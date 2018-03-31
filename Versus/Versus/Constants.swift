@@ -10,8 +10,8 @@ import Foundation
 
 // Segues
 
-let SHOW_EMAIL_SIGNUP = "EmailSignupVC"
 let SHOW_LOGIN = "LoginVC"
-let SHOW_CHOOSE_USERNAME = "ChooseUsernameVC"
+let SHOW_SIGNUP = "SignupVC"
+let SHOW_VERIFY_ACCOUNT = "VerifyAccountVC"
 
-let UNWIND_LANDING = "LandingVC"
+let UNWIND_TO_LANDING = "LandingVC"
