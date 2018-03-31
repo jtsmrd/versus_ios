@@ -2,6 +2,8 @@
 //  LoginVC.swift
 //  Versus
 //
+// Allows user to log in via username/ email & password, Facebook, or Google.
+//
 //  Created by JT Smrdel on 3/30/18.
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
@@ -10,26 +12,34 @@ import UIKit
 
 class LoginVC: UIViewController {
 
+    
+    // MARK: - Outlets
+    
+    @IBOutlet weak var usernameOrEmailTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    
+    
+    // MARK: - View Functions
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    // MARK: - Actions
+    
+    // Transition back to LandingVC
+    @IBAction func backButtonAction() {
+        navigationController?.popViewController(animated: true)
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    // Authenticate user via username/ email & password
+    // TODO:
+    // - Authenticate user via username/ email & password
+    @IBAction func loginButtonAction() {
+        
     }
-    */
-
 }

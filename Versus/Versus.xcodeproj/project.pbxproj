@@ -8,9 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		589C140C381C23DC0BEB472F /* Pods_Versus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A999CFBAD01983D013158ED9 /* Pods_Versus.framework */; };
+		6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1C8206FD9BA00F92375 /* Constants.swift */; };
+		6BAA03EB206F1D8D0032F7F9 /* EmailSignupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EA206F1D8D0032F7F9 /* EmailSignupVC.swift */; };
+		6BAA03ED206F1E1E0032F7F9 /* ChooseUsernameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EC206F1E1E0032F7F9 /* ChooseUsernameVC.swift */; };
+		6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EE206F1E420032F7F9 /* LoginVC.swift */; };
+		6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */; };
 		6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */; };
-		6BEACB59206EB3DC00C221A0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB58206EB3DC00C221A0 /* ViewController.swift */; };
-		6BEACB5C206EB3DD00C221A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB5A206EB3DD00C221A0 /* Main.storyboard */; };
+		6BEACB59206EB3DC00C221A0 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB58206EB3DC00C221A0 /* LandingVC.swift */; };
+		6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB5A206EB3DD00C221A0 /* Login.storyboard */; };
 		6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB5D206EB3DE00C221A0 /* Assets.xcassets */; };
 		6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB5F206EB3DE00C221A0 /* LaunchScreen.storyboard */; };
 		6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */; };
@@ -18,10 +23,15 @@
 
 /* Begin PBXFileReference section */
 		3755991080BE762D5B01C76C /* Pods-Versus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Versus.release.xcconfig"; path = "Pods/Target Support Files/Pods-Versus/Pods-Versus.release.xcconfig"; sourceTree = "<group>"; };
+		6B36E1C8206FD9BA00F92375 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		6BAA03EA206F1D8D0032F7F9 /* EmailSignupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignupVC.swift; sourceTree = "<group>"; };
+		6BAA03EC206F1E1E0032F7F9 /* ChooseUsernameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseUsernameVC.swift; sourceTree = "<group>"; };
+		6BAA03EE206F1E420032F7F9 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
+		6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		6BEACB53206EB3DC00C221A0 /* Versus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Versus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		6BEACB58206EB3DC00C221A0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		6BEACB5B206EB3DD00C221A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		6BEACB58206EB3DC00C221A0 /* LandingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
+		6BEACB5B206EB3DD00C221A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Login.storyboard; sourceTree = "<group>"; };
 		6BEACB5D206EB3DE00C221A0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6BEACB60206EB3DE00C221A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6BEACB62206EB3DE00C221A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -50,6 +60,34 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6BAA03E8206F1D270032F7F9 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				6BAA03E9206F1D440032F7F9 /* Login */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		6BAA03E9206F1D440032F7F9 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				6BAA03EC206F1E1E0032F7F9 /* ChooseUsernameVC.swift */,
+				6BAA03EA206F1D8D0032F7F9 /* EmailSignupVC.swift */,
+				6BEACB58206EB3DC00C221A0 /* LandingVC.swift */,
+				6BEACB5A206EB3DD00C221A0 /* Login.storyboard */,
+				6BAA03EE206F1E420032F7F9 /* LoginVC.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		6BAA03F0206F1EEA0032F7F9 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
 		6BEACB4A206EB3DC00C221A0 = {
 			isa = PBXGroup;
 			children = (
@@ -71,13 +109,14 @@
 		6BEACB55206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXGroup;
 			children = (
-				6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */,
 				6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */,
-				6BEACB58206EB3DC00C221A0 /* ViewController.swift */,
-				6BEACB5A206EB3DD00C221A0 /* Main.storyboard */,
 				6BEACB5D206EB3DE00C221A0 /* Assets.xcassets */,
-				6BEACB5F206EB3DE00C221A0 /* LaunchScreen.storyboard */,
+				6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */,
+				6B36E1C8206FD9BA00F92375 /* Constants.swift */,
+				6BAA03F0206F1EEA0032F7F9 /* Controls */,
 				6BEACB62206EB3DE00C221A0 /* Info.plist */,
+				6BEACB5F206EB3DE00C221A0 /* LaunchScreen.storyboard */,
+				6BAA03E8206F1D270032F7F9 /* Modules */,
 			);
 			path = Versus;
 			sourceTree = "<group>";
@@ -155,7 +194,7 @@
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,
 				6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */,
-				6BEACB5C206EB3DD00C221A0 /* Main.storyboard in Resources */,
+				6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,20 +263,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6BEACB59206EB3DC00C221A0 /* ViewController.swift in Sources */,
+				6BEACB59206EB3DC00C221A0 /* LandingVC.swift in Sources */,
 				6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */,
+				6BAA03EB206F1D8D0032F7F9 /* EmailSignupVC.swift in Sources */,
+				6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */,
+				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
+				6BAA03ED206F1E1E0032F7F9 /* ChooseUsernameVC.swift in Sources */,
+				6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		6BEACB5A206EB3DD00C221A0 /* Main.storyboard */ = {
+		6BEACB5A206EB3DD00C221A0 /* Login.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				6BEACB5B206EB3DD00C221A0 /* Base */,
 			);
-			name = Main.storyboard;
+			name = Login.storyboard;
 			sourceTree = "<group>";
 		};
 		6BEACB5F206EB3DE00C221A0 /* LaunchScreen.storyboard */ = {
@@ -374,7 +418,10 @@
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.Versus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -391,7 +438,10 @@
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.Versus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
