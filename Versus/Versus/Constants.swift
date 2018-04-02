@@ -12,6 +12,11 @@ import Foundation
 
 let SHOW_LOGIN = "LoginVC"
 let SHOW_SIGNUP = "SignupVC"
-let SHOW_VERIFY_ACCOUNT = "VerifyAccountVC"
+let SHOW_VERIFY_ACCOUNT = "VerifyUserVC"
 
 let UNWIND_TO_LANDING = "LandingVC"
+
+
+// Completions
+
+typealias SuccessCompletion = (Bool) -> ()

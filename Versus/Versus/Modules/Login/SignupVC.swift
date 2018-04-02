@@ -9,6 +9,7 @@
 //
 
 import UIKit
+import AWSUserPoolsSignIn
 
 class SignupVC: UIViewController {
 
@@ -54,18 +55,26 @@ class SignupVC: UIViewController {
     }
     
     
-    // Created a new identity (in User Pool) via email or phone then transitions to VerifyAccountVC.
+    // Created a new identity (in User Pool) via email or phone then transitions to VerifyUserVC.
     // TODO:
     // - Authenticate using AWS Cognito via email or phone.
     @IBAction func signupButtonAction() {
         
-        guard let emailPhoneNumber = emailPhoneNumberTextField.text, !emailPhoneNumber.isEmpty else {
-            // Display error
-            return
-        }
-        
         if inputDataIsValid() {
-            performSegue(withIdentifier: SHOW_VERIFY_ACCOUNT, sender: nil)
+            
+            let username = emailPhoneNumberTextField.text!
+            let password = passwordTextField.text!
+            
+            AWSCognitoIdentityUserPool.default().signUp(username, password: password, userAttributes: nil, validationData: nil)
+                .continueWith(executor: AWSExecutor.mainThread()) { (response) -> Any? in
+                    if let error = response.error {
+                        debugPrint("Failed to create user: \(error.localizedDescription)")
+                    }
+                    else if let user = response.result?.user {
+                        self.performSegue(withIdentifier: SHOW_VERIFY_ACCOUNT, sender: user)
+                    }
+                    return nil
+            }
         }
     }
     
@@ -77,7 +86,21 @@ class SignupVC: UIViewController {
     
     // MARK: - Private Funtions
     
+    // Validate email or phone number and password prior to attempting to create a new user
+    // TODO:
+    // - If signup method is email, validate email.
+    // - If signup method is phone number, validate phone number.
+    // Valid phone numbers are strings prefixed with '+' and the international code. ex: +14128885555
     private func inputDataIsValid() -> Bool {
         return true
+    }
+    
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let verifyAccountVC = segue.destination as? VerifyUserVC, let awsUser = sender as? AWSCognitoIdentityUser {
+            verifyAccountVC.awsUser = awsUser
+        }
     }
 }
