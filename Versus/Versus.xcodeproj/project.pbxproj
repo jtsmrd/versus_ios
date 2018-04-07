@@ -8,9 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		589C140C381C23DC0BEB472F /* Pods_Versus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A999CFBAD01983D013158ED9 /* Pods_Versus.framework */; };
+		6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1ABF1D2072E819005A0DDB /* Main.storyboard */; };
 		6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1C8206FD9BA00F92375 /* Constants.swift */; };
 		6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */; };
 		6B36E1D020703D5D00F92375 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CF20703D5D00F92375 /* UserService.swift */; };
+		6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C120742F4900BC23A0 /* CircleButton.swift */; };
+		6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */; };
+		6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C5207431B800BC23A0 /* BorderView.swift */; };
+		6BA4B0C9207435F200BC23A0 /* ProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C8207435F200BC23A0 /* ProfileVC.swift */; };
+		6BA4B0CB2074360100BC23A0 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */; };
+		6BA4B0D220744D0400BC23A0 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0D120744D0400BC23A0 /* User.swift */; };
 		6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EA206F1D8D0032F7F9 /* SignupVC.swift */; };
 		6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EE206F1E420032F7F9 /* LoginVC.swift */; };
 		6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */; };
@@ -24,9 +31,16 @@
 
 /* Begin PBXFileReference section */
 		3755991080BE762D5B01C76C /* Pods-Versus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Versus.release.xcconfig"; path = "Pods/Target Support Files/Pods-Versus/Pods-Versus.release.xcconfig"; sourceTree = "<group>"; };
+		6B1ABF1D2072E819005A0DDB /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		6B36E1C8206FD9BA00F92375 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyUserVC.swift; sourceTree = "<group>"; };
 		6B36E1CF20703D5D00F92375 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		6BA4B0C120742F4900BC23A0 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
+		6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
+		6BA4B0C5207431B800BC23A0 /* BorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
+		6BA4B0C8207435F200BC23A0 /* ProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileVC.swift; sourceTree = "<group>"; };
+		6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
+		6BA4B0D120744D0400BC23A0 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6BAA03EA206F1D8D0032F7F9 /* SignupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupVC.swift; sourceTree = "<group>"; };
 		6BAA03EE206F1E420032F7F9 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
@@ -70,10 +84,29 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		6BA4B0C7207435DB00BC23A0 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				6BA4B0C8207435F200BC23A0 /* ProfileVC.swift */,
+				6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		6BA4B0CC20744BEE00BC23A0 /* AWS Models */ = {
+			isa = PBXGroup;
+			children = (
+				6BA4B0D120744D0400BC23A0 /* User.swift */,
+			);
+			path = "AWS Models";
+			sourceTree = "<group>";
+		};
 		6BAA03E8206F1D270032F7F9 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
 				6BAA03E9206F1D440032F7F9 /* Login */,
+				6B1ABF1D2072E819005A0DDB /* Main.storyboard */,
+				6BA4B0C7207435DB00BC23A0 /* Profile */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -94,6 +127,9 @@
 			isa = PBXGroup;
 			children = (
 				6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */,
+				6BA4B0C120742F4900BC23A0 /* CircleButton.swift */,
+				6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */,
+				6BA4B0C5207431B800BC23A0 /* BorderView.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -119,6 +155,7 @@
 		6BEACB55206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXGroup;
 			children = (
+				6BA4B0CC20744BEE00BC23A0 /* AWS Models */,
 				6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */,
 				6BEACB5D206EB3DE00C221A0 /* Assets.xcassets */,
 				6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */,
@@ -203,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
+				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,
 				6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */,
 				6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */,
@@ -256,6 +294,7 @@
 				"${BUILT_PRODUCTS_DIR}/AWSCognitoIdentityProvider/AWSCognitoIdentityProvider.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSCognitoIdentityProviderASF/AWSCognitoIdentityProviderASF.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSCore/AWSCore.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSDynamoDB/AWSDynamoDB.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSMobileClient/AWSMobileClient.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSUserPoolsSignIn/AWSUserPoolsSignIn.framework",
 			);
@@ -265,6 +304,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognitoIdentityProvider.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognitoIdentityProviderASF.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSDynamoDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSMobileClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSUserPoolsSignIn.framework",
 			);
@@ -280,14 +320,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6BA4B0C9207435F200BC23A0 /* ProfileVC.swift in Sources */,
 				6BEACB59206EB3DC00C221A0 /* LandingVC.swift in Sources */,
 				6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */,
 				6B36E1D020703D5D00F92375 /* UserService.swift in Sources */,
+				6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */,
 				6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */,
+				6BA4B0D220744D0400BC23A0 /* User.swift in Sources */,
 				6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */,
 				6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */,
 				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
+				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
+				6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */,
 				6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */,
+				6BA4B0CB2074360100BC23A0 /* EditProfileVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,7 +27,7 @@ class RoundButton: UIButton {
         setupButton()
     }
     
-    func setupButton() {
+    private func setupButton() {
         clipsToBounds = true
         layer.cornerRadius = _cornerRadius
         

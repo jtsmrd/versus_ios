@@ -24,6 +24,7 @@ class SignupVC: UIViewController {
     // MARK: - Variables
     
     var signupMethod: SignupMethod = .email
+    var signInCredentials: SignInCredentials!
     
     
     // MARK: - View Functions
@@ -65,7 +66,16 @@ class SignupVC: UIViewController {
             let username = emailPhoneNumberTextField.text!
             let password = passwordTextField.text!
             
-            AWSCognitoIdentityUserPool.default().signUp(username, password: password, userAttributes: nil, validationData: nil)
+            signInCredentials = SignInCredentials(username: username, password: password)
+            
+            var attributes = [AWSCognitoIdentityUserAttributeType]()
+            
+            let email = AWSCognitoIdentityUserAttributeType()!
+            email.name = "email"
+            email.value = username
+            attributes.append(email)
+            
+            AWSCognitoIdentityUserPool.default().signUp("smrddddd", password: password, userAttributes: attributes, validationData: nil)
                 .continueWith(executor: AWSExecutor.mainThread()) { (response) -> Any? in
                     if let error = response.error {
                         debugPrint("Failed to create user: \(error.localizedDescription)")
@@ -101,6 +111,7 @@ class SignupVC: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let verifyAccountVC = segue.destination as? VerifyUserVC, let awsUser = sender as? AWSCognitoIdentityUser {
             verifyAccountVC.awsUser = awsUser
+            verifyAccountVC.signInCredentials = signInCredentials
         }
     }
 }

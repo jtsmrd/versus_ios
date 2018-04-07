@@ -8,7 +8,9 @@
 
 import UIKit
 import AWSMobileClient
+import AWSAuthCore
 import AWSCore
+import AWSCognitoIdentityProvider
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,7 +25,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         AWSDDLog.sharedInstance.logLevel = .info
         
         // Create AWSMobileClient to connect with AWS
-        return AWSMobileClient.sharedInstance().interceptApplication(application, didFinishLaunchingWithOptions: launchOptions)
+        let interceptReturn = AWSMobileClient.sharedInstance().interceptApplication(application, didFinishLaunchingWithOptions: launchOptions)
+        
+        if AWSSignInManager.sharedInstance().isLoggedIn {
+            let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+            window?.rootViewController = tabBarController
+            window?.becomeKey()
+        }
+        else {
+            let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController()
+            window?.rootViewController = loginVC
+            window?.makeKeyAndVisible()
+        }
+        
+        return interceptReturn
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
