@@ -35,5 +35,17 @@
     "Default": {
       "Region": "us-east-1"
     }
+  },
+  "S3TransferUtility": {
+    "Default": {
+      "Bucket": "versus-userfiles-mobilehub-387870640",
+      "Region": "us-east-1"
+    }
+  },
+  "UserFileManager": {
+    "Default": {
+      "Bucket": "versus-userfiles-mobilehub-387870640",
+      "Region": "us-east-1"
+    }
   }
 }
