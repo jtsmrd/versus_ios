@@ -1,3 +1,5 @@
 .DS_Store
 Versus.xcodeproj/project.xcworkspace/
 Versus.xcodeproj/xcuserdata/
+xcuserdata/
+../../.DS_Store
