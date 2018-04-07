@@ -20,7 +20,7 @@ class FollowSuggestionsVC: UIViewController {
 
     
     @IBAction func skipButtonAction() {
-        performSegue(withIdentifier: "", sender: nil)
+        performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
     }
     
 

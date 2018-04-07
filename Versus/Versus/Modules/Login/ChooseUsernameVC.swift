@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AWSUserPoolsSignIn
 
 class ChooseUsernameVC: UIViewController {
 
@@ -23,8 +24,37 @@ class ChooseUsernameVC: UIViewController {
     
     
     @IBAction func continueButtonAction() {
-        
+        guard inputDataIsValid() else { return }
+        let username = usernameTextField.text!
+        createUser(username: username)
     }    
+    
+    
+    private func createUser(username: String) {
+        
+        UserService.instance.createUser(username: username) { (success) in
+            if success {
+                DispatchQueue.main.async {
+                    self.performSegue(withIdentifier: SHOW_FOLLOW_SUGGESTIONS, sender: nil)
+                }
+            }
+            else {
+                debugPrint("Failed to create user!!!")
+            }
+        }
+    }
+    
+    private func inputDataIsValid() -> Bool {
+        
+        guard let username = usernameTextField.text, !username.isEmpty else {
+            
+            // Display error
+            
+            return false
+        }
+        
+        return true
+    }
     
 
     /*

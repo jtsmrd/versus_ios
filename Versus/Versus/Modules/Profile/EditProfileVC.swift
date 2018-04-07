@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import AWSUserPoolsSignIn
 
-class EditProfileVC: UIViewController {
+class EditProfileVC: UIViewController, UITextViewDelegate {
 
     
     @IBOutlet weak var backgroundImageView: UIImageView!
@@ -17,21 +18,26 @@ class EditProfileVC: UIViewController {
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     
-    
+    var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        configureView()
+    }
+    
+    
+    func initData(user: User) {
+        self.user = user
     }
     
     
     @IBAction func cancelButtonAction() {
-        
+        dismiss(animated: true, completion: nil)
     }
     
     @IBAction func doneButtonAction() {
-        
+        updateUser()
     }
     
     @IBAction func editBackgroundImageAction() {
@@ -40,6 +46,54 @@ class EditProfileVC: UIViewController {
     
     @IBAction func editProfileButtonAction() {
         
+    }
+    
+    
+    private func configureView() {
+        usernameTextField.text = user._username
+        bioTextView.text = user._bio
+        
+        // Get and display the users' email
+        let currentUser = AWSCognitoIdentityUserPool.default().currentUser()
+        currentUser?.getDetails().continueWith(executor: AWSExecutor.mainThread(), block: { (response) -> Any? in
+            if let error = response.error {
+                debugPrint("Error getting user details: \(error.localizedDescription)")
+            }
+            else if let result = response.result {
+                if let attributes = result.userAttributes {
+                    for attribute in attributes {
+                        if let attributeName = attribute.name, attributeName == "email" {
+                            if let email = attribute.value {
+                                self.emailTextField.text = email
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return nil
+        })
+    }
+    
+    private func updateUser() {
+        UserService.instance.updateUser(user: user) { (success) in
+            if success {
+                debugPrint("Successfully updated user")
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true, completion: nil)
+                }
+            }
+            else {
+                debugPrint("Failed to updated user")
+            }
+        }
+    }
+    
+    
+    // MARK: - UITextViewDelegate Functions
+    
+    func textViewDidChange(_ textView: UITextView) {
+        user._bio = textView.text
     }
     
     

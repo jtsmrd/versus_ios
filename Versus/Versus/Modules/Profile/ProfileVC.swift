@@ -26,31 +26,83 @@ class ProfileVC: UIViewController {
     @IBOutlet weak var rankLabel: UILabel!
     @IBOutlet weak var competitionCollectionView: UICollectionView!
     
+    var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loadUser()
     }
 
     
     @IBAction func optionsButtonAction() {
-        guard let username = AWSCognitoUserPoolsSignInProvider.sharedInstance().getUserPool().currentUser()?.username else {
-            debugPrint("AWS user username nil")
-            return
-        }
-        
-        UserService.instance.createUser(userPoolUserId: username, username: "JTSmrd")
+        displayOptions()
     }
     
     @IBAction func directMessageButtonAction() {
-        AWSSignInManager.sharedInstance().logout { (anyVal, error) in
-            
-        }
+        
     }
     
     
+    private func loadUser() {
+        
+        UserService.instance.loadUser { (user) in
+            if let user = user {
+                self.user = user
+                DispatchQueue.main.async {
+                    self.configureView()
+                }
+            }
+        }
+    }
     
+    private func configureView() {
+        usernameLabel.text = user._username
+        bioLabel.text = user._bio
+    }
+    
+    private func displayOptions() {
+        let optionsAlertController = UIAlertController(title: "Profile Options", message: nil, preferredStyle: .actionSheet)
+        optionsAlertController.addAction(UIAlertAction(title: "Edit Profile", style: .default, handler: { (action) in
+            self.displayEditProfile()
+        }))
+        
+        optionsAlertController.addAction(UIAlertAction(title: "Change Password", style: .default, handler: { (action) in
+            
+        }))
+        
+        optionsAlertController.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { (action) in
+            self.signOut()
+        }))
+        
+        optionsAlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+            
+        }))
+        
+        present(optionsAlertController, animated: true, completion: nil)
+    }
+    
+    private func displayEditProfile() {
+        if let editProfileVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EditProfileVC") as? EditProfileVC {
+            editProfileVC.initData(user: user)
+            present(editProfileVC, animated: true, completion: nil)
+        }
+    }
+    
+    private func signOut() {
+        AWSCognitoIdentityUserPool.default().currentUser()?.signOut()
+        if let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController() {
+            (UIApplication.shared.delegate as! AppDelegate).window?.rootViewController = loginVC
+            (UIApplication.shared.delegate as! AppDelegate).window?.makeKeyAndVisible()
+        }
+        
+    }
     
 
     /*

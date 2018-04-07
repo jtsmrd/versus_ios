@@ -11,6 +11,7 @@ import AWSMobileClient
 import AWSAuthCore
 import AWSCore
 import AWSCognitoIdentityProvider
+import AWSUserPoolsSignIn
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

@@ -68,14 +68,14 @@ class SignupVC: UIViewController {
             
             signInCredentials = SignInCredentials(username: username, password: password)
             
-            var attributes = [AWSCognitoIdentityUserAttributeType]()
+//            var attributes = [AWSCognitoIdentityUserAttributeType]()
+//
+//            let email = AWSCognitoIdentityUserAttributeType()!
+//            email.name = "email"
+//            email.value = username
+//            attributes.append(email)
             
-            let email = AWSCognitoIdentityUserAttributeType()!
-            email.name = "email"
-            email.value = username
-            attributes.append(email)
-            
-            AWSCognitoIdentityUserPool.default().signUp("smrddddd", password: password, userAttributes: attributes, validationData: nil)
+            AWSCognitoIdentityUserPool.default().signUp(username, password: password, userAttributes: nil, validationData: nil)
                 .continueWith(executor: AWSExecutor.mainThread()) { (response) -> Any? in
                     if let error = response.error {
                         debugPrint("Failed to create user: \(error.localizedDescription)")

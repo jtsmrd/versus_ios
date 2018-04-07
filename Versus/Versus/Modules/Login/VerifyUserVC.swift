@@ -10,8 +10,6 @@
 
 import UIKit
 import AWSUserPoolsSignIn
-//import AWSCognitoIdentityProvider
-//import AWSCognitoUserPoolsSignIn
 
 class VerifyUserVC: UIViewController {
 
@@ -47,8 +45,6 @@ class VerifyUserVC: UIViewController {
     
     @IBAction func submitButtonAction() {
         
-//        guard let user = AWSCognitoIdentityUserPool.default().currentUser() else { return }
-        
         guard inputDataIsValid() else { return }
         
         let verificationCode = verificationCodeTextField.text!
@@ -60,7 +56,7 @@ class VerifyUserVC: UIViewController {
             }
             debugPrint("User verified")
             
-            self.createUser()
+            self.signIn()
             
             return nil
         })
@@ -92,34 +88,16 @@ class VerifyUserVC: UIViewController {
         AWSSignInManager.sharedInstance().login(signInProviderKey: signInProvider.identityProviderName) { (result, error) in
             if let error = error {
                 debugPrint("Failed to login: \(error.localizedDescription)")
+                return
             }
-            self.createUser()
+            self.performSegue(withIdentifier: SHOW_CHOOSE_USERNAME, sender: nil)
         }
-    }
-    
-    private func createUser() {
-//        guard let userPoolUserId = self.awsUser.username else {
-//            debugPrint("AWS user username nil")
-//            return
-//        }
-        guard let username = AWSCognitoUserPoolsSignInProvider.sharedInstance().getUserPool().currentUser()?.username else {
-            debugPrint("AWS user username nil")
-            return
-        }
-        debugPrint("Current user username: \(username)")
-        
-        UserService.instance.createUser(userPoolUserId: username, username: "JTSmrd")
     }
 }
 
 extension VerifyUserVC: AWSCognitoUserPoolsSignInHandler {
     
     func handleUserPoolSignInFlowStart() {
-        
-//        guard let username = AWSCognitoUserPoolsSignInProvider.sharedInstance().getUserPool().currentUser()?.username else {
-//            debugPrint("AWS user username nil")
-//            return
-//        }
         
         passwordAuthenticationCompletion?.set(result: AWSCognitoIdentityPasswordAuthenticationDetails(username: signInCredentials.username, password: signInCredentials.password))
     }
