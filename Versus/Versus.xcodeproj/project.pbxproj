@@ -13,6 +13,7 @@
 		6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */; };
 		6B36E1D020703D5D00F92375 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CF20703D5D00F92375 /* UserService.swift */; };
 		6B87388D20796A0B00BF834D /* SignInCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388C20796A0B00BF834D /* SignInCredentials.swift */; };
+		6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388E2079979D00BF834D /* S3BucketService.swift */; };
 		6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C120742F4900BC23A0 /* CircleButton.swift */; };
 		6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */; };
 		6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C5207431B800BC23A0 /* BorderView.swift */; };
@@ -37,6 +38,7 @@
 		6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyUserVC.swift; sourceTree = "<group>"; };
 		6B36E1CF20703D5D00F92375 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		6B87388C20796A0B00BF834D /* SignInCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInCredentials.swift; sourceTree = "<group>"; };
+		6B87388E2079979D00BF834D /* S3BucketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = S3BucketService.swift; sourceTree = "<group>"; };
 		6BA4B0C120742F4900BC23A0 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
 		6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
 		6BA4B0C5207431B800BC23A0 /* BorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				6B36E1CF20703D5D00F92375 /* UserService.swift */,
+				6B87388E2079979D00BF834D /* S3BucketService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -332,6 +335,7 @@
 				6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */,
 				6B36E1D020703D5D00F92375 /* UserService.swift in Sources */,
 				6B87388D20796A0B00BF834D /* SignInCredentials.swift in Sources */,
+				6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */,
 				6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */,
 				6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */,
 				6BA4B0D220744D0400BC23A0 /* User.swift in Sources */,
@@ -490,7 +494,10 @@
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.Versus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -507,7 +514,10 @@
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.Versus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

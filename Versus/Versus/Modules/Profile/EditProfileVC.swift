@@ -8,9 +8,16 @@
 
 import UIKit
 import AWSUserPoolsSignIn
+import MobileCoreServices
 
 class EditProfileVC: UIViewController, UITextViewDelegate {
 
+    
+    enum EditImageType {
+        case profile
+        case background
+    }
+    
     
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var profileImageView: CircleImageView!
@@ -18,12 +25,19 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     
+    
     var user: User!
+    var imagePicker: UIImagePickerController!
+    var editImageType: EditImageType!
+    var profileImage: UIImage?
+    var backgroundImage: UIImage?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureView()
+        configureImagePicker()
     }
     
     
@@ -38,15 +52,32 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     
     @IBAction func doneButtonAction() {
         updateUser()
+        
+//        guard let image = profileImage, let imageData = UIImageJPEGRepresentation(image, 0.5) else {
+//            debugPrint("Could not convert image to jpeg data")
+//            return
+//        }
+//
+//        // Remove
+//        print("There were \(imageData.count) bytes")
+//        let bcf = ByteCountFormatter()
+//        bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
+//        bcf.countStyle = .file
+//        let string = bcf.string(fromByteCount: Int64(imageData.count))
+//        print("formatted result: \(string)")
+//        // Remove
     }
     
     @IBAction func editBackgroundImageAction() {
-        
+        editImageType = .background
+        editImage()
     }
     
     @IBAction func editProfileButtonAction() {
-        
+        editImageType = .profile
+        editImage()
     }
+    
     
     
     private func configureView() {
@@ -75,18 +106,58 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         })
     }
     
+    
+    private func configureImagePicker() {
+        imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+    }
+    
+    
     private func updateUser() {
-        UserService.instance.updateUser(user: user) { (success) in
-            if success {
-                debugPrint("Successfully updated user")
-                DispatchQueue.main.async {
-                    self.dismiss(animated: true, completion: nil)
-                }
-            }
-            else {
-                debugPrint("Failed to updated user")
-            }
+        
+        guard let profileImage = profileImage else {
+            debugPrint("Profile image is nil")
+            return
         }
+        
+        S3BucketService.instance.uploadImage(image: profileImage, bucketType: .profileImage)
+        
+//        UserService.instance.updateUser(user: user) { (success) in
+//            if success {
+//                debugPrint("Successfully updated user")
+//                DispatchQueue.main.async {
+//                    self.dismiss(animated: true, completion: nil)
+//                }
+//            }
+//            else {
+//                debugPrint("Failed to updated user")
+//            }
+//        }
+    }
+    
+    
+    private func editImage() {
+        let imageSourceAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        imageSourceAlert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action) in
+            self.presentImagePicker(sourceType: .camera)
+        }))
+        
+        imageSourceAlert.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action) in
+            self.presentImagePicker(sourceType: .photoLibrary)
+        }))
+        
+        imageSourceAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+            
+        }))
+        present(imageSourceAlert, animated: true, completion: nil)
+    }
+    
+    
+    private func presentImagePicker(sourceType: UIImagePickerControllerSourceType) {
+        imagePicker.sourceType = sourceType
+        imagePicker.mediaTypes = [String(kUTTypeImage)]
+        present(imagePicker, animated: true, completion: nil)
     }
     
     
@@ -107,4 +178,25 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     }
     */
 
+}
+
+extension EditProfileVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            switch editImageType! {
+            case .profile:
+                self.profileImage = image
+                self.profileImageView.image = image
+            case .background:
+                self.backgroundImage = image
+                self.backgroundImageView.image = image
+            }
+        }
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
 }
