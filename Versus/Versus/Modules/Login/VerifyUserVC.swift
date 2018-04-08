@@ -17,7 +17,6 @@ class VerifyUserVC: UIViewController {
     // MARK: - Outlets
     
     @IBOutlet weak var verificationCodeTextField: UITextField!
-    var passwordAuthenticationCompletion: AWSTaskCompletionSource<AnyObject>?
     
     // MARK: - Variables
     
@@ -83,42 +82,19 @@ class VerifyUserVC: UIViewController {
     }
     
     private func signIn() {
-        AWSCognitoUserPoolsSignInProvider.sharedInstance().setInteractiveAuthDelegate(self)
+        
+        appDelegate.prepareForSignIn(signInCredentials: signInCredentials)
         let signInProvider: AWSSignInProvider = AWSCognitoUserPoolsSignInProvider.sharedInstance()
-        AWSSignInManager.sharedInstance().login(signInProviderKey: signInProvider.identityProviderName) { (result, error) in
+        
+        AWSSignInManager.sharedInstance().login(
+        signInProviderKey: signInProvider.identityProviderName) { (result, error) in
             if let error = error {
                 debugPrint("Failed to login: \(error.localizedDescription)")
                 return
             }
-            self.performSegue(withIdentifier: SHOW_CHOOSE_USERNAME, sender: nil)
+            DispatchQueue.main.async {
+                self.performSegue(withIdentifier: SHOW_CHOOSE_USERNAME, sender: nil)
+            }
         }
-    }
-}
-
-extension VerifyUserVC: AWSCognitoUserPoolsSignInHandler {
-    
-    func handleUserPoolSignInFlowStart() {
-        
-        passwordAuthenticationCompletion?.set(result: AWSCognitoIdentityPasswordAuthenticationDetails(username: signInCredentials.username, password: signInCredentials.password))
-    }
-}
-
-extension VerifyUserVC: AWSCognitoIdentityPasswordAuthentication {
-    
-    func getDetails(_ authenticationInput: AWSCognitoIdentityPasswordAuthenticationInput, passwordAuthenticationCompletionSource: AWSTaskCompletionSource<AWSCognitoIdentityPasswordAuthenticationDetails>) {
-        passwordAuthenticationCompletion = passwordAuthenticationCompletionSource as? AWSTaskCompletionSource<AnyObject>
-    }
-    
-    func didCompleteStepWithError(_ error: Error?) {
-        if let error = error {
-            debugPrint("Error password auth step: \(error.localizedDescription)")
-        }
-    }
-}
-
-extension VerifyUserVC: AWSCognitoIdentityInteractiveAuthenticationDelegate {
-    
-    func startPasswordAuthentication() -> AWSCognitoIdentityPasswordAuthentication {
-        return self
     }
 }

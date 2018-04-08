@@ -13,10 +13,14 @@ import AWSCore
 import AWSCognitoIdentityProvider
 import AWSUserPoolsSignIn
 
+let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var passwordAuthenticationCompletion: AWSTaskCompletionSource<AnyObject>?
+    var signInCredentials: SignInCredentials!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -64,6 +68,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    
+    
+    func prepareForSignIn(signInCredentials: SignInCredentials) {
+        self.signInCredentials = signInCredentials
+        AWSCognitoUserPoolsSignInProvider.sharedInstance().setInteractiveAuthDelegate(self)
+    }
+}
 
+extension AppDelegate: AWSCognitoIdentityPasswordAuthentication {
+
+    func getDetails(_ authenticationInput: AWSCognitoIdentityPasswordAuthenticationInput, passwordAuthenticationCompletionSource: AWSTaskCompletionSource<AWSCognitoIdentityPasswordAuthenticationDetails>) {
+        passwordAuthenticationCompletion = passwordAuthenticationCompletionSource as? AWSTaskCompletionSource<AnyObject>
+    }
+
+    func didCompleteStepWithError(_ error: Error?) {
+        if let error = error {
+            debugPrint("Error password auth step: \(error.localizedDescription)")
+        }
+    }
+}
+
+extension AppDelegate: AWSCognitoIdentityInteractiveAuthenticationDelegate {
+
+    func startPasswordAuthentication() -> AWSCognitoIdentityPasswordAuthentication {
+        return self
+    }
+}
+
+extension AppDelegate: AWSCognitoUserPoolsSignInHandler {
+    
+    func handleUserPoolSignInFlowStart() {
+        
+        appDelegate.passwordAuthenticationCompletion?.set(
+            result: AWSCognitoIdentityPasswordAuthenticationDetails(
+                username: signInCredentials.username,
+                password: signInCredentials.password
+            )
+        )
+    }
 }
 

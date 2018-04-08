@@ -9,17 +9,19 @@
 import UIKit
 import AWSUserPoolsSignIn
 
-class ChooseUsernameVC: UIViewController {
+class ChooseUsernameVC: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var usernameInfoLabel: UILabel!
+    @IBOutlet weak var usernameExistsLabel: UILabel!
     @IBOutlet weak var continueButton: RoundButton!
     
+    var usernameAvailable = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        usernameExistsLabel.isHidden = true
     }
     
     
@@ -46,11 +48,68 @@ class ChooseUsernameVC: UIViewController {
     
     private func inputDataIsValid() -> Bool {
         
-        guard let username = usernameTextField.text, !username.isEmpty else {
-            
-            // Display error
+        guard usernameAvailable else { return false }
+        
+        guard let username = usernameTextField.text,
+            !username.isEmpty,
+            username.count > 4,
+            username.count < 21 else {
             
             return false
+        }
+        
+        return true
+    }
+    
+    private func checkUsernameAvailability(username: String) {
+        
+        AccountService.instance.checkAvailability(for: username) { (isAvailable) in
+            if isAvailable {
+                self.usernameAvailable = true
+                DispatchQueue.main.async {
+                    self.usernameExistsLabel.isHidden = true
+                    self.usernameTextField.layer.borderColor = UIColor.green.cgColor
+                }
+            }
+            else {
+                self.usernameAvailable = false
+                DispatchQueue.main.async {
+                    self.usernameExistsLabel.isHidden = false
+                    self.usernameTextField.layer.borderColor = UIColor.red.cgColor
+                }
+            }
+        }
+    }
+    
+    
+    // MARK: - UITextFieldDelegate
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        guard let existingText = textField.text, existingText.count >= 4 else {
+            usernameInfoLabel.textColor = UIColor.red
+            return true
+        }
+        
+        usernameInfoLabel.textColor = UIColor.green
+        
+        if string != "" {
+            
+            if existingText.count == 20 {
+                usernameInfoLabel.textColor = UIColor.red
+            }
+            else {
+                checkUsernameAvailability(username: existingText + string)
+            }
+        }
+        else {
+            
+            if existingText.count == 5 {
+                usernameInfoLabel.textColor = UIColor.red
+            }
+            else {
+                checkUsernameAvailability(username: String(existingText.prefix(upTo: existingText.endIndex)))
+            }
         }
         
         return true

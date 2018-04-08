@@ -449,7 +449,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fKd-kJ-Un0" userLabel="Content Container View">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="548"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nx8-fy-kFa">
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nx8-fy-kFa">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="90"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="90" id="Ptf-hW-WHR"/>
@@ -624,7 +624,7 @@
                                                     <constraint firstItem="5Vw-nu-cEO" firstAttribute="leading" secondItem="PDF-Ki-tIR" secondAttribute="leading" constant="-1" id="wma-cq-6hx"/>
                                                 </constraints>
                                             </view>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile" translatesAutoresizingMaskIntoConstraints="NO" id="YfW-z1-OX2" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile" translatesAutoresizingMaskIntoConstraints="NO" id="YfW-z1-OX2" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
                                                 <rect key="frame" x="30" y="30" width="115" height="115"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="YfW-z1-OX2" secondAttribute="height" multiplier="1:1" id="ARC-be-tvI"/>

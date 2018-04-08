@@ -63,8 +63,39 @@ class ProfileVC: UIViewController {
     }
     
     private func configureView() {
+        
         usernameLabel.text = user._username
         bioLabel.text = user._bio
+        
+        // Get profile images
+        if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
+            
+            if let _ = user._profileImageUpdateDate {
+                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileImage) { (image, error) in
+                    if let error = error {
+                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
+                    }
+                    else if let image = image {
+                        DispatchQueue.main.async {
+                            self.profileImageView.image = image
+                        }
+                    }
+                }
+            }
+            
+            if let _ = user._profileBackgroundImageUpdateDate {
+                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileBackgroundImage) { (image, error) in
+                    if let error = error {
+                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
+                    }
+                    else if let image = image {
+                        DispatchQueue.main.async {
+                            self.backgroundImageView.image = image
+                        }
+                    }
+                }
+            }
+        }
     }
     
     private func displayOptions() {
@@ -96,12 +127,16 @@ class ProfileVC: UIViewController {
     }
     
     private func signOut() {
-        AWSCognitoIdentityUserPool.default().currentUser()?.signOut()
-        if let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController() {
-            (UIApplication.shared.delegate as! AppDelegate).window?.rootViewController = loginVC
-            (UIApplication.shared.delegate as! AppDelegate).window?.makeKeyAndVisible()
+        AccountService.instance.signOut { (success) in
+            if success {
+                DispatchQueue.main.async {
+                    if let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController() {
+                        (UIApplication.shared.delegate as! AppDelegate).window?.rootViewController = loginVC
+                        (UIApplication.shared.delegate as! AppDelegate).window?.makeKeyAndVisible()
+                    }
+                }
+            }
         }
-        
     }
     
 

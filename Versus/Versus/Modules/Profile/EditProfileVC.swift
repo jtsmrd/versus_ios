@@ -58,14 +58,51 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
 //            return
 //        }
 //
-//        // Remove
+//
 //        print("There were \(imageData.count) bytes")
 //        let bcf = ByteCountFormatter()
 //        bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
 //        bcf.countStyle = .file
 //        let string = bcf.string(fromByteCount: Int64(imageData.count))
 //        print("formatted result: \(string)")
-//        // Remove
+//
+//
+//        let resizedImage = resizeProfileImage(image: image, newWidth: 200.0)
+//        if let resizedImage = resizedImage, let resizedData = UIImageJPEGRepresentation(resizedImage, 1.0) {
+//
+//            print("Resized: There were \(resizedData.count) bytes")
+//            let bcf = ByteCountFormatter()
+//            bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
+//            bcf.countStyle = .file
+//            let string = bcf.string(fromByteCount: Int64(resizedData.count))
+//            print("Resized: formatted result: \(string)")
+//        }
+    }
+    
+    private func resizeProfileImage(image: UIImage, newWidth: CGFloat) -> UIImage? {
+        
+        let scale = newWidth / image.size.width
+        let newHeight = image.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    private func resizeProfileBackgroundImage(image: UIImage, newHeight: CGFloat) -> UIImage? {
+        
+        let scale: CGFloat = 6/25
+        let newWidth = image.size.width * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
     
     @IBAction func editBackgroundImageAction() {
@@ -81,10 +118,44 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     
     
     private func configureView() {
+        
         usernameTextField.text = user._username
         bioTextView.text = user._bio
+        setUserEmail()
         
-        // Get and display the users' email
+        // Get profile images
+        if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
+            
+            if let _ = user._profileImageUpdateDate {
+                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileImage) { (image, error) in
+                    if let error = error {
+                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
+                    }
+                    else if let image = image {
+                        DispatchQueue.main.async {
+                            self.profileImageView.image = image
+                        }
+                    }
+                }
+            }
+            
+            if let _ = user._profileBackgroundImageUpdateDate {
+                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileBackgroundImage) { (image, error) in
+                    if let error = error {
+                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
+                    }
+                    else if let image = image {
+                        DispatchQueue.main.async {
+                            self.backgroundImageView.image = image
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func setUserEmail() {
+        
         let currentUser = AWSCognitoIdentityUserPool.default().currentUser()
         currentUser?.getDetails().continueWith(executor: AWSExecutor.mainThread(), block: { (response) -> Any? in
             if let error = response.error {
@@ -106,7 +177,6 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         })
     }
     
-    
     private func configureImagePicker() {
         imagePicker = UIImagePickerController()
         imagePicker.delegate = self
@@ -116,24 +186,61 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     
     private func updateUser() {
         
-        guard let profileImage = profileImage else {
-            debugPrint("Profile image is nil")
-            return
+        var errorMessage = ""
+        let updateDispatchGroup = DispatchGroup()
+        
+        if let profileImage = profileImage, let resizedProfileImage = resizeProfileImage(image: profileImage, newWidth: 300.0) {
+            
+            updateDispatchGroup.enter()
+            S3BucketService.instance.uploadImage(image: resizedProfileImage, bucketType: .profileImage) { (success) in
+                if success {
+                    self.user._profileImageUpdateDate = String(Date().timeIntervalSince1970)
+                }
+                else {
+                    debugPrint("Failed to upload image in edit profile")
+                    errorMessage = "Unable to upload profile image."
+                }
+                updateDispatchGroup.leave()
+            }
         }
         
-        S3BucketService.instance.uploadImage(image: profileImage, bucketType: .profileImage)
         
-//        UserService.instance.updateUser(user: user) { (success) in
-//            if success {
-//                debugPrint("Successfully updated user")
-//                DispatchQueue.main.async {
-//                    self.dismiss(animated: true, completion: nil)
-//                }
-//            }
-//            else {
-//                debugPrint("Failed to updated user")
-//            }
-//        }
+        if let profileBackgroundImage = backgroundImage, let resizedProfileBackgroundImage = resizeProfileImage(image: profileBackgroundImage, newWidth: 600.0) {
+            
+            updateDispatchGroup.enter()
+            S3BucketService.instance.uploadImage(image: resizedProfileBackgroundImage, bucketType: .profileBackgroundImage) { (success) in
+                if success {
+                    self.user._profileBackgroundImageUpdateDate = String(Date().timeIntervalSince1970)
+                }
+                else {
+                    debugPrint("Failed to upload background image in edit profile")
+                    errorMessage = "Unable to upload background profile image."
+                }
+                updateDispatchGroup.leave()
+            }
+        }
+        
+        
+        updateDispatchGroup.notify(queue: .main) {
+            
+            if errorMessage.isEmpty {
+                
+                UserService.instance.updateUser(user: self.user) { (success) in
+                    if success {
+                        debugPrint("Successfully updated user")
+                        DispatchQueue.main.async {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    }
+                    else {
+                        debugPrint("Failed to updated user")
+                    }
+                }
+            }
+            else {
+                debugPrint(errorMessage)
+            }
+        }
     }
     
     

@@ -30,7 +30,7 @@ let PROFILE_BACKGROUND_IMAGE_BUCKET_PATH = "public/profileBackgroundImage/"
 
 let SHOW_LOGIN = "LoginVC"
 let SHOW_SIGNUP = "SignupVC"
-let SHOW_VERIFY_ACCOUNT = "VerifyUserVC"
+let SHOW_VERIFY_USER = "VerifyUserVC"
 let SHOW_CHOOSE_USERNAME = "ChooseUsernameVC"
 let SHOW_FOLLOW_SUGGESTIONS = "FollowSuggestionsVC"
 let SHOW_MAIN_STORYBOARD = "ShowMainStoryboard"

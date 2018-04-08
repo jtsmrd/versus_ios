@@ -21,9 +21,9 @@ class User: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _username: String?
     var _bio: String?
     var _createDate: String?
-    var _profileImageBackgroundId: String?
-    var _profileImageId: String?
-    var _profileImageSmallId: String?
+    var _isFeatured: NSNumber?
+    var _profileBackgroundImageUpdateDate: String?
+    var _profileImageUpdateDate: String?
     var _rankId: NSNumber?
     var _updateDate: String?
     var _userPoolUserId: String?
@@ -45,9 +45,9 @@ class User: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_username" : "username",
                "_bio" : "bio",
                "_createDate" : "createDate",
-               "_profileImageBackgroundId" : "profileImageBackgroundId",
-               "_profileImageId" : "profileImageId",
-               "_profileImageSmallId" : "profileImageSmallId",
+               "_isFeatured" : "isFeatured",
+               "_profileBackgroundImageUpdateDate" : "profileBackgroundImageUpdateDate",
+               "_profileImageUpdateDate" : "profileImageUpdateDate",
                "_rankId" : "rankId",
                "_updateDate" : "updateDate",
                "_userPoolUserId" : "userPoolUserId",

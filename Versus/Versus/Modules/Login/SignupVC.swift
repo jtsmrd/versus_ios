@@ -68,20 +68,13 @@ class SignupVC: UIViewController {
             
             signInCredentials = SignInCredentials(username: username, password: password)
             
-//            var attributes = [AWSCognitoIdentityUserAttributeType]()
-//
-//            let email = AWSCognitoIdentityUserAttributeType()!
-//            email.name = "email"
-//            email.value = username
-//            attributes.append(email)
-            
             AWSCognitoIdentityUserPool.default().signUp(username, password: password, userAttributes: nil, validationData: nil)
                 .continueWith(executor: AWSExecutor.mainThread()) { (response) -> Any? in
                     if let error = response.error {
                         debugPrint("Failed to create user: \(error.localizedDescription)")
                     }
                     else if let user = response.result?.user {
-                        self.performSegue(withIdentifier: SHOW_VERIFY_ACCOUNT, sender: user)
+                        self.performSegue(withIdentifier: SHOW_VERIFY_USER, sender: user)
                     }
                     return nil
             }
@@ -90,7 +83,7 @@ class SignupVC: UIViewController {
     
     
     @IBAction func alreadyHaveCodeButtonAction() {
-        performSegue(withIdentifier: SHOW_VERIFY_ACCOUNT, sender: "")
+        performSegue(withIdentifier: SHOW_VERIFY_USER, sender: "")
     }
     
     
