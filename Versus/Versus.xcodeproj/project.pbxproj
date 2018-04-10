@@ -12,6 +12,8 @@
 		6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1C8206FD9BA00F92375 /* Constants.swift */; };
 		6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */; };
 		6B36E1D020703D5D00F92375 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CF20703D5D00F92375 /* UserService.swift */; };
+		6B5D0A11207AE46600091DA1 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A10207AE46600091DA1 /* GameKit.framework */; };
+		6B5D0A13207AE46C00091DA1 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A12207AE46C00091DA1 /* StoreKit.framework */; };
 		6B87388D20796A0B00BF834D /* SignInCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388C20796A0B00BF834D /* SignInCredentials.swift */; };
 		6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388E2079979D00BF834D /* S3BucketService.swift */; };
 		6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C120742F4900BC23A0 /* CircleButton.swift */; };
@@ -41,6 +43,9 @@
 		6B36E1C8206FD9BA00F92375 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyUserVC.swift; sourceTree = "<group>"; };
 		6B36E1CF20703D5D00F92375 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		6B5D0A10207AE46600091DA1 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		6B5D0A12207AE46C00091DA1 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		6B5D0A14207AE48000091DA1 /* Versus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Versus.entitlements; sourceTree = "<group>"; };
 		6B87388C20796A0B00BF834D /* SignInCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInCredentials.swift; sourceTree = "<group>"; };
 		6B87388E2079979D00BF834D /* S3BucketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = S3BucketService.swift; sourceTree = "<group>"; };
 		6BA4B0C120742F4900BC23A0 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
@@ -73,7 +78,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B5D0A13207AE46C00091DA1 /* StoreKit.framework in Frameworks */,
 				589C140C381C23DC0BEB472F /* Pods_Versus.framework in Frameworks */,
+				6B5D0A11207AE46600091DA1 /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +90,8 @@
 		40CEAA774B2D3C01CC7D5D85 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6B5D0A12207AE46C00091DA1 /* StoreKit.framework */,
+				6B5D0A10207AE46600091DA1 /* GameKit.framework */,
 				A999CFBAD01983D013158ED9 /* Pods_Versus.framework */,
 			);
 			name = Frameworks;
@@ -180,6 +189,7 @@
 		6BEACB55206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXGroup;
 			children = (
+				6B5D0A14207AE48000091DA1 /* Versus.entitlements */,
 				6BB81788207A6E0B00503620 /* Extensions */,
 				6BA4B0CC20744BEE00BC23A0 /* AWS Models */,
 				6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */,
@@ -239,6 +249,17 @@
 				TargetAttributes = {
 					6BEACB52206EB3DC00C221A0 = {
 						CreatedOnToolsVersion = 9.3;
+						SystemCapabilities = {
+							com.apple.GameCenter.iOS = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -514,6 +535,7 @@
 			baseConfigurationReference = 8959046AF2DA8574CCDCF753 /* Pods-Versus.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Versus/Versus.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
@@ -522,7 +544,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.Versus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.versussmrdel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -534,6 +556,7 @@
 			baseConfigurationReference = 3755991080BE762D5B01C76C /* Pods-Versus.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Versus/Versus.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
@@ -542,7 +565,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.Versus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.versussmrdel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
