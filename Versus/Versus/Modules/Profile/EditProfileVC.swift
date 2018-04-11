@@ -122,36 +122,38 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         usernameTextField.text = user._username
         bioTextView.text = user._bio
         setUserEmail()
+        profileImageView.image = CurrentUser.profileImage
+        backgroundImageView.image = CurrentUser.profileBackgroundImage
         
         // Get profile images
-        if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
-            
-            if let _ = user._profileImageUpdateDate {
-                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileImage) { (image, error) in
-                    if let error = error {
-                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
-                    }
-                    else if let image = image {
-                        DispatchQueue.main.async {
-                            self.profileImageView.image = image
-                        }
-                    }
-                }
-            }
-            
-            if let _ = user._profileBackgroundImageUpdateDate {
-                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileBackgroundImage) { (image, error) in
-                    if let error = error {
-                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
-                    }
-                    else if let image = image {
-                        DispatchQueue.main.async {
-                            self.backgroundImageView.image = image
-                        }
-                    }
-                }
-            }
-        }
+//        if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
+//
+//            if let _ = user._profileImageUpdateDate {
+//                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileImage) { (image, error) in
+//                    if let error = error {
+//                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
+//                    }
+//                    else if let image = image {
+//                        DispatchQueue.main.async {
+//                            self.profileImageView.image = image
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if let _ = user._profileBackgroundImageUpdateDate {
+//                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileBackgroundImage) { (image, error) in
+//                    if let error = error {
+//                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
+//                    }
+//                    else if let image = image {
+//                        DispatchQueue.main.async {
+//                            self.backgroundImageView.image = image
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
     
     private func setUserEmail() {
@@ -191,6 +193,8 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         
         if let profileImage = profileImage, let resizedProfileImage = resizeProfileImage(image: profileImage, newWidth: 300.0) {
             
+            CurrentUser.profileImage = resizedProfileImage
+            
             updateDispatchGroup.enter()
             S3BucketService.instance.uploadImage(image: resizedProfileImage, bucketType: .profileImage) { (success) in
                 if success {
@@ -206,6 +210,8 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         
         
         if let profileBackgroundImage = backgroundImage, let resizedProfileBackgroundImage = resizeProfileImage(image: profileBackgroundImage, newWidth: 600.0) {
+            
+            CurrentUser.profileBackgroundImage = resizedProfileBackgroundImage
             
             updateDispatchGroup.enter()
             S3BucketService.instance.uploadImage(image: resizedProfileBackgroundImage, bucketType: .profileBackgroundImage) { (success) in

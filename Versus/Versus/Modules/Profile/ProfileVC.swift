@@ -75,16 +75,19 @@ class ProfileVC: UIViewController {
         winsLabel.text = "\(String(describing: user._wins!))"
         rankImageView.image = UIImage(named: CurrentUser.rank.imageName)
         rankLabel.text = CurrentUser.rank.title
+        profileImageView.image = CurrentUser.profileImage
+        backgroundImageView.image = CurrentUser.profileBackgroundImage
         
         // Get profile images
         if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
             
-            if let _ = user._profileImageUpdateDate {
+            if let _ = user._profileImageUpdateDate, CurrentUser.profileImage == nil {
                 S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileImage) { (image, error) in
                     if let error = error {
                         debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
                     }
                     else if let image = image {
+                        CurrentUser.profileImage = image
                         DispatchQueue.main.async {
                             self.profileImageView.image = image
                         }
@@ -92,12 +95,13 @@ class ProfileVC: UIViewController {
                 }
             }
             
-            if let _ = user._profileBackgroundImageUpdateDate {
+            if let _ = user._profileBackgroundImageUpdateDate, CurrentUser.profileBackgroundImage == nil {
                 S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileBackgroundImage) { (image, error) in
                     if let error = error {
                         debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
                     }
                     else if let image = image {
+                        CurrentUser.profileBackgroundImage = image
                         DispatchQueue.main.async {
                             self.backgroundImageView.image = image
                         }
@@ -154,8 +158,6 @@ class ProfileVC: UIViewController {
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let rankVC = segue.destination as? RankVC {
-            rankVC.initData(user: user)
-        }
+        
     }
 }

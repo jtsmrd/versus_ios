@@ -19,6 +19,7 @@
 		6B8316E2207D791A0067EE0E /* RankCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E1207D791A0067EE0E /* RankCollection.swift */; };
 		6B8316E4207D7C6A0067EE0E /* RankVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E3207D7C6A0067EE0E /* RankVC.swift */; };
 		6B8316E6207D977A0067EE0E /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E5207D977A0067EE0E /* CurrentUser.swift */; };
+		6B8316E8207D9DFD0067EE0E /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B8316E7207D9DFD0067EE0E /* Profile.storyboard */; };
 		6B87388D20796A0B00BF834D /* SignInCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388C20796A0B00BF834D /* SignInCredentials.swift */; };
 		6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388E2079979D00BF834D /* S3BucketService.swift */; };
 		6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C120742F4900BC23A0 /* CircleButton.swift */; };
@@ -56,6 +57,7 @@
 		6B8316E1207D791A0067EE0E /* RankCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCollection.swift; sourceTree = "<group>"; };
 		6B8316E3207D7C6A0067EE0E /* RankVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankVC.swift; sourceTree = "<group>"; };
 		6B8316E5207D977A0067EE0E /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
+		6B8316E7207D9DFD0067EE0E /* Profile.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
 		6B87388C20796A0B00BF834D /* SignInCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInCredentials.swift; sourceTree = "<group>"; };
 		6B87388E2079979D00BF834D /* S3BucketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = S3BucketService.swift; sourceTree = "<group>"; };
 		6BA4B0C120742F4900BC23A0 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 		6BA4B0C7207435DB00BC23A0 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				6B8316E7207D9DFD0067EE0E /* Profile.storyboard */,
 				6BA4B0C8207435F200BC23A0 /* ProfileVC.swift */,
 				6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */,
 				6B8316DC207D71EC0067EE0E /* RankCell.swift */,
@@ -309,6 +312,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B8316E8207D9DFD0067EE0E /* Profile.storyboard in Resources */,
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
 				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,

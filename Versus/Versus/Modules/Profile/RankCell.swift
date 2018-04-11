@@ -36,12 +36,12 @@ class RankCell: UITableViewCell {
         super.layoutSubviews()
     }
     
-    func configureCell(user: User, rank: Rank) {
+    func configureCell(rank: Rank) {
         
-        userRankView.isHidden = Int(exactly: user._rankId!) != rank.id
-//        profileImageView.image =
-        winsLabel.text = "\(Int(exactly: user._wins!)!) Wins"
-        votesLabel.text = "\(Int(exactly: user._votes!)!) Votes"
+        userRankView.isHidden = Int(exactly: CurrentUser.user._rankId!) != rank.id
+        profileImageView.image = CurrentUser.profileImage
+        winsLabel.text = "\(Int(exactly: CurrentUser.user._wins!)!) Wins"
+        votesLabel.text = "\(Int(exactly: CurrentUser.user._votes!)!) Votes"
         rankTitleLabel.text = rank.title
         winsRequirementLabel.text = "10+ Wins"
         votesRequirementLabel.text = "10+ Votes"
