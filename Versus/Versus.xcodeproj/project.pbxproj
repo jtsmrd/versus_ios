@@ -14,6 +14,11 @@
 		6B36E1D020703D5D00F92375 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CF20703D5D00F92375 /* UserService.swift */; };
 		6B5D0A11207AE46600091DA1 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A10207AE46600091DA1 /* GameKit.framework */; };
 		6B5D0A13207AE46C00091DA1 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A12207AE46C00091DA1 /* StoreKit.framework */; };
+		6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316DC207D71EC0067EE0E /* RankCell.swift */; };
+		6B8316DF207D73070067EE0E /* UserRankView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316DE207D73070067EE0E /* UserRankView.swift */; };
+		6B8316E2207D791A0067EE0E /* RankCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E1207D791A0067EE0E /* RankCollection.swift */; };
+		6B8316E4207D7C6A0067EE0E /* RankVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E3207D7C6A0067EE0E /* RankVC.swift */; };
+		6B8316E6207D977A0067EE0E /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E5207D977A0067EE0E /* CurrentUser.swift */; };
 		6B87388D20796A0B00BF834D /* SignInCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388C20796A0B00BF834D /* SignInCredentials.swift */; };
 		6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388E2079979D00BF834D /* S3BucketService.swift */; };
 		6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C120742F4900BC23A0 /* CircleButton.swift */; };
@@ -46,6 +51,11 @@
 		6B5D0A10207AE46600091DA1 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		6B5D0A12207AE46C00091DA1 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		6B5D0A14207AE48000091DA1 /* Versus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Versus.entitlements; sourceTree = "<group>"; };
+		6B8316DC207D71EC0067EE0E /* RankCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCell.swift; sourceTree = "<group>"; };
+		6B8316DE207D73070067EE0E /* UserRankView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankView.swift; sourceTree = "<group>"; };
+		6B8316E1207D791A0067EE0E /* RankCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCollection.swift; sourceTree = "<group>"; };
+		6B8316E3207D7C6A0067EE0E /* RankVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankVC.swift; sourceTree = "<group>"; };
+		6B8316E5207D977A0067EE0E /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 		6B87388C20796A0B00BF834D /* SignInCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInCredentials.swift; sourceTree = "<group>"; };
 		6B87388E2079979D00BF834D /* S3BucketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = S3BucketService.swift; sourceTree = "<group>"; };
 		6BA4B0C120742F4900BC23A0 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
@@ -107,11 +117,22 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		6B8316E0207D79030067EE0E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6B8316E1207D791A0067EE0E /* RankCollection.swift */,
+				6B8316E5207D977A0067EE0E /* CurrentUser.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		6BA4B0C7207435DB00BC23A0 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
 				6BA4B0C8207435F200BC23A0 /* ProfileVC.swift */,
 				6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */,
+				6B8316DC207D71EC0067EE0E /* RankCell.swift */,
+				6B8316E3207D7C6A0067EE0E /* RankVC.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -149,15 +170,16 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
-		6BAA03F0206F1EEA0032F7F9 /* Controls */ = {
+		6BAA03F0206F1EEA0032F7F9 /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
 				6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */,
 				6BA4B0C120742F4900BC23A0 /* CircleButton.swift */,
 				6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */,
 				6BA4B0C5207431B800BC23A0 /* BorderView.swift */,
+				6B8316DE207D73070067EE0E /* UserRankView.swift */,
 			);
-			path = Controls;
+			path = "Custom Views";
 			sourceTree = "<group>";
 		};
 		6BB81788207A6E0B00503620 /* Extensions */ = {
@@ -189,18 +211,19 @@
 		6BEACB55206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXGroup;
 			children = (
-				6B5D0A14207AE48000091DA1 /* Versus.entitlements */,
-				6BB81788207A6E0B00503620 /* Extensions */,
-				6BA4B0CC20744BEE00BC23A0 /* AWS Models */,
+				6B8316E0207D79030067EE0E /* Models */,
 				6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */,
 				6BEACB5D206EB3DE00C221A0 /* Assets.xcassets */,
+				6BA4B0CC20744BEE00BC23A0 /* AWS Models */,
 				6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */,
 				6B36E1C8206FD9BA00F92375 /* Constants.swift */,
-				6BAA03F0206F1EEA0032F7F9 /* Controls */,
+				6BAA03F0206F1EEA0032F7F9 /* Custom Views */,
+				6BB81788207A6E0B00503620 /* Extensions */,
 				6BEACB62206EB3DE00C221A0 /* Info.plist */,
 				6BEACB5F206EB3DE00C221A0 /* LaunchScreen.storyboard */,
 				6BAA03E8206F1D270032F7F9 /* Modules */,
 				6B36E1CE20703D3A00F92375 /* Services */,
+				6B5D0A14207AE48000091DA1 /* Versus.entitlements */,
 			);
 			path = Versus;
 			sourceTree = "<group>";
@@ -376,7 +399,9 @@
 				6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */,
 				6B36E1D020703D5D00F92375 /* UserService.swift in Sources */,
 				6BB81787207A470400503620 /* User.swift in Sources */,
+				6B8316E6207D977A0067EE0E /* CurrentUser.swift in Sources */,
 				6B87388D20796A0B00BF834D /* SignInCredentials.swift in Sources */,
+				6B8316E2207D791A0067EE0E /* RankCollection.swift in Sources */,
 				6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */,
 				6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */,
 				6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */,
@@ -385,12 +410,15 @@
 				6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */,
 				6BB8178F207A842400503620 /* FollowSuggestionsVC.swift in Sources */,
 				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
+				6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */,
 				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
 				6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */,
 				6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */,
 				6BA4B0CB2074360100BC23A0 /* EditProfileVC.swift in Sources */,
+				6B8316E4207D7C6A0067EE0E /* RankVC.swift in Sources */,
 				6BB8178A207A6E2E00503620 /* UIImageExtensions.swift in Sources */,
 				6BB81790207A842400503620 /* ChooseUsernameVC.swift in Sources */,
+				6B8316DF207D73070067EE0E /* UserRankView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

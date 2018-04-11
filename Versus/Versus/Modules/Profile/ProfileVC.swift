@@ -31,7 +31,7 @@ class ProfileVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        rankContainerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showRanks)))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,11 +50,17 @@ class ProfileVC: UIViewController {
     }
     
     
+    @objc func showRanks() {
+        performSegue(withIdentifier: SHOW_RANKS, sender: nil)
+    }
+    
+    
     private func loadUser() {
         
         UserService.instance.loadUser { (user) in
             if let user = user {
                 self.user = user
+                CurrentUser.user = user
                 DispatchQueue.main.async {
                     self.configureView()
                 }
@@ -66,6 +72,9 @@ class ProfileVC: UIViewController {
         
         usernameLabel.text = user._username
         bioLabel.text = user._bio
+        winsLabel.text = "\(String(describing: user._wins!))"
+        rankImageView.image = UIImage(named: CurrentUser.rank.imageName)
+        rankLabel.text = CurrentUser.rank.title
         
         // Get profile images
         if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
@@ -140,14 +149,13 @@ class ProfileVC: UIViewController {
     }
     
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if let rankVC = segue.destination as? RankVC {
+            rankVC.initData(user: user)
+        }
     }
-    */
-
 }

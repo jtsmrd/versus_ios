@@ -26,6 +26,9 @@ class UserService {
         user._username = username
         user._createDate = String(Date().timeIntervalSince1970)
         user._userPoolUserId = userPoolUserId
+        user._rankId = NSNumber(integerLiteral: 1)
+        user._wins = NSNumber(integerLiteral: 0)
+        user._votes = NSNumber(integerLiteral: 0)
         
         AWSDynamoDBObjectMapper.default().save(user) { (error) in
             if let error = error {
