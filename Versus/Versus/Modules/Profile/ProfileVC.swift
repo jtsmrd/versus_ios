@@ -17,9 +17,12 @@ enum ProfileViewMode {
 class ProfileVC: UIViewController {
 
     
+    @IBOutlet weak var optionsButton: UIButton!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var profileImageView: CircleImageView!
+    @IBOutlet weak var followButton: RoundButton!
+    @IBOutlet weak var displayNameLabel: UILabel!
     @IBOutlet weak var winsLabel: UILabel!
     @IBOutlet weak var bioLabel: UILabel!
     @IBOutlet weak var followingContainerView: BorderView!
@@ -31,11 +34,13 @@ class ProfileVC: UIViewController {
     @IBOutlet weak var rankLabel: UILabel!
     @IBOutlet weak var competitionCollectionView: UICollectionView!
     
-    var user: User!
+    var user: AWSUser!
+    var userPoolUserId: String!
+    var profileViewMode: ProfileViewMode = .edit
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         rankContainerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showRanks)))
     }
     
@@ -62,10 +67,13 @@ class ProfileVC: UIViewController {
     
     private func loadUser() {
         
-        UserService.instance.loadUser { (user) in
+        if profileViewMode == .edit {
+            userPoolUserId = CurrentUser.userPoolUserId
+        }
+        
+        UserService.instance.loadUser(userPoolUserId: userPoolUserId) { (user) in
             if let user = user {
                 self.user = user
-                CurrentUser.user = user
                 DispatchQueue.main.async {
                     self.configureView()
                 }
@@ -76,23 +84,31 @@ class ProfileVC: UIViewController {
     private func configureView() {
         
         usernameLabel.text = user._username
+        displayNameLabel.text = user._displayName
         bioLabel.text = user._bio
         winsLabel.text = "\(String(describing: user._wins!))"
-        rankImageView.image = UIImage(named: CurrentUser.rank.imageName)
-        rankLabel.text = CurrentUser.rank.title
-        profileImageView.image = CurrentUser.profileImage
-        backgroundImageView.image = CurrentUser.profileBackgroundImage
+//        rankImageView.image = UIImage(named: CurrentUser.rank.imageName)
+//        rankLabel.text = CurrentUser.rank.title
+//        profileImageView.image = CurrentUser.profileImage
+//        backgroundImageView.image = CurrentUser.profileBackgroundImage
+        
+        
+        switch profileViewMode {
+        case .edit:
+            followButton.isHidden = true
+            optionsButton.isHidden = false
+        case .viewOnly:
+            followButton.isHidden = false
+            optionsButton.isHidden = true
+        }
+
         
         // Get profile images
-        if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
+        if let userPoolUserId = user._userPoolUserId {
             
-            if let _ = user._profileImageUpdateDate, CurrentUser.profileImage == nil {
-                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileImage) { (image, error) in
-                    if let error = error {
-                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
-                    }
-                    else if let image = image {
-                        CurrentUser.profileImage = image
+            if let _ = user._profileImageUpdateDate {
+                UserService.instance.downloadImage(userPoolUserId: userPoolUserId, bucketType: .profileImage) { (image) in
+                    if let image = image {
                         DispatchQueue.main.async {
                             self.profileImageView.image = image
                         }
@@ -100,13 +116,9 @@ class ProfileVC: UIViewController {
                 }
             }
             
-            if let _ = user._profileBackgroundImageUpdateDate, CurrentUser.profileBackgroundImage == nil {
-                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileBackgroundImage) { (image, error) in
-                    if let error = error {
-                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
-                    }
-                    else if let image = image {
-                        CurrentUser.profileBackgroundImage = image
+            if let _ = user._profileBackgroundImageUpdateDate {
+                UserService.instance.downloadImage(userPoolUserId: userPoolUserId, bucketType: .profileBackgroundImage) { (image) in
+                    if let image = image {
                         DispatchQueue.main.async {
                             self.backgroundImageView.image = image
                         }

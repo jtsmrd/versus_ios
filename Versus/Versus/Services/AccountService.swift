@@ -53,17 +53,37 @@ class AccountService {
     }
     
     
-    func signIn(signInCredentials: SignInCredentials) {
+    func getEmail(completion: @escaping (String) -> ()) {
         
-//        self.signInCredentials = signInCredentials
-//        AWSCognitoUserPoolsSignInProvider.sharedInstance().setInteractiveAuthDelegate(self)
-//        let signInProvider: AWSSignInProvider = AWSCognitoUserPoolsSignInProvider.sharedInstance()
-//        AWSSignInManager.sharedInstance().login(signInProviderKey: signInProvider.identityProviderName) { (result, error) in
-//            if let error = error {
-//                debugPrint("Failed to login: \(error.localizedDescription)")
-//                return
-//            }
-//        }
+        let getEmailDispatchGroup = DispatchGroup()
+        let currentUser = AWSCognitoIdentityUserPool.default().currentUser()
+        var userEmail = ""
+        
+        getEmailDispatchGroup.enter()
+        currentUser?.getDetails().continueWith(executor: AWSExecutor.mainThread(), block: { (response) -> Any? in
+            if let error = response.error {
+                debugPrint("Error getting user details: \(error.localizedDescription)")
+                getEmailDispatchGroup.leave()
+            }
+            else if let result = response.result {
+                if let attributes = result.userAttributes {
+                    for attribute in attributes {
+                        if let attributeName = attribute.name, attributeName == "email" {
+                            if let email = attribute.value {
+                                userEmail = email
+                                getEmailDispatchGroup.leave()
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return nil
+        })
+        
+        getEmailDispatchGroup.notify(queue: .main) {
+            completion(userEmail)
+        }
     }
     
     
@@ -80,7 +100,7 @@ class AccountService {
         
         availabilityDispatchGroup.enter()
         AWSDynamoDBObjectMapper.default().query(
-            User.self,
+            AWSUser.self,
             expression: queryExpression
         ).continueWith { (task) -> Any? in
             responseTask = task

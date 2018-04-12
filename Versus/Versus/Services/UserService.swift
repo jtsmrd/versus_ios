@@ -22,7 +22,7 @@ class UserService {
             return
         }
         
-        let user: User = User()
+        let user: AWSUser = AWSUser()
         user._username = username
         user._createDate = String(Date().timeIntervalSince1970)
         user._userPoolUserId = userPoolUserId
@@ -40,11 +40,7 @@ class UserService {
         }
     }
     
-    func loadUser(completion: @escaping (User?) -> ()) {
-        guard let userPoolUserId = AWSCognitoIdentityUserPool.default().currentUser()?.username else {
-            debugPrint("AWS user username nil")
-            return
-        }
+    func loadUser(userPoolUserId: String, completion: @escaping (AWSUser?) -> ()) {
         
         let queryExpression = AWSDynamoDBQueryExpression()
         queryExpression.keyConditionExpression = "#userPoolUserId = :userPoolUserId"
@@ -56,20 +52,125 @@ class UserService {
         ]
         queryExpression.indexName = "userPoolUserIdIndex"
 
-        AWSDynamoDBObjectMapper.default().query(User.self, expression: queryExpression) { (paginatedOutput, error) in
+        AWSDynamoDBObjectMapper.default().query(AWSUser.self, expression: queryExpression) { (paginatedOutput, error) in
             if let error = error {
                 debugPrint("Error loading user: \(error.localizedDescription)")
                 completion(nil)
             }
             else if let result = paginatedOutput {
-                if let user = result.items.first as? User {
+                if let user = result.items.first as? AWSUser {
                     completion(user)
                 }
             }
         }
     }
     
-    func updateUser(user: User, completion: @escaping SuccessCompletion) {
+    
+    func downloadImage(userPoolUserId: String, bucketType: S3BucketType, completion: @escaping (_ image: UIImage?) -> Void) {
+        
+        S3BucketService.instance.downloadImage(imageName: userPoolUserId, bucketType: bucketType) { (image, error) in
+            if let error = error {
+                debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
+                completion(nil)
+            }
+            else if let image = image {
+                completion(image)
+            }
+            else {
+                completion(nil)
+            }
+        }
+    }
+    
+    
+    func uploadImage(
+        image: UIImage,
+        bucketType: S3BucketType,
+        completion: @escaping SuccessCompletion) {
+        
+        var uploadImage: UIImage!
+        
+        switch bucketType {
+        case .profileImage:
+            if let image = resizeProfileImage(image: image) {
+                uploadImage = image
+            }
+            else {
+                completion(false)
+            }
+        case .profileImageSmall:
+            if let image = resizeProfileImageSmall(image: image) {
+                uploadImage = image
+            }
+            else {
+                completion(false)
+            }
+        case .profileBackgroundImage:
+            if let image = resizeProfileBackgroundImage(image: image) {
+                uploadImage = image
+            }
+            else {
+                completion(false)
+            }
+        }
+        
+        S3BucketService.instance.uploadImage(
+        image: uploadImage,
+        bucketType: bucketType) { (success) in
+            if success {
+                completion(true)
+            }
+            else {
+                debugPrint("Failed to upload image in edit profile")
+                completion(false)
+            }
+        }
+    }
+    
+    private func resizeProfileImage(image: UIImage) -> UIImage? {
+        let newWidth: CGFloat = 300
+        
+        let scale = newWidth / image.size.width
+        let newHeight = image.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    private func resizeProfileImageSmall(image: UIImage) -> UIImage? {
+        let newWidth: CGFloat = 150
+        
+        let scale = newWidth / image.size.width
+        let newHeight = image.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    private func resizeProfileBackgroundImage(image: UIImage) -> UIImage? {
+        let newHeight: CGFloat = 600
+        
+        let scale: CGFloat = 6/25
+        let newWidth = image.size.width * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    
+    func updateUser(user: AWSUser, completion: @escaping SuccessCompletion) {
         
         user._updateDate = String(Date().timeIntervalSince1970)
         let updateMapperConfig = AWSDynamoDBObjectMapperConfiguration()
@@ -84,12 +185,7 @@ class UserService {
         }
     }
     
-    func getUserEmail() -> String {
-        
-        return ""
-    }
-    
-    func queryUsers(queryString: String, completion: @escaping ([User]?) -> Void) {
+    func queryUsers(queryString: String, completion: @escaping ([AWSUser]?) -> Void) {
         
         let scanExpression = AWSDynamoDBScanExpression()
         scanExpression.filterExpression = "begins_with(#username, :username)"
@@ -101,17 +197,17 @@ class UserService {
             ":username": queryString.lowercased()
         ]
         
-        AWSDynamoDBObjectMapper.default().scan(User.self, expression: scanExpression) { (paginatedOutput, error) in
+        AWSDynamoDBObjectMapper.default().scan(AWSUser.self, expression: scanExpression) { (paginatedOutput, error) in
             if let error = error {
                 debugPrint("Error loading user: \(error.localizedDescription)")
                 completion(nil)
             }
             else if let result = paginatedOutput {
-                if let users = result.items as? [User] {
+                if let users = result.items as? [AWSUser] {
                     completion(users)
                 }
                 else {
-                    completion([User]())
+                    completion([AWSUser]())
                 }
             }
         }

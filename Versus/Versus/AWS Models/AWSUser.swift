@@ -1,5 +1,5 @@
 //
-//  User.swift
+//  AWSUser.swift
 //  MySampleApp
 //
 //
@@ -16,11 +16,12 @@ import UIKit
 import AWSDynamoDB
 
 @objcMembers
-class User: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
+class AWSUser: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     var _username: String?
     var _bio: String?
     var _createDate: String?
+    var _displayName: String?
     var _isFeatured: NSNumber?
     var _profileBackgroundImageUpdateDate: String?
     var _profileImageUpdateDate: String?
@@ -32,7 +33,7 @@ class User: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-User"
+        return "versus-mobilehub-387870640-AWS_User"
     }
     
     class func hashKeyAttribute() -> String {
@@ -45,6 +46,7 @@ class User: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_username" : "username",
                "_bio" : "bio",
                "_createDate" : "createDate",
+               "_displayName" : "displayName",
                "_isFeatured" : "isFeatured",
                "_profileBackgroundImageUpdateDate" : "profileBackgroundImageUpdateDate",
                "_profileImageUpdateDate" : "profileImageUpdateDate",

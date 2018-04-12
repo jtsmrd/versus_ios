@@ -14,7 +14,7 @@ class SearchVC: UIViewController {
     @IBOutlet weak var browseTableView: UITableView!
     @IBOutlet weak var searchUserTableView: UITableView!
     
-    var searchResultUsers = [User]()
+    var searchResultUsers = [AWSUser]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,16 +23,16 @@ class SearchVC: UIViewController {
     }
     
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if let profileVC = segue.destination as? ProfileVC, let awsUser = sender as? AWSUser {
+            profileVC.profileViewMode = .viewOnly
+            profileVC.userPoolUserId = awsUser._userPoolUserId
+        }
     }
-    */
-
 }
 
 extension SearchVC: UITableViewDataSource {
@@ -74,6 +74,9 @@ extension SearchVC: UITableViewDataSource {
 
 extension SearchVC: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: SHOW_PROFILE, sender: searchResultUsers[indexPath.row])
+    }
 }
 
 extension SearchVC: UISearchBarDelegate {

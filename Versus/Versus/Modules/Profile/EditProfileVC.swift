@@ -21,12 +21,13 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var profileImageView: CircleImageView!
+    @IBOutlet weak var displayNameTextField: UITextField!
     @IBOutlet weak var bioTextView: UITextView!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     
     
-    var user: User!
+    var user: AWSUser!
     var imagePicker: UIImagePickerController!
     var editImageType: EditImageType!
     var profileImage: UIImage?
@@ -41,7 +42,7 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     }
     
     
-    func initData(user: User) {
+    func initData(user: AWSUser) {
         self.user = user
     }
     
@@ -120,63 +121,16 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     private func configureView() {
         
         usernameTextField.text = user._username
+        displayNameTextField.text = user._displayName
         bioTextView.text = user._bio
-        setUserEmail()
         profileImageView.image = CurrentUser.profileImage
         backgroundImageView.image = CurrentUser.profileBackgroundImage
         
-        // Get profile images
-//        if let username = AWSCognitoIdentityUserPool.default().currentUser()?.username {
-//
-//            if let _ = user._profileImageUpdateDate {
-//                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileImage) { (image, error) in
-//                    if let error = error {
-//                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
-//                    }
-//                    else if let image = image {
-//                        DispatchQueue.main.async {
-//                            self.profileImageView.image = image
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if let _ = user._profileBackgroundImageUpdateDate {
-//                S3BucketService.instance.downloadImage(imageName: username, bucketType: .profileBackgroundImage) { (image, error) in
-//                    if let error = error {
-//                        debugPrint("Error downloading profile image in edit profile: \(error.localizedDescription)")
-//                    }
-//                    else if let image = image {
-//                        DispatchQueue.main.async {
-//                            self.backgroundImageView.image = image
-//                        }
-//                    }
-//                }
-//            }
-//        }
-    }
-    
-    private func setUserEmail() {
-        
-        let currentUser = AWSCognitoIdentityUserPool.default().currentUser()
-        currentUser?.getDetails().continueWith(executor: AWSExecutor.mainThread(), block: { (response) -> Any? in
-            if let error = response.error {
-                debugPrint("Error getting user details: \(error.localizedDescription)")
+        AccountService.instance.getEmail { (email) in
+            DispatchQueue.main.async {
+                self.emailTextField.text = email
             }
-            else if let result = response.result {
-                if let attributes = result.userAttributes {
-                    for attribute in attributes {
-                        if let attributeName = attribute.name, attributeName == "email" {
-                            if let email = attribute.value {
-                                self.emailTextField.text = email
-                            }
-                        }
-                    }
-                }
-            }
-            
-            return nil
-        })
+        }
     }
     
     private func configureImagePicker() {
@@ -188,48 +142,51 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     
     private func updateUser() {
         
-        var errorMessage = ""
+        // Update images
         let updateDispatchGroup = DispatchGroup()
         
-        if let profileImage = profileImage, let resizedProfileImage = resizeProfileImage(image: profileImage, newWidth: 300.0) {
-            
-            CurrentUser.profileImage = resizedProfileImage
+        var profileImageUploadSuccess = true
+        var profileImageSmallUploadSuccess = true
+        var profileBackgroundImageUploadSuccess = true
+        
+        if let image = profileImage {
             
             updateDispatchGroup.enter()
-            S3BucketService.instance.uploadImage(image: resizedProfileImage, bucketType: .profileImage) { (success) in
-                if success {
-                    self.user._profileImageUpdateDate = String(Date().timeIntervalSince1970)
-                }
-                else {
-                    debugPrint("Failed to upload image in edit profile")
-                    errorMessage = "Unable to upload profile image."
-                }
+            UserService.instance.uploadImage(
+            image: image,
+            bucketType: .profileImage) { (success) in
+                profileImageUploadSuccess = success
+                updateDispatchGroup.leave()
+            }
+            
+            updateDispatchGroup.enter()
+            UserService.instance.uploadImage(
+            image: image,
+            bucketType: .profileImageSmall) { (success) in
+                profileImageSmallUploadSuccess = success
                 updateDispatchGroup.leave()
             }
         }
         
-        
-        if let profileBackgroundImage = backgroundImage, let resizedProfileBackgroundImage = resizeProfileImage(image: profileBackgroundImage, newWidth: 600.0) {
-            
-            CurrentUser.profileBackgroundImage = resizedProfileBackgroundImage
+        if let image = backgroundImage {
             
             updateDispatchGroup.enter()
-            S3BucketService.instance.uploadImage(image: resizedProfileBackgroundImage, bucketType: .profileBackgroundImage) { (success) in
-                if success {
-                    self.user._profileBackgroundImageUpdateDate = String(Date().timeIntervalSince1970)
-                }
-                else {
-                    debugPrint("Failed to upload background image in edit profile")
-                    errorMessage = "Unable to upload background profile image."
-                }
-                updateDispatchGroup.leave()
+            UserService.instance.uploadImage(
+                image: image,
+                bucketType: .profileBackgroundImage) { (success) in
+                    profileBackgroundImageUploadSuccess = success
+                    updateDispatchGroup.leave()
             }
         }
-        
         
         updateDispatchGroup.notify(queue: .main) {
             
-            if errorMessage.isEmpty {
+            // If all applicable image updates are successful, update user
+            if profileImageUploadSuccess && profileImageSmallUploadSuccess && profileBackgroundImageUploadSuccess {
+                
+                self.user._displayName = self.displayNameTextField.text
+                self.user._profileImageUpdateDate = String(Date().timeIntervalSince1970)
+                self.user._profileBackgroundImageUpdateDate = String(Date().timeIntervalSince1970)
                 
                 UserService.instance.updateUser(user: self.user) { (success) in
                     if success {
@@ -244,7 +201,7 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
                 }
             }
             else {
-                debugPrint(errorMessage)
+                debugPrint("Failed to upload image")
             }
         }
     }
