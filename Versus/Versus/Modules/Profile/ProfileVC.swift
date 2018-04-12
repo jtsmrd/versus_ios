@@ -9,6 +9,11 @@
 import UIKit
 import AWSUserPoolsSignIn
 
+enum ProfileViewMode {
+    case edit
+    case viewOnly
+}
+
 class ProfileVC: UIViewController {
 
     

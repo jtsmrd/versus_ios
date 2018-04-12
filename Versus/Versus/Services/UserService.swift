@@ -88,4 +88,32 @@ class UserService {
         
         return ""
     }
+    
+    func queryUsers(queryString: String, completion: @escaping ([User]?) -> Void) {
+        
+        let scanExpression = AWSDynamoDBScanExpression()
+        scanExpression.filterExpression = "begins_with(#username, :username)"
+        scanExpression.expressionAttributeNames = [
+            "#username": "username"
+        ]
+        
+        scanExpression.expressionAttributeValues = [
+            ":username": queryString.lowercased()
+        ]
+        
+        AWSDynamoDBObjectMapper.default().scan(User.self, expression: scanExpression) { (paginatedOutput, error) in
+            if let error = error {
+                debugPrint("Error loading user: \(error.localizedDescription)")
+                completion(nil)
+            }
+            else if let result = paginatedOutput {
+                if let users = result.items as? [User] {
+                    completion(users)
+                }
+                else {
+                    completion([User]())
+                }
+            }
+        }
+    }
 }
