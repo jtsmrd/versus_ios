@@ -188,13 +188,15 @@ class UserService {
     func queryUsers(queryString: String, completion: @escaping ([AWSUser]?) -> Void) {
         
         let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "begins_with(#username, :username)"
+        scanExpression.filterExpression = "begins_with(#username, :username) OR begins_with(#displayName, :displayName)"
         scanExpression.expressionAttributeNames = [
-            "#username": "username"
+            "#username": "username",
+            "#displayName": "displayName"
         ]
         
         scanExpression.expressionAttributeValues = [
-            ":username": queryString.lowercased()
+            ":username": queryString.lowercased(),
+            ":displayName": queryString
         ]
         
         AWSDynamoDBObjectMapper.default().scan(AWSUser.self, expression: scanExpression) { (paginatedOutput, error) in

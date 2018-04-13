@@ -104,6 +104,7 @@ extension SearchVC: UISearchBarDelegate {
         
         UserService.instance.queryUsers(queryString: searchText) { (awsUsers) in
             if let awsUsers = awsUsers {
+                self.searchResultUsers.removeAll()
                 for awsUser in awsUsers {
                     self.searchResultUsers.append(User(awsUser: awsUser))
                 }
