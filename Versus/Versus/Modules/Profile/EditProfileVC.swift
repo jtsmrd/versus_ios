@@ -27,7 +27,7 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     @IBOutlet weak var emailTextField: UITextField!
     
     
-    var user: AWSUser!
+    var user: User!
     var imagePicker: UIImagePickerController!
     var editImageType: EditImageType!
     var profileImage: UIImage?
@@ -42,7 +42,7 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     }
     
     
-    func initData(user: AWSUser) {
+    func initData(user: User) {
         self.user = user
     }
     
@@ -120,9 +120,9 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     
     private func configureView() {
         
-        usernameTextField.text = user._username
-        displayNameTextField.text = user._displayName
-        bioTextView.text = user._bio
+        usernameTextField.text = user.awsUser._username
+        displayNameTextField.text = user.awsUser._displayName
+        bioTextView.text = user.awsUser._bio
         profileImageView.image = CurrentUser.profileImage
         backgroundImageView.image = CurrentUser.profileBackgroundImage
         
@@ -184,11 +184,11 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
             // If all applicable image updates are successful, update user
             if profileImageUploadSuccess && profileImageSmallUploadSuccess && profileBackgroundImageUploadSuccess {
                 
-                self.user._displayName = self.displayNameTextField.text
-                self.user._profileImageUpdateDate = String(Date().timeIntervalSince1970)
-                self.user._profileBackgroundImageUpdateDate = String(Date().timeIntervalSince1970)
+                self.user.awsUser._displayName = self.displayNameTextField.text
+                self.user.awsUser._profileImageUpdateDate = String(Date().timeIntervalSince1970)
+                self.user.awsUser._profileBackgroundImageUpdateDate = String(Date().timeIntervalSince1970)
                 
-                UserService.instance.updateUser(user: self.user) { (success) in
+                UserService.instance.updateUser(user: self.user.awsUser) { (success) in
                     if success {
                         debugPrint("Successfully updated user")
                         DispatchQueue.main.async {
@@ -234,7 +234,7 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     // MARK: - UITextViewDelegate Functions
     
     func textViewDidChange(_ textView: UITextView) {
-        user._bio = textView.text
+        user.awsUser._bio = textView.text
     }
     
     

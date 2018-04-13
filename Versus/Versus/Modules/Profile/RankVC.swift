@@ -14,10 +14,17 @@ class RankVC: UIViewController {
     @IBOutlet weak var rankTableView: UITableView!
     
     
+    var user: User!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+    }
+    
+    func initData(user: User) {
+        self.user = user
     }
     
     @IBAction func backButtonAction() {
@@ -33,7 +40,7 @@ extension RankVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "RankCell", for: indexPath) as? RankCell {
-            cell.configureCell(rank: RankCollection.instance.ranks[indexPath.row])
+            cell.configureCell(user: user, rank: RankCollection.instance.ranks[indexPath.row])
             return cell
         }
         return RankCell()

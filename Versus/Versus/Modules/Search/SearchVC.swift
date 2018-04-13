@@ -14,12 +14,11 @@ class SearchVC: UIViewController {
     @IBOutlet weak var browseTableView: UITableView!
     @IBOutlet weak var searchUserTableView: UITableView!
     
-    var searchResultUsers = [AWSUser]()
+    var searchResultUsers = [User]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
     }
     
 
@@ -28,9 +27,10 @@ class SearchVC: UIViewController {
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let profileVC = segue.destination as? ProfileVC, let awsUser = sender as? AWSUser {
-            profileVC.profileViewMode = .viewOnly
-            profileVC.userPoolUserId = awsUser._userPoolUserId
+        if let navController = segue.destination as? UINavigationController,
+            let profileVC = navController.childViewControllers.first as? ProfileVC,
+            let user = sender as? User {
+            profileVC.initData(profileViewMode: .viewOnly, user: user)
         }
     }
 }
@@ -76,6 +76,7 @@ extension SearchVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: SHOW_PROFILE, sender: searchResultUsers[indexPath.row])
+        tableView.deselectRow(at: indexPath, animated: false)
     }
 }
 
@@ -88,6 +89,7 @@ extension SearchVC: UISearchBarDelegate {
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchUserTableView.isHidden = true
+        searchBar.text?.removeAll()
         searchBar.setShowsCancelButton(false, animated: true)
         view.endEditing(true)
     }
@@ -100,9 +102,11 @@ extension SearchVC: UISearchBarDelegate {
             return
         }
         
-        UserService.instance.queryUsers(queryString: searchText) { (users) in
-            if let users = users {
-                self.searchResultUsers = users
+        UserService.instance.queryUsers(queryString: searchText) { (awsUsers) in
+            if let awsUsers = awsUsers {
+                for awsUser in awsUsers {
+                    self.searchResultUsers.append(User(awsUser: awsUser))
+                }
                 DispatchQueue.main.async {
                     self.searchUserTableView.reloadData()
                 }

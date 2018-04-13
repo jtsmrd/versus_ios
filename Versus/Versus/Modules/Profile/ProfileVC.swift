@@ -17,6 +17,7 @@ enum ProfileViewMode {
 class ProfileVC: UIViewController {
 
     
+    @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var optionsButton: UIButton!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var backgroundImageView: UIImageView!
@@ -34,9 +35,8 @@ class ProfileVC: UIViewController {
     @IBOutlet weak var rankLabel: UILabel!
     @IBOutlet weak var competitionCollectionView: UICollectionView!
     
-    var user: AWSUser!
-    var userPoolUserId: String!
-    var profileViewMode: ProfileViewMode = .edit
+    private var user: User!
+    private var profileViewMode: ProfileViewMode = .edit
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,12 +51,22 @@ class ProfileVC: UIViewController {
     }
 
     
+    func initData(profileViewMode: ProfileViewMode, user: User) {
+        self.profileViewMode = profileViewMode
+        self.user = user
+    }
+    
+    
     @IBAction func optionsButtonAction() {
         displayOptions()
     }
     
     @IBAction func directMessageButtonAction() {
         
+    }
+    
+    @IBAction func closeButtonAction() {
+        dismiss(animated: true, completion: nil)
     }
     
     
@@ -67,13 +77,23 @@ class ProfileVC: UIViewController {
     
     private func loadUser() {
         
+        guard user == nil else {
+            configureView()
+            return
+        }
+        
+        var userPoolUserId = ""
+        
         if profileViewMode == .edit {
             userPoolUserId = CurrentUser.userPoolUserId
         }
+        else {
+            userPoolUserId = user.awsUser._userPoolUserId!
+        }
         
-        UserService.instance.loadUser(userPoolUserId: userPoolUserId) { (user) in
-            if let user = user {
-                self.user = user
+        UserService.instance.loadUser(userPoolUserId: userPoolUserId) { (awsUser) in
+            if let awsUser = awsUser {
+                self.user = User(awsUser: awsUser)
                 DispatchQueue.main.async {
                     self.configureView()
                 }
@@ -83,32 +103,34 @@ class ProfileVC: UIViewController {
     
     private func configureView() {
         
-        usernameLabel.text = user._username
-        displayNameLabel.text = user._displayName
-        bioLabel.text = user._bio
-        winsLabel.text = "\(String(describing: user._wins!))"
-//        rankImageView.image = UIImage(named: CurrentUser.rank.imageName)
-//        rankLabel.text = CurrentUser.rank.title
-//        profileImageView.image = CurrentUser.profileImage
-//        backgroundImageView.image = CurrentUser.profileBackgroundImage
+        usernameLabel.text = "@\(user.awsUser._username!)"
+        displayNameLabel.text = user.awsUser._displayName
+        bioLabel.text = user.awsUser._bio
+        winsLabel.text = "\(String(describing: user.awsUser._wins!))"
+        rankImageView.image = UIImage(named: user.rank.imageName)
+        rankLabel.text = user.rank.title
+        profileImageView.image = user.profileImage
+        backgroundImageView.image = user.profileBackgroundImage
         
         
         switch profileViewMode {
         case .edit:
             followButton.isHidden = true
             optionsButton.isHidden = false
+            closeButton.isHidden = true
         case .viewOnly:
             followButton.isHidden = false
             optionsButton.isHidden = true
+            closeButton.isHidden = false
         }
-
         
         // Get profile images
-        if let userPoolUserId = user._userPoolUserId {
+        if let userPoolUserId = user.awsUser._userPoolUserId {
             
-            if let _ = user._profileImageUpdateDate {
+            if let _ = user.awsUser._profileImageUpdateDate {
                 UserService.instance.downloadImage(userPoolUserId: userPoolUserId, bucketType: .profileImage) { (image) in
                     if let image = image {
+                        self.user.profileImage = image
                         DispatchQueue.main.async {
                             self.profileImageView.image = image
                         }
@@ -116,9 +138,10 @@ class ProfileVC: UIViewController {
                 }
             }
             
-            if let _ = user._profileBackgroundImageUpdateDate {
+            if let _ = user.awsUser._profileBackgroundImageUpdateDate {
                 UserService.instance.downloadImage(userPoolUserId: userPoolUserId, bucketType: .profileBackgroundImage) { (image) in
                     if let image = image {
+                        self.user.profileBackgroundImage = image
                         DispatchQueue.main.async {
                             self.backgroundImageView.image = image
                         }
@@ -175,6 +198,8 @@ class ProfileVC: UIViewController {
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+        if let rankVC = segue.destination as? RankVC {
+            rankVC.initData(user: user)
+        }
     }
 }
