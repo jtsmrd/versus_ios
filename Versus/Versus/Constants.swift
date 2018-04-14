@@ -43,3 +43,4 @@ let UNWIND_TO_LANDING = "LandingVC"
 // Completions
 
 typealias SuccessCompletion = (Bool) -> ()
+typealias SuccessErrorCompletion = (_ success: Bool, _ error: CustomError?) -> Void

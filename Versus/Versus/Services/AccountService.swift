@@ -18,7 +18,10 @@ class AccountService {
     
     private init() { }
     
-    func signUp(username: String, password: String, completion: @escaping (Bool) -> Void) {
+    func signUp(
+        username: String,
+        password: String,
+        completion: @escaping (_ user: AWSCognitoIdentityUser?, _ error: CustomError?) -> Void) {
         
         var responseTask: AWSTask<AWSCognitoIdentityUserPoolSignUpResponse>!
         let signUpDispatchGroup = DispatchGroup()
@@ -36,20 +39,125 @@ class AccountService {
         }
         
         signUpDispatchGroup.notify(queue: .main) {
+            var errorMessage = "Unable to sign up, try again"
+            
             if let error = responseTask.error {
                 debugPrint("Failed to create user: \(error.localizedDescription)")
-                completion(false)
+                
+                if error.localizedDescription.contains("37") {
+                    errorMessage = "Email already exists"
+                }
+                else if error.localizedDescription.contains("14") {
+                    errorMessage = "Invalid password"
+                }
+                
+                completion(nil, CustomError(error: error, title: "Error", desc: errorMessage))
             }
-            else if let _ = responseTask.result?.user {
+            else if let user = responseTask.result?.user {
                 debugPrint("Successfully created user")
-                completion(true)
+                completion(user, nil)
+            }
+            else {
+                debugPrint("Failed to create user")
+                completion(nil, CustomError(error: nil, title: "Error", desc: errorMessage))
             }
         }
     }
     
     
-    func verify() {
+    func verify(
+        awsUser: AWSCognitoIdentityUser,
+        confirmationCode: String,
+        completion: @escaping SuccessErrorCompletion) {
         
+        var responseTask: AWSTask<AWSCognitoIdentityUserConfirmSignUpResponse>!
+        let verifyDispatchGroup = DispatchGroup()
+        
+        verifyDispatchGroup.enter()
+        awsUser.confirmSignUp(
+            confirmationCode,
+            forceAliasCreation: true
+        ).continueWith { (task) -> Any? in
+            responseTask = task
+            verifyDispatchGroup.leave()
+            return nil
+        }
+        
+        verifyDispatchGroup.notify(queue: .main) {
+            var errorMessage = "Unable to verify user, try again"
+            
+            if let error = responseTask.error {
+                debugPrint("Failed to verify user: \(error.localizedDescription)")
+                
+                if error.localizedDescription.contains("20") {
+                    errorMessage = "Invalid verification code"
+                }
+                
+                completion(false, CustomError(error: error, title: "Error", desc: errorMessage))
+            }
+            else {
+                completion(true, nil)
+            }
+        }
+    }
+    
+    
+    func resendCode(completion: @escaping SuccessErrorCompletion) {
+        
+        guard let awsUser = AWSCognitoIdentityUserPool.default().currentUser() else {
+            debugPrint("awsUser nil")
+            completion(false, nil)
+            return
+        }
+        
+        var responseTask: AWSTask<AWSCognitoIdentityUserResendConfirmationCodeResponse>!
+        let resendCodeDispatchGroup = DispatchGroup()
+        
+        resendCodeDispatchGroup.enter()
+        awsUser.resendConfirmationCode()
+        .continueWith { (task) -> Any? in
+            responseTask = task
+            resendCodeDispatchGroup.leave()
+            return nil
+        }
+        
+        resendCodeDispatchGroup.notify(queue: .main) {
+            var errorMessage = "Unable to resend code, try again"
+            
+            if let error = responseTask.error {
+                debugPrint("Failed to resend code: \(error.localizedDescription)")
+                
+                if error.localizedDescription.contains("20") {
+                    errorMessage = "Invalid verification code"
+                }
+                
+                completion(false, CustomError(error: error, title: "Error", desc: errorMessage))
+            }
+            else {
+                completion(true, nil)
+            }
+        }
+    }
+    
+    
+    func signIn(
+        signInCredentials: SignInCredentials,
+        completion: @escaping SuccessErrorCompletion) {
+        
+        appDelegate.prepareForSignIn(signInCredentials: signInCredentials)
+        let signInProvider: AWSSignInProvider = AWSCognitoUserPoolsSignInProvider.sharedInstance()
+        
+        AWSSignInManager.sharedInstance().login(
+            signInProviderKey: signInProvider.identityProviderName
+        ) { (result, error) in
+            if let error = error {
+                debugPrint("Failed to login: \(error.localizedDescription)")
+                completion(false, CustomError(error: error, title: "", desc: "Unable to login user"))
+            }
+            else {
+                completion(true, nil)
+            }
+        }
     }
     
     
@@ -87,7 +195,9 @@ class AccountService {
     }
     
     
-    func checkAvailability(for username: String, completion: @escaping (_ isAvailable: Bool) -> Void) {
+    func checkAvailability(
+        for username: String,
+        completion: @escaping (_ isAvailable: Bool) -> Void) {
         
         let queryExpression = AWSDynamoDBQueryExpression()
 
