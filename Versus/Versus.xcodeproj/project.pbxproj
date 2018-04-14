@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		589C140C381C23DC0BEB472F /* Pods_Versus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A999CFBAD01983D013158ED9 /* Pods_Versus.framework */; };
 		6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1ABF1D2072E819005A0DDB /* Main.storyboard */; };
+		6B334FD120816032005B010F /* CustomError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD020816032005B010F /* CustomError.swift */; };
+		6B334FD32081652D005B010F /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */; };
 		6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1C8206FD9BA00F92375 /* Constants.swift */; };
 		6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */; };
 		6B36E1D020703D5D00F92375 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CF20703D5D00F92375 /* UserService.swift */; };
@@ -51,6 +53,8 @@
 /* Begin PBXFileReference section */
 		3755991080BE762D5B01C76C /* Pods-Versus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Versus.release.xcconfig"; path = "Pods/Target Support Files/Pods-Versus/Pods-Versus.release.xcconfig"; sourceTree = "<group>"; };
 		6B1ABF1D2072E819005A0DDB /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		6B334FD020816032005B010F /* CustomError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomError.swift; sourceTree = "<group>"; };
+		6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		6B36E1C8206FD9BA00F92375 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyUserVC.swift; sourceTree = "<group>"; };
 		6B36E1CF20703D5D00F92375 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
@@ -117,6 +121,14 @@
 				A999CFBAD01983D013158ED9 /* Pods_Versus.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6B334FCF20816006005B010F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				6B334FD020816032005B010F /* CustomError.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		6B36E1CE20703D3A00F92375 /* Services */ = {
@@ -203,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				6BB81789207A6E2E00503620 /* UIImageExtensions.swift */,
+				6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -237,7 +250,6 @@
 		6BEACB55206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXGroup;
 			children = (
-				6B8316E0207D79030067EE0E /* Models */,
 				6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */,
 				6BEACB5D206EB3DE00C221A0 /* Assets.xcassets */,
 				6BA4B0CC20744BEE00BC23A0 /* AWS Models */,
@@ -247,8 +259,10 @@
 				6BB81788207A6E0B00503620 /* Extensions */,
 				6BEACB62206EB3DE00C221A0 /* Info.plist */,
 				6BEACB5F206EB3DE00C221A0 /* LaunchScreen.storyboard */,
+				6B8316E0207D79030067EE0E /* Models */,
 				6BAA03E8206F1D270032F7F9 /* Modules */,
 				6B36E1CE20703D3A00F92375 /* Services */,
+				6B334FCF20816006005B010F /* Utilities */,
 				6B5D0A14207AE48000091DA1 /* Versus.entitlements */,
 			);
 			path = Versus;
@@ -396,6 +410,7 @@
 				"${BUILT_PRODUCTS_DIR}/AWSMobileClient/AWSMobileClient.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSS3/AWSS3.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSUserPoolsSignIn/AWSUserPoolsSignIn.framework",
+				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -408,6 +423,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSMobileClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSS3.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSUserPoolsSignIn.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -443,6 +459,8 @@
 				6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */,
 				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
 				6B85343E208020C100985BDD /* User.swift in Sources */,
+				6B334FD120816032005B010F /* CustomError.swift in Sources */,
+				6B334FD32081652D005B010F /* UIViewControllerExtensions.swift in Sources */,
 				6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */,
 				6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */,
 				6BA4B0CB2074360100BC23A0 /* EditProfileVC.swift in Sources */,

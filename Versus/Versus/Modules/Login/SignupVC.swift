@@ -61,29 +61,28 @@ class SignupVC: UIViewController {
     // - Authenticate using AWS Cognito via email or phone.
     @IBAction func signupButtonAction() {
         
-        if inputDataIsValid() {
-            
-            let username = emailPhoneNumberTextField.text!
-            let password = passwordTextField.text!
-            
-            signInCredentials = SignInCredentials(username: username, password: password)
-            
-            AWSCognitoIdentityUserPool.default().signUp(username, password: password, userAttributes: nil, validationData: nil)
-                .continueWith(executor: AWSExecutor.mainThread()) { (response) -> Any? in
-                    if let error = response.error {
-                        debugPrint("Failed to create user: \(error.localizedDescription)")
-                    }
-                    else if let user = response.result?.user {
-                        self.performSegue(withIdentifier: SHOW_VERIFY_USER, sender: user)
-                    }
-                    return nil
+        guard inputDataIsValid() else { return }
+        
+        let username = emailPhoneNumberTextField.text!
+        let password = passwordTextField.text!
+        
+        signInCredentials = SignInCredentials(username: username, password: password)
+        
+        AccountService.instance.signUp(username: username, password: password) { (awsUser, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if let awsUser = awsUser {
+                    self.performSegue(withIdentifier: SHOW_VERIFY_USER, sender: awsUser)
+                }
             }
         }
     }
     
     
     @IBAction func alreadyHaveCodeButtonAction() {
-        performSegue(withIdentifier: SHOW_VERIFY_USER, sender: "")
+        performSegue(withIdentifier: SHOW_VERIFY_USER, sender: nil)
     }
     
     
@@ -95,6 +94,22 @@ class SignupVC: UIViewController {
     // - If signup method is phone number, validate phone number.
     // Valid phone numbers are strings prefixed with '+' and the international code. ex: +14128885555
     private func inputDataIsValid() -> Bool {
+        
+        guard let emailPhoneNumber = emailPhoneNumberTextField.text, !emailPhoneNumber.isEmpty else {
+            switch signupMethod {
+            case .email:
+                displayMessage(message: "Provide a valid email")
+            case .phoneNumber:
+                displayMessage(message: "Provide a valid phone number")
+            }
+            return false
+        }
+        
+        guard let password = passwordTextField.text, !password.isEmpty else {
+            displayMessage(message: "Provide a valid password")
+            return false
+        }
+        
         return true
     }
     
@@ -103,8 +118,7 @@ class SignupVC: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let verifyAccountVC = segue.destination as? VerifyUserVC, let awsUser = sender as? AWSCognitoIdentityUser {
-            verifyAccountVC.awsUser = awsUser
-            verifyAccountVC.signInCredentials = signInCredentials
+            verifyAccountVC.initData(awsUser: awsUser, signInCredentials: signInCredentials)
         }
     }
 }

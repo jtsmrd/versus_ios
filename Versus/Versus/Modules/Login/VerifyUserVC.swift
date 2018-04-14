@@ -31,6 +31,12 @@ class VerifyUserVC: UIViewController {
     }
     
     
+    func initData(awsUser: AWSCognitoIdentityUser, signInCredentials: SignInCredentials) {
+        self.awsUser = awsUser
+        self.signInCredentials = signInCredentials
+    }
+    
+    
     // MARK: - Actions
     
     // Abort the signup process and transition back to LandingVC.
@@ -46,24 +52,36 @@ class VerifyUserVC: UIViewController {
         
         guard inputDataIsValid() else { return }
         
-        let verificationCode = verificationCodeTextField.text!
+        let confirmationCode = verificationCodeTextField.text!
         
-        awsUser.confirmSignUp(verificationCode, forceAliasCreation: true).continueWith(executor: AWSExecutor.mainThread(), block: { (response) -> Any? in
-            if let error = response.error {
-                debugPrint("Failed to auth user: \(error.localizedDescription)")
-                return nil
+        AccountService.instance.verify(
+            awsUser: awsUser,
+            confirmationCode: confirmationCode
+        ) { (success, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if success {
+                    self.signIn()
+                }
             }
-            debugPrint("User verified")
-            
-            self.signIn()
-            
-            return nil
-        })
+        }
     }
     
     
     @IBAction func resendCodeButtonAction() {
         
+        AccountService.instance.resendCode { (success, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if success {
+                    self.displayMessage(message: "Code resent")
+                }
+            }
+        }
     }
     
     
@@ -72,9 +90,7 @@ class VerifyUserVC: UIViewController {
     private func inputDataIsValid() -> Bool {
         
         guard let code = verificationCodeTextField.text, !code.isEmpty else {
-            
-            // Display error
-            
+            displayMessage(message: "Enter your verification code")
             return false
         }
         
@@ -83,17 +99,16 @@ class VerifyUserVC: UIViewController {
     
     private func signIn() {
         
-        appDelegate.prepareForSignIn(signInCredentials: signInCredentials)
-        let signInProvider: AWSSignInProvider = AWSCognitoUserPoolsSignInProvider.sharedInstance()
-        
-        AWSSignInManager.sharedInstance().login(
-        signInProviderKey: signInProvider.identityProviderName) { (result, error) in
-            if let error = error {
-                debugPrint("Failed to login: \(error.localizedDescription)")
-                return
-            }
+        AccountService.instance.signIn(
+            signInCredentials: signInCredentials
+        ) { (success, error) in
             DispatchQueue.main.async {
-                self.performSegue(withIdentifier: SHOW_CHOOSE_USERNAME, sender: nil)
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if success {
+                    self.performSegue(withIdentifier: SHOW_CHOOSE_USERNAME, sender: nil)
+                }
             }
         }
     }
