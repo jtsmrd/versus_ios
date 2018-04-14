@@ -32,15 +32,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Create AWSMobileClient to connect with AWS
         let interceptReturn = AWSMobileClient.sharedInstance().interceptApplication(application, didFinishLaunchingWithOptions: launchOptions)
         
+        
         if AWSSignInManager.sharedInstance().isLoggedIn {
-            let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-            window?.rootViewController = tabBarController
-            window?.becomeKey()
+            
+            loadCurrentUser { (success) in
+                DispatchQueue.main.async {
+                    if success {
+                        self.showMain()
+                    }
+                    else {
+                        self.showLogin()
+                    }
+                }
+            }
         }
         else {
-            let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController()
-            window?.rootViewController = loginVC
-            window?.makeKeyAndVisible()
+            showLogin()
         }
         
         return interceptReturn
@@ -68,6 +75,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    
+    func showMain() {
+        let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+        window?.rootViewController = tabBarController
+        window?.becomeKey()
+    }
+    
+    func showLogin() {
+        let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController()
+        window?.rootViewController = loginVC
+        window?.makeKeyAndVisible()
+    }
+    
+    func loadCurrentUser(completion: @escaping SuccessCompletion) {
+        UserService.instance.loadUser(userPoolUserId: CurrentUser.userPoolUserId) { (awsUser) in
+            if let awsUser = awsUser {
+                CurrentUser.user = User(awsUser: awsUser)
+                self.loadCurrentUserData()
+                completion(true)
+            }
+            else {
+                completion(false)
+            }
+        }
+    }
+    
+    func loadCurrentUserData() {
+        
+    }
     
     
     func prepareForSignIn(signInCredentials: SignInCredentials) {

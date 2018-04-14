@@ -13,6 +13,7 @@ class FollowerVC: UIViewController {
     
     
     @IBOutlet weak var viewTitleLabel: UILabel!
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var followerTableView: UITableView!
     
     
@@ -24,7 +25,7 @@ class FollowerVC: UIViewController {
 
     
     @IBAction func backButtonAction() {
-        
+        navigationController?.popViewController(animated: true)
     }
     
 

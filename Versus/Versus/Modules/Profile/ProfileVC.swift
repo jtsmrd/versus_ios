@@ -41,13 +41,17 @@ class ProfileVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if user == nil {
+            user = CurrentUser.user
+        }
+        
         rankContainerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showRanks)))
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        loadUser()
+        configureView()
     }
 
     
@@ -72,33 +76,6 @@ class ProfileVC: UIViewController {
     
     @objc func showRanks() {
         performSegue(withIdentifier: SHOW_RANKS, sender: nil)
-    }
-    
-    
-    private func loadUser() {
-        
-        guard user == nil else {
-            configureView()
-            return
-        }
-        
-        var userPoolUserId = ""
-        
-        if profileViewMode == .edit {
-            userPoolUserId = CurrentUser.userPoolUserId
-        }
-        else {
-            userPoolUserId = user.awsUser._userPoolUserId!
-        }
-        
-        UserService.instance.loadUser(userPoolUserId: userPoolUserId) { (awsUser) in
-            if let awsUser = awsUser {
-                self.user = User(awsUser: awsUser)
-                DispatchQueue.main.async {
-                    self.configureView()
-                }
-            }
-        }
     }
     
     private func configureView() {

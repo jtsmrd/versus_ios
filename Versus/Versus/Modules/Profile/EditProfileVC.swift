@@ -123,8 +123,8 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         usernameTextField.text = user.awsUser._username
         displayNameTextField.text = user.awsUser._displayName
         bioTextView.text = user.awsUser._bio
-        profileImageView.image = CurrentUser.profileImage
-        backgroundImageView.image = CurrentUser.profileBackgroundImage
+        profileImageView.image = CurrentUser.user.profileImage
+        backgroundImageView.image = CurrentUser.user.profileBackgroundImage
         
         AccountService.instance.getEmail { (email) in
             DispatchQueue.main.async {

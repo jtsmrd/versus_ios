@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol SearchUserCellDelegate {
+    func searchResultFollowButtonAction(user: User)
+}
+
 class SearchUserCell: UITableViewCell {
 
     
@@ -16,6 +20,8 @@ class SearchUserCell: UITableViewCell {
     @IBOutlet weak var displayNameLabel: UILabel!
     @IBOutlet weak var followButton: RoundButton!
     
+    var user: User!
+    var delegate: SearchUserCellDelegate!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,7 +34,10 @@ class SearchUserCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func configureCell(user: User) {
+    func configureCell(user: User, delegate: SearchUserCellDelegate) {
+        self.user = user
+        self.delegate = delegate
+        
         usernameLabel.text = user.awsUser._username
         displayNameLabel.text = user.awsUser._displayName
         
@@ -47,6 +56,6 @@ class SearchUserCell: UITableViewCell {
     }
     
     @IBAction func followButtonAction() {
-        
+        delegate.searchResultFollowButtonAction(user: user)
     }
 }

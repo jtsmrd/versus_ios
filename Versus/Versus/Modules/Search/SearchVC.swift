@@ -54,7 +54,7 @@ extension SearchVC: UITableViewDataSource {
         }
         else {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "SearchUserCell", for: indexPath) as? SearchUserCell {
-                cell.configureCell(user: searchResultUsers[indexPath.row])
+                cell.configureCell(user: searchResultUsers[indexPath.row], delegate: self)
                 return cell
             }
             return SearchUserCell()
@@ -68,6 +68,24 @@ extension SearchVC: UITableViewDataSource {
         }
         else {
             return 70
+        }
+    }
+}
+
+extension SearchVC: SearchUserCellDelegate {
+    
+    func searchResultFollowButtonAction(user: User) {
+        FollowerService.instance.followUser(userToFollow: user) { (success, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if success {
+                    debugPrint("Successfully followed user")
+                    // TODO: Maybe just reload cell
+                    self.searchUserTableView.reloadData()
+                }
+            }
         }
     }
 }
