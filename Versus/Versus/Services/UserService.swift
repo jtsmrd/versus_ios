@@ -40,7 +40,9 @@ class UserService {
         }
     }
     
-    func loadUser(userPoolUserId: String, completion: @escaping (AWSUser?) -> ()) {
+    func loadUser(
+        userPoolUserId: String,
+        completion: @escaping (_ awsUser: AWSUser?, _ error: CustomError?) -> ()) {
         
         let queryExpression = AWSDynamoDBQueryExpression()
         queryExpression.keyConditionExpression = "#userPoolUserId = :userPoolUserId"
@@ -52,14 +54,56 @@ class UserService {
         ]
         queryExpression.indexName = "userPoolUserIdIndex"
 
-        AWSDynamoDBObjectMapper.default().query(AWSUser.self, expression: queryExpression) { (paginatedOutput, error) in
+        AWSDynamoDBObjectMapper.default().query(
+            AWSUser.self,
+            expression: queryExpression
+        ) { (paginatedOutput, error) in
             if let error = error {
                 debugPrint("Error loading user: \(error.localizedDescription)")
-                completion(nil)
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to load user"))
             }
             else if let result = paginatedOutput {
                 if let user = result.items.first as? AWSUser {
-                    completion(user)
+                    completion(user, nil)
+                }
+            }
+        }
+    }
+    
+    
+    func loadUser(
+        fromFollower follower: Follower,
+        completion: @escaping (_ awsUser: AWSUser?, _ error: CustomError?) -> ()) {
+        
+        var userPoolUserId = ""
+        switch follower.followerType! {
+        case .follower:
+            userPoolUserId = follower.awsFollower._followerUserId!
+        case .following:
+            userPoolUserId = follower.awsFollower._followedUserId!
+        }
+        
+        let queryExpression = AWSDynamoDBQueryExpression()
+        queryExpression.keyConditionExpression = "#userPoolUserId = :userPoolUserId"
+        queryExpression.expressionAttributeNames = [
+            "#userPoolUserId": "userPoolUserId"
+        ]
+        queryExpression.expressionAttributeValues = [
+            ":userPoolUserId": userPoolUserId
+        ]
+        queryExpression.indexName = "userPoolUserIdIndex"
+        
+        AWSDynamoDBObjectMapper.default().query(
+            AWSUser.self,
+            expression: queryExpression
+        ) { (paginatedOutput, error) in
+            if let error = error {
+                debugPrint("Error loading user: \(error.localizedDescription)")
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to load user"))
+            }
+            else if let result = paginatedOutput {
+                if let user = result.items.first as? AWSUser {
+                    completion(user, nil)
                 }
             }
         }

@@ -23,14 +23,17 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dTW-bs-pSG">
                                 <rect key="frame" x="0.0" y="20" width="375" height="50"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZtX-f1-bgd">
-                                        <rect key="frame" x="8" y="8" width="39" height="33"/>
-                                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                                        <state key="normal" title="Close">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZtX-f1-bgd">
+                                        <rect key="frame" x="8" y="4.5" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="dAA-tY-k3c"/>
+                                            <constraint firstAttribute="height" constant="40" id="fEP-wq-FLt"/>
+                                        </constraints>
+                                        <state key="normal" image="back_icon">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="closeButtonAction" destination="uoD-Se-kqh" eventType="touchUpInside" id="T4O-sV-NRh"/>
+                                            <action selector="backButtonAction" destination="uoD-Se-kqh" eventType="touchUpInside" id="SCd-Il-YKR"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@Username" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r5g-zs-tKd">
@@ -230,11 +233,11 @@
                                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gIG-hb-qWz" customClass="RoundButton" customModule="Versus" customModuleProvider="target">
-                                                        <rect key="frame" x="294.5" y="16" width="72.5" height="29"/>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gIG-hb-qWz" customClass="FollowButton" customModule="Versus" customModuleProvider="target">
+                                                        <rect key="frame" x="280" y="16" width="87" height="29"/>
                                                         <color key="backgroundColor" red="0.0" green="0.76712721589999999" blue="0.70759445430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" secondItem="gIG-hb-qWz" secondAttribute="height" multiplier="5:2" id="4V0-xt-OXO"/>
+                                                            <constraint firstAttribute="width" secondItem="gIG-hb-qWz" secondAttribute="height" multiplier="6:2" id="4V0-xt-OXO"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="12"/>
                                                         <state key="normal" title="follow">
@@ -246,6 +249,9 @@
                                                             </userDefinedRuntimeAttribute>
                                                             <userDefinedRuntimeAttribute type="boolean" keyPath="_hasBorder" value="NO"/>
                                                         </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="followButtonAction" destination="uoD-Se-kqh" eventType="touchUpInside" id="qkN-B3-xzF"/>
+                                                        </connections>
                                                     </button>
                                                 </subviews>
                                                 <constraints>
@@ -355,9 +361,9 @@
                     </view>
                     <navigationItem key="navigationItem" id="8jl-Vf-C9G"/>
                     <connections>
+                        <outlet property="backButton" destination="ZtX-f1-bgd" id="6L0-ft-D2o"/>
                         <outlet property="backgroundImageView" destination="nx8-fy-kFa" id="6sJ-Gj-oWe"/>
                         <outlet property="bioLabel" destination="By1-Ab-LpV" id="HUW-aM-eeg"/>
-                        <outlet property="closeButton" destination="ZtX-f1-bgd" id="zBi-Cg-YM6"/>
                         <outlet property="competitionCollectionView" destination="Bro-bD-Okz" id="C3P-qZ-JaL"/>
                         <outlet property="displayNameLabel" destination="3GT-XL-W79" id="DSK-cC-k8b"/>
                         <outlet property="followButton" destination="gIG-hb-qWz" id="HpK-HA-7tN"/>
@@ -383,7 +389,7 @@
         <!--FollowerVC-->
         <scene sceneID="HRg-e5-LCu">
             <objects>
-                <viewController id="OgH-a5-8jl" customClass="FollowerVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="OgH-a5-8jl" customClass="FollowerVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="6s0-Rq-dUH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -458,11 +464,11 @@
                                                         </label>
                                                     </subviews>
                                                 </stackView>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yLB-2r-n6t" customClass="RoundButton" customModule="Versus" customModuleProvider="target">
-                                                    <rect key="frame" x="286.5" y="19.5" width="72.5" height="29"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yLB-2r-n6t" customClass="FollowButton" customModule="Versus" customModuleProvider="target">
+                                                    <rect key="frame" x="272" y="19.5" width="87" height="29"/>
                                                     <color key="backgroundColor" red="0.0" green="0.76712721589999999" blue="0.70759445430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" secondItem="yLB-2r-n6t" secondAttribute="height" multiplier="5:2" id="8pJ-O5-FeA"/>
+                                                        <constraint firstAttribute="width" secondItem="yLB-2r-n6t" secondAttribute="height" multiplier="6:2" id="8pJ-O5-FeA"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="12"/>
                                                     <state key="normal" title="follow">
@@ -497,10 +503,17 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="OgH-a5-8jl" id="d3G-47-VIK"/>
+                                    <outlet property="delegate" destination="OgH-a5-8jl" id="RI3-bO-BvX"/>
+                                </connections>
                             </tableView>
                             <searchBar contentMode="redraw" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="XKG-ET-c6M">
                                 <rect key="frame" x="0.0" y="70" width="375" height="56"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="OgH-a5-8jl" id="cWS-Dm-OD4"/>
+                                </connections>
                             </searchBar>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.76712721589999999" blue="0.70759445430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

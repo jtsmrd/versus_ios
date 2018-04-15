@@ -76,34 +76,63 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     
-    func showMain() {
+    
+    
+    private func showMain() {
         let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
         window?.rootViewController = tabBarController
         window?.becomeKey()
     }
     
-    func showLogin() {
+    private func showLogin() {
         let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController()
         window?.rootViewController = loginVC
         window?.makeKeyAndVisible()
     }
     
-    func loadCurrentUser(completion: @escaping SuccessCompletion) {
-        UserService.instance.loadUser(userPoolUserId: CurrentUser.userPoolUserId) { (awsUser) in
-            if let awsUser = awsUser {
+    private func loadCurrentUser(completion: @escaping SuccessCompletion) {
+        UserService.instance.loadUser(userPoolUserId: CurrentUser.userPoolUserId) { (awsUser, error) in
+            if let customError = error, let customErrorError = customError.error {
+                debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
+                completion(false)
+            }
+            else if let awsUser = awsUser {
                 CurrentUser.user = User(awsUser: awsUser)
                 self.loadCurrentUserData()
                 completion(true)
             }
+        }
+    }
+    
+    private func loadCurrentUserData() {
+        getFollowers()
+        getFollowedUsers()
+    }
+    
+    private func getFollowers() {
+        
+        FollowerService.instance.getFollowers(for: CurrentUser.user.awsUser) { (followers, error) in
+            if let customError = error, let customErrorError = customError.error {
+                debugPrint("Failed to get followers: \(customErrorError.localizedDescription)")
+            }
             else {
-                completion(false)
+                CurrentUser.user.followers = followers
             }
         }
     }
     
-    func loadCurrentUserData() {
+    private func getFollowedUsers() {
         
+        FollowerService.instance.getFollowedUsers(for: CurrentUser.user.awsUser) { (followedUsers, error) in
+            if let customError = error, let customErrorError = customError.error {
+                debugPrint("Failed to get followed users: \(customErrorError.localizedDescription)")
+            }
+            else {
+                CurrentUser.user.followedUsers = followedUsers
+            }
+        }
     }
+    
     
     
     func prepareForSignIn(signInCredentials: SignInCredentials) {

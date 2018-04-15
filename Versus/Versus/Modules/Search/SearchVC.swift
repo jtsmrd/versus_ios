@@ -21,17 +21,25 @@ class SearchVC: UIViewController {
 
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        searchUserTableView.reloadData()
+    }
 
     
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let navController = segue.destination as? UINavigationController,
-            let profileVC = navController.childViewControllers.first as? ProfileVC,
-            let user = sender as? User {
-            profileVC.initData(profileViewMode: .viewOnly, user: user)
-        }
+        
+    }
+}
+
+extension SearchVC: SearchUserCellDelegate {
+    
+    func searchUserCellFollowButtonActionError(error: CustomError) {
+        self.displayError(error: error)
     }
 }
 
@@ -53,7 +61,7 @@ extension SearchVC: UITableViewDataSource {
             return UITableViewCell()
         }
         else {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "SearchUserCell", for: indexPath) as? SearchUserCell {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: SEARCH_USER_CELL, for: indexPath) as? SearchUserCell {
                 cell.configureCell(user: searchResultUsers[indexPath.row], delegate: self)
                 return cell
             }
@@ -72,28 +80,15 @@ extension SearchVC: UITableViewDataSource {
     }
 }
 
-extension SearchVC: SearchUserCellDelegate {
-    
-    func searchResultFollowButtonAction(user: User) {
-        FollowerService.instance.followUser(userToFollow: user) { (success, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
-                }
-                else if success {
-                    debugPrint("Successfully followed user")
-                    // TODO: Maybe just reload cell
-                    self.searchUserTableView.reloadData()
-                }
-            }
-        }
-    }
-}
-
 extension SearchVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: SHOW_PROFILE, sender: searchResultUsers[indexPath.row])
+        
+        if let profileVC = UIStoryboard.init(name: "Profile", bundle: nil).instantiateViewController(withIdentifier: "ProfileVC") as? ProfileVC {
+            profileVC.initData(profileViewMode: .viewOnly, user: searchResultUsers[indexPath.row])
+            profileVC.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(profileVC, animated: true)
+        }
         tableView.deselectRow(at: indexPath, animated: false)
     }
 }
@@ -108,6 +103,8 @@ extension SearchVC: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchUserTableView.isHidden = true
         searchBar.text?.removeAll()
+        searchResultUsers.removeAll()
+        searchUserTableView.reloadData()
         searchBar.setShowsCancelButton(false, animated: true)
         view.endEditing(true)
     }

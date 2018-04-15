@@ -18,13 +18,17 @@ class RoundButton: UIButton {
     @IBInspectable var _borderColor: UIColor = UIColor.white
     @IBInspectable var _borderWidth: CGFloat = 3.0
     
+    override func draw(_ rect: CGRect) {
+        setupButton()
+    }
+    
     override func prepareForInterfaceBuilder() {
         setupButton()
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        setupButton()
+        
     }
     
     private func setupButton() {
@@ -34,6 +38,10 @@ class RoundButton: UIButton {
         if _hasBorder {
             layer.borderColor = _borderColor.cgColor
             layer.borderWidth = _borderWidth
+        }
+        else {
+            layer.borderColor = nil
+            layer.borderWidth = 0
         }
     }
 }

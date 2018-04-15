@@ -18,6 +18,8 @@ class User {
             return RankCollection.instance.ranks.first(where: { $0.id == Int(exactly: awsUser._rankId!)! })!
         }
     }
+    var followers = [Follower]()
+    var followedUsers = [Follower]()
     
     init(awsUser: AWSUser) {
         self.awsUser = awsUser

@@ -20,10 +20,12 @@ class AWSFollower: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     var _followedUserId: String?
     var _createDate: String?
-    var _displayName: String?
+    var _followedUserDisplayName: String?
+    var _followedUserUsername: String?
+    var _followerDisplayName: String?
     var _followerUserId: String?
+    var _followerUsername: String?
     var _id: String?
-    var _username: String?
     
     class func dynamoDBTableName() -> String {
 
@@ -39,10 +41,12 @@ class AWSFollower: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
         return [
                "_followedUserId" : "followedUserId",
                "_createDate" : "createDate",
-               "_displayName" : "displayName",
+               "_followedUserDisplayName" : "followedUserDisplayName",
+               "_followedUserUsername" : "followedUserUsername",
+               "_followerDisplayName" : "followerDisplayName",
                "_followerUserId" : "followerUserId",
+               "_followerUsername" : "followerUsername",
                "_id" : "id",
-               "_username" : "username",
         ]
     }
 }

@@ -36,6 +36,7 @@ let SHOW_FOLLOW_SUGGESTIONS = "FollowSuggestionsVC"
 let SHOW_MAIN_STORYBOARD = "ShowMainStoryboard"
 let SHOW_RANKS = "RankVC"
 let SHOW_PROFILE = "ProfileVC"
+let SHOW_FOLLOWERS = "FollowerVC"
 
 let UNWIND_TO_LANDING = "LandingVC"
 
@@ -44,3 +45,9 @@ let UNWIND_TO_LANDING = "LandingVC"
 
 typealias SuccessCompletion = (Bool) -> ()
 typealias SuccessErrorCompletion = (_ success: Bool, _ error: CustomError?) -> Void
+
+
+// TableViewCell Identifiers
+
+let FOLLOWER_CELL = "FollowerCell"
+let SEARCH_USER_CELL = "SearchUserCell"

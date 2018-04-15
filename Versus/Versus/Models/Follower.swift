@@ -8,12 +8,24 @@
 
 import UIKit
 
+enum FollowerType {
+    case follower
+    case following
+}
+
+enum FollowStatus {
+    case following
+    case notFollowing
+}
+
 class Follower {
     
     var awsFollower: AWSFollower!
-    var profileImage: UIImage?
+    var followerType: FollowerType!
+    var profileImageSmall: UIImage?
     
-    init(awsFollower: AWSFollower) {
+    init(awsFollower: AWSFollower, followerType: FollowerType) {
         self.awsFollower = awsFollower
+        self.followerType = followerType
     }
 }
