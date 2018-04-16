@@ -121,7 +121,9 @@ extension SearchVC: UISearchBarDelegate {
             if let awsUsers = awsUsers {
                 self.searchResultUsers.removeAll()
                 for awsUser in awsUsers {
-                    self.searchResultUsers.append(User(awsUser: awsUser))
+                    if !CurrentUser.userIsMe(awsUser: awsUser) {
+                        self.searchResultUsers.append(User(awsUser: awsUser))
+                    }
                 }
                 DispatchQueue.main.async {
                     self.searchUserTableView.reloadData()

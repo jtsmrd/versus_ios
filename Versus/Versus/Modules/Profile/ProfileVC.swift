@@ -65,6 +65,32 @@ class ProfileVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        if user.followers.count == 0 {
+            user.getFollowers { (success, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.displayError(error: error)
+                    }
+                    else if success {
+                        self.configureView()
+                    }
+                }
+            }
+        }
+        
+        if user.followedUsers.count == 0 {
+            user.getFollowedUsers { (success, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.displayError(error: error)
+                    }
+                    else if success {
+                        self.configureView()
+                    }
+                }
+            }
+        }
+        
         configureView()
     }
 
@@ -139,14 +165,20 @@ class ProfileVC: UIViewController {
             optionsButton.isHidden = false
             backButton.isHidden = true
         case .viewOnly:
-            followButton.isHidden = false
             optionsButton.isHidden = true
             backButton.isHidden = false
-            configureFollowerButton()
+            
+            if CurrentUser.userIsMe(user: user) {
+                followButton.isHidden = true
+            }
+            else {
+                followButton.isHidden = false
+                configureFollowerButton()
+            }
         }
         
         // Get profile image
-        if let _ = user.awsUser._profileImageUpdateDate {
+        if let _ = user.awsUser._profileImageUpdateDate, user.profileImage == nil {
             UserService.instance.downloadImage(
                 userPoolUserId: user.awsUser._userPoolUserId!,
                 bucketType: .profileImage
@@ -161,7 +193,7 @@ class ProfileVC: UIViewController {
         }
         
         // Get background image
-        if let _ = user.awsUser._profileBackgroundImageUpdateDate {
+        if let _ = user.awsUser._profileBackgroundImageUpdateDate, user.profileBackgroundImage == nil {
             UserService.instance.downloadImage(
                 userPoolUserId: user.awsUser._userPoolUserId!,
                 bucketType: .profileBackgroundImage

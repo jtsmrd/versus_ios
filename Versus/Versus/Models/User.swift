@@ -24,4 +24,30 @@ class User {
     init(awsUser: AWSUser) {
         self.awsUser = awsUser
     }
+    
+    func getFollowers(completion: @escaping SuccessErrorCompletion) {
+        
+        FollowerService.instance.getFollowers(for: awsUser) { (followers, error) in
+            if let error = error {
+                completion(false, error)
+            }
+            else {
+                self.followers = followers
+                completion(true, nil)
+            }
+        }
+    }
+    
+    func getFollowedUsers(completion: @escaping SuccessErrorCompletion) {
+        
+        FollowerService.instance.getFollowedUsers(for: awsUser) { (followedUsers, error) in
+            if let error = error {
+                completion(false, error)
+            }
+            else {
+                self.followedUsers = followedUsers
+                completion(true, nil)
+            }
+        }
+    }
 }

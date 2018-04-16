@@ -36,6 +36,26 @@ class CurrentUser {
         UserDefaults.standard.set(nil, forKey: "signupPassword")
     }
     
+    
+    static func followerIsMe(follower: Follower) -> Bool {
+        switch follower.followerType! {
+        case .follower:
+            return follower.awsFollower._followerUserId == userPoolUserId
+        case .following:
+            return follower.awsFollower._followedUserId == userPoolUserId
+        }
+    }
+    
+    
+    static func userIsMe(user: User) -> Bool {
+        return user.awsUser._userPoolUserId == userPoolUserId
+    }
+    
+    static func userIsMe(awsUser: AWSUser) -> Bool {
+        return awsUser._userPoolUserId == userPoolUserId
+    }
+    
+    
     static func isFollowing(user: User) -> Bool {
         return self.user.followedUsers.contains(
             where: {$0.awsFollower._followedUserId == user.awsUser._userPoolUserId}

@@ -18,14 +18,14 @@ import AWSDynamoDB
 @objcMembers
 class AWSFollower: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _followedUserId: String?
+    var _id: String?
     var _createDate: String?
     var _followedUserDisplayName: String?
+    var _followedUserId: String?
     var _followedUserUsername: String?
     var _followerDisplayName: String?
     var _followerUserId: String?
     var _followerUsername: String?
-    var _id: String?
     
     class func dynamoDBTableName() -> String {
 
@@ -34,19 +34,19 @@ class AWSFollower: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     class func hashKeyAttribute() -> String {
 
-        return "_followedUserId"
+        return "_id"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_followedUserId" : "followedUserId",
+               "_id" : "id",
                "_createDate" : "createDate",
                "_followedUserDisplayName" : "followedUserDisplayName",
+               "_followedUserId" : "followedUserId",
                "_followedUserUsername" : "followedUserUsername",
                "_followerDisplayName" : "followerDisplayName",
                "_followerUserId" : "followerUserId",
                "_followerUsername" : "followerUsername",
-               "_id" : "id",
         ]
     }
 }

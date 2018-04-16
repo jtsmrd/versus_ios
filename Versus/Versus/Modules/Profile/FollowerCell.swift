@@ -41,7 +41,13 @@ class FollowerCell: UITableViewCell {
         self.delegate = delegate
         
         determineFollowerFollowStatus()
-        configureButton()
+        
+        if CurrentUser.followerIsMe(follower: follower) {
+            followButton.isHidden = true
+        }
+        else {
+            configureButton()
+        }
         
         var followerImageName = ""
         

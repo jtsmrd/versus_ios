@@ -96,20 +96,21 @@ class FollowerService {
         for awsUser: AWSUser,
         completion: @escaping (_ followers: [Follower], _ error: CustomError?) -> Void) {
         
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#followedUserId = :userPoolUserId"
-        queryExpression.expressionAttributeNames = [
+        let scanExpression = AWSDynamoDBScanExpression()
+        scanExpression.filterExpression = "#followedUserId = :userPoolUserId"
+        scanExpression.expressionAttributeNames = [
             "#followedUserId": "followedUserId"
         ]
-        queryExpression.expressionAttributeValues = [
+        
+        scanExpression.expressionAttributeValues = [
             ":userPoolUserId": awsUser._userPoolUserId!
         ]
         
         var followers = [Follower]()
         
-        AWSDynamoDBObjectMapper.default().query(
+        AWSDynamoDBObjectMapper.default().scan(
             AWSFollower.self,
-            expression: queryExpression
+            expression: scanExpression
         ) { (paginatedOutput, error) in
             if let error = error {
                 completion(followers, CustomError(error: error, title: "", desc: "Unable to get followers"))
@@ -132,21 +133,21 @@ class FollowerService {
         for awsUser: AWSUser,
         completion: @escaping (_ followers: [Follower], _ error: CustomError?) -> Void) {
         
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#followerUserId = :userPoolUserId"
-        queryExpression.expressionAttributeNames = [
+        let scanExpression = AWSDynamoDBScanExpression()
+        scanExpression.filterExpression = "#followerUserId = :userPoolUserId"
+        scanExpression.expressionAttributeNames = [
             "#followerUserId": "followerUserId"
         ]
-        queryExpression.expressionAttributeValues = [
+        
+        scanExpression.expressionAttributeValues = [
             ":userPoolUserId": awsUser._userPoolUserId!
         ]
-        queryExpression.indexName = "followerUserIdIndex"
         
         var followers = [Follower]()
         
-        AWSDynamoDBObjectMapper.default().query(
+        AWSDynamoDBObjectMapper.default().scan(
             AWSFollower.self,
-            expression: queryExpression
+            expression: scanExpression
         ) { (paginatedOutput, error) in
             if let error = error {
                 completion(followers, CustomError(error: error, title: "", desc: "Unable to get followed users"))
