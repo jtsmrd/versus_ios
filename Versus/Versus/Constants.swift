@@ -51,3 +51,8 @@ typealias SuccessErrorCompletion = (_ success: Bool, _ error: CustomError?) -> V
 
 let FOLLOWER_CELL = "FollowerCell"
 let SEARCH_USER_CELL = "SearchUserCell"
+
+
+// Storyboard Identifiers
+
+let CHOOSE_USERNAME_VC = "ChooseUsernameVC"

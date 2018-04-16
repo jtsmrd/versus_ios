@@ -34,14 +34,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         if AWSSignInManager.sharedInstance().isLoggedIn {
-            
-            loadCurrentUser { (success) in
+            loadCurrentUser { (success, error) in
                 DispatchQueue.main.async {
-                    if success {
+                    if let customError = error, let customErrorError = customError.error {
+                        debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
+                        self.showLogin()
+                    }
+                    else if success {
                         self.showMain()
                     }
                     else {
-                        self.showLogin()
+                        self.showChooseUsername()
                     }
                 }
             }
@@ -90,45 +93,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
     }
     
-    private func loadCurrentUser(completion: @escaping SuccessCompletion) {
+    private func showChooseUsername() {
+        if let chooseUsernameVC = UIStoryboard(name: "Login", bundle: nil)
+            .instantiateViewController(withIdentifier: CHOOSE_USERNAME_VC) as? ChooseUsernameVC {
+            let navController = UINavigationController()
+            navController.isNavigationBarHidden = true
+            navController.addChildViewController(chooseUsernameVC)
+            window?.rootViewController = navController
+            window?.makeKeyAndVisible()
+        }
+    }
+    
+    private func loadCurrentUser(completion: @escaping SuccessErrorCompletion) {
         UserService.instance.loadUser(userPoolUserId: CurrentUser.userPoolUserId) { (awsUser, error) in
-            if let customError = error, let customErrorError = customError.error {
-                debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
-                completion(false)
+            if let error = error {
+                completion(false, error)
             }
             else if let awsUser = awsUser {
                 CurrentUser.user = User(awsUser: awsUser)
-                self.loadCurrentUserData()
-                completion(true)
-            }
-        }
-    }
-    
-    private func loadCurrentUserData() {
-        getFollowers()
-        getFollowedUsers()
-    }
-    
-    private func getFollowers() {
-        
-        FollowerService.instance.getFollowers(for: CurrentUser.user.awsUser) { (followers, error) in
-            if let customError = error, let customErrorError = customError.error {
-                debugPrint("Failed to get followers: \(customErrorError.localizedDescription)")
+                CurrentUser.loadUserData()
+                completion(true, nil)
             }
             else {
-                CurrentUser.user.followers = followers
-            }
-        }
-    }
-    
-    private func getFollowedUsers() {
-        
-        FollowerService.instance.getFollowedUsers(for: CurrentUser.user.awsUser) { (followedUsers, error) in
-            if let customError = error, let customErrorError = customError.error {
-                debugPrint("Failed to get followed users: \(customErrorError.localizedDescription)")
-            }
-            else {
-                CurrentUser.user.followedUsers = followedUsers
+                // User closed app without selecting a usename, which creates a user
+                completion(false, nil)
             }
         }
     }

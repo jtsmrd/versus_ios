@@ -36,6 +36,7 @@ class UserService {
                 completion(false)
             }
             debugPrint("User was successfully created.")
+            CurrentUser.user = User(awsUser: user)
             completion(true)
         }
     }
@@ -65,6 +66,9 @@ class UserService {
             else if let result = paginatedOutput {
                 if let user = result.items.first as? AWSUser {
                     completion(user, nil)
+                }
+                else {
+                    completion(nil, nil)
                 }
             }
         }

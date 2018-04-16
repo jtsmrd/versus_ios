@@ -25,6 +25,20 @@ class ChooseUsernameVC: UIViewController, UITextFieldDelegate {
     }
     
     
+    @IBAction func cancelButtonAction() {
+        AccountService.instance.signOut { (success) in
+            if success {
+                DispatchQueue.main.async {
+                    if let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController() {
+                        (UIApplication.shared.delegate as! AppDelegate).window?.rootViewController = loginVC
+                        (UIApplication.shared.delegate as! AppDelegate).window?.makeKeyAndVisible()
+                    }
+                }
+            }
+        }
+    }
+    
+    
     @IBAction func continueButtonAction() {
         guard inputDataIsValid() else { return }
         let username = usernameTextField.text!

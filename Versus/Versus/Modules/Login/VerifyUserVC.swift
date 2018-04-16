@@ -20,7 +20,6 @@ class VerifyUserVC: UIViewController {
     
     // MARK: - Variables
     
-    var awsUser: AWSCognitoIdentityUser!
     var signInCredentials: SignInCredentials!
     
     // MARK: - View Functions
@@ -28,12 +27,7 @@ class VerifyUserVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-    }
-    
-    
-    func initData(awsUser: AWSCognitoIdentityUser, signInCredentials: SignInCredentials) {
-        self.awsUser = awsUser
-        self.signInCredentials = signInCredentials
+        signInCredentials = CurrentUser.getSignInCredentials()
     }
     
     
@@ -44,7 +38,7 @@ class VerifyUserVC: UIViewController {
     // - Display confirmation alert.
     // - Delete data already created for user.
     @IBAction func cancelButtonAction() {
-        performSegue(withIdentifier: UNWIND_TO_LANDING, sender: nil)
+        displayCancelAlert()
     }
     
     
@@ -53,6 +47,8 @@ class VerifyUserVC: UIViewController {
         guard inputDataIsValid() else { return }
         
         let confirmationCode = verificationCodeTextField.text!
+        
+        let awsUser = AWSCognitoIdentityUserPool.default().getUser(signInCredentials.username)
         
         AccountService.instance.verify(
             awsUser: awsUser,
@@ -111,5 +107,20 @@ class VerifyUserVC: UIViewController {
                 }
             }
         }
+    }
+    
+    private func displayCancelAlert() {
+        let cancelAlertController = UIAlertController(title: "Cancel signup?", message: "Are you sure you want to cancel?", preferredStyle: .alert)
+        cancelAlertController.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (action) in
+            let awsUser = AWSCognitoIdentityUserPool.default().getUser(self.signInCredentials.username)
+            awsUser.delete()
+            DispatchQueue.main.async {
+                self.performSegue(withIdentifier: UNWIND_TO_LANDING, sender: nil)
+            }
+        }))
+        cancelAlertController.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action) in
+            
+        }))
+        present(cancelAlertController, animated: true, completion: nil)
     }
 }

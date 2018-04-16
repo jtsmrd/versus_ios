@@ -61,13 +61,36 @@ class LoginVC: UIViewController {
         appDelegate.prepareForSignIn(signInCredentials: signInCredentials)
         
         let signInProvider: AWSSignInProvider = AWSCognitoUserPoolsSignInProvider.sharedInstance()
-        AWSSignInManager.sharedInstance().login(signInProviderKey: signInProvider.identityProviderName) { (result, error) in
+        AWSSignInManager.sharedInstance().login(
+            signInProviderKey: signInProvider.identityProviderName
+        ) { (result, error) in
             if let error = error {
                 debugPrint("Failed to login: \(error.localizedDescription)")
                 return
             }
+            else {
+                self.loadCurrentUser()
+            }
+        }
+    }
+    
+    private func loadCurrentUser() {
+        UserService.instance.loadUser(
+            userPoolUserId: CurrentUser.userPoolUserId
+        ) { (awsUser, error) in
             DispatchQueue.main.async {
-                self.performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if let awsUser = awsUser {
+                    CurrentUser.user = User(awsUser: awsUser)
+                    CurrentUser.loadUserData()
+                    self.performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
+                }
+                else {
+                    // User closed app without selecting a usename, which creates a user
+                    self.performSegue(withIdentifier: SHOW_CHOOSE_USERNAME, sender: nil)
+                }
             }
         }
     }

@@ -155,6 +155,7 @@ class AccountService {
                 completion(false, CustomError(error: error, title: "", desc: "Unable to login user"))
             }
             else {
+                CurrentUser.clearSignupCredentials()
                 completion(true, nil)
             }
         }

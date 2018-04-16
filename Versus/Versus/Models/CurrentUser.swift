@@ -20,6 +20,22 @@ class CurrentUser {
     
     private init() { }
     
+    static func setSignInCredentials(signInCredentials: SignInCredentials) {
+        UserDefaults.standard.set(signInCredentials.username, forKey: "signupUsername")
+        UserDefaults.standard.set(signInCredentials.password, forKey: "signupPassword")
+    }
+    
+    static func getSignInCredentials() -> SignInCredentials {
+        let username = UserDefaults.standard.string(forKey: "signupUsername") ?? ""
+        let password = UserDefaults.standard.string(forKey: "signupPassword") ?? ""
+        return SignInCredentials(username: username, password: password)
+    }
+    
+    static func clearSignupCredentials() {
+        UserDefaults.standard.set(nil, forKey: "signupUsername")
+        UserDefaults.standard.set(nil, forKey: "signupPassword")
+    }
+    
     static func isFollowing(user: User) -> Bool {
         return self.user.followedUsers.contains(
             where: {$0.awsFollower._followedUserId == user.awsUser._userPoolUserId}
@@ -71,6 +87,35 @@ class CurrentUser {
             return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == followedUser.awsFollower._followerUserId})
         case .following:
             return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == followedUser.awsFollower._followedUserId})
+        }
+    }
+    
+    static func loadUserData() {
+        getFollowers()
+        getFollowedUsers()
+    }
+    
+    static func getFollowers() {
+        
+        FollowerService.instance.getFollowers(for: CurrentUser.user.awsUser) { (followers, error) in
+            if let customError = error, let customErrorError = customError.error {
+                debugPrint("Failed to get followers: \(customErrorError.localizedDescription)")
+            }
+            else {
+                CurrentUser.user.followers = followers
+            }
+        }
+    }
+    
+    static func getFollowedUsers() {
+        
+        FollowerService.instance.getFollowedUsers(for: CurrentUser.user.awsUser) { (followedUsers, error) in
+            if let customError = error, let customErrorError = customError.error {
+                debugPrint("Failed to get followed users: \(customErrorError.localizedDescription)")
+            }
+            else {
+                CurrentUser.user.followedUsers = followedUsers
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ class SignupVC: UIViewController {
     
     @IBOutlet weak var emailPhoneNumberTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var passwordRequirementsLabel: UILabel!
     @IBOutlet weak var signupButton: RoundButton!
     
     
@@ -68,13 +69,19 @@ class SignupVC: UIViewController {
         
         signInCredentials = SignInCredentials(username: username, password: password)
         
-        AccountService.instance.signUp(username: username, password: password) { (awsUser, error) in
+        // If the user exits the app before signing in, we need the username and password when signing in
+        CurrentUser.setSignInCredentials(signInCredentials: signInCredentials)
+        
+        AccountService.instance.signUp(
+            username: username,
+            password: password
+        ) { (awsUser, error) in
             DispatchQueue.main.async {
                 if let error = error {
                     self.displayError(error: error)
                 }
-                else if let awsUser = awsUser {
-                    self.performSegue(withIdentifier: SHOW_VERIFY_USER, sender: awsUser)
+                else if let _ = awsUser {
+                    self.performSegue(withIdentifier: SHOW_VERIFY_USER, sender: nil)
                 }
             }
         }
@@ -105,7 +112,25 @@ class SignupVC: UIViewController {
             return false
         }
         
+        switch signupMethod {
+        case .email:
+            guard emailPhoneNumber.isValidEmail else {
+                displayMessage(message: "Provide a valid email")
+                return false
+            }
+        case .phoneNumber:
+            guard emailPhoneNumber.isValidPhoneNumber else {
+                displayMessage(message: "Provide a valid phone number")
+                return false
+            }
+        }
+        
         guard let password = passwordTextField.text, !password.isEmpty else {
+            displayMessage(message: "Provide a valid password")
+            return false
+        }
+        
+        guard password.isValidPassword else {
             displayMessage(message: "Provide a valid password")
             return false
         }
@@ -117,8 +142,6 @@ class SignupVC: UIViewController {
     // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let verifyAccountVC = segue.destination as? VerifyUserVC, let awsUser = sender as? AWSCognitoIdentityUser {
-            verifyAccountVC.initData(awsUser: awsUser, signInCredentials: signInCredentials)
-        }
+        
     }
 }

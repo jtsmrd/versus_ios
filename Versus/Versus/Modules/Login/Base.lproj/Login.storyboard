@@ -246,6 +246,7 @@
                         <outlet property="passwordTextField" destination="mZn-cV-9Y7" id="jKg-F0-hln"/>
                         <outlet property="usernameOrEmailTextField" destination="HeL-jO-6IM" id="MHa-tc-fJg"/>
                         <segue destination="MwI-aR-8rJ" kind="show" identifier="ShowMainStoryboard" id="UuU-10-wPP"/>
+                        <segue destination="Kwi-jm-2ro" kind="show" identifier="ChooseUsernameVC" id="c73-7p-jfa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="P2G-Mm-KPM" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -311,6 +312,9 @@
                                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="tHp-MF-gkN" id="6Mh-eR-PbG"/>
+                                                </connections>
                                             </textField>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Tz-Tj-bSh">
                                                 <rect key="frame" x="0.0" y="60" width="300" height="48"/>
@@ -320,6 +324,9 @@
                                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
                                                 <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="tHp-MF-gkN" id="5PI-N8-OZi"/>
+                                                </connections>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -347,6 +354,12 @@
                                             <action selector="alreadyHaveCodeButtonAction" destination="tHp-MF-gkN" eventType="touchUpInside" id="GbA-lZ-Jqw"/>
                                         </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password must contain atleast 8 characters, one capital letter, and one number" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bUu-Ny-HYl">
+                                        <rect key="frame" x="93" y="156" width="187.5" height="49.5"/>
+                                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="12"/>
+                                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -354,10 +367,13 @@
                                     <constraint firstItem="m9h-fX-5zu" firstAttribute="top" secondItem="Q9P-kU-s2V" secondAttribute="top" constant="40" id="6uU-ot-gny"/>
                                     <constraint firstItem="m9h-fX-5zu" firstAttribute="width" secondItem="Q9P-kU-s2V" secondAttribute="width" multiplier="0.8" id="9dN-zP-yQL"/>
                                     <constraint firstItem="lHs-FU-ijl" firstAttribute="centerX" secondItem="Q9P-kU-s2V" secondAttribute="centerX" id="D8Q-ox-1AW"/>
+                                    <constraint firstItem="bUu-Ny-HYl" firstAttribute="width" secondItem="Q9P-kU-s2V" secondAttribute="width" multiplier="0.5" id="Gss-eC-08K"/>
                                     <constraint firstItem="s02-Vc-arj" firstAttribute="top" secondItem="lHs-FU-ijl" secondAttribute="bottom" constant="16" id="Sc8-vH-PG7"/>
+                                    <constraint firstItem="bUu-Ny-HYl" firstAttribute="top" secondItem="m9h-fX-5zu" secondAttribute="bottom" constant="8" id="a9Y-4A-egQ"/>
                                     <constraint firstItem="lHs-FU-ijl" firstAttribute="centerY" secondItem="Q9P-kU-s2V" secondAttribute="centerY" id="bVw-Sc-ovv"/>
                                     <constraint firstItem="s02-Vc-arj" firstAttribute="centerX" secondItem="Q9P-kU-s2V" secondAttribute="centerX" id="e9q-Y2-2xZ"/>
                                     <constraint firstItem="m9h-fX-5zu" firstAttribute="centerX" secondItem="Q9P-kU-s2V" secondAttribute="centerX" id="t1s-Xb-fh7"/>
+                                    <constraint firstItem="bUu-Ny-HYl" firstAttribute="centerX" secondItem="Q9P-kU-s2V" secondAttribute="centerX" id="wqm-kW-8D2"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -375,6 +391,7 @@
                     </view>
                     <connections>
                         <outlet property="emailPhoneNumberTextField" destination="dRz-bo-3Ea" id="MZL-4j-LIF"/>
+                        <outlet property="passwordRequirementsLabel" destination="bUu-Ny-HYl" id="S3w-PM-Q0n"/>
                         <outlet property="passwordTextField" destination="2Tz-Tj-bSh" id="Nz8-rJ-JML"/>
                         <outlet property="signupButton" destination="lHs-FU-ijl" id="Qj1-se-VF3"/>
                         <segue destination="Ydl-N7-tyL" kind="show" identifier="VerifyUserVC" id="wsd-1I-3Ve"/>
@@ -512,7 +529,7 @@
         <!--Choose UsernameVC-->
         <scene sceneID="uCV-Bz-odS">
             <objects>
-                <viewController id="Kwi-jm-2ro" customClass="ChooseUsernameVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChooseUsernameVC" id="Kwi-jm-2ro" customClass="ChooseUsernameVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="090-Va-rBn">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -530,6 +547,9 @@
                                         <rect key="frame" x="8" y="10" width="49.5" height="30"/>
                                         <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="13"/>
                                         <state key="normal" title="Cancel"/>
+                                        <connections>
+                                            <action selector="cancelButtonAction" destination="Kwi-jm-2ro" eventType="touchUpInside" id="Twj-RY-R6U"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <constraints>
@@ -620,7 +640,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="23n-sk-Dw0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3982" y="-358"/>
+            <point key="canvasLocation" x="3994" y="15"/>
         </scene>
         <!--Follow SuggestionsVC-->
         <scene sceneID="B3u-CZ-71N">
@@ -709,7 +729,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N2a-KP-hdl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4808.8000000000002" y="-356.67166416791605"/>
+            <point key="canvasLocation" x="4836" y="15"/>
         </scene>
         <!--Main-->
         <scene sceneID="4QM-pJ-jiu">
@@ -717,7 +737,7 @@
                 <viewControllerPlaceholder storyboardName="Main" id="G6r-gW-2bw" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aMl-7h-iZH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5443" y="-357"/>
+            <point key="canvasLocation" x="5426" y="14"/>
         </scene>
     </scenes>
     <resources>
@@ -725,4 +745,7 @@
         <image name="temp_icon_green" width="355" height="355"/>
         <image name="temp_wordmark_white" width="365" height="57"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="c73-7p-jfa"/>
+    </inferredMetricsTieBreakers>
 </document>
