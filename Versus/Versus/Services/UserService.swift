@@ -262,4 +262,32 @@ class UserService {
             }
         }
     }
+    
+    func querySuggestedFollowUsers(completion: @escaping ([AWSUser]?) -> Void) {
+        
+        let scanExpression = AWSDynamoDBScanExpression()
+        scanExpression.filterExpression = "#isFeatured = :isFeatured"
+        scanExpression.expressionAttributeNames = [
+            "#isFeatured": "isFeatured"
+        ]
+        
+        scanExpression.expressionAttributeValues = [
+            ":isFeatured": 1
+        ]
+        
+        AWSDynamoDBObjectMapper.default().scan(AWSUser.self, expression: scanExpression) { (paginatedOutput, error) in
+            if let error = error {
+                debugPrint("Error loading user: \(error.localizedDescription)")
+                completion(nil)
+            }
+            else if let result = paginatedOutput {
+                if let users = result.items as? [AWSUser] {
+                    completion(users)
+                }
+                else {
+                    completion([AWSUser]())
+                }
+            }
+        }
+    }
 }

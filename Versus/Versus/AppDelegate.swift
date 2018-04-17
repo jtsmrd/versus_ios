@@ -111,7 +111,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             else if let awsUser = awsUser {
                 CurrentUser.user = User(awsUser: awsUser)
-                CurrentUser.loadUserData()
                 completion(true, nil)
             }
             else {

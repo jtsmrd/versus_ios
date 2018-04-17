@@ -65,28 +65,24 @@ class ProfileVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if user.followers.count == 0 {
-            user.getFollowers { (success, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.displayError(error: error)
-                    }
-                    else if success {
-                        self.configureView()
-                    }
+        user.getFollowers { (success, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if success {
+                    self.configureView()
                 }
             }
         }
         
-        if user.followedUsers.count == 0 {
-            user.getFollowedUsers { (success, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.displayError(error: error)
-                    }
-                    else if success {
-                        self.configureView()
-                    }
+        user.getFollowedUsers { (success, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else if success {
+                    self.configureView()
                 }
             }
         }

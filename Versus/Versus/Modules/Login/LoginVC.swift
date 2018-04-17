@@ -84,7 +84,6 @@ class LoginVC: UIViewController {
                 }
                 else if let awsUser = awsUser {
                     CurrentUser.user = User(awsUser: awsUser)
-                    CurrentUser.loadUserData()
                     self.performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
                 }
                 else {

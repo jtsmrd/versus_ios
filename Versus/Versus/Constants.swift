@@ -53,6 +53,11 @@ let FOLLOWER_CELL = "FollowerCell"
 let SEARCH_USER_CELL = "SearchUserCell"
 
 
+// CollectionViewCell Identifiers
+
+let FOLLOWER_SUGGESTION_CELL = "FollowerSuggestionCell"
+
+
 // Storyboard Identifiers
 
 let CHOOSE_USERNAME_VC = "ChooseUsernameVC"

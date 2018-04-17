@@ -12,15 +12,33 @@ class FollowSuggestionsVC: UIViewController {
 
     @IBOutlet weak var followSuggestionsCollectionView: UICollectionView!
     
+    let sectionInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+    var followerSuggestions = [User]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        getFollowerSuggestions()
+        
     }
 
     
     @IBAction func skipButtonAction() {
         performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
+    }
+    
+    
+    private func getFollowerSuggestions() {
+        UserService.instance.querySuggestedFollowUsers { (awsUsers) in
+            if let awsUsers = awsUsers {
+                for awsUser in awsUsers {
+                    self.followerSuggestions.append(User(awsUser: awsUser))
+                }
+                DispatchQueue.main.async {
+                    self.followSuggestionsCollectionView.reloadData()
+                }
+            }
+        }
     }
     
 
@@ -34,4 +52,64 @@ class FollowSuggestionsVC: UIViewController {
     }
     */
 
+}
+
+extension FollowSuggestionsVC: FollowerSuggestionCellDelegate {
+    func followerSuggestionCellFollowButtonActionError(error: CustomError) {
+        displayError(error: error)
+    }
+}
+
+extension FollowSuggestionsVC: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return followerSuggestions.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FOLLOWER_SUGGESTION_CELL, for: indexPath) as? FollowerSuggestionCell {
+            cell.configureCell(user: followerSuggestions[indexPath.row], delegate: self)
+            return cell
+        }
+        return FollowerSuggestionCell()
+    }
+    
+    
+}
+
+extension FollowSuggestionsVC: UICollectionViewDelegate {
+    
+}
+
+extension FollowSuggestionsVC: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let itemsPerRow: CGFloat = 2
+        
+        let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
+        let availableWidth = view.frame.width - paddingSpace
+        let widthPerItem = availableWidth / itemsPerRow
+        
+        return CGSize(width: widthPerItem, height: widthPerItem)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int) -> UIEdgeInsets {
+        
+        return sectionInsets
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        
+        return sectionInsets.left
+    }
 }

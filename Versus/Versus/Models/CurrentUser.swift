@@ -109,33 +109,4 @@ class CurrentUser {
             return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == followedUser.awsFollower._followedUserId})
         }
     }
-    
-    static func loadUserData() {
-        getFollowers()
-        getFollowedUsers()
-    }
-    
-    static func getFollowers() {
-        
-        FollowerService.instance.getFollowers(for: CurrentUser.user.awsUser) { (followers, error) in
-            if let customError = error, let customErrorError = customError.error {
-                debugPrint("Failed to get followers: \(customErrorError.localizedDescription)")
-            }
-            else {
-                CurrentUser.user.followers = followers
-            }
-        }
-    }
-    
-    static func getFollowedUsers() {
-        
-        FollowerService.instance.getFollowedUsers(for: CurrentUser.user.awsUser) { (followedUsers, error) in
-            if let customError = error, let customErrorError = customError.error {
-                debugPrint("Failed to get followed users: \(customErrorError.localizedDescription)")
-            }
-            else {
-                CurrentUser.user.followedUsers = followedUsers
-            }
-        }
-    }
 }
