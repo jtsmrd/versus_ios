@@ -1050,11 +1050,13 @@
             </objects>
             <point key="canvasLocation" x="2582" y="2421"/>
         </scene>
-        <!--Profile-->
+        <!--Navigation Controller-->
         <scene sceneID="k6D-r7-fPn">
             <objects>
                 <navigationController storyboardIdentifier="UINavigationController-slW-7A-c38" automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="slW-7A-c38" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Profile" id="hyh-gi-QA0"/>
+                    <tabBarItem key="tabBarItem" title="" image="Profile" id="hyh-gi-QA0">
+                        <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-8"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="MO8-xN-zes">
                         <autoresizingMask key="autoresizingMask"/>
@@ -1074,7 +1076,7 @@
         <image name="Edit" width="200" height="201"/>
         <image name="Hall-of-Fame" width="200" height="201"/>
         <image name="Legend" width="200" height="201"/>
-        <image name="Profile" width="200" height="200"/>
+        <image name="Profile" width="34" height="34"/>
         <image name="Wins-Trophy" width="201" height="200"/>
         <image name="back_icon" width="200" height="200"/>
     </resources>

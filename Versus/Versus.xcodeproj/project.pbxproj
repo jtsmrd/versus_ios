@@ -26,6 +26,7 @@
 		6B525F8F208114D7007A7FC7 /* FollowerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B525F8E208114D7007A7FC7 /* FollowerVC.swift */; };
 		6B5D0A11207AE46600091DA1 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A10207AE46600091DA1 /* GameKit.framework */; };
 		6B5D0A13207AE46C00091DA1 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A12207AE46C00091DA1 /* StoreKit.framework */; };
+		6B7FCC552086C63B00B69DEA /* MainTBC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7FCC542086C63B00B69DEA /* MainTBC.swift */; };
 		6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316DC207D71EC0067EE0E /* RankCell.swift */; };
 		6B8316DF207D73070067EE0E /* UserRankView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316DE207D73070067EE0E /* UserRankView.swift */; };
 		6B8316E2207D791A0067EE0E /* RankCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E1207D791A0067EE0E /* RankCollection.swift */; };
@@ -50,6 +51,12 @@
 		6BB81790207A842400503620 /* ChooseUsernameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB8178E207A842400503620 /* ChooseUsernameVC.swift */; };
 		6BB9A384207ED1FB006881BE /* SearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB9A383207ED1FB006881BE /* SearchVC.swift */; };
 		6BB9A386207ED21E006881BE /* SearchUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB9A385207ED21E006881BE /* SearchUserCell.swift */; };
+		6BC1E12720894276005404E1 /* CompetitionEntry.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BC1E12620894276005404E1 /* CompetitionEntry.storyboard */; };
+		6BC1E12920894B3C005404E1 /* CompetitionDetailsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12820894B3C005404E1 /* CompetitionDetailsVC.swift */; };
+		6BC1E12B20894B54005404E1 /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12A20894B54005404E1 /* CategoryCell.swift */; };
+		6BC1E12D20894B92005404E1 /* CompetitionEntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */; };
+		6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */; };
+		6BC1E13120895D7D005404E1 /* CategoryCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E13020895D7D005404E1 /* CategoryCollection.swift */; };
 		6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */; };
 		6BEACB59206EB3DC00C221A0 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB58206EB3DC00C221A0 /* LandingVC.swift */; };
 		6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB5A206EB3DD00C221A0 /* Login.storyboard */; };
@@ -79,6 +86,7 @@
 		6B5D0A10207AE46600091DA1 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		6B5D0A12207AE46C00091DA1 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		6B5D0A14207AE48000091DA1 /* Versus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Versus.entitlements; sourceTree = "<group>"; };
+		6B7FCC542086C63B00B69DEA /* MainTBC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTBC.swift; sourceTree = "<group>"; };
 		6B8316DC207D71EC0067EE0E /* RankCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCell.swift; sourceTree = "<group>"; };
 		6B8316DE207D73070067EE0E /* UserRankView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankView.swift; sourceTree = "<group>"; };
 		6B8316E1207D791A0067EE0E /* RankCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCollection.swift; sourceTree = "<group>"; };
@@ -103,6 +111,12 @@
 		6BB8178E207A842400503620 /* ChooseUsernameVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChooseUsernameVC.swift; sourceTree = "<group>"; };
 		6BB9A383207ED1FB006881BE /* SearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVC.swift; sourceTree = "<group>"; };
 		6BB9A385207ED21E006881BE /* SearchUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserCell.swift; sourceTree = "<group>"; };
+		6BC1E12620894276005404E1 /* CompetitionEntry.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CompetitionEntry.storyboard; sourceTree = "<group>"; };
+		6BC1E12820894B3C005404E1 /* CompetitionDetailsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionDetailsVC.swift; sourceTree = "<group>"; };
+		6BC1E12A20894B54005404E1 /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
+		6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntryVC.swift; sourceTree = "<group>"; };
+		6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionSubmittedVC.swift; sourceTree = "<group>"; };
+		6BC1E13020895D7D005404E1 /* CategoryCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCollection.swift; sourceTree = "<group>"; };
 		6BEACB53206EB3DC00C221A0 /* Versus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Versus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BEACB58206EB3DC00C221A0 /* LandingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
@@ -165,6 +179,7 @@
 				6B8316E5207D977A0067EE0E /* CurrentUser.swift */,
 				6B85343D208020C100985BDD /* User.swift */,
 				6B334FD620818738005B010F /* Follower.swift */,
+				6BC1E13020895D7D005404E1 /* CategoryCollection.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -195,10 +210,11 @@
 		6BAA03E8206F1D270032F7F9 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				6BB9A382207ED1DB006881BE /* Search */,
+				6BC1E12520894266005404E1 /* Competition Entry */,
 				6BAA03E9206F1D440032F7F9 /* Login */,
-				6B1ABF1D2072E819005A0DDB /* Main.storyboard */,
+				6BC1E12420894204005404E1 /* Main */,
 				6BA4B0C7207435DB00BC23A0 /* Profile */,
+				6BB9A382207ED1DB006881BE /* Search */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -251,6 +267,27 @@
 				6BB9A385207ED21E006881BE /* SearchUserCell.swift */,
 			);
 			path = Search;
+			sourceTree = "<group>";
+		};
+		6BC1E12420894204005404E1 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				6B1ABF1D2072E819005A0DDB /* Main.storyboard */,
+				6B7FCC542086C63B00B69DEA /* MainTBC.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		6BC1E12520894266005404E1 /* Competition Entry */ = {
+			isa = PBXGroup;
+			children = (
+				6BC1E12620894276005404E1 /* CompetitionEntry.storyboard */,
+				6BC1E12820894B3C005404E1 /* CompetitionDetailsVC.swift */,
+				6BC1E12A20894B54005404E1 /* CategoryCell.swift */,
+				6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */,
+				6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */,
+			);
+			path = "Competition Entry";
 			sourceTree = "<group>";
 		};
 		6BEACB4A206EB3DC00C221A0 = {
@@ -377,6 +414,7 @@
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
 				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,
+				6BC1E12720894276005404E1 /* CompetitionEntry.storyboard in Resources */,
 				6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */,
 				6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */,
 			);
@@ -462,6 +500,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6BA4B0C9207435F200BC23A0 /* ProfileVC.swift in Sources */,
+				6B7FCC552086C63B00B69DEA /* MainTBC.swift in Sources */,
 				6BEACB59206EB3DC00C221A0 /* LandingVC.swift in Sources */,
 				6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */,
 				6B36E1D020703D5D00F92375 /* UserService.swift in Sources */,
@@ -479,14 +518,18 @@
 				6BB8178C207A718400503620 /* AccountService.swift in Sources */,
 				6B85343C2080021F00985BDD /* AWSUser.swift in Sources */,
 				6B26563720854790001D733A /* AWSFollower.swift in Sources */,
+				6BC1E13120895D7D005404E1 /* CategoryCollection.swift in Sources */,
 				6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */,
 				6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */,
+				6BC1E12D20894B92005404E1 /* CompetitionEntryVC.swift in Sources */,
 				6BB8178F207A842400503620 /* FollowSuggestionsVC.swift in Sources */,
+				6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */,
 				6B525F8D2081143B007A7FC7 /* FollowerCell.swift in Sources */,
 				6B334FD9208187B3005B010F /* FollowerService.swift in Sources */,
 				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
 				6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */,
 				6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */,
+				6BC1E12B20894B54005404E1 /* CategoryCell.swift in Sources */,
 				6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */,
 				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
 				6B85343E208020C100985BDD /* User.swift in Sources */,
@@ -501,6 +544,7 @@
 				6BB8178A207A6E2E00503620 /* UIImageExtensions.swift in Sources */,
 				6BB81790207A842400503620 /* ChooseUsernameVC.swift in Sources */,
 				6B8316DF207D73070067EE0E /* UserRankView.swift in Sources */,
+				6BC1E12920894B3C005404E1 /* CompetitionDetailsVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -649,7 +693,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -670,7 +714,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7QJKRU58DK;
 				INFOPLIST_FILE = Versus/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

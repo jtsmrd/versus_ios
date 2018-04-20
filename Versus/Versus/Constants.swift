@@ -37,6 +37,8 @@ let SHOW_MAIN_STORYBOARD = "ShowMainStoryboard"
 let SHOW_RANKS = "RankVC"
 let SHOW_PROFILE = "ProfileVC"
 let SHOW_FOLLOWERS = "FollowerVC"
+let SHOW_COMPETITION_DETAILS = "CompetitionDetailsVC"
+let SHOW_COMPETITION_SUBMITTED = "CompetitionSubmittedVC"
 
 let UNWIND_TO_LANDING = "LandingVC"
 
@@ -51,6 +53,7 @@ typealias SuccessErrorCompletion = (_ success: Bool, _ error: CustomError?) -> V
 
 let FOLLOWER_CELL = "FollowerCell"
 let SEARCH_USER_CELL = "SearchUserCell"
+let CATEGORY_CELL = "CategoryCell"
 
 
 // CollectionViewCell Identifiers
@@ -61,3 +64,4 @@ let FOLLOWER_SUGGESTION_CELL = "FollowerSuggestionCell"
 // Storyboard Identifiers
 
 let CHOOSE_USERNAME_VC = "ChooseUsernameVC"
+let COMPETITION_ENTRY_VC = "CompetitionEntryVC"
