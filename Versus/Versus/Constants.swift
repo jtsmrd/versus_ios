@@ -59,6 +59,7 @@ let CATEGORY_CELL = "CategoryCell"
 // CollectionViewCell Identifiers
 
 let FOLLOWER_SUGGESTION_CELL = "FollowerSuggestionCell"
+let PHOTO_LIBRARY_CELL = "PhotoLibraryCell"
 
 
 // Storyboard Identifiers
