@@ -9,7 +9,7 @@
 import UIKit
 
 class MainTBC: UITabBarController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -19,18 +19,18 @@ class MainTBC: UITabBarController {
         circleView.backgroundColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
         circleView.layer.cornerRadius = circleView.frame.height / 2
         circleView.clipsToBounds = true
-        circleView.center = CGPoint(x: tabBar.center.x, y: tabBar.center.y - (tabBarHeight * 0.2))
+        circleView.center = CGPoint(x: tabBar.center.x, y: circleView.frame.height * 0.25)
         
         let circleViewHeight = circleView.frame.size.height
         
         let button = UIButton(frame: CGRect(x: 0.0, y: 0.0, width: circleViewHeight * 0.7, height: circleViewHeight * 0.7))
         button.setImage(UIImage(named: "Add-Video"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
-        button.center =  CGPoint(x: tabBar.center.x, y: tabBar.center.y - (tabBarHeight * 0.2))
+        button.center = CGPoint(x: circleViewHeight / 2, y: circleViewHeight / 2)
         button.addTarget(self, action: #selector(newCompetitionEntryButtonAction), for: .touchUpInside)
         
-        view.addSubview(circleView)
-        view.addSubview(button)
+        circleView.addSubview(button)
+        tabBar.addSubview(circleView)
     }
 
     
