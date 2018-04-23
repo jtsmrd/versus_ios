@@ -24,6 +24,9 @@ let S3_BUCKET = "versus-userfiles-mobilehub-387870640"
 let PROFILE_IMAGE_BUCKET_PATH = "public/profileImage/"
 let PROFILE_IMAGE_SMALL_BUCKET_PATH = "public/profileImageSmall/"
 let PROFILE_BACKGROUND_IMAGE_BUCKET_PATH = "public/profileBackgroundImage/"
+let COMPETITION_IMAGE_BUCKET_PATH = "public/competitionImage/"
+let COMPETITION_VIDEO_BUCKET_PATH = "public/competitionVideo/"
+let COMPETITION_VIDEO_PREVIEW_IMAGE_BUCKET_PATH = "public/competitionVideoPreviewImage/"
 
 
 // Segues

@@ -160,6 +160,8 @@ class UserService {
             else {
                 completion(false)
             }
+        case .competitionImage, .competitionVideo, .competitionVideoPreviewImage:
+            completion(false)
         }
         
         S3BucketService.instance.uploadImage(

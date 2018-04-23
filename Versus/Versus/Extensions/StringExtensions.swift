@@ -10,14 +10,14 @@ import Foundation
 
 extension String {
     
-    //To check text field or String is blank or not
+    // To check text field or String is blank or not
     var isBlank: Bool {
         get {
             return trimmingCharacters(in: CharacterSet.whitespaces).isEmpty
         }
     }
     
-    //Validate email
+    // Validate email
     var isValidEmail: Bool {
         
         do {
@@ -29,7 +29,7 @@ extension String {
         }
     }
     
-    //Validate phone number
+    // Validate phone number
     var isValidPhoneNumber: Bool {
         do {
             let regex = try NSRegularExpression(pattern: "\\A[0-9]{10}\\z", options: .caseInsensitive)
@@ -39,7 +39,7 @@ extension String {
         return false
     }
     
-    //Validate password
+    // Validate password
     var isValidPassword: Bool {
         do {
             let regex = try NSRegularExpression(pattern: "^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}$", options: .caseInsensitive)
@@ -47,5 +47,10 @@ extension String {
         }
         catch { }
         return false
+    }
+    
+    // Get date from ISO8601 string
+    var dateFromISO8601: Date? {
+        return Formatter.iso8601.date(from: self)   // "Mar 22, 2017, 10:22 AM"
     }
 }

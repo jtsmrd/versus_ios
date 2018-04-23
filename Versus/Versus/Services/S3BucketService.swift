@@ -15,6 +15,9 @@ enum S3BucketType {
     case profileImage
     case profileImageSmall
     case profileBackgroundImage
+    case competitionImage
+    case competitionVideo
+    case competitionVideoPreviewImage
 }
 
 class S3BucketService {
@@ -109,6 +112,8 @@ class S3BucketService {
         }
     }
     
+    
+    
     private func generateImageKey(imageName: String, bucketType: S3BucketType) -> String {
         
         switch bucketType {
@@ -118,6 +123,12 @@ class S3BucketService {
             return "\(PROFILE_IMAGE_SMALL_BUCKET_PATH)\(imageName).jpg"
         case .profileBackgroundImage:
             return "\(PROFILE_BACKGROUND_IMAGE_BUCKET_PATH)\(imageName).jpg"
+        case .competitionImage:
+            return "\(COMPETITION_IMAGE_BUCKET_PATH)\(imageName).jpg"
+        case .competitionVideo:
+            return "\(COMPETITION_VIDEO_BUCKET_PATH)\(imageName).jpg"
+        case .competitionVideoPreviewImage:
+            return "\(COMPETITION_VIDEO_PREVIEW_IMAGE_BUCKET_PATH)\(imageName).jpg"
         }
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 
 class CompetitionDetailsVC: UIViewController {
 
@@ -17,6 +18,9 @@ class CompetitionDetailsVC: UIViewController {
     @IBOutlet weak var categoryImageView: UIImageView!
     @IBOutlet weak var categoryTableView: UITableView!
     
+    var competitionImage: UIImage?
+    var competitionVideoAsset: AVAsset?
+    var competitionType: CompetitionType = .image
     var selectedCategory: Category?
     
     override func viewDidLoad() {
@@ -26,13 +30,39 @@ class CompetitionDetailsVC: UIViewController {
         categoryTableView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         
         selectCategoryView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(categoryViewTapped)))
+        
+        configureView()
     }
 
+    
+    func initData(image: UIImage?, videoAsset: AVAsset?) {
+        competitionImage = image
+        competitionVideoAsset = videoAsset
+        competitionType = image != nil ? .image : .video
+    }
+    
+    
     @IBAction func backButtonAction() {
         navigationController?.popViewController(animated: true)
     }
     
     @IBAction func submitButtonAction() {
+        
+        guard inputDataIsValid() else { return }
+        
+        let uploadMediaDispatchGroup = DispatchGroup()
+        
+        switch competitionType {
+        case .image:
+            print()
+        case .video:
+            print()
+        }
+        
+        uploadMediaDispatchGroup.notify(queue: .main) {
+            
+        }
+        
         performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
     }
     
@@ -55,7 +85,6 @@ class CompetitionDetailsVC: UIViewController {
     
     
     private func configureView() {
-        
         if let category = selectedCategory {
             categoryLabel.text = category.title
             categoryLabel.textColor = UIColor.white
@@ -65,7 +94,71 @@ class CompetitionDetailsVC: UIViewController {
         else {
             categoryLabel.textColor = UIColor.darkGray
         }
+        
+        switch competitionType {
+        case .image:
+            previewImageView.image = competitionImage
+        case .video:
+            previewImageView.image = Utilities.generatePreviewImage(for: competitionVideoAsset!)
+        }
     }
+    
+    private func inputDataIsValid() -> Bool {
+        
+        guard let _ = selectedCategory else {
+            displayMessage(message: "Select a category")
+            return false
+        }
+        
+        switch competitionType {
+        case .image:
+            guard let _ = competitionImage else {
+                displayMessage(message: "Select competition image")
+                return false
+            }
+        case .video:
+            guard let _ = competitionVideoAsset else {
+                displayMessage(message: "Select competition video")
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    private func createCompetitionEntry() {
+        
+        
+    }
+    
+    private func uploadCompetitionImage(
+        image: UIImage,
+        completion: @escaping SuccessCompletion
+    ) {
+        S3BucketService.instance.uploadImage(
+            image: image,
+            bucketType: .competitionImage
+        ) { (success) in
+            completion(success)
+        }
+    }
+    
+    private func uploadCompetitionVideo() {
+        
+    }
+    
+    private func uploadCompetitionVideoPreviewImage(
+        image: UIImage,
+        completion: @escaping SuccessCompletion
+    ) {
+        S3BucketService.instance.uploadImage(
+            image: image,
+            bucketType: .competitionVideoPreviewImage
+        ) { (success) in
+            completion(success)
+        }
+    }
+    
 
     /*
     // MARK: - Navigation
@@ -77,6 +170,21 @@ class CompetitionDetailsVC: UIViewController {
     }
     */
 
+}
+
+extension CompetitionDetailsVC: UITextViewDelegate {
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.text == "Write a caption..." {
+            textView.text.removeAll()
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "Write a caption..."
+        }
+    }
 }
 
 extension CompetitionDetailsVC: UITableViewDataSource {
