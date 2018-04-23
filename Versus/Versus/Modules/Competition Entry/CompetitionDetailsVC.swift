@@ -19,7 +19,8 @@ class CompetitionDetailsVC: UIViewController {
     @IBOutlet weak var categoryTableView: UITableView!
     
     var competitionImage: UIImage?
-    var competitionVideoAsset: AVAsset?
+    var competitionVideoUrlAsset: AVURLAsset?
+    var competitionVideoPreviewImage: UIImage?
     var competitionType: CompetitionType = .image
     var selectedCategory: Category?
     
@@ -35,9 +36,9 @@ class CompetitionDetailsVC: UIViewController {
     }
 
     
-    func initData(image: UIImage?, videoAsset: AVAsset?) {
+    func initData(image: UIImage?, videoUrlAsset: AVURLAsset?) {
         competitionImage = image
-        competitionVideoAsset = videoAsset
+        competitionVideoUrlAsset = videoUrlAsset
         competitionType = image != nil ? .image : .video
     }
     
@@ -51,19 +52,73 @@ class CompetitionDetailsVC: UIViewController {
         guard inputDataIsValid() else { return }
         
         let uploadMediaDispatchGroup = DispatchGroup()
+        var errorMessage = ""
+        var competitionImageFilename: String?
+        var competitionVideoFilename: String?
+        var competitionVideoPreviewImageFilename: String?
         
         switch competitionType {
         case .image:
-            print()
+            
+            uploadMediaDispatchGroup.enter()
+            uploadCompetitionImage(image: competitionImage!) { (imageFilename) in
+                if let imageFilename = imageFilename {
+                    competitionImageFilename = imageFilename
+                }
+                else {
+                    errorMessage = "Failed to upload competition image"
+                }
+                uploadMediaDispatchGroup.leave()
+            }
+            
         case .video:
-            print()
+            
+            uploadMediaDispatchGroup.enter()
+            uploadCompetitionVideoPreviewImage(image: competitionVideoPreviewImage!) { (imageFilename) in
+                if let imageFilename = imageFilename {
+                    competitionVideoPreviewImageFilename = imageFilename
+                }
+                else {
+                    errorMessage = "Failed to upload competition video preview image"
+                }
+                uploadMediaDispatchGroup.leave()
+            }
+            
+            uploadMediaDispatchGroup.enter()
+            uploadCompetitionVideo(videoUrlAsset: competitionVideoUrlAsset!) { (videoFilename) in
+                if let videoFilename = videoFilename {
+                    competitionVideoFilename = videoFilename
+                }
+                else {
+                    errorMessage = "Failed to upload competition video"
+                }
+                uploadMediaDispatchGroup.leave()
+            }
         }
+        
         
         uploadMediaDispatchGroup.notify(queue: .main) {
-            
+            if errorMessage.isEmpty {
+                self.createCompetitionEntry(
+                    videoPreviewImageId: competitionVideoPreviewImageFilename,
+                    videoId: competitionVideoFilename,
+                    imageId: competitionImageFilename,
+                    completion: { (success) in
+                        DispatchQueue.main.async {
+                            if success {
+                                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
+                            }
+                            else {
+                                self.displayMessage(message: "Unable to submit competition entry")
+                            }
+                        }
+                    }
+                )
+            }
+            else {
+                self.displayMessage(message: errorMessage)
+            }
         }
-        
-        performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
     }
     
     @IBAction func facebookButtonAction() {
@@ -99,7 +154,8 @@ class CompetitionDetailsVC: UIViewController {
         case .image:
             previewImageView.image = competitionImage
         case .video:
-            previewImageView.image = Utilities.generatePreviewImage(for: competitionVideoAsset!)
+            competitionVideoPreviewImage = Utilities.generatePreviewImage(for: competitionVideoUrlAsset!)
+            previewImageView.image = competitionVideoPreviewImage
         }
     }
     
@@ -117,8 +173,12 @@ class CompetitionDetailsVC: UIViewController {
                 return false
             }
         case .video:
-            guard let _ = competitionVideoAsset else {
+            guard let _ = competitionVideoUrlAsset else {
                 displayMessage(message: "Select competition video")
+                return false
+            }
+            guard let _ = competitionVideoPreviewImage else {
+                displayMessage(message: "Unable to generate preview image")
                 return false
             }
         }
@@ -126,36 +186,57 @@ class CompetitionDetailsVC: UIViewController {
         return true
     }
     
-    private func createCompetitionEntry() {
-        
-        
-    }
-    
-    private func uploadCompetitionImage(
-        image: UIImage,
+    private func createCompetitionEntry(
+        videoPreviewImageId: String?,
+        videoId: String?,
+        imageId: String?,
         completion: @escaping SuccessCompletion
     ) {
-        S3BucketService.instance.uploadImage(
-            image: image,
-            bucketType: .competitionImage
+        CompetitionEntryService.instance.createCompetitionEntry(
+            categoryType: selectedCategory!.categoryType,
+            competitionType: competitionType,
+            caption: captionTextView.text,
+            videoPreviewImageId: videoPreviewImageId,
+            videoId: videoId,
+            imageId: imageId
         ) { (success) in
             completion(success)
         }
     }
     
-    private func uploadCompetitionVideo() {
-        
+    private func uploadCompetitionImage(
+        image: UIImage,
+        completion: @escaping (_ imageFilename: String?) -> Void
+    ) {
+        S3BucketService.instance.uploadImage(
+            image: image,
+            bucketType: .competitionImage
+        ) { (imageFilename) in
+            completion(imageFilename)
+        }
+    }
+    
+    private func uploadCompetitionVideo(
+        videoUrlAsset: AVURLAsset,
+        completion: @escaping (_ videoFilename: String?) -> Void
+    ) {
+        S3BucketService.instance.uploadVideo(
+            videoUrlAsset: videoUrlAsset,
+            bucketType: .competitionVideo
+        ) { (videoFilename) in
+            completion(videoFilename)
+        }
     }
     
     private func uploadCompetitionVideoPreviewImage(
         image: UIImage,
-        completion: @escaping SuccessCompletion
+        completion: @escaping (_ imageFilename: String?) -> Void
     ) {
         S3BucketService.instance.uploadImage(
             image: image,
             bucketType: .competitionVideoPreviewImage
-        ) { (success) in
-            completion(success)
+        ) { (imageFilename) in
+            completion(imageFilename)
         }
     }
     

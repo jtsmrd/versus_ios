@@ -24,7 +24,7 @@ class CompetitionEntryVC: UIViewController {
     
     var mediaAssets = [PHAsset]()
     var selectedImage: UIImage?
-    var selectedVideoAVAsset: AVAsset?
+    var selectedVideoAVUrlAsset: AVURLAsset?
     var avPlayerVC: AVPlayerViewController!
     var avPlayer: AVPlayer!
     var imagePicker = UIImagePickerController()
@@ -58,8 +58,8 @@ class CompetitionEntryVC: UIViewController {
         if let image = selectedImage {
             performSegue(withIdentifier: SHOW_COMPETITION_DETAILS, sender: image)
         }
-        else if let videoAsset = selectedVideoAVAsset {
-            performSegue(withIdentifier: SHOW_COMPETITION_DETAILS, sender: videoAsset)
+        else if let videoUrlAsset = selectedVideoAVUrlAsset {
+            performSegue(withIdentifier: SHOW_COMPETITION_DETAILS, sender: videoUrlAsset)
         }
     }
     
@@ -126,7 +126,7 @@ class CompetitionEntryVC: UIViewController {
     
     private func inputDataIsValid() -> Bool {
         
-        guard selectedImage != nil || selectedVideoAVAsset != nil else {
+        guard selectedImage != nil || selectedVideoAVUrlAsset != nil else {
             displayMessage(message: "Select image or video")
             return false
         }
@@ -141,10 +141,10 @@ class CompetitionEntryVC: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let competitionDetailsVC = segue.destination as? CompetitionDetailsVC {
             if let image = sender as? UIImage {
-                competitionDetailsVC.initData(image: image, videoAsset: nil)
+                competitionDetailsVC.initData(image: image, videoUrlAsset: nil)
             }
-            else if let videoAsset = sender as? AVAsset {
-                competitionDetailsVC.initData(image: nil, videoAsset: videoAsset)
+            else if let videoUrlAsset = sender as? AVURLAsset {
+                competitionDetailsVC.initData(image: nil, videoUrlAsset: videoUrlAsset)
             }
         }
     }
@@ -162,7 +162,7 @@ extension CompetitionEntryVC: UIImagePickerControllerDelegate, UINavigationContr
         case kUTTypeImage:
             if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
                 selectedImage = image
-                selectedVideoAVAsset = nil
+                selectedVideoAVUrlAsset = nil
                 DispatchQueue.main.async {
                     self.competitionPictureImageView.image = self.selectedImage
                     self.avPlayerContainerView.isHidden = true
@@ -170,9 +170,9 @@ extension CompetitionEntryVC: UIImagePickerControllerDelegate, UINavigationContr
             }
         case kUTTypeMovie:
             if let videoUrl = info[UIImagePickerControllerMediaURL] as? URL {
-                selectedVideoAVAsset = AVAsset(url: videoUrl)
+                selectedVideoAVUrlAsset = AVURLAsset(url: videoUrl)
                 selectedImage = nil
-                avPlayer.replaceCurrentItem(with: AVPlayerItem(asset: selectedVideoAVAsset!))
+                avPlayer.replaceCurrentItem(with: AVPlayerItem(asset: selectedVideoAVUrlAsset!))
                 DispatchQueue.main.async {
                     self.avPlayerContainerView.isHidden = false
                 }
@@ -219,9 +219,9 @@ extension CompetitionEntryVC: UICollectionViewDelegate {
                 forVideo: asset,
                 options: nil
             ) { (videoAsset, audioMix, info) in
-                if let videoAsset = videoAsset {
+                if let videoAsset = videoAsset as? AVURLAsset {
                     self.selectedImage = nil
-                    self.selectedVideoAVAsset = videoAsset
+                    self.selectedVideoAVUrlAsset = videoAsset
                     self.avPlayer.replaceCurrentItem(with: AVPlayerItem(asset: videoAsset))
                     DispatchQueue.main.async {
                         self.avPlayerContainerView.isHidden = false
@@ -237,7 +237,7 @@ extension CompetitionEntryVC: UICollectionViewDelegate {
                 options: nil
             ) { (image, infoDict) in
                 self.selectedImage = image
-                self.selectedVideoAVAsset = nil
+                self.selectedVideoAVUrlAsset = nil
                 DispatchQueue.main.async {
                     self.competitionPictureImageView.image = image
                     self.avPlayerContainerView.isHidden = true

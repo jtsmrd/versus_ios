@@ -134,7 +134,7 @@ class UserService {
     func uploadImage(
         image: UIImage,
         bucketType: S3BucketType,
-        completion: @escaping SuccessCompletion) {
+        completion: @escaping (_ imageFilename: String?) -> Void) {
         
         var uploadImage: UIImage!
         
@@ -144,36 +144,31 @@ class UserService {
                 uploadImage = image
             }
             else {
-                completion(false)
+                completion(nil)
             }
         case .profileImageSmall:
             if let image = resizeProfileImageSmall(image: image) {
                 uploadImage = image
             }
             else {
-                completion(false)
+                completion(nil)
             }
         case .profileBackgroundImage:
             if let image = resizeProfileBackgroundImage(image: image) {
                 uploadImage = image
             }
             else {
-                completion(false)
+                completion(nil)
             }
         case .competitionImage, .competitionVideo, .competitionVideoPreviewImage:
-            completion(false)
+            completion(nil)
         }
         
         S3BucketService.instance.uploadImage(
-        image: uploadImage,
-        bucketType: bucketType) { (success) in
-            if success {
-                completion(true)
-            }
-            else {
-                debugPrint("Failed to upload image in edit profile")
-                completion(false)
-            }
+            image: uploadImage,
+            bucketType: bucketType
+        ) { (imageFilename) in
+            completion(imageFilename)
         }
     }
     

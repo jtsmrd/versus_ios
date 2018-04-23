@@ -152,18 +152,20 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         if let image = profileImage {
             
             updateDispatchGroup.enter()
-            UserService.instance.uploadImage(
-            image: image,
-            bucketType: .profileImage) { (success) in
-                profileImageUploadSuccess = success
+                UserService.instance.uploadImage(
+                image: image,
+                bucketType: .profileImage
+            ) { (imageFilename) in
+                profileImageUploadSuccess = imageFilename != nil
                 updateDispatchGroup.leave()
             }
             
             updateDispatchGroup.enter()
             UserService.instance.uploadImage(
-            image: image,
-            bucketType: .profileImageSmall) { (success) in
-                profileImageSmallUploadSuccess = success
+                image: image,
+                bucketType: .profileImageSmall
+            ) { (imageFilename) in
+                profileImageSmallUploadSuccess = imageFilename != nil
                 updateDispatchGroup.leave()
             }
         }
@@ -173,9 +175,10 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
             updateDispatchGroup.enter()
             UserService.instance.uploadImage(
                 image: image,
-                bucketType: .profileBackgroundImage) { (success) in
-                    profileBackgroundImageUploadSuccess = success
-                    updateDispatchGroup.leave()
+                bucketType: .profileBackgroundImage
+            ) { (imageFilename) in
+                profileBackgroundImageUploadSuccess = imageFilename != nil
+                updateDispatchGroup.leave()
             }
         }
         

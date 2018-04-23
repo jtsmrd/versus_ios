@@ -25,7 +25,7 @@ class CompetitionEntryService {
         completion: @escaping SuccessCompletion) {
         
         let competitionEntry: AWSCompetitionEntry = AWSCompetitionEntry()
-        competitionEntry._id = UUID.init().uuidString
+        competitionEntry._id = UUID().uuidString
         competitionEntry._userPoolUserId = CurrentUser.userPoolUserId
         competitionEntry._createDate = Date().iso8601
         competitionEntry._categoryId = NSNumber(integerLiteral: categoryType.rawValue)
