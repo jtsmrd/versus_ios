@@ -23,8 +23,8 @@ class FollowerService {
         completion: @escaping SuccessErrorCompletion) {
         
         let follower: AWSFollower = AWSFollower()
-        follower._id = UUID.init().uuidString
-        follower._createDate = String(Date().timeIntervalSince1970)
+        follower._id = UUID().uuidString
+        follower._createDate = Date().iso8601
         follower._followedUserId = userToFollow.awsUser._userPoolUserId
         follower._followedUserDisplayName = userToFollow.awsUser._displayName
         follower._followedUserUsername = userToFollow.awsUser._username
@@ -51,8 +51,8 @@ class FollowerService {
         completion: @escaping SuccessErrorCompletion) {
         
         let follower: AWSFollower = AWSFollower()
-        follower._id = UUID.init().uuidString
-        follower._createDate = String(Date().timeIntervalSince1970)
+        follower._id = UUID().uuidString
+        follower._createDate = Date().iso8601
         follower._followedUserId = followerToFollow.awsFollower._followerUserId
         follower._followedUserDisplayName = followerToFollow.awsFollower._followerDisplayName
         follower._followedUserUsername = followerToFollow.awsFollower._followerUsername

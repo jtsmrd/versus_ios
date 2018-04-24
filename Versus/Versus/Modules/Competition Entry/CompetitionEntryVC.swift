@@ -10,6 +10,7 @@ import UIKit
 import Photos
 import AVKit
 import MobileCoreServices
+import SwiftyCam
 
 class CompetitionEntryVC: UIViewController {
 
@@ -147,6 +148,10 @@ class CompetitionEntryVC: UIViewController {
                 competitionDetailsVC.initData(image: nil, videoUrlAsset: videoUrlAsset)
             }
         }
+        else if let swiftyCamVC = segue.destination as? SwiftyCamVC {
+            swiftyCamVC.videoGravity = .resize
+            swiftyCamVC.cameraDelegate = self
+        }
     }
 }
 
@@ -244,5 +249,12 @@ extension CompetitionEntryVC: UICollectionViewDelegate {
                 }
             }
         }
+    }
+}
+
+extension CompetitionEntryVC: SwiftyCamViewControllerDelegate {
+    
+    func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
+        debugPrint("Photo taken")
     }
 }

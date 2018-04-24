@@ -24,7 +24,7 @@ class UserService {
         
         let user: AWSUser = AWSUser()
         user._username = username
-        user._createDate = String(Date().timeIntervalSince1970)
+        user._createDate = Date().iso8601
         user._userPoolUserId = userPoolUserId
         user._rankId = NSNumber(integerLiteral: 1)
         user._wins = NSNumber(integerLiteral: 0)
@@ -217,7 +217,7 @@ class UserService {
     
     func updateUser(user: AWSUser, completion: @escaping SuccessCompletion) {
         
-        user._updateDate = String(Date().timeIntervalSince1970)
+        user._updateDate = Date().iso8601
         let updateMapperConfig = AWSDynamoDBObjectMapperConfiguration()
         updateMapperConfig.saveBehavior = .updateSkipNullAttributes
         AWSDynamoDBObjectMapper.default().save(user, configuration: updateMapperConfig) { (error) in

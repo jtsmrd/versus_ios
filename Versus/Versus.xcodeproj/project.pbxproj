@@ -64,6 +64,8 @@
 		6BC1E12D20894B92005404E1 /* CompetitionEntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */; };
 		6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */; };
 		6BC1E13120895D7D005404E1 /* CategoryCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E13020895D7D005404E1 /* CategoryCollection.swift */; };
+		6BDE76DD208FE5FD009621D0 /* SwiftyCamVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDE76DC208FE5FD009621D0 /* SwiftyCamVC.swift */; };
+		6BDE76DF208FF0A3009621D0 /* SwiftyCamProgressButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDE76DE208FF0A3009621D0 /* SwiftyCamProgressButton.swift */; };
 		6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */; };
 		6BEACB59206EB3DC00C221A0 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB58206EB3DC00C221A0 /* LandingVC.swift */; };
 		6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB5A206EB3DD00C221A0 /* Login.storyboard */; };
@@ -131,6 +133,8 @@
 		6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntryVC.swift; sourceTree = "<group>"; };
 		6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionSubmittedVC.swift; sourceTree = "<group>"; };
 		6BC1E13020895D7D005404E1 /* CategoryCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCollection.swift; sourceTree = "<group>"; };
+		6BDE76DC208FE5FD009621D0 /* SwiftyCamVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyCamVC.swift; sourceTree = "<group>"; };
+		6BDE76DE208FF0A3009621D0 /* SwiftyCamProgressButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyCamProgressButton.swift; sourceTree = "<group>"; };
 		6BEACB53206EB3DC00C221A0 /* Versus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Versus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BEACB58206EB3DC00C221A0 /* LandingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
@@ -262,6 +266,7 @@
 				6BA4B0C5207431B800BC23A0 /* BorderView.swift */,
 				6B8316DE207D73070067EE0E /* UserRankView.swift */,
 				6B3DAEC72082DBE700946EB1 /* FollowButton.swift */,
+				6BDE76DE208FF0A3009621D0 /* SwiftyCamProgressButton.swift */,
 			);
 			path = "Custom Views";
 			sourceTree = "<group>";
@@ -307,6 +312,7 @@
 				6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */,
 				6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */,
 				6B2A22E9208AAAC500D65C9A /* PhotoLibraryCell.swift */,
+				6BDE76DC208FE5FD009621D0 /* SwiftyCamVC.swift */,
 			);
 			path = "Competition Entry";
 			sourceTree = "<group>";
@@ -493,6 +499,7 @@
 				"${BUILT_PRODUCTS_DIR}/AWSMobileClient/AWSMobileClient.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSS3/AWSS3.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSUserPoolsSignIn/AWSUserPoolsSignIn.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyCam/SwiftyCam.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -506,6 +513,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSMobileClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSS3.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSUserPoolsSignIn.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyCam.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -543,9 +551,11 @@
 				6BB8178C207A718400503620 /* AccountService.swift in Sources */,
 				6B85343C2080021F00985BDD /* AWSUser.swift in Sources */,
 				6B26563720854790001D733A /* AWSFollower.swift in Sources */,
+				6BDE76DF208FF0A3009621D0 /* SwiftyCamProgressButton.swift in Sources */,
 				6B079FF5208D429D003BBB87 /* CompetitionEntry.swift in Sources */,
 				6BC1E13120895D7D005404E1 /* CategoryCollection.swift in Sources */,
 				6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */,
+				6BDE76DD208FE5FD009621D0 /* SwiftyCamVC.swift in Sources */,
 				6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */,
 				6BC1E12D20894B92005404E1 /* CompetitionEntryVC.swift in Sources */,
 				6BB8178F207A842400503620 /* FollowSuggestionsVC.swift in Sources */,

@@ -188,8 +188,8 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
             if profileImageUploadSuccess && profileImageSmallUploadSuccess && profileBackgroundImageUploadSuccess {
                 
                 self.user.awsUser._displayName = self.displayNameTextField.text
-                self.user.awsUser._profileImageUpdateDate = String(Date().timeIntervalSince1970)
-                self.user.awsUser._profileBackgroundImageUpdateDate = String(Date().timeIntervalSince1970)
+                self.user.awsUser._profileImageUpdateDate = Date().iso8601
+                self.user.awsUser._profileBackgroundImageUpdateDate = Date().iso8601
                 
                 UserService.instance.updateUser(user: self.user.awsUser) { (success) in
                     if success {

@@ -12,4 +12,5 @@ target 'Versus' do
   pod 'AWSS3', '~> 2.6.13'
   pod 'AWSCognito', '~> 2.6.13'
   pod 'Toast-Swift', '~> 3.0.1'
+  pod 'SwiftyCam'
 end

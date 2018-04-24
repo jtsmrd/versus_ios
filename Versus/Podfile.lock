@@ -17,6 +17,7 @@ PODS:
   - AWSUserPoolsSignIn (2.6.14):
     - AWSAuthCore (= 2.6.14)
     - AWSCognitoIdentityProvider (= 2.6.14)
+  - SwiftyCam (2.6.0)
   - Toast-Swift (3.0.1)
 
 DEPENDENCIES:
@@ -25,6 +26,7 @@ DEPENDENCIES:
   - AWSMobileClient (~> 2.6.13)
   - AWSS3 (~> 2.6.13)
   - AWSUserPoolsSignIn (~> 2.6.13)
+  - SwiftyCam
   - Toast-Swift (~> 3.0.1)
 
 SPEC CHECKSUMS:
@@ -37,8 +39,9 @@ SPEC CHECKSUMS:
   AWSMobileClient: 4467dd19e5e50d9a115b37e7be3ffb689c0b285c
   AWSS3: a8cf89448c74637e34c46839ce5b5f7850f206e6
   AWSUserPoolsSignIn: 8c52ad458e6e6fbf385a41a6b5d35a99c707db37
+  SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
   Toast-Swift: ba0b01b095aada709d915f9beb1d38184a2721c3
 
-PODFILE CHECKSUM: b139cfffed67f3b51d20a0fe97d1cc21857a5332
+PODFILE CHECKSUM: 4a1555a0e13a7c0e4bfcdd7ecc60ba761d663c67
 
 COCOAPODS: 1.4.0
