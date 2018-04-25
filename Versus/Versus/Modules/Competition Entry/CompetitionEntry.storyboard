@@ -69,13 +69,100 @@
                                             <segue destination="NEw-HZ-Z9U" kind="embed" identifier="SwiftyCamVC" id="mkF-3K-ywJ"/>
                                         </connections>
                                     </containerView>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6dl-Sk-D7w" userLabel="Captured Image Container View">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="547"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="vQY-Db-Hfa">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="487"/>
+                                            </imageView>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1cS-2m-heX" userLabel="Edit Delete View">
+                                                <rect key="frame" x="0.0" y="487" width="375" height="60"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EYg-Er-dzu">
+                                                        <rect key="frame" x="316" y="14" width="43" height="32"/>
+                                                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="14"/>
+                                                        <state key="normal" title="Delete">
+                                                            <color key="titleColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="capturedImageDeleteButtonAction" destination="P5d-jn-Upu" eventType="touchUpInside" id="jvH-hZ-RHq"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="60" id="ISV-Rv-bVV"/>
+                                                    <constraint firstItem="EYg-Er-dzu" firstAttribute="centerY" secondItem="1cS-2m-heX" secondAttribute="centerY" id="Lvw-GM-43N"/>
+                                                    <constraint firstAttribute="trailing" secondItem="EYg-Er-dzu" secondAttribute="trailing" constant="16" id="vDU-Pr-da3"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="vQY-Db-Hfa" firstAttribute="leading" secondItem="6dl-Sk-D7w" secondAttribute="leading" id="5hV-rd-UlY"/>
+                                            <constraint firstAttribute="trailing" secondItem="1cS-2m-heX" secondAttribute="trailing" id="8Gu-Xc-5ub"/>
+                                            <constraint firstItem="vQY-Db-Hfa" firstAttribute="top" secondItem="6dl-Sk-D7w" secondAttribute="top" id="Iar-db-Whw"/>
+                                            <constraint firstItem="1cS-2m-heX" firstAttribute="top" secondItem="vQY-Db-Hfa" secondAttribute="bottom" id="Jrg-b9-z8P"/>
+                                            <constraint firstItem="1cS-2m-heX" firstAttribute="leading" secondItem="6dl-Sk-D7w" secondAttribute="leading" id="MCf-K1-u3a"/>
+                                            <constraint firstAttribute="trailing" secondItem="vQY-Db-Hfa" secondAttribute="trailing" id="jM5-YK-I0b"/>
+                                            <constraint firstAttribute="bottom" secondItem="1cS-2m-heX" secondAttribute="bottom" id="lZm-7R-qbG"/>
+                                        </constraints>
+                                    </view>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Tg-je-mYE" userLabel="Captured Video Container View">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="547"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vrC-TJ-LKe" userLabel="AVPlayer Container View">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="487"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="v3g-da-4jN" userLabel="Edit Delete View">
+                                                <rect key="frame" x="0.0" y="487" width="375" height="60"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LeK-Ss-i8a">
+                                                        <rect key="frame" x="316" y="14" width="43" height="32"/>
+                                                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="14"/>
+                                                        <state key="normal" title="Delete">
+                                                            <color key="titleColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="capturedVideoDeleteButtonAction" destination="P5d-jn-Upu" eventType="touchUpInside" id="IAN-Ti-D4C"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" secondItem="LeK-Ss-i8a" secondAttribute="trailing" constant="16" id="69R-6a-4Cn"/>
+                                                    <constraint firstAttribute="height" constant="60" id="780-RF-PMz"/>
+                                                    <constraint firstItem="LeK-Ss-i8a" firstAttribute="centerY" secondItem="v3g-da-4jN" secondAttribute="centerY" id="TeO-ov-lnZ"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="v3g-da-4jN" secondAttribute="bottom" id="025-of-aFJ"/>
+                                            <constraint firstItem="vrC-TJ-LKe" firstAttribute="leading" secondItem="6Tg-je-mYE" secondAttribute="leading" id="AIE-AR-ZIW"/>
+                                            <constraint firstAttribute="trailing" secondItem="vrC-TJ-LKe" secondAttribute="trailing" id="E26-gf-0Jc"/>
+                                            <constraint firstItem="v3g-da-4jN" firstAttribute="top" secondItem="vrC-TJ-LKe" secondAttribute="bottom" id="XhP-tU-vF2"/>
+                                            <constraint firstItem="v3g-da-4jN" firstAttribute="leading" secondItem="6Tg-je-mYE" secondAttribute="leading" id="YIE-p0-MZ5"/>
+                                            <constraint firstItem="vrC-TJ-LKe" firstAttribute="top" secondItem="6Tg-je-mYE" secondAttribute="top" id="fdT-Gd-2H9"/>
+                                            <constraint firstAttribute="trailing" secondItem="v3g-da-4jN" secondAttribute="trailing" id="mps-Wk-YwT"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="jPR-eI-hTJ" firstAttribute="leading" secondItem="hf6-3b-tEe" secondAttribute="leading" id="1qp-Y0-c6F"/>
                                     <constraint firstAttribute="bottom" secondItem="jPR-eI-hTJ" secondAttribute="bottom" id="EMU-GB-CfC"/>
+                                    <constraint firstAttribute="bottom" secondItem="6dl-Sk-D7w" secondAttribute="bottom" id="LMp-MN-L86"/>
+                                    <constraint firstAttribute="trailing" secondItem="6dl-Sk-D7w" secondAttribute="trailing" id="RKW-ds-qeV"/>
+                                    <constraint firstAttribute="trailing" secondItem="6Tg-je-mYE" secondAttribute="trailing" id="UjX-qH-xOo"/>
+                                    <constraint firstItem="6Tg-je-mYE" firstAttribute="leading" secondItem="hf6-3b-tEe" secondAttribute="leading" id="ViB-PY-kBc"/>
                                     <constraint firstAttribute="trailing" secondItem="jPR-eI-hTJ" secondAttribute="trailing" id="Vsw-9W-T9V"/>
                                     <constraint firstItem="jPR-eI-hTJ" firstAttribute="top" secondItem="hf6-3b-tEe" secondAttribute="top" id="dHc-kW-c1E"/>
+                                    <constraint firstItem="6Tg-je-mYE" firstAttribute="top" secondItem="hf6-3b-tEe" secondAttribute="top" id="nIH-2e-kEl"/>
+                                    <constraint firstItem="6dl-Sk-D7w" firstAttribute="leading" secondItem="hf6-3b-tEe" secondAttribute="leading" id="p7a-df-aQg"/>
+                                    <constraint firstItem="6dl-Sk-D7w" firstAttribute="top" secondItem="hf6-3b-tEe" secondAttribute="top" id="sT2-Ww-KXc"/>
+                                    <constraint firstAttribute="bottom" secondItem="6Tg-je-mYE" secondAttribute="bottom" id="sqx-pS-kDx"/>
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="meF-lg-hpP" userLabel="Upload Container View">
@@ -214,6 +301,10 @@
                     <navigationItem key="navigationItem" id="mgg-Ic-QBP"/>
                     <connections>
                         <outlet property="avPlayerContainerView" destination="yk6-qC-qTn" id="Qya-EO-rzT"/>
+                        <outlet property="capturedImageContainerView" destination="6dl-Sk-D7w" id="riE-yc-8VE"/>
+                        <outlet property="capturedImageImageView" destination="vQY-Db-Hfa" id="GU3-d2-ZiA"/>
+                        <outlet property="capturedVideoAVPlayerContainerView" destination="vrC-TJ-LKe" id="c62-OF-euC"/>
+                        <outlet property="capturedVideoContainerView" destination="6Tg-je-mYE" id="5Xh-cC-2ML"/>
                         <outlet property="competitionPictureImageView" destination="DOk-9l-xBH" id="5br-6u-Mq8"/>
                         <outlet property="photoLibraryCollectionView" destination="D8S-cg-AaP" id="F4B-bh-GBK"/>
                         <outlet property="recordContainerView" destination="hf6-3b-tEe" id="WfW-ae-apt"/>
@@ -609,17 +700,6 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JM1-GS-dJa">
-                                        <rect key="frame" x="309" y="10" width="50" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="nee-Mj-OOW"/>
-                                            <constraint firstAttribute="width" constant="50" id="q7e-7G-4xZ"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="16"/>
-                                        <state key="normal" title="0:23">
-                                            <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                    </button>
                                     <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n7S-d2-OLN">
                                         <rect key="frame" x="16" y="10" width="50" height="50"/>
                                         <constraints>
@@ -627,18 +707,27 @@
                                             <constraint firstAttribute="height" constant="50" id="mh7-eV-gZv"/>
                                         </constraints>
                                         <state key="normal" image="Flip-Camera"/>
+                                        <connections>
+                                            <action selector="switchCameraButtonAction" destination="NEw-HZ-Z9U" eventType="touchUpInside" id="XcF-9q-40X"/>
+                                        </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="343-cL-ooJ">
+                                        <rect key="frame" x="330" y="25.5" width="29" height="19.5"/>
+                                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="14"/>
+                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="L1H-dn-iX6" firstAttribute="height" secondItem="pl0-DL-icb" secondAttribute="height" multiplier="0.9" id="CyH-8i-HrV"/>
                                     <constraint firstItem="n7S-d2-OLN" firstAttribute="centerY" secondItem="pl0-DL-icb" secondAttribute="centerY" id="XMg-dZ-dzX"/>
                                     <constraint firstItem="L1H-dn-iX6" firstAttribute="centerY" secondItem="pl0-DL-icb" secondAttribute="centerY" id="YPU-7h-m09"/>
-                                    <constraint firstItem="JM1-GS-dJa" firstAttribute="centerY" secondItem="pl0-DL-icb" secondAttribute="centerY" id="dKC-MT-bW8"/>
-                                    <constraint firstAttribute="trailing" secondItem="JM1-GS-dJa" secondAttribute="trailing" constant="16" id="hCx-ev-D64"/>
+                                    <constraint firstAttribute="trailing" secondItem="343-cL-ooJ" secondAttribute="trailing" constant="16" id="bI9-sp-WyM"/>
                                     <constraint firstItem="L1H-dn-iX6" firstAttribute="centerX" secondItem="pl0-DL-icb" secondAttribute="centerX" id="k4m-UR-Im0"/>
                                     <constraint firstAttribute="height" constant="70" id="lPa-iN-cGc"/>
                                     <constraint firstItem="n7S-d2-OLN" firstAttribute="leading" secondItem="pl0-DL-icb" secondAttribute="leading" constant="16" id="rxd-cs-GI6"/>
+                                    <constraint firstItem="343-cL-ooJ" firstAttribute="centerY" secondItem="pl0-DL-icb" secondAttribute="centerY" id="sQn-2X-mm4"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -648,9 +737,11 @@
                             <constraint firstAttribute="trailing" secondItem="pl0-DL-icb" secondAttribute="trailing" id="b0o-uX-1tP"/>
                             <constraint firstItem="pl0-DL-icb" firstAttribute="leading" secondItem="HWk-ut-koK" secondAttribute="leading" id="c9W-pC-lcj"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="9c4-gj-Db4"/>
                     </view>
                     <connections>
                         <outlet property="cameraButton" destination="L1H-dn-iX6" id="P1m-U0-2Pa"/>
+                        <outlet property="recordTimeRemainingLabel" destination="343-cL-ooJ" id="vwE-CS-x79"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oDJ-zx-srJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

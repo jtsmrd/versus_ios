@@ -12,6 +12,10 @@ import SwiftyCam
 class SwiftyCamVC: SwiftyCamViewController {
 
     @IBOutlet weak var cameraButton: SwiftyCamProgressButton!
+    @IBOutlet weak var recordTimeRemainingLabel: UILabel!
+    
+    var seconds = 0
+    var timer: Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,7 +23,35 @@ class SwiftyCamVC: SwiftyCamViewController {
         cameraButton.delegate = self
     }
     
-
+    @IBAction func switchCameraButtonAction() {
+        switchCamera()
+    }
+    
+    func startRecordingCountDown() {
+        seconds = 59
+        timer = Timer.scheduledTimer(
+            timeInterval: 1,
+            target: self,
+            selector: #selector(SwiftyCamVC.updateTimeRemainingLabel),
+            userInfo: nil,
+            repeats: true
+        )
+        recordTimeRemainingLabel.text = "0:\(seconds)"
+    }
+    
+    func stopRecordingCountDown() {
+        timer.invalidate()
+    }
+    
+    func resetTimeRemainingLabel() {
+        recordTimeRemainingLabel.text = "1:00"
+    }
+    
+    @objc func updateTimeRemainingLabel() {
+        seconds -= 1
+        recordTimeRemainingLabel.text = "0:\(seconds)"
+    }
+    
     /*
     // MARK: - Navigation
 

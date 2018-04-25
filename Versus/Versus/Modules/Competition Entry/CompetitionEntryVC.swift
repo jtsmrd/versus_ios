@@ -16,6 +16,10 @@ class CompetitionEntryVC: UIViewController {
 
     
     @IBOutlet weak var recordContainerView: UIView!
+    @IBOutlet weak var capturedImageContainerView: UIView!
+    @IBOutlet weak var capturedImageImageView: UIImageView!
+    @IBOutlet weak var capturedVideoContainerView: UIView!
+    @IBOutlet weak var capturedVideoAVPlayerContainerView: UIView!
     @IBOutlet weak var uploadContainerView: UIView!
     @IBOutlet weak var avPlayerContainerView: UIView!
     @IBOutlet weak var competitionPictureImageView: UIImageView!
@@ -26,15 +30,19 @@ class CompetitionEntryVC: UIViewController {
     var mediaAssets = [PHAsset]()
     var selectedImage: UIImage?
     var selectedVideoAVUrlAsset: AVURLAsset?
-    var avPlayerVC: AVPlayerViewController!
-    var avPlayer: AVPlayer!
+    var uploadAVPlayerVC: AVPlayerViewController!
+    var uploadAVPlayer: AVPlayer!
+    var recordAVPlayerVC: AVPlayerViewController!
+    var recordAVPlayer: AVPlayer!
     var imagePicker = UIImagePickerController()
+    var swiftyCamVC: SwiftyCamVC!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureAVPlayer()
+        configureRecordAVPlayer()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -79,6 +87,17 @@ class CompetitionEntryVC: UIViewController {
         displayImagePicker()
     }
     
+    @IBAction func capturedImageDeleteButtonAction() {
+        selectedImage = nil
+        capturedImageContainerView.isHidden = true
+    }
+    
+    @IBAction func capturedVideoDeleteButtonAction() {
+        selectedVideoAVUrlAsset = nil
+        capturedVideoContainerView.isHidden = true
+    }
+    
+    
     
     private func getMedia() {
         let fetchOptions = PHFetchOptions()
@@ -110,12 +129,21 @@ class CompetitionEntryVC: UIViewController {
     }
     
     private func configureAVPlayer() {
-        avPlayer = AVPlayer()
-        avPlayerVC = AVPlayerViewController()
-        avPlayerVC.player = avPlayer
-        avPlayerVC.view.frame = avPlayerContainerView.frame
-        addChildViewController(avPlayerVC)
-        avPlayerContainerView.addSubview(avPlayerVC.view)
+        uploadAVPlayer = AVPlayer()
+        uploadAVPlayerVC = AVPlayerViewController()
+        uploadAVPlayerVC.player = uploadAVPlayer
+        uploadAVPlayerVC.view.frame = avPlayerContainerView.frame
+        addChildViewController(uploadAVPlayerVC)
+        avPlayerContainerView.addSubview(uploadAVPlayerVC.view)
+    }
+    
+    private func configureRecordAVPlayer() {
+        recordAVPlayer = AVPlayer()
+        recordAVPlayerVC = AVPlayerViewController()
+        recordAVPlayerVC.player = recordAVPlayer
+        recordAVPlayerVC.view.frame = capturedVideoAVPlayerContainerView.frame
+        addChildViewController(recordAVPlayerVC)
+        capturedVideoAVPlayerContainerView.addSubview(recordAVPlayerVC.view)
     }
 
     private func displayImagePicker() {
@@ -149,7 +177,9 @@ class CompetitionEntryVC: UIViewController {
             }
         }
         else if let swiftyCamVC = segue.destination as? SwiftyCamVC {
-            swiftyCamVC.videoGravity = .resize
+            self.swiftyCamVC = swiftyCamVC
+            swiftyCamVC.videoGravity = .resizeAspectFill
+            swiftyCamVC.maximumVideoDuration = 60
             swiftyCamVC.cameraDelegate = self
         }
     }
@@ -177,7 +207,7 @@ extension CompetitionEntryVC: UIImagePickerControllerDelegate, UINavigationContr
             if let videoUrl = info[UIImagePickerControllerMediaURL] as? URL {
                 selectedVideoAVUrlAsset = AVURLAsset(url: videoUrl)
                 selectedImage = nil
-                avPlayer.replaceCurrentItem(with: AVPlayerItem(asset: selectedVideoAVUrlAsset!))
+                uploadAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: selectedVideoAVUrlAsset!))
                 DispatchQueue.main.async {
                     self.avPlayerContainerView.isHidden = false
                 }
@@ -227,7 +257,7 @@ extension CompetitionEntryVC: UICollectionViewDelegate {
                 if let videoAsset = videoAsset as? AVURLAsset {
                     self.selectedImage = nil
                     self.selectedVideoAVUrlAsset = videoAsset
-                    self.avPlayer.replaceCurrentItem(with: AVPlayerItem(asset: videoAsset))
+                    self.uploadAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: videoAsset))
                     DispatchQueue.main.async {
                         self.avPlayerContainerView.isHidden = false
                     }
@@ -252,9 +282,37 @@ extension CompetitionEntryVC: UICollectionViewDelegate {
     }
 }
 
+
+// MARK: - SwiftyCamViewControllerDelegate
+
 extension CompetitionEntryVC: SwiftyCamViewControllerDelegate {
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
-        debugPrint("Photo taken")
+        selectedImage = photo
+        DispatchQueue.main.async {
+            self.capturedImageImageView.image = self.selectedImage
+            self.capturedImageContainerView.isHidden = false
+        }
+    }
+    
+    func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
+        selectedVideoAVUrlAsset = AVURLAsset(url: url)
+        recordAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: selectedVideoAVUrlAsset!))
+        DispatchQueue.main.async {
+            self.capturedVideoContainerView.isHidden = false
+        }
+        swiftyCamVC.resetTimeRemainingLabel()
+    }
+    
+    func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {
+        
+    }
+    
+    func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
+        swiftyCamVC.startRecordingCountDown()
+    }
+    
+    func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
+        swiftyCamVC.stopRecordingCountDown()
     }
 }
