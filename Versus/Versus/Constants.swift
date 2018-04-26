@@ -57,6 +57,7 @@ typealias SuccessErrorCompletion = (_ success: Bool, _ error: CustomError?) -> V
 let FOLLOWER_CELL = "FollowerCell"
 let SEARCH_USER_CELL = "SearchUserCell"
 let CATEGORY_CELL = "CategoryCell"
+let COMPETITION_CELL = "CompetitionCell"
 
 
 // CollectionViewCell Identifiers

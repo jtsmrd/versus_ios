@@ -24,6 +24,7 @@ class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _competitionTypeId: NSNumber?
     var _createDate: String?
     var _imageId: String?
+    var _isFeatured: NSNumber?
     var _matchDate: String?
     var _userPoolUserId: String?
     var _videoId: String?
@@ -47,6 +48,7 @@ class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_competitionTypeId" : "competitionTypeId",
                "_createDate" : "createDate",
                "_imageId" : "imageId",
+               "_isFeatured" : "isFeatured",
                "_matchDate" : "matchDate",
                "_userPoolUserId" : "userPoolUserId",
                "_videoId" : "videoId",
