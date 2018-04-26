@@ -26,11 +26,13 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _startDate: String?
     var _status: String?
     var _user1ImageId: String?
+    var _user1RankId: NSNumber?
     var _user1Username: String?
     var _user1VideoId: String?
     var _user1VideoPreviewImageId: String?
     var _user1userPoolUserId: String?
     var _user2ImageId: String?
+    var _user2RankId: NSNumber?
     var _user2Username: String?
     var _user2VideoId: String?
     var _user2VideoPreviewImageId: String?
@@ -56,11 +58,13 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_startDate" : "startDate",
                "_status" : "status",
                "_user1ImageId" : "user1ImageId",
+               "_user1RankId" : "user1RankId",
                "_user1Username" : "user1Username",
                "_user1VideoId" : "user1VideoId",
                "_user1VideoPreviewImageId" : "user1VideoPreviewImageId",
                "_user1userPoolUserId" : "user1userPoolUserId",
                "_user2ImageId" : "user2ImageId",
+               "_user2RankId" : "user2RankId",
                "_user2Username" : "user2Username",
                "_user2VideoId" : "user2VideoId",
                "_user2VideoPreviewImageId" : "user2VideoPreviewImageId",

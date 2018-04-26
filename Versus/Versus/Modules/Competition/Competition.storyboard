@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EvG-fF-hME">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--View CompetitionVC-->
         <scene sceneID="YBd-pj-cbt">
             <objects>
-                <viewController id="EvG-fF-hME" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewCompetitionVC" hidesBottomBarWhenPushed="YES" id="EvG-fF-hME" customClass="ViewCompetitionVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NTF-ax-Jcc">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HNU-GF-yfV" userLabel="Competition Image Container View">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HNU-GF-yfV" userLabel="Competition Image Container View">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Rck-Of-7qU">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Rck-Of-7qU">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                     </imageView>
                                 </subviews>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="Rck-Of-7qU" secondAttribute="bottom" id="3p9-dp-yZw"/>
                                     <constraint firstItem="Rck-Of-7qU" firstAttribute="top" secondItem="HNU-GF-yfV" secondAttribute="top" id="JOh-Ph-cdB"/>
@@ -34,9 +32,8 @@
                                     <constraint firstAttribute="trailing" secondItem="Rck-Of-7qU" secondAttribute="trailing" id="VOp-Uh-9iU"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RdB-l6-0Nz" userLabel="Competition Video Container View">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RdB-l6-0Nz" userLabel="Competition Video Container View">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QOg-iQ-LKp">
                                 <rect key="frame" x="16" y="36" width="40" height="40"/>
@@ -45,6 +42,9 @@
                                     <constraint firstAttribute="width" constant="40" id="duQ-vP-fcX"/>
                                 </constraints>
                                 <state key="normal" image="Back"/>
+                                <connections>
+                                    <action selector="backButtonAction" destination="EvG-fF-hME" eventType="touchUpInside" id="qlk-Dm-mSH"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQR-ET-VFn">
                                 <rect key="frame" x="329" y="40" width="30" height="36"/>
@@ -52,6 +52,9 @@
                                 <state key="normal" title="•••">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="optionsButtonAction" destination="EvG-fF-hME" eventType="touchUpInside" id="Dhy-0M-3dk"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2:16:35" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="79S-ie-ito" userLabel="Competition Time Remaining Labe">
                                 <rect key="frame" x="152" y="44" width="70.5" height="25"/>
@@ -66,6 +69,9 @@
                                     <constraint firstAttribute="width" constant="40" id="mE8-v8-Dpq"/>
                                 </constraints>
                                 <state key="normal" image="Comments"/>
+                                <connections>
+                                    <action selector="commentButtonAction" destination="EvG-fF-hME" eventType="touchUpInside" id="WvA-5P-PX8"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="94x-mQ-TV5" userLabel="Vote Button">
                                 <rect key="frame" x="319" y="611" width="40" height="40"/>
@@ -74,6 +80,9 @@
                                     <constraint firstAttribute="height" constant="40" id="ZiJ-U9-QY4"/>
                                 </constraints>
                                 <state key="normal" image="Voting-Star"/>
+                                <connections>
+                                    <action selector="voteButtonAction" destination="EvG-fF-hME" eventType="touchUpInside" id="qOF-lO-tZJ"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4278" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nmp-w2-quY" userLabel="Comments Label">
                                 <rect key="frame" x="22" y="594.5" width="28" height="16.5"/>
@@ -88,7 +97,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="PiA-2n-6Vo" userLabel="User1 Info Stack View">
-                                <rect key="frame" x="114.5" y="556" width="63.5" height="15"/>
+                                <rect key="frame" x="117.5" y="556" width="63.5" height="15"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rWI-7j-8bA">
                                         <rect key="frame" x="0.0" y="0.0" width="15" height="15"/>
@@ -107,7 +116,7 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bo3-O3-fIH" userLabel="User1 View" customClass="CircleView" customModule="Versus" customModuleProvider="target">
-                                <rect key="frame" x="114.5" y="571" width="80" height="80"/>
+                                <rect key="frame" x="117.5" y="571" width="80" height="80"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="3tN-xs-K0h">
                                         <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
@@ -129,7 +138,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="J07-yD-HT6" userLabel="User2 Info Stack View">
-                                <rect key="frame" x="187" y="576" width="63.5" height="15"/>
+                                <rect key="frame" x="184" y="576" width="63.5" height="15"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g8A-K5-RkL">
                                         <rect key="frame" x="0.0" y="0.0" width="15" height="15"/>
@@ -148,7 +157,7 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SbW-Vt-5xg" userLabel="User2 View" customClass="CircleView" customModule="Versus" customModuleProvider="target">
-                                <rect key="frame" x="190.5" y="591" width="60" height="60"/>
+                                <rect key="frame" x="187.5" y="591" width="60" height="60"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="r75-0t-xfx">
                                         <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
@@ -170,7 +179,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.0" green="0.76712721589999999" blue="0.70759445430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="HNU-GF-yfV" firstAttribute="leading" secondItem="Pyx-Ev-z6S" secondAttribute="leading" id="2OT-0X-rfo"/>
                             <constraint firstItem="QOg-iQ-LKp" firstAttribute="top" secondItem="Pyx-Ev-z6S" secondAttribute="top" constant="16" id="3EZ-WK-Lyw"/>
@@ -185,10 +194,10 @@
                             <constraint firstItem="Nmp-w2-quY" firstAttribute="centerX" secondItem="Rjz-on-aTf" secondAttribute="centerX" id="X7e-PR-Qy1"/>
                             <constraint firstItem="Pyx-Ev-z6S" firstAttribute="trailing" secondItem="HNU-GF-yfV" secondAttribute="trailing" id="ZAf-eW-kH1"/>
                             <constraint firstItem="QOg-iQ-LKp" firstAttribute="leading" secondItem="Pyx-Ev-z6S" secondAttribute="leading" constant="16" id="ZFc-eW-J7S"/>
-                            <constraint firstItem="SbW-Vt-5xg" firstAttribute="centerX" secondItem="NTF-ax-Jcc" secondAttribute="centerX" multiplier="1.175" id="bpm-87-tta"/>
+                            <constraint firstItem="SbW-Vt-5xg" firstAttribute="centerX" secondItem="NTF-ax-Jcc" secondAttribute="centerX" constant="30" id="bpm-87-tta"/>
                             <constraint firstItem="Rjz-on-aTf" firstAttribute="top" secondItem="Nmp-w2-quY" secondAttribute="bottom" id="cvj-tb-uXs"/>
                             <constraint firstItem="RdB-l6-0Nz" firstAttribute="leading" secondItem="Pyx-Ev-z6S" secondAttribute="leading" id="dIY-hK-AFd"/>
-                            <constraint firstItem="bo3-O3-fIH" firstAttribute="centerX" secondItem="NTF-ax-Jcc" secondAttribute="centerX" multiplier="0.825" id="dUw-up-HOu"/>
+                            <constraint firstItem="bo3-O3-fIH" firstAttribute="centerX" secondItem="NTF-ax-Jcc" secondAttribute="centerX" constant="-30" id="dUw-up-HOu"/>
                             <constraint firstItem="RdB-l6-0Nz" firstAttribute="trailing" secondItem="Pyx-Ev-z6S" secondAttribute="trailing" id="ePG-n3-MMe"/>
                             <constraint firstItem="PiA-2n-6Vo" firstAttribute="leading" secondItem="bo3-O3-fIH" secondAttribute="leading" id="fhW-V9-V8e"/>
                             <constraint firstItem="94x-mQ-TV5" firstAttribute="top" secondItem="jmX-wX-rMD" secondAttribute="bottom" id="gJA-Td-imO"/>
@@ -205,6 +214,23 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Pyx-Ev-z6S"/>
                     </view>
+                    <connections>
+                        <outlet property="competitionImageContainerView" destination="HNU-GF-yfV" id="KKT-jx-bbx"/>
+                        <outlet property="competitionImageImageView" destination="Rck-Of-7qU" id="IdG-5W-sVL"/>
+                        <outlet property="competitionTimeRemainingLabel" destination="79S-ie-ito" id="Zus-no-R1e"/>
+                        <outlet property="competitionVideoContainerView" destination="RdB-l6-0Nz" id="tAl-in-bsn"/>
+                        <outlet property="numberOfCommentsLabel" destination="Nmp-w2-quY" id="s3l-IR-umD"/>
+                        <outlet property="numberOfVotesLabel" destination="jmX-wX-rMD" id="KwM-ml-kup"/>
+                        <outlet property="user1ProfileImageView" destination="3tN-xs-K0h" id="Ikb-vQ-ZUE"/>
+                        <outlet property="user1RankImageView" destination="rWI-7j-8bA" id="Fll-bx-1ZS"/>
+                        <outlet property="user1SelectorView" destination="bo3-O3-fIH" id="Ca2-2n-UsM"/>
+                        <outlet property="user1UsernameLabel" destination="E14-gd-NxZ" id="UaP-JS-WiE"/>
+                        <outlet property="user2ProfileImageView" destination="r75-0t-xfx" id="x6u-ZN-wFJ"/>
+                        <outlet property="user2RankImageView" destination="g8A-K5-RkL" id="QMk-v3-OLU"/>
+                        <outlet property="user2SelectorView" destination="SbW-Vt-5xg" id="Msm-2n-wiv"/>
+                        <outlet property="user2UsernameLabel" destination="mAs-hT-iO2" id="GWz-Jr-NWY"/>
+                        <outlet property="voteButton" destination="94x-mQ-TV5" id="Dwa-nJ-awX"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="T6J-E7-BSX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

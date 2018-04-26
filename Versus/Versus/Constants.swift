@@ -42,6 +42,7 @@ let SHOW_PROFILE = "ProfileVC"
 let SHOW_FOLLOWERS = "FollowerVC"
 let SHOW_COMPETITION_DETAILS = "CompetitionDetailsVC"
 let SHOW_COMPETITION_SUBMITTED = "CompetitionSubmittedVC"
+let SHOW_COMPETITION = "ViewCompetitionVC"
 
 let UNWIND_TO_LANDING = "LandingVC"
 
@@ -70,3 +71,9 @@ let PHOTO_LIBRARY_CELL = "PhotoLibraryCell"
 
 let CHOOSE_USERNAME_VC = "ChooseUsernameVC"
 let COMPETITION_ENTRY_VC = "CompetitionEntryVC"
+let VIEW_COMPETITION_VC = "ViewCompetitionVC"
+
+
+// Storyboards
+
+let COMPETITION = "Competition"

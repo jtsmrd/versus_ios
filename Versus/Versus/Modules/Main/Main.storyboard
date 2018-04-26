@@ -77,8 +77,8 @@
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dgl-Hm-Dwo">
                                                             <rect key="frame" x="0.0" y="0.0" width="187.5" height="25"/>
                                                             <subviews>
-                                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="lW1-Di-2AE">
-                                                                    <rect key="frame" x="27" y="0.0" width="135" height="25"/>
+                                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="lW1-Di-2AE">
+                                                                    <rect key="frame" x="15" y="0.0" width="159" height="25"/>
                                                                     <subviews>
                                                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Star" translatesAutoresizingMaskIntoConstraints="NO" id="x6H-Ol-v7b">
                                                                             <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
@@ -87,13 +87,13 @@
                                                                             </constraints>
                                                                         </imageView>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@Username1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMC-4c-i9o">
-                                                                            <rect key="frame" x="29" y="0.0" width="73" height="25"/>
+                                                                            <rect key="frame" x="41" y="0.0" width="73" height="25"/>
                                                                             <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="12"/>
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3245" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EQt-7u-Kgb">
-                                                                            <rect key="frame" x="106" y="0.0" width="29" height="25"/>
+                                                                            <rect key="frame" x="130" y="0.0" width="29" height="25"/>
                                                                             <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="12"/>
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <nil key="highlightedColor"/>
@@ -114,8 +114,8 @@
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bpJ-GR-kBa">
                                                             <rect key="frame" x="187.5" y="-0.5" width="187.5" height="25"/>
                                                             <subviews>
-                                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="tjD-kU-EUh">
-                                                                    <rect key="frame" x="26.5" y="0.0" width="135" height="25"/>
+                                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="tjD-kU-EUh">
+                                                                    <rect key="frame" x="14.5" y="0.0" width="159" height="25"/>
                                                                     <subviews>
                                                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Star" translatesAutoresizingMaskIntoConstraints="NO" id="Mbs-vW-ZOB">
                                                                             <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
@@ -124,13 +124,13 @@
                                                                             </constraints>
                                                                         </imageView>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@Username2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="58i-Hu-tgh">
-                                                                            <rect key="frame" x="29" y="0.0" width="73" height="25"/>
+                                                                            <rect key="frame" x="41" y="0.0" width="73" height="25"/>
                                                                             <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="12"/>
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3245" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D7A-Sc-02U">
-                                                                            <rect key="frame" x="106" y="0.0" width="29" height="25"/>
+                                                                            <rect key="frame" x="130" y="0.0" width="29" height="25"/>
                                                                             <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="12"/>
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <nil key="highlightedColor"/>
@@ -186,6 +186,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="categoryBarView" destination="OEE-70-wbq" id="VSl-xa-hc4"/>
                                             <outlet property="competitionCategoryImageView" destination="64P-ri-6Il" id="cHa-9a-s8T"/>
                                             <outlet property="user1ImageView" destination="c7i-hJ-dkf" id="7r3-U3-KHX"/>
                                             <outlet property="user1RankImageView" destination="x6H-Ol-v7b" id="Vbz-eU-akw"/>
@@ -217,16 +218,14 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="mKp-7u-JdA"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="" image="Home" id="OLh-hk-SFt">
-                        <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-8"/>
-                    </tabBarItem>
+                    <navigationItem key="navigationItem" id="sQC-K6-9JY"/>
                     <connections>
                         <outlet property="featuredTableView" destination="bwf-CS-EhA" id="ven-0o-Yj2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vdf-OG-Qjq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="700" y="-963"/>
+            <point key="canvasLocation" x="1628" y="-966"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="PKr-AB-YfP">
@@ -464,7 +463,7 @@
                         <color key="selectedImageTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="V6S-tM-lph" kind="relationship" relationship="viewControllers" id="EjQ-eS-6Xl"/>
+                        <segue destination="xYr-Fh-bY7" kind="relationship" relationship="viewControllers" id="EjQ-eS-6Xl"/>
                         <segue destination="9um-jP-t5V" kind="relationship" relationship="viewControllers" id="cCu-j7-Wd4"/>
                         <segue destination="KWr-tb-YD6" kind="relationship" relationship="viewControllers" id="kJs-RN-0Vw"/>
                         <segue destination="F3k-dD-LEZ" kind="relationship" relationship="viewControllers" id="kne-x6-fZp"/>
@@ -530,6 +529,26 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tC4-Yy-Ra5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="700" y="601"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="OVw-ui-TC9">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="xYr-Fh-bY7" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="" image="Home" id="OLh-hk-SFt">
+                        <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-8"/>
+                    </tabBarItem>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="4NM-wF-Zwz">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="V6S-tM-lph" kind="relationship" relationship="rootViewController" id="dat-c2-XwB"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nQ5-RU-Dci" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="700" y="-965"/>
         </scene>
     </scenes>
     <resources>

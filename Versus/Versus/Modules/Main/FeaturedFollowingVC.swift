@@ -37,16 +37,23 @@ class FeaturedFollowingVC: UIViewController {
         }
     }
 
-    /*
+    private func showCompetition(competition: Competition) {
+        
+        if let viewCompetitionVC = UIStoryboard(name: COMPETITION, bundle: nil).instantiateInitialViewController() as? ViewCompetitionVC {
+            viewCompetitionVC.initData(competition: competition)
+            navigationController?.pushViewController(viewCompetitionVC, animated: true)
+        }
+    }
+    
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if let viewCompetitionVC = segue.destination as? ViewCompetitionVC, let competition = sender as? Competition {
+            viewCompetitionVC.initData(competition: competition)
+        }
     }
-    */
-
 }
 
 extension FeaturedFollowingVC: UITableViewDataSource {
@@ -70,4 +77,8 @@ extension FeaturedFollowingVC: UITableViewDataSource {
 
 extension FeaturedFollowingVC: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        showCompetition(competition: featuredCompetitions[indexPath.row])
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
 }

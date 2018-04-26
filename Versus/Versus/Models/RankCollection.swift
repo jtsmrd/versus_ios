@@ -6,7 +6,7 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class RankCollection {
     
@@ -25,6 +25,13 @@ class RankCollection {
         let rank4 = Rank(id: 4, imageName: "Legend", title: "Legend", requiredWins: 300, requiredVotes: 50000)
         let rank5 = Rank(id: 5, imageName: "Hall-of-Fame", title: "Hall of Fame", requiredWins: 500, requiredVotes: 100000)
         ranks.append(contentsOf: [rank5, rank4, rank3, rank2, rank1])
+    }
+    
+    func rankIconFor(rankId: Int) -> UIImage? {
+        if let rank = ranks.first(where: {$0.id == rankId}) {
+            return UIImage(named: rank.imageName)
+        }
+        return nil
     }
 }
 

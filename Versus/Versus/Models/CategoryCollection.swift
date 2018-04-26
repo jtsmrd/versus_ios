@@ -28,6 +28,17 @@ class CategoryCollection {
         let category7 = Category(categoryType: .fashion, title: "Fashion", iconName: "Fashion", backgroundColor: #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1))
         categories.append(contentsOf: [category1, category2, category3, category4, category5, category6, category7])
     }
+    
+    func categoryIconFor(categoryTypeId: Int) -> UIImage? {
+        if let category = categories.first(where: {$0.categoryType.rawValue == categoryTypeId }) {
+            return UIImage(named: category.iconName)
+        }
+        return nil
+    }
+    
+    func categoryColorFor(categoryTypeId: Int) -> UIColor {
+        return categories.first(where: {$0.categoryType.rawValue == categoryTypeId })!.backgroundColor
+    }
 }
 
 enum CategoryType: Int {

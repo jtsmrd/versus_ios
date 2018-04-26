@@ -12,6 +12,7 @@ class CompetitionCell: UITableViewCell {
 
     
     @IBOutlet weak var versusCircleView: CircleView!
+    @IBOutlet weak var categoryBarView: UIView!
     @IBOutlet weak var user1ImageView: UIImageView!
     @IBOutlet weak var user1RankImageView: UIImageView!
     @IBOutlet weak var user1UsernameLabel: UILabel!
@@ -36,30 +37,26 @@ class CompetitionCell: UITableViewCell {
     
     func configureCell(competition: Competition) {
         
-        S3BucketService.instance.downloadImage(imageName: competition.awsCompetition._user1ImageId!, bucketType: .competitionImage) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download user1 competition image: \(error.localizedDescription)")
-            }
-            else if let image = image {
-                DispatchQueue.main.async {
-                    self.user1ImageView.image = image
-                }
+        competition.getUser1CompetitionImage { (competitionImage) in
+            DispatchQueue.main.async {
+                self.user1ImageView.image = competitionImage
             }
         }
         
-        S3BucketService.instance.downloadImage(imageName: competition.awsCompetition._user2ImageId!, bucketType: .competitionImage) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download user1 competition image: \(error.localizedDescription)")
-            }
-            else if let image = image {
-                DispatchQueue.main.async {
-                    self.user2ImageView.image = image
-                }
+        competition.getUser2CompetitionImage { (competitionImage) in
+            DispatchQueue.main.async {
+                self.user2ImageView.image = competitionImage
             }
         }
         
-        user1UsernameLabel.text = "@\(competition.awsCompetition._user1Username!)"
+        versusCircleView._backgroundColor = competition.competitionCategoryColor
+        categoryBarView.backgroundColor = competition.competitionCategoryColor
+        competitionCategoryImageView.image = competition.competitionCategoryIconImage
         
-        user2UsernameLabel.text = "@\(competition.awsCompetition._user2Username!)"
+        user1RankImageView.image = competition.user1RankImage
+        user1UsernameLabel.text = competition.user1Username
+        
+        user2RankImageView.image = competition.user2RankImage
+        user2UsernameLabel.text = competition.user2Username
     }
 }
