@@ -15,6 +15,8 @@
 		6B079FF3208D41DE003BBB87 /* AWSCompetitionEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF2208D41DE003BBB87 /* AWSCompetitionEntry.swift */; };
 		6B079FF5208D429D003BBB87 /* CompetitionEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF4208D429D003BBB87 /* CompetitionEntry.swift */; };
 		6B079FF7208D4315003BBB87 /* CompetitionEntryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF6208D4315003BBB87 /* CompetitionEntryService.swift */; };
+		6B160C6B209231F2003F2F9D /* Competition.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B160C6A209231F2003F2F9D /* Competition.storyboard */; };
+		6B160C6D209236B7003F2F9D /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B160C6C209236B7003F2F9D /* CircleView.swift */; };
 		6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1ABF1D2072E819005A0DDB /* Main.storyboard */; };
 		6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B29992083CE230070848C /* StringExtensions.swift */; };
 		6B26563720854790001D733A /* AWSFollower.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B26563620854790001D733A /* AWSFollower.swift */; };
@@ -83,6 +85,8 @@
 		6B079FF2208D41DE003BBB87 /* AWSCompetitionEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSCompetitionEntry.swift; sourceTree = "<group>"; };
 		6B079FF4208D429D003BBB87 /* CompetitionEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntry.swift; sourceTree = "<group>"; };
 		6B079FF6208D4315003BBB87 /* CompetitionEntryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntryService.swift; sourceTree = "<group>"; };
+		6B160C6A209231F2003F2F9D /* Competition.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Competition.storyboard; sourceTree = "<group>"; };
+		6B160C6C209236B7003F2F9D /* CircleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
 		6B1ABF1D2072E819005A0DDB /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		6B1B29992083CE230070848C /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		6B26563620854790001D733A /* AWSFollower.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSFollower.swift; sourceTree = "<group>"; };
@@ -171,6 +175,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6B160C69209231DB003F2F9D /* Competition */ = {
+			isa = PBXGroup;
+			children = (
+				6B160C6A209231F2003F2F9D /* Competition.storyboard */,
+			);
+			path = Competition;
+			sourceTree = "<group>";
+		};
 		6B334FCF20816006005B010F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -232,6 +244,7 @@
 		6BAA03E8206F1D270032F7F9 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				6B160C69209231DB003F2F9D /* Competition */,
 				6BC1E12520894266005404E1 /* Competition Entry */,
 				6BAA03E9206F1D440032F7F9 /* Login */,
 				6BC1E12420894204005404E1 /* Main */,
@@ -260,6 +273,7 @@
 		6BAA03F0206F1EEA0032F7F9 /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
+				6B160C6C209236B7003F2F9D /* CircleView.swift */,
 				6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */,
 				6BA4B0C120742F4900BC23A0 /* CircleButton.swift */,
 				6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */,
@@ -437,6 +451,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B160C6B209231F2003F2F9D /* Competition.storyboard in Resources */,
 				6B8316E8207D9DFD0067EE0E /* Profile.storyboard in Resources */,
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
 				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
@@ -568,6 +583,7 @@
 				6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */,
 				6BC1E12B20894B54005404E1 /* CategoryCell.swift in Sources */,
 				6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */,
+				6B160C6D209236B7003F2F9D /* CircleView.swift in Sources */,
 				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
 				6B85343E208020C100985BDD /* User.swift in Sources */,
 				6B334FD120816032005B010F /* CustomError.swift in Sources */,
