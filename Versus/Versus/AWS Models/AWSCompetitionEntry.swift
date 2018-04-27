@@ -24,6 +24,7 @@ class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _competitionTypeId: NSNumber?
     var _createDate: String?
     var _imageId: String?
+    var _imageSmallId: String?
     var _isFeatured: NSNumber?
     var _matchDate: String?
     var _userPoolUserId: String?
@@ -31,6 +32,7 @@ class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _username: String?
     var _videoId: String?
     var _videoPreviewImageId: String?
+    var _videoPreviewImageSmallId: String?
     
     class func dynamoDBTableName() -> String {
 
@@ -50,6 +52,7 @@ class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_competitionTypeId" : "competitionTypeId",
                "_createDate" : "createDate",
                "_imageId" : "imageId",
+               "_imageSmallId" : "imageSmallId",
                "_isFeatured" : "isFeatured",
                "_matchDate" : "matchDate",
                "_userPoolUserId" : "userPoolUserId",
@@ -57,6 +60,7 @@ class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_username" : "username",
                "_videoId" : "videoId",
                "_videoPreviewImageId" : "videoPreviewImageId",
+               "_videoPreviewImageSmallId" : "videoPreviewImageSmallId",
         ]
     }
 }

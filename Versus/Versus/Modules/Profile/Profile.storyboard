@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -621,7 +620,7 @@
                                             <constraint firstAttribute="height" constant="90" id="0AS-eg-z0w"/>
                                         </constraints>
                                     </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile" translatesAutoresizingMaskIntoConstraints="NO" id="CiM-99-bWh" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="CiM-99-bWh" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
                                         <rect key="frame" x="30" y="30" width="115" height="115"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="115" id="IG7-EE-De0"/>
@@ -629,7 +628,7 @@
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="color" keyPath="_backgroundColor">
-                                                <color key="value" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <color key="value" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </imageView>
@@ -1079,5 +1078,6 @@
         <image name="Profile" width="34" height="34"/>
         <image name="Wins-Trophy" width="201" height="200"/>
         <image name="back_icon" width="200" height="200"/>
+        <image name="default-profile" width="376" height="376"/>
     </resources>
 </document>

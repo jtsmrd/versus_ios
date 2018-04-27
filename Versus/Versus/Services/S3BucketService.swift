@@ -17,8 +17,10 @@ enum S3BucketType {
     case profileImageSmall
     case profileBackgroundImage
     case competitionImage
+    case competitionImageSmall
     case competitionVideo
     case competitionVideoPreviewImage
+    case competitionVideoPreviewImageSmall
 }
 
 class S3BucketService {
@@ -41,7 +43,8 @@ class S3BucketService {
         
         var imageFilename = CurrentUser.userPoolUserId
         
-        if bucketType == .competitionImage || bucketType == .competitionVideoPreviewImage {
+        if bucketType == .competitionImage || bucketType == .competitionImageSmall
+            || bucketType == .competitionVideoPreviewImage || bucketType == .competitionVideoPreviewImageSmall {
             imageFilename = UUID().uuidString
         }
         
@@ -181,7 +184,7 @@ class S3BucketService {
         videoName: String,
         bucketType: S3BucketType,
         completion: @escaping (AVURLAsset?, Error?) -> Void
-        ) {
+    ) {
         
         let mediaKey = generateMediaKey(filename: videoName, bucketType: bucketType)
         
@@ -210,14 +213,14 @@ class S3BucketService {
             key: mediaKey,
             expression: expression,
             completionHandler: completionHandler
-            ).continueWith { (task) -> Any? in
-                if let error = task.error {
-                    debugPrint("Error downloading video: \(error.localizedDescription)")
-                }
-                else if let _ = task.result {
-                    
-                }
-                return nil
+        ).continueWith { (task) -> Any? in
+            if let error = task.error {
+                debugPrint("Error downloading video: \(error.localizedDescription)")
+            }
+            else if let _ = task.result {
+                
+            }
+            return nil
         }
     }
     
@@ -232,10 +235,14 @@ class S3BucketService {
             return "\(PROFILE_BACKGROUND_IMAGE_BUCKET_PATH)\(filename).jpg"
         case .competitionImage:
             return "\(COMPETITION_IMAGE_BUCKET_PATH)\(filename).jpg"
+        case .competitionImageSmall:
+            return "\(COMPETITION_IMAGE_SMALL_BUCKET_PATH)\(filename).jpg"
         case .competitionVideo:
             return "\(COMPETITION_VIDEO_BUCKET_PATH)\(filename).mov"
         case .competitionVideoPreviewImage:
             return "\(COMPETITION_VIDEO_PREVIEW_IMAGE_BUCKET_PATH)\(filename).jpg"
+        case .competitionVideoPreviewImageSmall:
+            return "\(COMPETITION_VIDEO_PREVIEW_IMAGE_SMALL_BUCKET_PATH)\(filename).jpg"
         }
     }
 }

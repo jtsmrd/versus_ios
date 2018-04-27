@@ -37,13 +37,13 @@ class CompetitionCell: UITableViewCell {
     
     func configureCell(competition: Competition) {
         
-        competition.getUser1CompetitionImage { (competitionImage) in
+        competition.getUser1CompetitionImageSmall { (competitionImage) in
             DispatchQueue.main.async {
                 self.user1ImageView.image = competitionImage
             }
         }
         
-        competition.getUser2CompetitionImage { (competitionImage) in
+        competition.getUser2CompetitionImageSmall { (competitionImage) in
             DispatchQueue.main.async {
                 self.user2ImageView.image = competitionImage
             }

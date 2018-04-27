@@ -10,6 +10,10 @@ import UIKit
 
 class ViewCompetitionVC: UIViewController {
 
+    enum SelectedUser {
+        case user1
+        case user2
+    }
     
     @IBOutlet weak var competitionTimeRemainingLabel: UILabel!
     @IBOutlet weak var competitionImageContainerView: UIView!
@@ -20,15 +24,17 @@ class ViewCompetitionVC: UIViewController {
     @IBOutlet weak var voteButton: UIButton!
     @IBOutlet weak var user1RankImageView: UIImageView!
     @IBOutlet weak var user1UsernameLabel: UILabel!
-    @IBOutlet weak var user1SelectorView: CircleView!
-    @IBOutlet weak var user1ProfileImageView: UIImageView!
+    @IBOutlet weak var user1SelectorButton: ProgressIndicatorButton!
     @IBOutlet weak var user2RankImageView: UIImageView!
     @IBOutlet weak var user2UsernameLabel: UILabel!
-    @IBOutlet weak var user2SelectorView: CircleView!
-    @IBOutlet weak var user2ProfileImageView: UIImageView!
+    @IBOutlet weak var user2SelectorButton: ProgressIndicatorButton!
+    
+    @IBOutlet var user1SelectorButtonHeight: NSLayoutConstraint!
+    @IBOutlet var user2SelectorButtonHeight: NSLayoutConstraint!
     
     
     var competition: Competition!
+    var selectedUser: SelectedUser = .user1
     
     
     override func viewDidLoad() {
@@ -39,23 +45,14 @@ class ViewCompetitionVC: UIViewController {
 
     func initData(competition: Competition) {
         self.competition = competition
-    }
-    
-    
-    private func configureView() {
-        switch competition.competitionType {
-        case .image:
-            competitionImageContainerView.isHidden = false
-            competitionImageImageView.image = competition.user1CompetitionImage
-        case .video:
-            competitionVideoContainerView.isHidden = false
+        
+        competition.getUser1CompetitionImage { (image) in
+            
         }
         
-        user1RankImageView.image = competition.user1RankImage
-        user1UsernameLabel.text = competition.user1Username
-        
-        user2RankImageView.image = competition.user2RankImage
-        user2UsernameLabel.text = competition.user2Username
+        competition.getUser2CompetitionImage { (image) in
+            
+        }
     }
     
     
@@ -75,7 +72,81 @@ class ViewCompetitionVC: UIViewController {
         
     }
     
+    @IBAction func user1SelectorButtonAction() {
+        guard selectedUser != .user1 else { return }
+        selectedUser = .user1
+        user1SelectorButtonHeight.constant = 80
+        user2SelectorButtonHeight.constant = 60
+        user1SelectorButton.layoutIfNeeded()
+        view.bringSubview(toFront: user1SelectorButton)
+        displayCompetitionMedia()
+    }
     
+    @IBAction func user2SelectorButtonAction() {
+        guard selectedUser != .user2 else { return }
+        selectedUser = .user2
+        user2SelectorButtonHeight.constant = 80
+        user1SelectorButtonHeight.constant = 60
+        user2SelectorButton.layoutIfNeeded()
+        view.bringSubview(toFront: user2SelectorButton)
+        displayCompetitionMedia()
+    }
+    
+    
+    private func configureView() {
+        switch competition.competitionType {
+        case .image:
+            competitionImageContainerView.isHidden = false
+            competitionVideoContainerView.isHidden = true
+        case .video:
+            competitionVideoContainerView.isHidden = false
+            competitionImageContainerView.isHidden = true
+        }
+        displayCompetitionMedia()
+        user1RankImageView.image = competition.user1RankImage
+        user1UsernameLabel.text = competition.user1Username
+        user2RankImageView.image = competition.user2RankImage
+        user2UsernameLabel.text = competition.user2Username
+        
+        competition.getUser1ProfileImage { (image) in
+            DispatchQueue.main.async {
+                self.user1SelectorButton._imageView.image = image
+            }
+        }
+        
+        competition.getUser2ProfileImage { (image) in
+            DispatchQueue.main.async {
+                self.user2SelectorButton._imageView.image = image
+            }
+        }
+    }
+    
+    private func displayCompetitionMedia() {
+        switch selectedUser {
+        case .user1:
+            switch competition.competitionType {
+            case .image:
+                competition.getUser1CompetitionImage { (image) in
+                    DispatchQueue.main.async {
+                        self.competitionImageImageView.image = image
+                    }
+                }
+            case .video:
+                print()
+            }
+        case .user2:
+            switch competition.competitionType {
+            case .image:
+                competition.getUser2CompetitionImage { (image) in
+                    DispatchQueue.main.async {
+                        self.competitionImageImageView.image = image
+                    }
+                }
+            case .video:
+                print()
+            }
+        }
+    }
     
 
     /*

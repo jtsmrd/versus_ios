@@ -7,6 +7,12 @@
 //
 
 import AWSDynamoDB
+import AVKit
+
+enum CompetitionImageSizeType: CGFloat {
+    case normal = 600
+    case small = 300
+}
 
 class CompetitionEntryService {
     
@@ -20,8 +26,10 @@ class CompetitionEntryService {
         competitionType: CompetitionType,
         caption: String?,
         videoPreviewImageId: String?,
+        videoPreviewImageSmallId: String?,
         videoId: String?,
         imageId: String?,
+        imageSmallId: String?,
         completion: @escaping SuccessCompletion) {
         
         let competitionEntry: AWSCompetitionEntry = AWSCompetitionEntry()
@@ -32,8 +40,10 @@ class CompetitionEntryService {
         competitionEntry._competitionTypeId = NSNumber(integerLiteral: competitionType.rawValue)
         competitionEntry._caption = caption
         competitionEntry._videoPreviewImageId = videoPreviewImageId
+        competitionEntry._videoPreviewImageSmallId = videoPreviewImageSmallId
         competitionEntry._videoId = videoId
         competitionEntry._imageId = imageId
+        competitionEntry._imageSmallId = imageSmallId
         
         AWSDynamoDBObjectMapper.default().save(competitionEntry) { (error) in
             if let error = error {
@@ -43,5 +53,50 @@ class CompetitionEntryService {
             debugPrint("Competition entry successfully created.")
             completion(true)
         }
+    }
+    
+    
+    func uploadCompetitionImage(
+        image: UIImage,
+        bucketType: S3BucketType,
+        competitionImageSizeType: CompetitionImageSizeType,
+        completion: @escaping (_ imageFilename: String?) -> Void
+    ) {
+        guard let uploadImage = resizeImage(image: image, newWidth: competitionImageSizeType.rawValue) else {
+            completion(nil)
+            return
+        }
+        S3BucketService.instance.uploadImage(
+            image: uploadImage,
+            bucketType: bucketType
+        ) { (imageFilename) in
+            completion(imageFilename)
+        }
+    }
+    
+    func uploadCompetitionVideo(
+        videoUrlAsset: AVURLAsset,
+        bucketType: S3BucketType,
+        completion: @escaping (_ videoFilename: String?) -> Void
+    ) {
+        S3BucketService.instance.uploadVideo(
+            videoUrlAsset: videoUrlAsset,
+            bucketType: bucketType
+        ) { (videoFilename) in
+            completion(videoFilename)
+        }
+    }
+    
+    
+    private func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage? {
+        let scale = newWidth / image.size.width
+        let newHeight = image.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
 }

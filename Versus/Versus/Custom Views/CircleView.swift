@@ -22,6 +22,11 @@ class CircleView: UIView {
         setupButton()
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        setupButton()
+    }
+    
     private func setupButton() {
         clipsToBounds = true
         layer.cornerRadius = bounds.width / 2

@@ -25,8 +25,10 @@ let PROFILE_IMAGE_BUCKET_PATH = "public/profileImage/"
 let PROFILE_IMAGE_SMALL_BUCKET_PATH = "public/profileImageSmall/"
 let PROFILE_BACKGROUND_IMAGE_BUCKET_PATH = "public/profileBackgroundImage/"
 let COMPETITION_IMAGE_BUCKET_PATH = "public/competitionImage/"
+let COMPETITION_IMAGE_SMALL_BUCKET_PATH = "public/competitionImageSmall/"
 let COMPETITION_VIDEO_BUCKET_PATH = "public/competitionVideo/"
 let COMPETITION_VIDEO_PREVIEW_IMAGE_BUCKET_PATH = "public/competitionVideoPreviewImage/"
+let COMPETITION_VIDEO_PREVIEW_IMAGE_SMALL_BUCKET_PATH = "public/competitionVideoPreviewImageSmall/"
 
 
 // Segues

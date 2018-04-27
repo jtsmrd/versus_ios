@@ -54,14 +54,16 @@ class CompetitionDetailsVC: UIViewController {
         let uploadMediaDispatchGroup = DispatchGroup()
         var errorMessage = ""
         var competitionImageFilename: String?
+        var competitionImageSmallFilename: String?
         var competitionVideoFilename: String?
         var competitionVideoPreviewImageFilename: String?
+        var competitionVideoPreviewImageSmallFilename: String?
         
         switch competitionType {
         case .image:
             
             uploadMediaDispatchGroup.enter()
-            uploadCompetitionImage(image: competitionImage!) { (imageFilename) in
+            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionImage!, bucketType: .competitionImage, competitionImageSizeType: .normal) { (imageFilename) in
                 if let imageFilename = imageFilename {
                     competitionImageFilename = imageFilename
                 }
@@ -71,10 +73,32 @@ class CompetitionDetailsVC: UIViewController {
                 uploadMediaDispatchGroup.leave()
             }
             
+            uploadMediaDispatchGroup.enter()
+            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionImage!, bucketType: .competitionImageSmall, competitionImageSizeType: .small) { (imageFilename) in
+                if let imageFilename = imageFilename {
+                    competitionImageSmallFilename = imageFilename
+                }
+                else {
+                    errorMessage = "Failed to upload competition image small"
+                }
+                uploadMediaDispatchGroup.leave()
+            }
+            
         case .video:
             
             uploadMediaDispatchGroup.enter()
-            uploadCompetitionVideoPreviewImage(image: competitionVideoPreviewImage!) { (imageFilename) in
+            CompetitionEntryService.instance.uploadCompetitionVideo(videoUrlAsset: competitionVideoUrlAsset!, bucketType: .competitionVideo) { (videoFilename) in
+                if let videoFilename = videoFilename {
+                    competitionVideoFilename = videoFilename
+                }
+                else {
+                    errorMessage = "Failed to upload competition video"
+                }
+                uploadMediaDispatchGroup.leave()
+            }
+            
+            uploadMediaDispatchGroup.enter()
+            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionVideoPreviewImage!, bucketType: .competitionVideoPreviewImage, competitionImageSizeType: .normal) { (imageFilename) in
                 if let imageFilename = imageFilename {
                     competitionVideoPreviewImageFilename = imageFilename
                 }
@@ -85,12 +109,12 @@ class CompetitionDetailsVC: UIViewController {
             }
             
             uploadMediaDispatchGroup.enter()
-            uploadCompetitionVideo(videoUrlAsset: competitionVideoUrlAsset!) { (videoFilename) in
-                if let videoFilename = videoFilename {
-                    competitionVideoFilename = videoFilename
+            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionVideoPreviewImage!, bucketType: .competitionVideoPreviewImage, competitionImageSizeType: .small) { (imageFilename) in
+                if let imageFilename = imageFilename {
+                    competitionVideoPreviewImageSmallFilename = imageFilename
                 }
                 else {
-                    errorMessage = "Failed to upload competition video"
+                    errorMessage = "Failed to upload competition video preview image small"
                 }
                 uploadMediaDispatchGroup.leave()
             }
@@ -101,8 +125,10 @@ class CompetitionDetailsVC: UIViewController {
             if errorMessage.isEmpty {
                 self.createCompetitionEntry(
                     videoPreviewImageId: competitionVideoPreviewImageFilename,
+                    videoPreviewImageSmallId: competitionVideoPreviewImageSmallFilename,
                     videoId: competitionVideoFilename,
                     imageId: competitionImageFilename,
+                    imageSmallId: competitionImageSmallFilename,
                     completion: { (success) in
                         DispatchQueue.main.async {
                             if success {
@@ -188,8 +214,10 @@ class CompetitionDetailsVC: UIViewController {
     
     private func createCompetitionEntry(
         videoPreviewImageId: String?,
+        videoPreviewImageSmallId: String?,
         videoId: String?,
         imageId: String?,
+        imageSmallId: String?,
         completion: @escaping SuccessCompletion
     ) {
         CompetitionEntryService.instance.createCompetitionEntry(
@@ -197,46 +225,12 @@ class CompetitionDetailsVC: UIViewController {
             competitionType: competitionType,
             caption: captionTextView.text,
             videoPreviewImageId: videoPreviewImageId,
+            videoPreviewImageSmallId: videoPreviewImageSmallId,
             videoId: videoId,
-            imageId: imageId
+            imageId: imageId,
+            imageSmallId: imageSmallId
         ) { (success) in
             completion(success)
-        }
-    }
-    
-    private func uploadCompetitionImage(
-        image: UIImage,
-        completion: @escaping (_ imageFilename: String?) -> Void
-    ) {
-        S3BucketService.instance.uploadImage(
-            image: image,
-            bucketType: .competitionImage
-        ) { (imageFilename) in
-            completion(imageFilename)
-        }
-    }
-    
-    private func uploadCompetitionVideo(
-        videoUrlAsset: AVURLAsset,
-        completion: @escaping (_ videoFilename: String?) -> Void
-    ) {
-        S3BucketService.instance.uploadVideo(
-            videoUrlAsset: videoUrlAsset,
-            bucketType: .competitionVideo
-        ) { (videoFilename) in
-            completion(videoFilename)
-        }
-    }
-    
-    private func uploadCompetitionVideoPreviewImage(
-        image: UIImage,
-        completion: @escaping (_ imageFilename: String?) -> Void
-    ) {
-        S3BucketService.instance.uploadImage(
-            image: image,
-            bucketType: .competitionVideoPreviewImage
-        ) { (imageFilename) in
-            completion(imageFilename)
         }
     }
     

@@ -160,7 +160,7 @@ class UserService {
             else {
                 completion(nil)
             }
-        case .competitionImage, .competitionVideo, .competitionVideoPreviewImage:
+        case .competitionImage, .competitionImageSmall, .competitionVideo, .competitionVideoPreviewImage, .competitionVideoPreviewImageSmall:
             completion(nil)
         }
         
