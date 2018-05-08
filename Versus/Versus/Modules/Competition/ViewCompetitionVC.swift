@@ -15,6 +15,12 @@ class ViewCompetitionVC: UIViewController {
         case user2
     }
     
+    enum VotedCompetition {
+        case user1
+        case user2
+        case none
+    }
+    
     @IBOutlet weak var competitionTimeRemainingLabel: UILabel!
     @IBOutlet weak var competitionImageContainerView: UIView!
     @IBOutlet weak var competitionImageImageView: UIImageView!
@@ -29,18 +35,31 @@ class ViewCompetitionVC: UIViewController {
     @IBOutlet weak var user2UsernameLabel: UILabel!
     @IBOutlet weak var user2SelectorButton: ProgressIndicatorButton!
     
+    @IBOutlet weak var commentsContainerView: UIView!
+    @IBOutlet weak var commentsTableView: UITableView!
+    
+    
     @IBOutlet var user1SelectorButtonHeight: NSLayoutConstraint!
     @IBOutlet var user2SelectorButtonHeight: NSLayoutConstraint!
     
     
     var competition: Competition!
     var selectedUser: SelectedUser = .user1
+    var votedCompetition: VotedCompetition = .none
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureView()
+        
+        let imageVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
+        imageVoteGestureRecognizer.numberOfTapsRequired = 2
+        competitionImageContainerView.addGestureRecognizer(imageVoteGestureRecognizer)
+        
+        let videoVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
+        videoVoteGestureRecognizer.numberOfTapsRequired = 2
+        competitionVideoContainerView.addGestureRecognizer(videoVoteGestureRecognizer)
     }
 
     func initData(competition: Competition) {
@@ -65,11 +84,12 @@ class ViewCompetitionVC: UIViewController {
     }
     
     @IBAction func commentButtonAction() {
-        
+        view.bringSubview(toFront: commentsContainerView)
+        commentsContainerView.isHidden = false
     }
     
     @IBAction func voteButtonAction() {
-        
+       voteForCompetition()
     }
     
     @IBAction func user1SelectorButtonAction() {
@@ -80,6 +100,7 @@ class ViewCompetitionVC: UIViewController {
         user1SelectorButton.layoutIfNeeded()
         view.bringSubview(toFront: user1SelectorButton)
         displayCompetitionMedia()
+        configureVoteButton()
     }
     
     @IBAction func user2SelectorButtonAction() {
@@ -90,8 +111,22 @@ class ViewCompetitionVC: UIViewController {
         user2SelectorButton.layoutIfNeeded()
         view.bringSubview(toFront: user2SelectorButton)
         displayCompetitionMedia()
+        configureVoteButton()
     }
     
+    @IBAction func hideCommentsButtonAction() {
+        commentsContainerView.isHidden = true
+    }
+    
+    @objc func voteForCompetition() {
+        switch selectedUser {
+        case .user1:
+            votedCompetition = .user1
+        case .user2:
+            votedCompetition = .user2
+        }
+        configureVoteButton()
+    }
     
     private func configureView() {
         switch competition.competitionType {
@@ -118,6 +153,20 @@ class ViewCompetitionVC: UIViewController {
             DispatchQueue.main.async {
                 self.user2SelectorButton._imageView.image = image
             }
+        }
+        
+        configureVoteButton()
+    }
+    
+    private func configureVoteButton() {
+        if votedCompetition == .user1 && selectedUser == .user1 {
+            voteButton.setImage(UIImage(named: "Voting-Star"), for: .normal)
+        }
+        else if votedCompetition == .user2 && selectedUser == .user2 {
+            voteButton.setImage(UIImage(named: "Voting-Star"), for: .normal)
+        }
+        else {
+            voteButton.setImage(UIImage(named: "Voting-Star-White"), for: .normal)
         }
     }
     
