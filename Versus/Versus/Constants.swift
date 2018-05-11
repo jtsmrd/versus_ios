@@ -67,6 +67,12 @@ let COMPETITION_CELL = "CompetitionCell"
 
 let FOLLOWER_SUGGESTION_CELL = "FollowerSuggestionCell"
 let PHOTO_LIBRARY_CELL = "PhotoLibraryCell"
+let PROFILE_COMPETITION_CELL = "ProfileCompetitionCell"
+
+
+// CollectionViewHeader Identifiers
+
+let PROFILE_INFO_COLLECTION_VIEW_HEADER = "ProfileInfoCollectionViewHeader"
 
 
 // Storyboard Identifiers
@@ -74,8 +80,11 @@ let PHOTO_LIBRARY_CELL = "PhotoLibraryCell"
 let CHOOSE_USERNAME_VC = "ChooseUsernameVC"
 let COMPETITION_ENTRY_VC = "CompetitionEntryVC"
 let VIEW_COMPETITION_VC = "ViewCompetitionVC"
+let EDIT_PROFILE_VC = "EditProfileVC"
 
 
 // Storyboards
 
+let MAIN = "Main"
+let LOGIN = "Login"
 let COMPETITION = "Competition"

@@ -49,4 +49,42 @@ class CompetitionService {
             }
         }
     }
+    
+    
+    func getCompetitionsFor(
+        userPoolUserId userId: String,
+        completion: @escaping (_ competitions: [Competition],
+        _ error: CustomError?) -> Void) {
+        
+        let scanExpression = AWSDynamoDBScanExpression()
+        scanExpression.filterExpression = "#user1userPoolUserId = :userPoolUserId OR #user2userPoolUserId = :userPoolUserId"
+        scanExpression.expressionAttributeNames = [
+            "#user1userPoolUserId": "user1userPoolUserId",
+            "#user2userPoolUserId": "user2userPoolUserId"
+        ]
+        
+        scanExpression.expressionAttributeValues = [
+            ":userPoolUserId": userId
+        ]
+        
+        var competitions = [Competition]()
+        
+        AWSDynamoDBObjectMapper.default().scan(
+            AWSCompetition.self,
+            expression: scanExpression
+        ) { (paginatedOutput, error) in
+            if let error = error {
+                completion(competitions, CustomError(error: error, title: "", desc: "Unable to get competitions for user"))
+            }
+            else if let result = paginatedOutput {
+                for competition in result.items {
+                    competitions.append(Competition(awsCompetition: competition as! AWSCompetition))
+                }
+                completion(competitions, nil)
+            }
+            else {
+                completion(competitions, nil)
+            }
+        }
+    }
 }
