@@ -33,6 +33,8 @@
 		6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1C8206FD9BA00F92375 /* Constants.swift */; };
 		6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */; };
 		6B36E1D020703D5D00F92375 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CF20703D5D00F92375 /* UserService.swift */; };
+		6B3B771420A79F2100E3FFDE /* OptionIconCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3B771320A79F2100E3FFDE /* OptionIconCollection.swift */; };
+		6B3B771620A7A11E00E3FFDE /* ShareIconCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3B771520A7A11E00E3FFDE /* ShareIconCollection.swift */; };
 		6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DAEBF20822D7300946EB1 /* NSMutableAttributedStringExtensions.swift */; };
 		6B3DAEC620827D9800946EB1 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DAEC520827D9800946EB1 /* UIViewExtensions.swift */; };
 		6B3DAEC82082DBE700946EB1 /* FollowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DAEC72082DBE700946EB1 /* FollowButton.swift */; };
@@ -78,6 +80,8 @@
 		6BC1E12D20894B92005404E1 /* CompetitionEntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */; };
 		6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */; };
 		6BC1E13120895D7D005404E1 /* CategoryCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC1E13020895D7D005404E1 /* CategoryCollection.swift */; };
+		6BD5E36120A65A0B00A9C054 /* CompetitionShareCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E36020A65A0B00A9C054 /* CompetitionShareCell.swift */; };
+		6BD5E36320A65A1E00A9C054 /* CompetitionOptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E36220A65A1E00A9C054 /* CompetitionOptionCell.swift */; };
 		6BDE76DD208FE5FD009621D0 /* SwiftyCamVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDE76DC208FE5FD009621D0 /* SwiftyCamVC.swift */; };
 		6BDE76DF208FF0A3009621D0 /* SwiftyCamProgressButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDE76DE208FF0A3009621D0 /* SwiftyCamProgressButton.swift */; };
 		6BE1DF5F20A4F16D002A4629 /* ProfileInfoCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE1DF5E20A4F16D002A4629 /* ProfileInfoCollectionViewHeader.swift */; };
@@ -116,6 +120,8 @@
 		6B36E1C8206FD9BA00F92375 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyUserVC.swift; sourceTree = "<group>"; };
 		6B36E1CF20703D5D00F92375 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		6B3B771320A79F2100E3FFDE /* OptionIconCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionIconCollection.swift; sourceTree = "<group>"; };
+		6B3B771520A7A11E00E3FFDE /* ShareIconCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareIconCollection.swift; sourceTree = "<group>"; };
 		6B3DAEBF20822D7300946EB1 /* NSMutableAttributedStringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSMutableAttributedStringExtensions.swift; sourceTree = "<group>"; };
 		6B3DAEC520827D9800946EB1 /* UIViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
 		6B3DAEC72082DBE700946EB1 /* FollowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowButton.swift; sourceTree = "<group>"; };
@@ -162,6 +168,8 @@
 		6BC1E12C20894B92005404E1 /* CompetitionEntryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntryVC.swift; sourceTree = "<group>"; };
 		6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionSubmittedVC.swift; sourceTree = "<group>"; };
 		6BC1E13020895D7D005404E1 /* CategoryCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCollection.swift; sourceTree = "<group>"; };
+		6BD5E36020A65A0B00A9C054 /* CompetitionShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionShareCell.swift; sourceTree = "<group>"; };
+		6BD5E36220A65A1E00A9C054 /* CompetitionOptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionOptionCell.swift; sourceTree = "<group>"; };
 		6BDE76DC208FE5FD009621D0 /* SwiftyCamVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyCamVC.swift; sourceTree = "<group>"; };
 		6BDE76DE208FF0A3009621D0 /* SwiftyCamProgressButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyCamProgressButton.swift; sourceTree = "<group>"; };
 		6BE1DF5E20A4F16D002A4629 /* ProfileInfoCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoCollectionViewHeader.swift; sourceTree = "<group>"; };
@@ -206,6 +214,8 @@
 			children = (
 				6B160C6A209231F2003F2F9D /* Competition.storyboard */,
 				6BC01AC22092824700FDAC44 /* ViewCompetitionVC.swift */,
+				6BD5E36020A65A0B00A9C054 /* CompetitionShareCell.swift */,
+				6BD5E36220A65A1E00A9C054 /* CompetitionOptionCell.swift */,
 			);
 			path = Competition;
 			sourceTree = "<group>";
@@ -245,6 +255,8 @@
 				6B079FF4208D429D003BBB87 /* CompetitionEntry.swift */,
 				6B04B73E20914251007BF021 /* Competition.swift */,
 				6B6DE28D20A264AC005368C4 /* CompetitionVote.swift */,
+				6B3B771320A79F2100E3FFDE /* OptionIconCollection.swift */,
+				6B3B771520A7A11E00E3FFDE /* ShareIconCollection.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -595,6 +607,7 @@
 				6B2A22EA208AAAC500D65C9A /* PhotoLibraryCell.swift in Sources */,
 				6B7FCC552086C63B00B69DEA /* MainTBC.swift in Sources */,
 				6BEACB59206EB3DC00C221A0 /* LandingVC.swift in Sources */,
+				6B3B771620A7A11E00E3FFDE /* ShareIconCollection.swift in Sources */,
 				6BC01AC32092824700FDAC44 /* ViewCompetitionVC.swift in Sources */,
 				6BE1DF5F20A4F16D002A4629 /* ProfileInfoCollectionViewHeader.swift in Sources */,
 				6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */,
@@ -632,11 +645,14 @@
 				6BC1E12D20894B92005404E1 /* CompetitionEntryVC.swift in Sources */,
 				6BB8178F207A842400503620 /* FollowSuggestionsVC.swift in Sources */,
 				6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */,
+				6BD5E36320A65A1E00A9C054 /* CompetitionOptionCell.swift in Sources */,
+				6B3B771420A79F2100E3FFDE /* OptionIconCollection.swift in Sources */,
 				6B079FF3208D41DE003BBB87 /* AWSCompetitionEntry.swift in Sources */,
 				6B525F8D2081143B007A7FC7 /* FollowerCell.swift in Sources */,
 				6B334FD9208187B3005B010F /* FollowerService.swift in Sources */,
 				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
 				6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */,
+				6BD5E36120A65A0B00A9C054 /* CompetitionShareCell.swift in Sources */,
 				6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */,
 				6B2E60C120A354AA005C1987 /* ProfileCompetitionCell.swift in Sources */,
 				6BC1E12B20894B54005404E1 /* CategoryCell.swift in Sources */,

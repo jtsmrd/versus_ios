@@ -68,6 +68,8 @@ let COMPETITION_CELL = "CompetitionCell"
 let FOLLOWER_SUGGESTION_CELL = "FollowerSuggestionCell"
 let PHOTO_LIBRARY_CELL = "PhotoLibraryCell"
 let PROFILE_COMPETITION_CELL = "ProfileCompetitionCell"
+let COMPETITION_SHARE_CELL = "CompetitionShareCell"
+let COMPETITION_OPTION_CELL = "CompetitionOptionCell"
 
 
 // CollectionViewHeader Identifiers

@@ -22,6 +22,7 @@ class ViewCompetitionVC: UIViewController {
     }
     
     @IBOutlet weak var competitionTimeRemainingLabel: UILabel!
+    @IBOutlet weak var optionsButton: UIButton!
     @IBOutlet weak var competitionImageContainerView: UIView!
     @IBOutlet weak var competitionImageImageView: UIImageView!
     @IBOutlet weak var competitionVideoContainerView: UIView!
@@ -38,6 +39,11 @@ class ViewCompetitionVC: UIViewController {
     @IBOutlet weak var commentsContainerView: UIView!
     @IBOutlet weak var commentsTableView: UITableView!
     
+    @IBOutlet weak var optionsContainerView: UIView!
+    @IBOutlet weak var competitionShareCollectionView: UICollectionView!
+    @IBOutlet weak var competitionOptionsCollectionView: UICollectionView!
+    
+    
     
     @IBOutlet var user1SelectorButtonHeight: NSLayoutConstraint!
     @IBOutlet var user2SelectorButtonHeight: NSLayoutConstraint!
@@ -46,6 +52,7 @@ class ViewCompetitionVC: UIViewController {
     var competition: Competition!
     var selectedUser: SelectedUser = .user1
     var votedCompetition: VotedCompetition = .none
+    let collectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
     
     override func viewDidLoad() {
@@ -80,7 +87,9 @@ class ViewCompetitionVC: UIViewController {
     }
     
     @IBAction func optionsButtonAction() {
-        
+        view.bringSubview(toFront: optionsContainerView)
+        optionsContainerView.isHidden = false
+        optionsButton.isEnabled = false
     }
     
     @IBAction func commentButtonAction() {
@@ -117,6 +126,13 @@ class ViewCompetitionVC: UIViewController {
     @IBAction func hideCommentsButtonAction() {
         commentsContainerView.isHidden = true
     }
+    
+    @IBAction func competitionOptionsCancelButtonAction() {
+        optionsContainerView.isHidden = true
+        optionsButton.isEnabled = true
+    }
+    
+    
     
     @objc func voteForCompetition() {
         switch selectedUser {
@@ -197,6 +213,41 @@ class ViewCompetitionVC: UIViewController {
         }
     }
     
+    
+    private func shareToInstagramAction() {
+        displayMessage(message: "Share to Instagram")
+    }
+    
+    
+    private func shareToMessageAction() {
+        displayMessage(message: "Share to Message")
+    }
+    
+    
+    private func shareToWhatsAppAction() {
+        displayMessage(message: "Share to WhatsApp")
+    }
+    
+    
+    private func shareToFacebookMessengerAction() {
+        displayMessage(message: "Share to Facebook Messenger")
+    }
+    
+    
+    private func optionShareAction() {
+        displayMessage(message: "Share")
+    }
+    
+    
+    private func optionCopyLinkAction() {
+        displayMessage(message: "Copy Link")
+    }
+    
+    
+    private func optionReportAction() {
+        displayMessage(message: "Report Competition")
+    }
+    
 
     /*
     // MARK: - Navigation
@@ -208,4 +259,71 @@ class ViewCompetitionVC: UIViewController {
     }
     */
 
+}
+
+
+extension ViewCompetitionVC: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if collectionView == competitionShareCollectionView {
+            return ShareIconCollection.instance.shareIcons.count
+        }
+        else if collectionView == competitionOptionsCollectionView {
+            return OptionIconCollection.instance.optionIcons.count
+        }
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if collectionView == competitionShareCollectionView {
+            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: COMPETITION_SHARE_CELL, for: indexPath) as? CompetitionShareCell {
+                cell.configureCell(shareIcon: ShareIconCollection.instance.shareIcons[indexPath.row])
+                return cell
+            }
+            return CompetitionShareCell()
+        }
+        else if collectionView == competitionOptionsCollectionView {
+            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: COMPETITION_OPTION_CELL, for: indexPath) as? CompetitionOptionCell {
+                cell.configureCell(optionIcon: OptionIconCollection.instance.optionIcons[indexPath.row])
+                return cell
+            }
+            return CompetitionOptionCell()
+        }
+        return UICollectionViewCell()
+    }
+}
+
+
+extension ViewCompetitionVC: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == competitionShareCollectionView {
+            
+            let shareIcon = ShareIconCollection.instance.shareIcons[indexPath.row]
+            
+            switch shareIcon.shareIconType {
+            case .instagram:
+                shareToInstagramAction()
+            case .message:
+                shareToMessageAction()
+            case .whatsApp:
+                shareToWhatsAppAction()
+            case .facebookMessenger:
+                shareToFacebookMessengerAction()
+            }
+        }
+        else if collectionView == competitionOptionsCollectionView {
+            
+            let optionIcon = OptionIconCollection.instance.optionIcons[indexPath.row]
+            
+            switch optionIcon.optionIconType {
+            case .share:
+                optionShareAction()
+            case .copyLink:
+                optionCopyLinkAction()
+            case .report:
+                optionReportAction()
+            }
+        }
+    }
 }
