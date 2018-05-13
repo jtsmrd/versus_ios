@@ -15,16 +15,16 @@ class MainTBC: UITabBarController {
         
         let tabBarHeight = tabBar.frame.size.height
         
-        let circleView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tabBarHeight * 1.2, height: tabBarHeight * 1.2))
-        circleView.backgroundColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
+        let circleView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tabBarHeight * 0.95, height: tabBarHeight * 0.95))
+        circleView.backgroundColor = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 0.5)
         circleView.layer.cornerRadius = circleView.frame.height / 2
         circleView.clipsToBounds = true
-        circleView.center = CGPoint(x: tabBar.center.x, y: circleView.frame.height * 0.25)
+        circleView.center = CGPoint(x: tabBar.center.x, y: (circleView.frame.height / 2) * 1.05)
         
         let circleViewHeight = circleView.frame.size.height
         
-        let button = UIButton(frame: CGRect(x: 0.0, y: 0.0, width: circleViewHeight * 0.7, height: circleViewHeight * 0.7))
-        button.setImage(UIImage(named: "Add-Video"), for: .normal)
+        let button = UIButton(frame: CGRect(x: 0.0, y: 0.0, width: circleViewHeight, height: circleViewHeight))
+        button.setImage(UIImage(named: "temp_icon_red"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
         button.center = CGPoint(x: circleViewHeight / 2, y: circleViewHeight / 2)
         button.addTarget(self, action: #selector(newCompetitionEntryButtonAction), for: .touchUpInside)
