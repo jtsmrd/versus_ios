@@ -70,6 +70,8 @@ let PHOTO_LIBRARY_CELL = "PhotoLibraryCell"
 let PROFILE_COMPETITION_CELL = "ProfileCompetitionCell"
 let COMPETITION_SHARE_CELL = "CompetitionShareCell"
 let COMPETITION_OPTION_CELL = "CompetitionOptionCell"
+let LEADERBOARD_CELL = "LeaderboardCell"
+let BROWSE_CATEGORY_CELL = "BrowseCategoryCell"
 
 
 // CollectionViewHeader Identifiers
@@ -82,6 +84,7 @@ let PROFILE_INFO_COLLECTION_VIEW_HEADER = "ProfileInfoCollectionViewHeader"
 let CHOOSE_USERNAME_VC = "ChooseUsernameVC"
 let COMPETITION_ENTRY_VC = "CompetitionEntryVC"
 let VIEW_COMPETITION_VC = "ViewCompetitionVC"
+let PROFILE_VC = "ProfileVC"
 let EDIT_PROFILE_VC = "EditProfileVC"
 
 
@@ -89,4 +92,5 @@ let EDIT_PROFILE_VC = "EditProfileVC"
 
 let MAIN = "Main"
 let LOGIN = "Login"
+let PROFILE = "Profile"
 let COMPETITION = "Competition"

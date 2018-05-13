@@ -32,7 +32,7 @@ class ProfileVC: UIViewController, ProfileInfoCollectionViewHeaderDelegate {
     
     
     var delegate: ProfileVCDelegate?
-    let sectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    let competitionCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
     
     override func viewDidLoad() {
@@ -226,7 +226,7 @@ extension ProfileVC: UICollectionViewDelegateFlowLayout {
         
         let itemsPerRow: CGFloat = 3
         
-        let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
+        let paddingSpace = competitionCollectionViewSectionInsets.left * (itemsPerRow + 1)
         let availableWidth = view.frame.width - paddingSpace
         let widthPerItem = availableWidth / itemsPerRow
         
@@ -238,7 +238,7 @@ extension ProfileVC: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        return sectionInsets
+        return competitionCollectionViewSectionInsets
     }
     
     func collectionView(
@@ -246,6 +246,6 @@ extension ProfileVC: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         
-        return sectionInsets.left
+        return competitionCollectionViewSectionInsets.left
     }
 }

@@ -27,6 +27,11 @@ class CircleImageView: UIImageView {
         setupImageView()
     }
     
+    override func setNeedsDisplay() {
+        super.setNeedsDisplay()
+        layer.backgroundColor = _backgroundColor.cgColor
+    }
+    
     private func setupImageView() {
         clipsToBounds = true
         layer.cornerRadius = bounds.width / 2

@@ -26,7 +26,7 @@ class CompetitionCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -50,6 +50,7 @@ class CompetitionCell: UITableViewCell {
         }
         
         versusCircleView._backgroundColor = competition.competitionCategoryColor
+        versusCircleView.setNeedsDisplay()
         categoryBarView.backgroundColor = competition.competitionCategoryColor
         competitionCategoryImageView.image = competition.competitionCategoryIconImage
         

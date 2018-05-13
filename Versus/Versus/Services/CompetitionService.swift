@@ -51,6 +51,44 @@ class CompetitionService {
     }
     
     
+    func getFeaturedCompetitionsWith(
+        categoryId id: Int,
+        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void) {
+        
+        let scanExpression = AWSDynamoDBScanExpression()
+        scanExpression.filterExpression = "#isFeatured = :isFeatured AND #categoryId = :categoryId"
+        scanExpression.expressionAttributeNames = [
+            "#isFeatured": "isFeatured",
+            "#categoryId": "categoryId"
+        ]
+        
+        scanExpression.expressionAttributeValues = [
+            ":isFeatured": 1,
+            ":categoryId": id
+        ]
+        
+        var competitions = [Competition]()
+        
+        AWSDynamoDBObjectMapper.default().scan(
+            AWSCompetition.self,
+            expression: scanExpression
+        ) { (paginatedOutput, error) in
+            if let error = error {
+                completion(competitions, CustomError(error: error, title: "", desc: "Unable to get featured competitions"))
+            }
+            else if let result = paginatedOutput {
+                for competition in result.items {
+                    competitions.append(Competition(awsCompetition: competition as! AWSCompetition))
+                }
+                completion(competitions, nil)
+            }
+            else {
+                completion(competitions, nil)
+            }
+        }
+    }
+    
+    
     func getCompetitionsFor(
         userPoolUserId userId: String,
         completion: @escaping (_ competitions: [Competition],
