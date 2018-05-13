@@ -301,7 +301,6 @@ extension CompetitionEntryVC: SwiftyCamViewControllerDelegate {
         DispatchQueue.main.async {
             self.capturedVideoContainerView.isHidden = false
         }
-        swiftyCamVC.resetTimeRemainingLabel()
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {

@@ -29,14 +29,24 @@ class CountdownTimer {
         self.delegate = delegate
     }
     
-    func startTimer() {
-        timer = Timer(timeInterval: countdownSeconds, repeats: true, block: { (t) in
-            self.countdownSeconds -= 1.0
-            self.delegate.timerTick(timeRemaining: self.countdownSeconds)
-        })
+    func start() {
+        
+        timer = Timer.scheduledTimer(
+            timeInterval: 1,
+            target: self,
+            selector: #selector(CountdownTimer.timerTick),
+            userInfo: nil,
+            repeats: true
+        )
+        timer.fire()
     }
     
-    func stopTimer() {
+    func stop() {
         timer.invalidate()
+    }
+    
+    @objc func timerTick() {
+        self.countdownSeconds -= 1.0
+        self.delegate.timerTick(timeRemaining: self.countdownSeconds)
     }
 }

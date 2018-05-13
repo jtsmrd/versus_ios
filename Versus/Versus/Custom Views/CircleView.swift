@@ -14,20 +14,20 @@ class CircleView: UIView {
     @IBInspectable var _backgroundColor: UIColor = UIColor.white
     
     override func prepareForInterfaceBuilder() {
-        setupButton()
+        setupView()
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        setupButton()
+        setupView()
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        setupButton()
+        setupView()
     }
     
-    private func setupButton() {
+    private func setupView() {
         clipsToBounds = true
         layer.cornerRadius = bounds.width / 2
         layer.backgroundColor = _backgroundColor.cgColor

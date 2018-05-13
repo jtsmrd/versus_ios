@@ -92,4 +92,8 @@ class ProgressIndicatorButton: UIButton {
         circleFrame.origin.y = (circlePathBounds.midY - circleFrame.midY) + circlePathDelta
         return UIBezierPath(ovalIn: circleFrame)
     }
+    
+    func updateProgress(percent: CGFloat) {
+        progress = percent
+    }
 }

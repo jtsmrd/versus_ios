@@ -9,13 +9,13 @@
 import UIKit
 import SwiftyCam
 
-class SwiftyCamVC: SwiftyCamViewController {
+class SwiftyCamVC: SwiftyCamViewController, CountdownTimerDelegate {
 
     @IBOutlet weak var cameraButton: SwiftyCamProgressButton!
     @IBOutlet weak var recordTimeRemainingLabel: UILabel!
     
-    var seconds = 0
-    var timer: Timer!
+    let MAX_TIME: Double = 60.0
+    var countdownTimer: CountdownTimer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,29 +28,21 @@ class SwiftyCamVC: SwiftyCamViewController {
     }
     
     func startRecordingCountDown() {
-        seconds = 59
-        timer = Timer.scheduledTimer(
-            timeInterval: 1,
-            target: self,
-            selector: #selector(SwiftyCamVC.updateTimeRemainingLabel),
-            userInfo: nil,
-            repeats: true
-        )
-        recordTimeRemainingLabel.text = "0:\(seconds)"
+        countdownTimer = CountdownTimer(countdownSeconds: MAX_TIME, delegate: self)
+        countdownTimer.start()
+        cameraButton.animateTimeRemaining()
     }
     
     func stopRecordingCountDown() {
-        timer.invalidate()
-    }
-    
-    func resetTimeRemainingLabel() {
+        countdownTimer.stop()
         recordTimeRemainingLabel.text = "1:00"
+        cameraButton.stopAnimatingTimeRemaining()
     }
     
-    @objc func updateTimeRemainingLabel() {
-        seconds -= 1
-        recordTimeRemainingLabel.text = "0:\(seconds)"
+    func timerTick(timeRemaining: Double) {
+        recordTimeRemainingLabel.text = "0:\(Int(timeRemaining))"
     }
+    
     
     /*
     // MARK: - Navigation

@@ -683,25 +683,27 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pl0-DL-icb">
-                                <rect key="frame" x="0.0" y="477" width="375" height="70"/>
+                                <rect key="frame" x="0.0" y="467" width="375" height="80"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L1H-dn-iX6" customClass="SwiftyCamProgressButton" customModule="Versus" customModuleProvider="target">
-                                        <rect key="frame" x="156" y="3.5" width="63" height="63"/>
+                                        <rect key="frame" x="151.5" y="4" width="72" height="72"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="L1H-dn-iX6" secondAttribute="height" multiplier="1:1" id="jJO-E6-u4m"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="boolean" keyPath="_hasBorder" value="YES"/>
-                                            <userDefinedRuntimeAttribute type="color" keyPath="_borderColor">
-                                                <color key="value" white="0.66666666666666663" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="_backgroundColor">
+                                                <color key="value" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                             </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="_borderWidth">
-                                                <real key="value" value="2"/>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="_progressIndicatorColor">
+                                                <color key="value" red="1" green="0.0039215688589999999" blue="0.062745101750000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="_progressIndicatorLineWidth">
+                                                <real key="value" value="4"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </button>
                                     <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n7S-d2-OLN">
-                                        <rect key="frame" x="16" y="10" width="50" height="50"/>
+                                        <rect key="frame" x="16" y="15" width="50" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="IL1-29-v2u"/>
                                             <constraint firstAttribute="height" constant="50" id="mh7-eV-gZv"/>
@@ -712,7 +714,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="343-cL-ooJ">
-                                        <rect key="frame" x="330" y="25.5" width="29" height="19.5"/>
+                                        <rect key="frame" x="330" y="30.5" width="29" height="19.5"/>
                                         <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="14"/>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -725,7 +727,7 @@
                                     <constraint firstItem="L1H-dn-iX6" firstAttribute="centerY" secondItem="pl0-DL-icb" secondAttribute="centerY" id="YPU-7h-m09"/>
                                     <constraint firstAttribute="trailing" secondItem="343-cL-ooJ" secondAttribute="trailing" constant="16" id="bI9-sp-WyM"/>
                                     <constraint firstItem="L1H-dn-iX6" firstAttribute="centerX" secondItem="pl0-DL-icb" secondAttribute="centerX" id="k4m-UR-Im0"/>
-                                    <constraint firstAttribute="height" constant="70" id="lPa-iN-cGc"/>
+                                    <constraint firstAttribute="height" constant="80" id="lPa-iN-cGc"/>
                                     <constraint firstItem="n7S-d2-OLN" firstAttribute="leading" secondItem="pl0-DL-icb" secondAttribute="leading" constant="16" id="rxd-cs-GI6"/>
                                     <constraint firstItem="343-cL-ooJ" firstAttribute="centerY" secondItem="pl0-DL-icb" secondAttribute="centerY" id="sQn-2X-mm4"/>
                                 </constraints>
