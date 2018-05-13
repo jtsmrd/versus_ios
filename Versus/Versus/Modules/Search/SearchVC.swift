@@ -28,7 +28,7 @@ class SearchVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        getFeaturedCompetitions()
+        configureView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -37,7 +37,18 @@ class SearchVC: UIViewController {
         searchUserTableView.reloadData()
     }
 
-    
+    private func configureView() {
+        
+        getFeaturedCompetitions()
+        
+        CurrentUser.user.getFollowedUsers { (success, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayError(error: error)
+                }
+            }
+        }
+    }
     
     private func getFeaturedCompetitions() {
         

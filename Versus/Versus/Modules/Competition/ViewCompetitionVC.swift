@@ -125,6 +125,7 @@ class ViewCompetitionVC: UIViewController {
     
     @IBAction func hideCommentsButtonAction() {
         commentsContainerView.isHidden = true
+        view.endEditing(true)
     }
     
     @IBAction func competitionOptionsCancelButtonAction() {
