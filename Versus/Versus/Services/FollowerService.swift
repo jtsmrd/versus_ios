@@ -6,7 +6,6 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSUserPoolsSignIn
 import AWSDynamoDB
 
 class FollowerService {

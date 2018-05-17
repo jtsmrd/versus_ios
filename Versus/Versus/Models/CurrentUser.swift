@@ -11,12 +11,17 @@ import AWSUserPoolsSignIn
 
 class CurrentUser {
     
-    static var user: User!
+    static var user: User! {
+        didSet {
+            loadUserData()
+        }
+    }
     static var userPoolUserId: String {
         get {
             return AWSCognitoIdentityUserPool.default().currentUser()?.username ?? ""
         }
     }
+    static var notifications = [Notification]()
     
     private init() { }
     
@@ -69,6 +74,13 @@ class CurrentUser {
         return .notFollowing
     }
     
+    static func followStatus(for userPoolUserId: String) -> FollowStatus {
+        if self.user.followedUsers.contains(where: {$0.awsFollower._followedUserId == userPoolUserId}) {
+            return .following
+        }
+        return .notFollowing
+    }
+    
     static func isFollowing(follower: Follower) -> Bool {
         switch follower.followerType! {
         case .follower:
@@ -107,6 +119,44 @@ class CurrentUser {
             return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == followedUser.awsFollower._followerUserId})
         case .following:
             return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == followedUser.awsFollower._followedUserId})
+        }
+    }
+    
+    static func loadUserData() {
+        getNotifications()
+        
+        user.getFollowers { (success, customError) in
+            if !success {
+                debugPrint("Failed to load followers")
+            }
+        }
+        
+        user.getFollowedUsers { (success, customError) in
+            if !success {
+                debugPrint("Failed to load followed users")
+            }
+        }
+        
+        user.getCompetitions { (success, customError) in
+            if !success {
+                debugPrint("Failed to load user competitions")
+            }
+        }
+        
+        user.getProfileBackgroundImage { (image) in
+            
+        }
+        
+        user.getProfileImage { (image) in
+            
+        }
+    }
+    
+    static func getNotifications() {
+        NotificationService.instance.getCurrentUserNotifications { (success, customError) in
+            if !success {
+                debugPrint("Failed to load user notifications")
+            }
         }
     }
 }

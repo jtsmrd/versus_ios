@@ -125,4 +125,65 @@ class CompetitionService {
             }
         }
     }
+    
+    
+    func getCompetition(
+        with id: String,
+        completion: @escaping (_ competition: Competition?, _ error: CustomError?) -> Void) {
+        
+        AWSDynamoDBObjectMapper.default().load(
+            AWSCompetition.self,
+            hashKey: id,
+            rangeKey: nil
+        ) { (awsCompetition, error) in
+            if let error = error {
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to get competition"))
+            }
+            else if let awsCompetition = awsCompetition as? AWSCompetition {
+                completion(Competition(awsCompetition: awsCompetition), nil)
+            }
+            else {
+                completion(nil, nil)
+            }
+        }
+    }
+    
+    
+    func getCompetitionImage(
+        for user: User,
+        competition: Competition,
+        completion: @escaping (_ image: UIImage?, _ error: Error?) -> Void) {
+        
+        var imageName = ""
+        var bucketType: S3BucketType!
+        
+        if user.awsUser._userPoolUserId == competition.awsCompetition._user1userPoolUserId {
+            
+            switch competition.competitionType {
+            case .image:
+                imageName = competition.awsCompetition._user1ImageSmallId!
+                bucketType = .competitionImageSmall
+            case .video:
+                imageName = competition.awsCompetition._user1VideoPreviewImageSmallId!
+                bucketType = .competitionVideoPreviewImageSmall
+            }
+        }
+        else {
+            switch competition.competitionType {
+            case .image:
+                imageName = competition.awsCompetition._user2ImageSmallId!
+                bucketType = .competitionImageSmall
+            case .video:
+                imageName = competition.awsCompetition._user2VideoPreviewImageSmallId!
+                bucketType = .competitionVideoPreviewImageSmall
+            }
+        }
+        
+        S3BucketService.instance.downloadImage(
+            imageName: imageName,
+            bucketType: bucketType
+        ) { (image, error) in
+            completion(image, error)
+        }
+    }
 }

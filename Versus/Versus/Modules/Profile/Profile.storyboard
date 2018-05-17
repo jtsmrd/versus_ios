@@ -61,14 +61,14 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="69.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cIr-Un-NR5" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="cIr-Un-NR5" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
                                                     <rect key="frame" x="16" y="7.5" width="55.5" height="55.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="cIr-Un-NR5" secondAttribute="height" multiplier="1:1" id="j8h-Tt-AJP"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="color" keyPath="_backgroundColor">
-                                                            <color key="value" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <color key="value" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
@@ -498,14 +498,14 @@
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3Mq-jk-4x9">
                                                             <rect key="frame" x="0.0" y="0.0" width="143.5" height="109.5"/>
                                                             <subviews>
-                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile" translatesAutoresizingMaskIntoConstraints="NO" id="dls-EJ-tJO" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="dls-EJ-tJO" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
                                                                     <rect key="frame" x="38.5" y="8" width="66" height="65.5"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" secondItem="dls-EJ-tJO" secondAttribute="height" multiplier="1:1" id="abZ-vZ-q9e"/>
                                                                     </constraints>
                                                                     <userDefinedRuntimeAttributes>
                                                                         <userDefinedRuntimeAttribute type="color" keyPath="_backgroundColor">
-                                                                            <color key="value" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                            <color key="value" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                                                         </userDefinedRuntimeAttribute>
                                                                     </userDefinedRuntimeAttributes>
                                                                 </imageView>
@@ -964,14 +964,14 @@
                                                         <constraint firstItem="2eD-0l-BO1" firstAttribute="centerY" secondItem="r1z-WP-sV7" secondAttribute="centerY" id="xeU-4E-4LR"/>
                                                     </constraints>
                                                 </view>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile" translatesAutoresizingMaskIntoConstraints="NO" id="PnN-PP-KCI" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="PnN-PP-KCI" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
                                                     <rect key="frame" x="50" y="52.5" width="105" height="105"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="PnN-PP-KCI" secondAttribute="height" multiplier="1:1" id="Wen-wm-IGv"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="color" keyPath="_backgroundColor">
-                                                            <color key="value" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <color key="value" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>

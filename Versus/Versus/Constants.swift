@@ -61,6 +61,7 @@ let FOLLOWER_CELL = "FollowerCell"
 let SEARCH_USER_CELL = "SearchUserCell"
 let CATEGORY_CELL = "CategoryCell"
 let COMPETITION_CELL = "CompetitionCell"
+let NOTIFICATION_CELL = "NotificationCell"
 
 
 // CollectionViewCell Identifiers
@@ -94,3 +95,4 @@ let MAIN = "Main"
 let LOGIN = "Login"
 let PROFILE = "Profile"
 let COMPETITION = "Competition"
+let NOTIFICATIONS = "Notifications"
