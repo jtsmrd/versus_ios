@@ -136,7 +136,7 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     private func configureImagePicker() {
         imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        imagePicker.allowsEditing = true
+        imagePicker.allowsEditing = false
     }
     
     
@@ -234,6 +234,13 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     }
     
     
+    private func cropImage(image: UIImage, cropImageType: CropImageType) {
+        let editImageVC = UIStoryboard(name: EDIT_IMAGE, bundle: nil).instantiateInitialViewController() as! EditImageVC
+        editImageVC.initData(imageToCrop: image, cropImageType: cropImageType, delegate: self)
+        present(editImageVC, animated: true, completion: nil)
+    }
+    
+    
     // MARK: - UITextViewDelegate Functions
     
     func textViewDidChange(_ textView: UITextView) {
@@ -256,20 +263,33 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
 extension EditProfileVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        picker.dismiss(animated: true, completion: nil)
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             switch editImageType! {
             case .profile:
-                self.profileImage = image
-                self.profileImageView.image = image
+                cropImage(image: image, cropImageType: .circle)
             case .background:
-                self.backgroundImage = image
-                self.backgroundImageView.image = image
+                cropImage(image: image, cropImageType: .landscape)
             }
         }
-        picker.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
+    }
+}
+
+
+extension EditProfileVC: EditImageVCDelegate {
+    
+    func imageCropped(image: UIImage) {
+        switch editImageType! {
+        case .profile:
+            profileImage = image
+            profileImageView.image = image
+        case .background:
+            backgroundImage = image
+            backgroundImageView.image = image
+        }
     }
 }

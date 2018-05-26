@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fSp-8Z-aaP">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Edit ImageVC-->
+        <scene sceneID="8wT-a1-rUV">
+            <objects>
+                <viewController id="fSp-8Z-aaP" customClass="EditImageVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wDl-wt-Jcc">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gQ7-Wv-QF4" userLabel="Carved View">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <subviews>
+                                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="Fkw-tW-414">
+                                        <rect key="frame" x="0.0" y="145.5" width="375" height="375"/>
+                                        <gestureRecognizers/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="Fkw-tW-414" secondAttribute="height" multiplier="1:1" id="8ks-MD-Ii9"/>
+                                        </constraints>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="Ptk-oy-QGA" appends="YES" id="uPa-b3-BgB"/>
+                                            <outletCollection property="gestureRecognizers" destination="kKJ-8O-gQC" appends="YES" id="Ufe-nR-QgH"/>
+                                        </connections>
+                                    </imageView>
+                                    <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x2g-cP-AU1" customClass="CropView" customModule="Versus" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="Fkw-tW-414" firstAttribute="leading" secondItem="gQ7-Wv-QF4" secondAttribute="leading" id="1ii-Ke-RC0"/>
+                                    <constraint firstItem="x2g-cP-AU1" firstAttribute="leading" secondItem="gQ7-Wv-QF4" secondAttribute="leading" id="5l6-Jl-pQr"/>
+                                    <constraint firstAttribute="bottom" secondItem="x2g-cP-AU1" secondAttribute="bottom" id="Dyb-nu-6it"/>
+                                    <constraint firstItem="x2g-cP-AU1" firstAttribute="top" secondItem="gQ7-Wv-QF4" secondAttribute="top" id="IRJ-B8-RdU"/>
+                                    <constraint firstAttribute="trailing" secondItem="x2g-cP-AU1" secondAttribute="trailing" id="P03-dT-8fK"/>
+                                    <constraint firstAttribute="trailing" secondItem="Fkw-tW-414" secondAttribute="trailing" id="Woh-t3-JyO"/>
+                                    <constraint firstItem="Fkw-tW-414" firstAttribute="centerY" secondItem="gQ7-Wv-QF4" secondAttribute="centerY" id="loB-fb-07z"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Move and Scale" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0nq-lb-aqO">
+                                <rect key="frame" x="107.5" y="70" width="160" height="31"/>
+                                <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="22"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IDh-K0-zer">
+                                <rect key="frame" x="24" y="592" width="70" height="43"/>
+                                <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="22"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelButtonAction" destination="fSp-8Z-aaP" eventType="touchUpInside" id="Vfm-uY-OSu"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zB-6o-uci">
+                                <rect key="frame" x="273" y="592" width="78" height="43"/>
+                                <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="22"/>
+                                <state key="normal" title="Choose">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="chooseButtonAction" destination="fSp-8Z-aaP" eventType="touchUpInside" id="P6U-bt-Tht"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="gQ7-Wv-QF4" firstAttribute="top" secondItem="wDl-wt-Jcc" secondAttribute="top" id="0RD-G9-woG"/>
+                            <constraint firstItem="IDh-K0-zer" firstAttribute="leading" secondItem="bge-rO-u7F" secondAttribute="leading" constant="24" id="60c-6j-RYv"/>
+                            <constraint firstItem="bge-rO-u7F" firstAttribute="bottom" secondItem="gQ7-Wv-QF4" secondAttribute="bottom" id="KhF-X2-Rjc"/>
+                            <constraint firstItem="bge-rO-u7F" firstAttribute="trailing" secondItem="gQ7-Wv-QF4" secondAttribute="trailing" id="PqF-iA-AvS"/>
+                            <constraint firstItem="bge-rO-u7F" firstAttribute="bottom" secondItem="IDh-K0-zer" secondAttribute="bottom" constant="32" id="RxK-8T-f1R"/>
+                            <constraint firstItem="0nq-lb-aqO" firstAttribute="centerX" secondItem="wDl-wt-Jcc" secondAttribute="centerX" id="bG2-Xl-sDu"/>
+                            <constraint firstItem="gQ7-Wv-QF4" firstAttribute="leading" secondItem="bge-rO-u7F" secondAttribute="leading" id="dqY-7B-xj2"/>
+                            <constraint firstItem="bge-rO-u7F" firstAttribute="trailing" secondItem="1zB-6o-uci" secondAttribute="trailing" constant="24" id="dvt-d1-PMs"/>
+                            <constraint firstItem="bge-rO-u7F" firstAttribute="bottom" secondItem="1zB-6o-uci" secondAttribute="bottom" constant="32" id="kRV-Jf-b9T"/>
+                            <constraint firstItem="0nq-lb-aqO" firstAttribute="top" secondItem="bge-rO-u7F" secondAttribute="top" constant="50" id="xE2-nn-OQl"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="bge-rO-u7F"/>
+                    </view>
+                    <connections>
+                        <outlet property="carvingView" destination="gQ7-Wv-QF4" id="Let-id-DAS"/>
+                        <outlet property="cropView" destination="x2g-cP-AU1" id="23N-84-toe"/>
+                        <outlet property="imageView" destination="Fkw-tW-414" id="Gbt-ew-KyT"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pj3-Ke-V8f" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pinchGestureRecognizer id="Ptk-oy-QGA">
+                    <connections>
+                        <action selector="scaleImageAction:" destination="fSp-8Z-aaP" id="UdI-os-PIl"/>
+                        <outlet property="delegate" destination="fSp-8Z-aaP" id="A5N-cr-ezh"/>
+                    </connections>
+                </pinchGestureRecognizer>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="kKJ-8O-gQC">
+                    <connections>
+                        <action selector="moveImageAction:" destination="fSp-8Z-aaP" id="tHs-md-0bz"/>
+                        <outlet property="delegate" destination="fSp-8Z-aaP" id="fR2-qJ-uJu"/>
+                    </connections>
+                </panGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="90" y="156"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="default-profile" width="376" height="376"/>
+    </resources>
+</document>
