@@ -24,8 +24,21 @@ class SearchVC: UIViewController {
     var selectedCategoryIndexPath: IndexPath?
     let leaderboardCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     let browseCategoryCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
-    var leaderboardCategoryContainerViewHeight: CGFloat = 0
+    
+    
+    // Used to handle expanding and collapsing leaderboardCategoryContainerView
     var previousBrowseTableViewContentOffsetY: CGFloat = 0
+    let expandedConstant: CGFloat = 0.0
+    lazy var collapsedConstant: CGFloat = {
+        return -leaderboardCategoryContainerView.frame.height
+    }()
+    var leaderboardCategoryContainerViewCollapsed: Bool {
+        return leaderboardCategoryContainerViewTop.constant == collapsedConstant
+    }
+    var leaderboardCategoryContainerViewExpanded: Bool {
+        return leaderboardCategoryContainerViewTop.constant == expandedConstant
+    }
+    var browseTableViewIsScrollingUp = false
     
     let testLeaderboardNames = ["Weekly Leaders", "Monthly Leaders", "All-Time Leaders"]
     
@@ -42,8 +55,6 @@ class SearchVC: UIViewController {
     }
 
     private func configureView() {
-        
-        leaderboardCategoryContainerViewHeight = leaderboardCategoryContainerView.frame.height
         
         getFeaturedCompetitions()
         
@@ -101,18 +112,17 @@ class SearchVC: UIViewController {
     }
     
     
+    // When the user scrolls down, push the leaderboard category container view up under the search bar.
+    // When the user scrolls up, and they're at the top of the table view, pull the leaderboard category
+    // container view back down.
     private func handleBrowseTableViewScroll(scrollView: UIScrollView) {
         
         let deltaY = abs(scrollView.contentOffset.y)
-        let collapsedConstant: CGFloat = -leaderboardCategoryContainerViewHeight
-        let expandedConstant: CGFloat = 0.0
-        let viewCollapsed = leaderboardCategoryContainerViewTop.constant == collapsedConstant
-        let viewExpanded = leaderboardCategoryContainerViewTop.constant == expandedConstant
-        
         
         // Scrolling down
         if previousBrowseTableViewContentOffsetY < scrollView.contentOffset.y {
-            if scrollView.contentOffset.y >= 0.0 && !viewCollapsed {
+            browseTableViewIsScrollingUp = false
+            if scrollView.contentOffset.y >= 0.0 && !leaderboardCategoryContainerViewCollapsed {
                 leaderboardCategoryContainerViewTop.constant -= deltaY
                 if leaderboardCategoryContainerViewTop.constant < collapsedConstant {
                     leaderboardCategoryContainerViewTop.constant = collapsedConstant
@@ -121,7 +131,8 @@ class SearchVC: UIViewController {
             }
         }
         else if previousBrowseTableViewContentOffsetY > scrollView.contentOffset.y {
-            if scrollView.contentOffset.y <= 0.0 && !viewExpanded {
+            browseTableViewIsScrollingUp = true
+            if scrollView.contentOffset.y <= 0.0 && !leaderboardCategoryContainerViewExpanded {
                 leaderboardCategoryContainerViewTop.constant += deltaY
                 if leaderboardCategoryContainerViewTop.constant > expandedConstant {
                     leaderboardCategoryContainerViewTop.constant = expandedConstant
@@ -129,8 +140,22 @@ class SearchVC: UIViewController {
                 scrollView.contentOffset.y = 0.0
             }
         }
-        
         previousBrowseTableViewContentOffsetY = scrollView.contentOffset.y
+    }
+    
+    
+    // When the user scrolls to the top of the browse table view and the leaderboard category container view
+    // is being expanded, animate the remainder of the expansion.
+    private func expandLeaderboardCategoriesViewIfNeeded() {
+        if leaderboardCategoryContainerViewTop.constant > collapsedConstant &&
+            leaderboardCategoryContainerViewTop.constant != expandedConstant &&
+            browseTableViewIsScrollingUp {
+            
+            UIView.animate(withDuration: 0.3) {
+                self.leaderboardCategoryContainerViewTop.constant = 0
+                self.view.layoutIfNeeded()
+            }
+        }
     }
     
     
@@ -214,8 +239,20 @@ extension SearchVC: UITableViewDelegate {
     
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
         handleBrowseTableViewScroll(scrollView: scrollView)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        
+        // If the scroll view will decelerate then scrollViewDidEndDecelerating will be called instead.
+        // We don't want to expand twice
+        if !decelerate {
+            expandLeaderboardCategoriesViewIfNeeded()
+        }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        expandLeaderboardCategoriesViewIfNeeded()
     }
 }
 
