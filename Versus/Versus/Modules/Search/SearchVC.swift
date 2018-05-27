@@ -13,15 +13,19 @@ class SearchVC: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var browseTableView: UITableView!
     @IBOutlet weak var searchUserTableView: UITableView!
+    @IBOutlet weak var leaderboardCategoryContainerView: UIView!
     @IBOutlet weak var leaderboardCollectionView: UICollectionView!
     @IBOutlet weak var browseCategoryCollectionView: UICollectionView!
     
+    @IBOutlet weak var leaderboardCategoryContainerViewTop: NSLayoutConstraint!
     
     var searchResultUsers = [User]()
     var featuredCompetitions = [Competition]()
     var selectedCategoryIndexPath: IndexPath?
     let leaderboardCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     let browseCategoryCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    var leaderboardCategoryContainerViewHeight: CGFloat = 0
+    var previousBrowseTableViewContentOffsetY: CGFloat = 0
     
     let testLeaderboardNames = ["Weekly Leaders", "Monthly Leaders", "All-Time Leaders"]
     
@@ -38,6 +42,8 @@ class SearchVC: UIViewController {
     }
 
     private func configureView() {
+        
+        leaderboardCategoryContainerViewHeight = leaderboardCategoryContainerView.frame.height
         
         getFeaturedCompetitions()
         
@@ -92,6 +98,39 @@ class SearchVC: UIViewController {
             viewCompetitionVC.initData(competition: competition)
             navigationController?.pushViewController(viewCompetitionVC, animated: true)
         }
+    }
+    
+    
+    private func handleBrowseTableViewScroll(scrollView: UIScrollView) {
+        
+        let deltaY = abs(scrollView.contentOffset.y)
+        let collapsedConstant: CGFloat = -leaderboardCategoryContainerViewHeight
+        let expandedConstant: CGFloat = 0.0
+        let viewCollapsed = leaderboardCategoryContainerViewTop.constant == collapsedConstant
+        let viewExpanded = leaderboardCategoryContainerViewTop.constant == expandedConstant
+        
+        
+        // Scrolling down
+        if previousBrowseTableViewContentOffsetY < scrollView.contentOffset.y {
+            if scrollView.contentOffset.y >= 0.0 && !viewCollapsed {
+                leaderboardCategoryContainerViewTop.constant -= deltaY
+                if leaderboardCategoryContainerViewTop.constant < collapsedConstant {
+                    leaderboardCategoryContainerViewTop.constant = collapsedConstant
+                }
+                scrollView.contentOffset.y = 0.0
+            }
+        }
+        else if previousBrowseTableViewContentOffsetY > scrollView.contentOffset.y {
+            if scrollView.contentOffset.y <= 0.0 && !viewExpanded {
+                leaderboardCategoryContainerViewTop.constant += deltaY
+                if leaderboardCategoryContainerViewTop.constant > expandedConstant {
+                    leaderboardCategoryContainerViewTop.constant = expandedConstant
+                }
+                scrollView.contentOffset.y = 0.0
+            }
+        }
+        
+        previousBrowseTableViewContentOffsetY = scrollView.contentOffset.y
     }
     
     
@@ -171,6 +210,12 @@ extension SearchVC: UITableViewDelegate {
             }
         }
         tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        handleBrowseTableViewScroll(scrollView: scrollView)
     }
 }
 
