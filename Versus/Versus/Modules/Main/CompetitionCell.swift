@@ -37,15 +37,53 @@ class CompetitionCell: UITableViewCell {
     
     func configureCell(competition: Competition) {
         
-        competition.getUser1CompetitionImageSmall { (competitionImage) in
-            DispatchQueue.main.async {
-                self.user1ImageView.image = competitionImage
+        switch competition.competitionType {
+        case .image:
+            
+            competition.getCompetitionImage(for: .user1, bucketType: .competitionImageSmall) { (image, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.parentViewController?.displayError(error: error)
+                    }
+                    else {
+                        self.user1ImageView.image = image
+                    }
+                }
             }
-        }
-        
-        competition.getUser2CompetitionImageSmall { (competitionImage) in
-            DispatchQueue.main.async {
-                self.user2ImageView.image = competitionImage
+            
+            competition.getCompetitionImage(for: .user2, bucketType: .competitionImageSmall) { (image, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.parentViewController?.displayError(error: error)
+                    }
+                    else {
+                        self.user2ImageView.image = image
+                    }
+                }
+            }
+            
+        case .video:
+            
+            competition.getCompetitionImage(for: .user1, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.parentViewController?.displayError(error: error)
+                    }
+                    else {
+                        self.user1ImageView.image = image
+                    }
+                }
+            }
+            
+            competition.getCompetitionImage(for: .user2, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.parentViewController?.displayError(error: error)
+                    }
+                    else {
+                        self.user2ImageView.image = image
+                    }
+                }
             }
         }
         
@@ -54,10 +92,10 @@ class CompetitionCell: UITableViewCell {
         categoryBarView.backgroundColor = competition.competitionCategoryColor
         competitionCategoryImageView.image = competition.competitionCategoryIconImage
         
-        user1RankImageView.image = competition.user1RankImage
-        user1UsernameLabel.text = competition.user1Username
+        user1RankImageView.image = competition.userRankImage(for: .user1)
+        user1UsernameLabel.text = competition.username(for: .user1)
         
-        user2RankImageView.image = competition.user2RankImage
-        user2UsernameLabel.text = competition.user2Username
+        user2RankImageView.image = competition.userRankImage(for: .user2)
+        user2UsernameLabel.text = competition.username(for: .user2)
     }
 }

@@ -109,7 +109,7 @@ class CompetitionDetailsVC: UIViewController {
             }
             
             uploadMediaDispatchGroup.enter()
-            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionVideoPreviewImage!, bucketType: .competitionVideoPreviewImage, competitionImageSizeType: .small) { (imageFilename) in
+            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionVideoPreviewImage!, bucketType: .competitionVideoPreviewImageSmall, competitionImageSizeType: .small) { (imageFilename) in
                 if let imageFilename = imageFilename {
                     competitionVideoPreviewImageSmallFilename = imageFilename
                 }

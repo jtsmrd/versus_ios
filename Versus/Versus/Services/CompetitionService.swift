@@ -149,33 +149,49 @@ class CompetitionService {
     }
     
     
+    // Download the competition image corresponding to the competitionUser and bucketType
     func getCompetitionImage(
-        for user: User,
+        for competitionUser: CompetitionUser,
         competition: Competition,
+        bucketType: S3BucketType,
         completion: @escaping (_ image: UIImage?, _ error: Error?) -> Void) {
         
         var imageName = ""
-        var bucketType: S3BucketType!
         
-        if user.awsUser._userPoolUserId == competition.awsCompetition._user1userPoolUserId {
+        // Get the appropriate image name for each combination of user/ bucket type
+        switch competitionUser {
+        case .user1:
             
-            switch competition.competitionType {
-            case .image:
+            switch bucketType {
+            case .profileImage, .profileImageSmall, .profileBackgroundImage:
+                imageName = competition.awsCompetition._user1userPoolUserId!
+            case .competitionImage:
+                imageName = competition.awsCompetition._user1ImageId!
+            case .competitionImageSmall:
                 imageName = competition.awsCompetition._user1ImageSmallId!
-                bucketType = .competitionImageSmall
-            case .video:
+            case .competitionVideoPreviewImage:
+                imageName = competition.awsCompetition._user1VideoPreviewImageId!
+            case .competitionVideoPreviewImageSmall:
                 imageName = competition.awsCompetition._user1VideoPreviewImageSmallId!
-                bucketType = .competitionVideoPreviewImageSmall
+            case .competitionVideo:
+                break
             }
-        }
-        else {
-            switch competition.competitionType {
-            case .image:
+            
+        case .user2:
+            
+            switch bucketType {
+            case .profileImage, .profileImageSmall, .profileBackgroundImage:
+                imageName = competition.awsCompetition._user2userPoolUserId!
+            case .competitionImage:
+                imageName = competition.awsCompetition._user2ImageId!
+            case .competitionImageSmall:
                 imageName = competition.awsCompetition._user2ImageSmallId!
-                bucketType = .competitionImageSmall
-            case .video:
+            case .competitionVideoPreviewImage:
+                imageName = competition.awsCompetition._user2VideoPreviewImageId!
+            case .competitionVideoPreviewImageSmall:
                 imageName = competition.awsCompetition._user2VideoPreviewImageSmallId!
-                bucketType = .competitionVideoPreviewImageSmall
+            case .competitionVideo:
+                break
             }
         }
         

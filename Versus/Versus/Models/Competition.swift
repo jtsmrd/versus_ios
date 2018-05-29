@@ -8,39 +8,31 @@
 
 import UIKit
 
+enum CompetitionUser {
+    case user1
+    case user2
+}
+
 class Competition {
     
     var awsCompetition: AWSCompetition!
-    var user1CompetitionImageSmall: UIImage?
-    var user1CompetitionImage: UIImage?
-    var user2CompetitionImageSmall: UIImage?
-    var user2CompetitionImage: UIImage?
+    
     var user1ProfileImage: UIImage?
+    var user1ProfileImageSmall: UIImage?
+    var user1ProfileBackgroundImage: UIImage?
+    var user1CompetitionImage: UIImage?
+    var user1CompetitionImageSmall: UIImage?
+    var user1CompetitionVideoPreviewImage: UIImage?
+    var user1CompetitionVideoPreviewImageSmall: UIImage?
+    
     var user2ProfileImage: UIImage?
+    var user2ProfileImageSmall: UIImage?
+    var user2ProfileBackgroundImage: UIImage?
+    var user2CompetitionImage: UIImage?
+    var user2CompetitionImageSmall: UIImage?
+    var user2CompetitionVideoPreviewImage: UIImage?
+    var user2CompetitionVideoPreviewImageSmall: UIImage?
     
-    var user1Username: String {
-        get {
-            return "@\(awsCompetition._user1Username!)"
-        }
-    }
-    
-    var user2Username: String {
-        get {
-            return "@\(awsCompetition._user2Username!)"
-        }
-    }
-    
-    var user1RankImage: UIImage? {
-        get {
-            return RankCollection.instance.rankIconFor(rankId: awsCompetition._user1RankId as! Int)
-        }
-    }
-    
-    var user2RankImage: UIImage? {
-        get {
-            return RankCollection.instance.rankIconFor(rankId: awsCompetition._user2RankId as! Int)
-        }
-    }
     
     var competitionType: CompetitionType {
         get {
@@ -64,104 +56,146 @@ class Competition {
         self.awsCompetition = awsCompetition
     }
     
-    func getUser1ProfileImage(completion: @escaping (UIImage?) -> Void) {
-        guard user1ProfileImage == nil else {
-            completion(user1ProfileImage)
-            return
-        }
-        S3BucketService.instance.downloadImage(imageName: awsCompetition._user1userPoolUserId!, bucketType: .profileImage) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download user1 profile image: \(error.localizedDescription)")
-                completion(nil)
-            }
-            else if let image = image {
-                self.user1ProfileImage = image
-                completion(image)
-            }
+    
+    // Returns the username for the specified CompetitionUser
+    func username(for competitionUser: CompetitionUser) -> String {
+        switch competitionUser {
+        case .user1:
+            return "@\(awsCompetition._user1Username!)"
+        case .user2:
+            return "@\(awsCompetition._user2Username!)"
         }
     }
     
-    func getUser2ProfileImage(completion: @escaping (UIImage?) -> Void) {
-        guard user2ProfileImage == nil else {
-            completion(user2ProfileImage)
-            return
-        }
-        S3BucketService.instance.downloadImage(imageName: awsCompetition._user2userPoolUserId!, bucketType: .profileImage) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download user2 profile image: \(error.localizedDescription)")
-                completion(nil)
-            }
-            else if let image = image {
-                self.user2ProfileImage = image
-                completion(image)
-            }
+    
+    func userRankImage(for competitionUser: CompetitionUser) -> UIImage? {
+        switch competitionUser {
+        case .user1:
+            return RankCollection.instance.rankIconFor(rankId: awsCompetition._user1RankId as! Int)
+        case .user2:
+            return RankCollection.instance.rankIconFor(rankId: awsCompetition._user2RankId as! Int)
         }
     }
     
-    func getUser1CompetitionImageSmall(completion: @escaping (UIImage?) -> Void) {
-        guard user1CompetitionImageSmall == nil else {
-            completion(user1CompetitionImageSmall)
-            return
-        }
-        S3BucketService.instance.downloadImage(imageName: awsCompetition._user1ImageSmallId!, bucketType: .competitionImageSmall) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download user1 competition image small: \(error.localizedDescription)")
-                completion(nil)
-            }
-            else if let image = image {
-                self.user1CompetitionImageSmall = image
-                completion(image)
-            }
-        }
-    }
     
-    func getUser1CompetitionImage(completion: @escaping (UIImage?) -> Void) {
-        guard user1CompetitionImage == nil else {
-            completion(user1CompetitionImage)
+    // Download the competition image corresponding to the competitionUser and bucketType
+    func getCompetitionImage(
+        for competitionUser: CompetitionUser,
+        bucketType: S3BucketType,
+        completion: @escaping (UIImage?, CustomError?) -> Void
+    ) {
+        
+        // This shouldn't happen, unless the video bucket type is specified in code, which doesn't make sense
+        guard bucketType != .competitionVideo else {
+            completion(nil, nil)
             return
         }
-        S3BucketService.instance.downloadImage(imageName: awsCompetition._user1ImageId!, bucketType: .competitionImage) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download user1 competition image: \(error.localizedDescription)")
-                completion(nil)
+        
+        // If the image was already downloaded, return the existing image
+        var existingImage: UIImage?
+        switch competitionUser {
+        case .user1:
+            
+            switch bucketType {
+            case .profileImage:
+                existingImage = user1ProfileImage
+            case .profileImageSmall:
+                existingImage = user1ProfileImageSmall
+            case .profileBackgroundImage:
+                existingImage = user1ProfileBackgroundImage
+            case .competitionImage:
+                existingImage = user1CompetitionImage
+            case .competitionImageSmall:
+                existingImage = user1CompetitionImageSmall
+            case .competitionVideoPreviewImage:
+                existingImage = user1CompetitionVideoPreviewImage
+            case .competitionVideoPreviewImageSmall:
+                existingImage = user1CompetitionVideoPreviewImageSmall
+            case .competitionVideo:
+                break
             }
-            else if let image = image {
-                self.user1CompetitionImage = image
-                completion(image)
+            
+        case .user2:
+            
+            switch bucketType {
+            case .profileImage:
+                existingImage = user2ProfileImage
+            case .profileImageSmall:
+                existingImage = user2ProfileImageSmall
+            case .profileBackgroundImage:
+                existingImage = user2ProfileBackgroundImage
+            case .competitionImage:
+                existingImage = user2CompetitionImage
+            case .competitionImageSmall:
+                existingImage = user2CompetitionImageSmall
+            case .competitionVideoPreviewImage:
+                existingImage = user2CompetitionVideoPreviewImage
+            case .competitionVideoPreviewImageSmall:
+                existingImage = user2CompetitionVideoPreviewImageSmall
+            case .competitionVideo:
+                break
             }
         }
-    }
-    
-    func getUser2CompetitionImageSmall(completion: @escaping (UIImage?) -> Void) {
-        guard user2CompetitionImageSmall == nil else {
-            completion(user2CompetitionImageSmall)
+        
+        if let image = existingImage {
+            completion(image, nil)
             return
         }
-        S3BucketService.instance.downloadImage(imageName: awsCompetition._user2ImageSmallId!, bucketType: .competitionImageSmall) { (image, error) in
+        
+        CompetitionService.instance.getCompetitionImage(
+            for: competitionUser,
+            competition: self,
+            bucketType: bucketType
+        ) { (image, error) in
             if let error = error {
-                debugPrint("Could not download user2 competition image: \(error.localizedDescription)")
-                completion(nil)
+                completion(nil, CustomError(error: error, title: "", desc: "Could not download competition image."))
             }
             else if let image = image {
-                self.user2CompetitionImageSmall = image
-                completion(image)
-            }
-        }
-    }
-    
-    func getUser2CompetitionImage(completion: @escaping (UIImage?) -> Void) {
-        guard user2CompetitionImage == nil else {
-            completion(user2CompetitionImage)
-            return
-        }
-        S3BucketService.instance.downloadImage(imageName: awsCompetition._user2ImageId!, bucketType: .competitionImage) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download user2 competition image: \(error.localizedDescription)")
-                completion(nil)
-            }
-            else if let image = image {
-                self.user2CompetitionImage = image
-                completion(image)
+                
+                switch competitionUser {
+                case .user1:
+                    
+                    switch bucketType {
+                    case .profileImage:
+                        self.user1ProfileImage = image
+                    case .profileImageSmall:
+                        self.user1ProfileImageSmall = image
+                    case .profileBackgroundImage:
+                        self.user1ProfileBackgroundImage = image
+                    case .competitionImage:
+                        self.user1CompetitionImage = image
+                    case .competitionImageSmall:
+                        self.user1CompetitionImageSmall = image
+                    case .competitionVideoPreviewImage:
+                        self.user1CompetitionVideoPreviewImage = image
+                    case .competitionVideoPreviewImageSmall:
+                        self.user1CompetitionVideoPreviewImageSmall = image
+                    case .competitionVideo:
+                        break
+                    }
+                    
+                case .user2:
+                    
+                    switch bucketType {
+                    case .profileImage:
+                        self.user2ProfileImage = image
+                    case .profileImageSmall:
+                        self.user2ProfileImageSmall = image
+                    case .profileBackgroundImage:
+                        self.user2ProfileBackgroundImage = image
+                    case .competitionImage:
+                        self.user2CompetitionImage = image
+                    case .competitionImageSmall:
+                        self.user2CompetitionImageSmall = image
+                    case .competitionVideoPreviewImage:
+                        self.user2CompetitionVideoPreviewImage = image
+                    case .competitionVideoPreviewImageSmall:
+                        self.user2CompetitionVideoPreviewImageSmall = image
+                    case .competitionVideo:
+                        break
+                    }
+                }
+                completion(image, nil)
             }
         }
     }

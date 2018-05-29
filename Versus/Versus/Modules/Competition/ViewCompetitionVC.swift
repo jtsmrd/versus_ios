@@ -9,11 +9,6 @@
 import UIKit
 
 class ViewCompetitionVC: UIViewController {
-
-    enum SelectedUser {
-        case user1
-        case user2
-    }
     
     enum VotedCompetition {
         case user1
@@ -50,7 +45,7 @@ class ViewCompetitionVC: UIViewController {
     
     
     var competition: Competition!
-    var selectedUser: SelectedUser = .user1
+    var selectedUser: CompetitionUser = .user1
     var votedCompetition: VotedCompetition = .none
     let collectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
@@ -72,12 +67,26 @@ class ViewCompetitionVC: UIViewController {
     func initData(competition: Competition) {
         self.competition = competition
         
-        competition.getUser1CompetitionImage { (image) in
+        //TODO: Move this down to configure view or elsewhere when download latency is decreased
+        switch competition.competitionType {
+        case .image:
             
-        }
-        
-        competition.getUser2CompetitionImage { (image) in
+            competition.getCompetitionImage(for: .user1, bucketType: .competitionImage) { (image, error) in
+                
+            }
             
+            competition.getCompetitionImage(for: .user2, bucketType: .competitionImage) { (image, error) in
+                
+            }
+        case .video:
+            
+            competition.getCompetitionImage(for: .user1, bucketType: .competitionVideoPreviewImage) { (image, error) in
+                
+            }
+            
+            competition.getCompetitionImage(for: .user2, bucketType: .competitionVideoPreviewImage) { (image, error) in
+                
+            }
         }
     }
     
@@ -155,20 +164,30 @@ class ViewCompetitionVC: UIViewController {
             competitionImageContainerView.isHidden = true
         }
         displayCompetitionMedia()
-        user1RankImageView.image = competition.user1RankImage
-        user1UsernameLabel.text = competition.user1Username
-        user2RankImageView.image = competition.user2RankImage
-        user2UsernameLabel.text = competition.user2Username
+        user1RankImageView.image = competition.userRankImage(for: .user1)
+        user1UsernameLabel.text = competition.username(for: .user1)
+        user2RankImageView.image = competition.userRankImage(for: .user2)
+        user2UsernameLabel.text = competition.username(for: .user2)
         
-        competition.getUser1ProfileImage { (image) in
+        competition.getCompetitionImage(for: .user1, bucketType: .profileImageSmall) { (image, error) in
             DispatchQueue.main.async {
-                self.user1SelectorButton._imageView.image = image
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else {
+                    self.user1SelectorButton._imageView.image = image
+                }
             }
         }
         
-        competition.getUser2ProfileImage { (image) in
+        competition.getCompetitionImage(for: .user2, bucketType: .profileImageSmall) { (image, error) in
             DispatchQueue.main.async {
-                self.user2SelectorButton._imageView.image = image
+                if let error = error {
+                    self.displayError(error: error)
+                }
+                else {
+                    self.user2SelectorButton._imageView.image = image
+                }
             }
         }
         
@@ -188,29 +207,35 @@ class ViewCompetitionVC: UIViewController {
     }
     
     private func displayCompetitionMedia() {
-        switch selectedUser {
-        case .user1:
-            switch competition.competitionType {
-            case .image:
-                competition.getUser1CompetitionImage { (image) in
-                    DispatchQueue.main.async {
+        
+        let competitionUser: CompetitionUser = selectedUser == .user1 ? .user1 : .user2
+        
+        switch competition.competitionType {
+        case .image:
+            
+            competition.getCompetitionImage(for: competitionUser, bucketType: .competitionImage) { (image, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.displayError(error: error)
+                    }
+                    else {
                         self.competitionImageImageView.image = image
                     }
                 }
-            case .video:
-                print()
             }
-        case .user2:
-            switch competition.competitionType {
-            case .image:
-                competition.getUser2CompetitionImage { (image) in
-                    DispatchQueue.main.async {
-                        self.competitionImageImageView.image = image
-                    }
-                }
-            case .video:
+            
+        case .video:
                 print()
-            }
+//            competition.getCompetitionImage(for: competitionUser, bucketType: .competitionVideoPreviewImage) { (image, error) in
+//                DispatchQueue.main.async {
+//                    if let error = error {
+//                        self.displayError(error: error)
+//                    }
+//                    else {
+//                        self.competitionImageImageView.image = image
+//                    }
+//                }
+//            }
         }
     }
     

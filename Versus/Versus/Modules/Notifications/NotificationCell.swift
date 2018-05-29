@@ -63,16 +63,33 @@ class NotificationCell: UITableViewCell {
                     }
                     else if let competition = competition {
                         
-                        CompetitionService.instance.getCompetitionImage(for: CurrentUser.user, competition: competition, completion: { (image, error) in
-                            DispatchQueue.main.async {
-                                if let error = error {
-                                    self.parentViewController?.displayError(error: CustomError(error: error, title: "", desc: "Unable to load competition image"))
-                                }
-                                else if let image = image {
-                                    self.competitionImageView.image = image
+                        // We want to display the competition image for the current user,
+                        // so just check if the CurrentUser userPoolUserId matches user1 or user 2.
+                        let competitionUser: CompetitionUser = competition.awsCompetition._user1userPoolUserId! == CurrentUser.userPoolUserId ? .user1 : .user2
+                        
+                        var bucketType: S3BucketType!
+                        
+                        switch competition.competitionType {
+                        case .image:
+                            bucketType = .competitionImageSmall
+                        case .video:
+                            bucketType = .competitionVideoPreviewImageSmall
+                        }
+                        
+                        competition.getCompetitionImage(
+                            for: competitionUser,
+                            bucketType: bucketType,
+                            completion: { (image, error) in
+                                DispatchQueue.main.async {
+                                    if let error = error {
+                                        self.parentViewController?.displayError(error: error)
+                                    }
+                                    else {
+                                        self.competitionImageView.image = image
+                                    }
                                 }
                             }
-                        })
+                        )
                     }
                 }
             }

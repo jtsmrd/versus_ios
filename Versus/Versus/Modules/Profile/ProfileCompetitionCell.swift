@@ -14,29 +14,35 @@ class ProfileCompetitionCell: UICollectionViewCell {
     
     func configureCell(competition: Competition) {
 
-        if CurrentUser.userPoolUserId == competition.awsCompetition._user1userPoolUserId {
-            switch competition.competitionType {
-            case .image:
-                competition.getUser1CompetitionImage { (image) in
-                    DispatchQueue.main.async {
-                        self.competitionImageView.image = competition.user1CompetitionImage
-                    }
-                }
-            case .video:
-                print()
-            }
-        }
-        else if CurrentUser.userPoolUserId == competition.awsCompetition._user2userPoolUserId {
+        // We want to display the competition image for the current user,
+        // so just check if the CurrentUser userPoolUserId matches user1 or user 2.
+        let competitionUser: CompetitionUser = competition.awsCompetition._user1userPoolUserId! == CurrentUser.userPoolUserId ? .user1 : .user2
+        
+        switch competition.competitionType {
+        case .image:
             
-            switch competition.competitionType {
-            case .image:
-                competition.getUser2CompetitionImage { (image) in
-                    DispatchQueue.main.async {
-                        self.competitionImageView.image = competition.user2CompetitionImage
+            competition.getCompetitionImage(for: competitionUser, bucketType: .competitionImageSmall) { (image, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.parentViewController?.displayError(error: error)
+                    }
+                    else {
+                        self.competitionImageView.image = image
                     }
                 }
-            case .video:
-                print()
+            }
+            
+        case .video:
+            
+            competition.getCompetitionImage(for: competitionUser, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.parentViewController?.displayError(error: error)
+                    }
+                    else {
+                        self.competitionImageView.image = image
+                    }
+                }
             }
         }
     }
