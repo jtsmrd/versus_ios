@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 
 class ViewCompetitionVC: UIViewController {
     
@@ -21,6 +22,8 @@ class ViewCompetitionVC: UIViewController {
     @IBOutlet weak var competitionImageContainerView: UIView!
     @IBOutlet weak var competitionImageImageView: UIImageView!
     @IBOutlet weak var competitionVideoContainerView: UIView!
+    @IBOutlet weak var competitionVideoPreviewImageView: UIImageView!
+    @IBOutlet weak var competitionVideoActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var numberOfCommentsLabel: UILabel!
     @IBOutlet weak var numberOfVotesLabel: UILabel!
     @IBOutlet weak var voteButton: UIButton!
@@ -49,11 +52,16 @@ class ViewCompetitionVC: UIViewController {
     var votedCompetition: VotedCompetition = .none
     let collectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
+    var user1VideoAVUrlAsset: AVURLAsset?
+    var user2VideoAVUrlAsset: AVURLAsset?
+    var playerLayer: AVPlayerLayer!
+    var competitionAVPlayer: AVPlayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureView()
+        configureCompetitionAVPlayer()
         
         let imageVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
         imageVoteGestureRecognizer.numberOfTapsRequired = 2
@@ -63,7 +71,7 @@ class ViewCompetitionVC: UIViewController {
         videoVoteGestureRecognizer.numberOfTapsRequired = 2
         competitionVideoContainerView.addGestureRecognizer(videoVoteGestureRecognizer)
     }
-
+    
     func initData(competition: Competition) {
         self.competition = competition
         
@@ -86,6 +94,26 @@ class ViewCompetitionVC: UIViewController {
             
             competition.getCompetitionImage(for: .user2, bucketType: .competitionVideoPreviewImage) { (image, error) in
                 
+            }
+            
+            CompetitionService.instance.getCompetitionVideo(for: .user1, competition: competition) { (asset, error) in
+                if let error = error {
+                    self.displayError(error: CustomError(error: error, title: "", desc: "Could not download User1 video"))
+                }
+                else if let asset = asset {
+                    self.user1VideoAVUrlAsset = asset
+                    self.competitionAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: self.user1VideoAVUrlAsset!))
+                    self.competitionAVPlayer.play()
+                }
+            }
+            
+            CompetitionService.instance.getCompetitionVideo(for: .user2, competition: competition) { (asset, error) in
+                if let error = error {
+                    self.displayError(error: CustomError(error: error, title: "", desc: "Could not download User2 video"))
+                }
+                else if let asset = asset {
+                    self.user2VideoAVUrlAsset = asset
+                }
             }
         }
     }
@@ -163,6 +191,7 @@ class ViewCompetitionVC: UIViewController {
             competitionVideoContainerView.isHidden = false
             competitionImageContainerView.isHidden = true
         }
+        
         displayCompetitionMedia()
         user1RankImageView.image = competition.userRankImage(for: .user1)
         user1UsernameLabel.text = competition.username(for: .user1)
@@ -225,18 +254,55 @@ class ViewCompetitionVC: UIViewController {
             }
             
         case .video:
-                print()
-//            competition.getCompetitionImage(for: competitionUser, bucketType: .competitionVideoPreviewImage) { (image, error) in
-//                DispatchQueue.main.async {
-//                    if let error = error {
-//                        self.displayError(error: error)
-//                    }
-//                    else {
-//                        self.competitionImageImageView.image = image
-//                    }
-//                }
-//            }
+            
+            var videoAsset: AVURLAsset?
+            var competitionUser: CompetitionUser!
+            
+            switch selectedUser {
+            case .user1:
+                
+                videoAsset = user1VideoAVUrlAsset
+                competitionUser = .user1
+            case .user2:
+                videoAsset = user2VideoAVUrlAsset
+                competitionUser = .user2
+            }
+            
+            if let competitionVideoAsset = videoAsset {
+                competitionVideoPreviewImageView.isHidden = true
+                competitionVideoActivityIndicator.stopAnimating()
+                competitionAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: competitionVideoAsset))
+                competitionAVPlayer.play()
+            }
+            else {
+                competition.getCompetitionImage(
+                    for: competitionUser,
+                    bucketType: .competitionVideoPreviewImage
+                ) { (image, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.displayError(error: error)
+                        }
+                        else {
+                            self.competitionAVPlayer.replaceCurrentItem(with: nil)
+                            self.competitionVideoActivityIndicator.startAnimating()
+                            self.competitionVideoPreviewImageView.isHidden = false
+                            self.competitionVideoPreviewImageView.image = image
+                        }
+                    }
+                }
+            }
         }
+    }
+    
+    
+    private func configureCompetitionAVPlayer() {
+        playerLayer = AVPlayerLayer()
+        competitionAVPlayer = AVPlayer()
+        playerLayer.player = competitionAVPlayer
+        playerLayer.frame = CGRect(origin: .zero, size: competitionVideoContainerView.frame.size)
+        playerLayer.videoGravity = .resizeAspectFill
+        competitionVideoContainerView.layer.addSublayer(playerLayer)
     }
     
     

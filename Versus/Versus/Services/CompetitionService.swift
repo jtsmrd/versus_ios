@@ -7,6 +7,7 @@
 //
 
 import AWSDynamoDB
+import AVKit
 
 class CompetitionService {
     
@@ -200,6 +201,28 @@ class CompetitionService {
             bucketType: bucketType
         ) { (image, error) in
             completion(image, error)
+        }
+    }
+    
+    func getCompetitionVideo(
+        for competitionUser: CompetitionUser,
+        competition: Competition,
+        completion: @escaping (_ videoAsset: AVURLAsset?, _ error: Error?) -> Void) {
+        
+        var videoName = ""
+        
+        switch competitionUser {
+        case .user1:
+            videoName = competition.awsCompetition._user1VideoId!
+        case .user2:
+            videoName = competition.awsCompetition._user2VideoId!
+        }
+        
+        S3BucketService.instance.downloadVideo(
+            videoName: videoName,
+            bucketType: .competitionVideo
+        ) { (asset, error) in
+            completion(asset, error)
         }
     }
 }

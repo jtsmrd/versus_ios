@@ -36,6 +36,22 @@
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RdB-l6-0Nz" userLabel="Competition Video Container View">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <subviews>
+                                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="z3L-Wx-Yfd">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                                    </imageView>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="2h3-dz-bjx">
+                                        <rect key="frame" x="169" y="305" width="37" height="37"/>
+                                    </activityIndicatorView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="z3L-Wx-Yfd" secondAttribute="trailing" id="5a8-QO-MuS"/>
+                                    <constraint firstAttribute="bottom" secondItem="z3L-Wx-Yfd" secondAttribute="bottom" id="E03-SQ-Fqf"/>
+                                    <constraint firstItem="z3L-Wx-Yfd" firstAttribute="leading" secondItem="RdB-l6-0Nz" secondAttribute="leading" id="Kcy-th-thi"/>
+                                    <constraint firstItem="2h3-dz-bjx" firstAttribute="centerY" secondItem="RdB-l6-0Nz" secondAttribute="centerY" id="Kfg-kJ-zCA"/>
+                                    <constraint firstItem="2h3-dz-bjx" firstAttribute="centerX" secondItem="RdB-l6-0Nz" secondAttribute="centerX" id="c3p-ax-XLX"/>
+                                    <constraint firstItem="z3L-Wx-Yfd" firstAttribute="top" secondItem="RdB-l6-0Nz" secondAttribute="top" id="sUg-Xv-7sq"/>
+                                </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QOg-iQ-LKp">
                                 <rect key="frame" x="16" y="36" width="40" height="40"/>
@@ -570,7 +586,6 @@
                             <constraint firstItem="Rjz-on-aTf" firstAttribute="top" secondItem="Nmp-w2-quY" secondAttribute="bottom" id="cvj-tb-uXs"/>
                             <constraint firstItem="RdB-l6-0Nz" firstAttribute="leading" secondItem="Pyx-Ev-z6S" secondAttribute="leading" id="dIY-hK-AFd"/>
                             <constraint firstItem="RdB-l6-0Nz" firstAttribute="trailing" secondItem="Pyx-Ev-z6S" secondAttribute="trailing" id="ePG-n3-MMe"/>
-                            <constraint firstItem="RdB-l6-0Nz" firstAttribute="centerX" secondItem="NTF-ax-Jcc" secondAttribute="centerX" id="fz1-Xl-0Ce"/>
                             <constraint firstItem="94x-mQ-TV5" firstAttribute="top" secondItem="jmX-wX-rMD" secondAttribute="bottom" id="gJA-Td-imO"/>
                             <constraint firstItem="x9v-fT-4jR" firstAttribute="leading" secondItem="Pyx-Ev-z6S" secondAttribute="leading" id="i6z-sA-3U9"/>
                             <constraint firstAttribute="bottom" secondItem="Jdp-Vj-K3H" secondAttribute="bottom" id="mCS-bB-W7L"/>
@@ -595,7 +610,9 @@
                         <outlet property="competitionOptionsCollectionView" destination="lQ9-2X-ZyN" id="IVY-TM-dud"/>
                         <outlet property="competitionShareCollectionView" destination="BrD-gg-6OF" id="HPN-u1-dh7"/>
                         <outlet property="competitionTimeRemainingLabel" destination="79S-ie-ito" id="Zus-no-R1e"/>
+                        <outlet property="competitionVideoActivityIndicator" destination="2h3-dz-bjx" id="3el-f5-WC8"/>
                         <outlet property="competitionVideoContainerView" destination="RdB-l6-0Nz" id="tAl-in-bsn"/>
+                        <outlet property="competitionVideoPreviewImageView" destination="z3L-Wx-Yfd" id="IgU-21-8hV"/>
                         <outlet property="numberOfCommentsLabel" destination="Nmp-w2-quY" id="s3l-IR-umD"/>
                         <outlet property="numberOfVotesLabel" destination="jmX-wX-rMD" id="KwM-ml-kup"/>
                         <outlet property="optionsButton" destination="aQR-ET-VFn" id="e1s-pT-Ddj"/>

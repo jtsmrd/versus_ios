@@ -201,10 +201,28 @@ class S3BucketService {
                 debugPrint("Failed to download video: \(error.localizedDescription)")
                 completion(nil, error)
             }
-            else if let videoUrl = url {
+            else if let data = data {
                 debugPrint("Successfully downloaded video")
-                let videoUrlAsset = AVURLAsset(url: videoUrl)
+                
+                var videoUrl: URL?
+                do {
+                    videoUrl = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent(videoName + ".mov")
+                    if let videoUrl = videoUrl {
+                        try data.write(to: videoUrl)
+                    }
+                    else {
+                        debugPrint("Video url is nil")
+                    }
+                }
+                catch {
+                    debugPrint("Could not write video data to file system: \(error.localizedDescription)")
+                }
+                
+                let videoUrlAsset = AVURLAsset(url: videoUrl!)
                 completion(videoUrlAsset, nil)
+            }
+            else {
+                debugPrint("Failed to receive video data")
             }
         }
         
