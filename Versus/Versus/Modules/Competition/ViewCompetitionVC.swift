@@ -54,8 +54,10 @@ class ViewCompetitionVC: UIViewController {
     
     var user1VideoAVUrlAsset: AVURLAsset?
     var user2VideoAVUrlAsset: AVURLAsset?
-    var playerLayer: AVPlayerLayer!
-    var competitionAVPlayer: AVPlayer!
+    var user1CompetitionPlayerLayer: AVPlayerLayer!
+    var user2CompetitionPlayerLayer: AVPlayerLayer!
+    var user1CompetitionAVPlayer: AVPlayer!
+    var user2CompetitionAVPlayer: AVPlayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,6 +72,21 @@ class ViewCompetitionVC: UIViewController {
         let videoVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
         videoVoteGestureRecognizer.numberOfTapsRequired = 2
         competitionVideoContainerView.addGestureRecognizer(videoVoteGestureRecognizer)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // Resize the player layer to after the views are layed out.
+        user1CompetitionPlayerLayer.frame = CGRect(origin: .zero, size: competitionVideoContainerView.frame.size)
+        user2CompetitionPlayerLayer.frame = CGRect(origin: .zero, size: competitionVideoContainerView.frame.size)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: user1CompetitionAVPlayer.currentItem)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: user2CompetitionAVPlayer.currentItem)
     }
     
     func initData(competition: Competition) {
@@ -102,8 +119,9 @@ class ViewCompetitionVC: UIViewController {
                 }
                 else if let asset = asset {
                     self.user1VideoAVUrlAsset = asset
-                    self.competitionAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: self.user1VideoAVUrlAsset!))
-                    self.competitionAVPlayer.play()
+                    DispatchQueue.main.async {
+                        self.displayCompetitionMedia()
+                    }
                 }
             }
             
@@ -255,26 +273,78 @@ class ViewCompetitionVC: UIViewController {
             
         case .video:
             
-            var videoAsset: AVURLAsset?
+            var videoStillDownloading = false
             var competitionUser: CompetitionUser!
             
             switch selectedUser {
             case .user1:
                 
-                videoAsset = user1VideoAVUrlAsset
                 competitionUser = .user1
+                
+                if let videoAsset = user1VideoAVUrlAsset {
+                    competitionVideoPreviewImageView.isHidden = true
+                    
+                    if competitionVideoActivityIndicator.isAnimating {
+                        competitionVideoActivityIndicator.stopAnimating()
+                    }
+                    
+                    if user1CompetitionAVPlayer.currentItem == nil {
+                        user1CompetitionAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: videoAsset))
+                    }
+                    
+                    toggleCompetiionPlayerLayer(for: .user1)
+                    user1CompetitionAVPlayer.play()
+                    
+                    if user2CompetitionAVPlayer.status == .readyToPlay {
+                        user2CompetitionAVPlayer.pause()
+                    }
+                }
+                else {
+                    videoStillDownloading = true
+                    
+                    // The small preview image should already be downloaded from when the competition cell was displayed.
+                    // Show the lower quality preview image until the normal/ high quality image is downloaded
+                    if let smallPreviewImage = competition.user1CompetitionVideoPreviewImageSmall {
+                        competitionVideoActivityIndicator.startAnimating()
+                        competitionVideoPreviewImageView.isHidden = false
+                        competitionVideoPreviewImageView.image = smallPreviewImage
+                    }
+                }
+                
             case .user2:
-                videoAsset = user2VideoAVUrlAsset
+                
                 competitionUser = .user2
+                
+                if let videoAsset = user2VideoAVUrlAsset {
+                    competitionVideoPreviewImageView.isHidden = true
+                    
+                    if competitionVideoActivityIndicator.isAnimating {
+                        competitionVideoActivityIndicator.stopAnimating()
+                    }
+                    
+                    if user2CompetitionAVPlayer.currentItem == nil {
+                        user2CompetitionAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: videoAsset))
+                    }
+                    
+                    toggleCompetiionPlayerLayer(for: .user2)
+                    user2CompetitionAVPlayer.play()
+                    
+                    if user1CompetitionAVPlayer.status == .readyToPlay {
+                        user1CompetitionAVPlayer.pause()
+                    }
+                }
+                else {
+                    videoStillDownloading = true
+                    
+                    if let smallPreviewImage = competition.user2CompetitionVideoPreviewImageSmall {
+                        competitionVideoActivityIndicator.startAnimating()
+                        competitionVideoPreviewImageView.isHidden = false
+                        competitionVideoPreviewImageView.image = smallPreviewImage
+                    }
+                }
             }
             
-            if let competitionVideoAsset = videoAsset {
-                competitionVideoPreviewImageView.isHidden = true
-                competitionVideoActivityIndicator.stopAnimating()
-                competitionAVPlayer.replaceCurrentItem(with: AVPlayerItem(asset: competitionVideoAsset))
-                competitionAVPlayer.play()
-            }
-            else {
+            if videoStillDownloading {
                 competition.getCompetitionImage(
                     for: competitionUser,
                     bucketType: .competitionVideoPreviewImage
@@ -284,7 +354,6 @@ class ViewCompetitionVC: UIViewController {
                             self.displayError(error: error)
                         }
                         else {
-                            self.competitionAVPlayer.replaceCurrentItem(with: nil)
                             self.competitionVideoActivityIndicator.startAnimating()
                             self.competitionVideoPreviewImageView.isHidden = false
                             self.competitionVideoPreviewImageView.image = image
@@ -297,12 +366,51 @@ class ViewCompetitionVC: UIViewController {
     
     
     private func configureCompetitionAVPlayer() {
-        playerLayer = AVPlayerLayer()
-        competitionAVPlayer = AVPlayer()
-        playerLayer.player = competitionAVPlayer
-        playerLayer.frame = CGRect(origin: .zero, size: competitionVideoContainerView.frame.size)
-        playerLayer.videoGravity = .resizeAspectFill
-        competitionVideoContainerView.layer.addSublayer(playerLayer)
+        
+        user1CompetitionPlayerLayer = AVPlayerLayer()
+        user1CompetitionAVPlayer = AVPlayer()
+        user1CompetitionPlayerLayer.player = user1CompetitionAVPlayer
+        user1CompetitionPlayerLayer.frame = CGRect(origin: .zero, size: competitionVideoContainerView.frame.size)
+        user1CompetitionPlayerLayer.videoGravity = .resizeAspectFill
+        competitionVideoContainerView.layer.addSublayer(user1CompetitionPlayerLayer)
+        
+        user2CompetitionPlayerLayer = AVPlayerLayer()
+        user2CompetitionAVPlayer = AVPlayer()
+        user2CompetitionPlayerLayer.player = user2CompetitionAVPlayer
+        user2CompetitionPlayerLayer.frame = CGRect(origin: .zero, size: competitionVideoContainerView.frame.size)
+        user2CompetitionPlayerLayer.videoGravity = .resizeAspectFill
+        competitionVideoContainerView.layer.addSublayer(user2CompetitionPlayerLayer)
+        
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+            object: user1CompetitionAVPlayer.currentItem,
+            queue: nil
+        ) { (notification) in
+            self.user1CompetitionAVPlayer.seek(to: kCMTimeZero)
+            self.user1CompetitionAVPlayer.play()
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+            object: user2CompetitionAVPlayer.currentItem,
+            queue: nil
+        ) { (notification) in
+            self.user2CompetitionAVPlayer.seek(to: kCMTimeZero)
+            self.user2CompetitionAVPlayer.play()
+        }
+    }
+    
+    
+    private func toggleCompetiionPlayerLayer(for competitionUser: CompetitionUser) {
+        
+        switch competitionUser {
+        case .user1:
+            user1CompetitionPlayerLayer.isHidden = false
+            user2CompetitionPlayerLayer.isHidden = true
+        case .user2:
+            user1CompetitionPlayerLayer.isHidden = true
+            user2CompetitionPlayerLayer.isHidden = false
+        }
     }
     
     
