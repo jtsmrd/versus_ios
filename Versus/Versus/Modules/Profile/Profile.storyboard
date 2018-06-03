@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2GC-lg-Itk">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2GC-lg-Itk">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -217,13 +217,13 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kpx-d2-nK2" userLabel="Content View">
                                 <rect key="frame" x="0.0" y="70" width="375" height="597"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZCF-Ku-hF1">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZCF-Ku-hF1">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="105"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="ZCF-Ku-hF1" secondAttribute="height" multiplier="25:7" id="QNu-A2-iVI"/>
                                         </constraints>
                                     </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="CiM-99-bWh" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="CiM-99-bWh" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
                                         <rect key="frame" x="50" y="52.5" width="105" height="105"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="CiM-99-bWh" secondAttribute="height" multiplier="1:1" id="eNs-Rb-Tzr"/>
@@ -743,7 +743,7 @@
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yJS-d2-BKx" userLabel="Profile Content View">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="340"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="O97-g8-k54">
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="O97-g8-k54">
                                                     <rect key="frame" x="0.0" y="0.0" width="375" height="105"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="O97-g8-k54" secondAttribute="height" multiplier="25:7" id="rj1-m6-8fA"/>
@@ -964,7 +964,7 @@
                                                         <constraint firstItem="2eD-0l-BO1" firstAttribute="centerY" secondItem="r1z-WP-sV7" secondAttribute="centerY" id="xeU-4E-4LR"/>
                                                     </constraints>
                                                 </view>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="PnN-PP-KCI" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="PnN-PP-KCI" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
                                                     <rect key="frame" x="50" y="52.5" width="105" height="105"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="PnN-PP-KCI" secondAttribute="height" multiplier="1:1" id="Wen-wm-IGv"/>

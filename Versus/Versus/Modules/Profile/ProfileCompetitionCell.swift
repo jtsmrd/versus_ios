@@ -12,6 +12,12 @@ class ProfileCompetitionCell: UICollectionViewCell {
     
     @IBOutlet weak var competitionImageView: UIImageView!
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        competitionImageView.image = nil
+    }
+    
     func configureCell(competition: Competition) {
 
         // We want to display the competition image for the current user,

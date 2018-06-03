@@ -111,7 +111,13 @@ class User {
                 completion(false, error)
             }
             else {
-                self.competitions = competitions
+                
+                // Only add new competitions
+                for competition in competitions {
+                    if !self.competitions.contains(where: { $0.awsCompetition._id == competition.awsCompetition._id }) {
+                        self.competitions.append(competition)
+                    }
+                }
                 completion(true, nil)
             }
         }

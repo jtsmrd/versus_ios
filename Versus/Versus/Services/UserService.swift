@@ -25,6 +25,7 @@ class UserService {
         let user: AWSUser = AWSUser()
         user._username = username
         user._createDate = Date().iso8601
+        user._isFeatured = NSNumber(integerLiteral: 0)
         user._userPoolUserId = userPoolUserId
         user._rankId = NSNumber(integerLiteral: 1)
         user._wins = NSNumber(integerLiteral: 0)
@@ -201,10 +202,10 @@ class UserService {
     }
     
     private func resizeProfileBackgroundImage(image: UIImage) -> UIImage? {
-        let newHeight: CGFloat = 600
+        let newWidth: CGFloat = 600
         
         let scale: CGFloat = 6/25
-        let newWidth = image.size.width * scale
+        let newHeight = image.size.width * scale
         UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
         image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
         

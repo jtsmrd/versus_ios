@@ -157,6 +157,11 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
                 bucketType: .profileImage
             ) { (imageFilename) in
                 profileImageUploadSuccess = imageFilename != nil
+                
+                //TODO: This will be updated and handled with AWS caching, which will get new if exists
+                // Set stored image to nil so newly saved image will be downloaded
+                CurrentUser.user.profileImage = nil
+                
                 updateDispatchGroup.leave()
             }
             
@@ -178,6 +183,11 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
                 bucketType: .profileBackgroundImage
             ) { (imageFilename) in
                 profileBackgroundImageUploadSuccess = imageFilename != nil
+                
+                //TODO: This will be updated and handled with AWS caching, which will get new if exists
+                // Set stored image to nil so newly saved image will be downloaded
+                CurrentUser.user.profileBackgroundImage = nil
+                
                 updateDispatchGroup.leave()
             }
         }

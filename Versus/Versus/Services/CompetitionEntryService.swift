@@ -34,16 +34,19 @@ class CompetitionEntryService {
         
         let competitionEntry: AWSCompetitionEntry = AWSCompetitionEntry()
         competitionEntry._id = UUID().uuidString
-        competitionEntry._userPoolUserId = CurrentUser.userPoolUserId
-        competitionEntry._createDate = Date().iso8601
+        competitionEntry._caption = caption
         competitionEntry._categoryId = NSNumber(integerLiteral: categoryType.rawValue)
         competitionEntry._competitionTypeId = NSNumber(integerLiteral: competitionType.rawValue)
-        competitionEntry._caption = caption
-        competitionEntry._videoPreviewImageId = videoPreviewImageId
-        competitionEntry._videoPreviewImageSmallId = videoPreviewImageSmallId
-        competitionEntry._videoId = videoId
-        competitionEntry._imageId = imageId
-        competitionEntry._imageSmallId = imageSmallId
+        competitionEntry._createDate = Date().iso8601
+        competitionEntry._imageId = imageId ?? "0"
+        competitionEntry._imageSmallId = imageSmallId ?? "0"
+        competitionEntry._isFeatured = CurrentUser.user.awsUser._isFeatured
+        competitionEntry._userPoolUserId = CurrentUser.userPoolUserId
+        competitionEntry._userRankId = CurrentUser.user.awsUser._rankId
+        competitionEntry._username = CurrentUser.user.awsUser._username
+        competitionEntry._videoId = videoId ?? "0"
+        competitionEntry._videoPreviewImageId = videoPreviewImageId ?? "0"
+        competitionEntry._videoPreviewImageSmallId = videoPreviewImageSmallId ?? "0"
         
         AWSDynamoDBObjectMapper.default().save(competitionEntry) { (error) in
             if let error = error {
