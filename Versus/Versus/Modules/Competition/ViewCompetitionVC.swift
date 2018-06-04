@@ -59,6 +59,9 @@ class ViewCompetitionVC: UIViewController {
     var user1CompetitionAVPlayer: AVPlayer!
     var user2CompetitionAVPlayer: AVPlayer!
     
+    var user1CompetitionAVPlayerObserver: NSObjectProtocol!
+    var user2CompetitionAVPlayerObserver: NSObjectProtocol!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -85,8 +88,12 @@ class ViewCompetitionVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: user1CompetitionAVPlayer.currentItem)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: user2CompetitionAVPlayer.currentItem)
+        NotificationCenter.default.removeObserver(user1CompetitionAVPlayerObserver)
+        NotificationCenter.default.removeObserver(user2CompetitionAVPlayerObserver)
+        user1CompetitionAVPlayer.pause()
+        user1CompetitionAVPlayer.replaceCurrentItem(with: nil)
+        user2CompetitionAVPlayer.pause()
+        user2CompetitionAVPlayer.replaceCurrentItem(with: nil)
     }
     
     func initData(competition: Competition) {
@@ -381,7 +388,7 @@ class ViewCompetitionVC: UIViewController {
         user2CompetitionPlayerLayer.videoGravity = .resizeAspectFill
         competitionVideoContainerView.layer.addSublayer(user2CompetitionPlayerLayer)
         
-        NotificationCenter.default.addObserver(
+        user1CompetitionAVPlayerObserver = NotificationCenter.default.addObserver(
             forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
             object: user1CompetitionAVPlayer.currentItem,
             queue: nil
@@ -390,7 +397,7 @@ class ViewCompetitionVC: UIViewController {
             self.user1CompetitionAVPlayer.play()
         }
         
-        NotificationCenter.default.addObserver(
+        user2CompetitionAVPlayerObserver = NotificationCenter.default.addObserver(
             forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
             object: user2CompetitionAVPlayer.currentItem,
             queue: nil

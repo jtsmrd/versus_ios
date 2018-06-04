@@ -11,6 +11,7 @@ import AVKit
 
 class CompetitionDetailsVC: UIViewController {
 
+    @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var previewImageView: UIImageView!
     @IBOutlet weak var captionTextView: UITextView!
     @IBOutlet weak var selectCategoryView: BorderView!
@@ -23,9 +24,14 @@ class CompetitionDetailsVC: UIViewController {
     var competitionVideoPreviewImage: UIImage?
     var competitionType: CompetitionType = .image
     var selectedCategory: Category?
+    var keyboardToolbar: KeyboardToolbar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        
+        submitButton.setTitleColor(UIColor.lightGray, for: .disabled)
         
         categoryTableView.layer.cornerRadius = 10
         categoryTableView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -58,6 +64,8 @@ class CompetitionDetailsVC: UIViewController {
         var competitionVideoFilename: String?
         var competitionVideoPreviewImageFilename: String?
         var competitionVideoPreviewImageSmallFilename: String?
+        
+        submitButton.isEnabled = false
         
         switch competitionType {
         case .image:
@@ -137,11 +145,13 @@ class CompetitionDetailsVC: UIViewController {
                             else {
                                 self.displayMessage(message: "Unable to submit competition entry")
                             }
+                            self.submitButton.isEnabled = true
                         }
                     }
                 )
             }
             else {
+                self.submitButton.isEnabled = true
                 self.displayMessage(message: errorMessage)
             }
         }
@@ -259,6 +269,11 @@ extension CompetitionDetailsVC: UITextViewDelegate {
         if textView.text.isEmpty {
             textView.text = "Write a caption..."
         }
+    }
+    
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        textView.inputAccessoryView = keyboardToolbar
+        return true
     }
 }
 

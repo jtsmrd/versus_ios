@@ -18,20 +18,29 @@ class FeaturedFollowingVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
+        let attributes = [NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
+        let refreshTitle = NSAttributedString(string: "Loading Competitions", attributes: attributes)
+        refreshControl.attributedTitle = refreshTitle
+        refreshControl.addTarget(self, action: #selector(FeaturedFollowingVC.getFeaturedCompetitions), for: .valueChanged)
+        featuredTableView.refreshControl = refreshControl
+        
+        refreshControl.beginRefreshing()
         getFeaturedCompetitions()
     }
     
-    private func getFeaturedCompetitions() {
+    @objc func getFeaturedCompetitions() {
         
-        CompetitionService.instance.getFeaturedCompetitions { (competitions, error) in
+        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
             DispatchQueue.main.async {
-                if let error = error {
+                if let error = customError {
                     self.displayError(error: error)
                 }
                 else {
-                    self.featuredCompetitions.removeAll()
-                    self.featuredCompetitions.append(contentsOf: competitions)
+                    self.featuredCompetitions = competitions
                     self.featuredTableView.reloadData()
+                    self.featuredTableView.refreshControl?.endRefreshing()
                 }
             }
         }

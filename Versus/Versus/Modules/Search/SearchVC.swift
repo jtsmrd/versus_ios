@@ -69,14 +69,13 @@ class SearchVC: UIViewController {
     
     private func getFeaturedCompetitions() {
         
-        CompetitionService.instance.getFeaturedCompetitions { (competitions, error) in
+        CompetitionManager.instance.getFeaturedCompetitions { (competitions, error) in
             DispatchQueue.main.async {
                 if let error = error {
                     self.displayError(error: error)
                 }
                 else {
-                    self.featuredCompetitions.removeAll()
-                    self.featuredCompetitions.append(contentsOf: competitions)
+                    self.featuredCompetitions = competitions
                     self.browseTableView.reloadData()
                 }
             }
