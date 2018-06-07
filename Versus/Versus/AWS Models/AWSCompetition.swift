@@ -25,6 +25,7 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _isFeatured: NSNumber?
     var _startDate: String?
     var _status: String?
+    var _user1CompetitionEntryId: String?
     var _user1ImageId: String?
     var _user1ImageSmallId: String?
     var _user1RankId: NSNumber?
@@ -33,6 +34,7 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _user1VideoPreviewImageId: String?
     var _user1VideoPreviewImageSmallId: String?
     var _user1userPoolUserId: String?
+    var _user2CompetitionEntryId: String?
     var _user2ImageId: String?
     var _user2ImageSmallId: String?
     var _user2RankId: NSNumber?
@@ -61,6 +63,7 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_isFeatured" : "isFeatured",
                "_startDate" : "startDate",
                "_status" : "status",
+               "_user1CompetitionEntryId" : "user1CompetitionEntryId",
                "_user1ImageId" : "user1ImageId",
                "_user1ImageSmallId" : "user1ImageSmallId",
                "_user1RankId" : "user1RankId",
@@ -69,6 +72,7 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_user1VideoPreviewImageId" : "user1VideoPreviewImageId",
                "_user1VideoPreviewImageSmallId" : "user1VideoPreviewImageSmallId",
                "_user1userPoolUserId" : "user1userPoolUserId",
+               "_user2CompetitionEntryId" : "user2CompetitionEntryId",
                "_user2ImageId" : "user2ImageId",
                "_user2ImageSmallId" : "user2ImageSmallId",
                "_user2RankId" : "user2RankId",

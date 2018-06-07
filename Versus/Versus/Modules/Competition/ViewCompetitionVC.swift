@@ -62,6 +62,8 @@ class ViewCompetitionVC: UIViewController {
     var user1CompetitionAVPlayerObserver: NSObjectProtocol!
     var user2CompetitionAVPlayerObserver: NSObjectProtocol!
     
+    var existingCompetitionVote: CompetitionVote?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -75,6 +77,18 @@ class ViewCompetitionVC: UIViewController {
         let videoVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
         videoVoteGestureRecognizer.numberOfTapsRequired = 2
         competitionVideoContainerView.addGestureRecognizer(videoVoteGestureRecognizer)
+        
+        
+        // If the current user previously voted, set the votedCompetition and update the vote button.
+        CompetitionVoteService.instance.getVoteForCompetition(competitionId: competition.awsCompetition._id!) { (competitionVote) in
+            if let competitionVote = competitionVote, let id = competitionVote.awsCompetitionVote._votedForCompetitionEntryId {
+                self.existingCompetitionVote = competitionVote
+                self.votedCompetition = self.competition.awsCompetition._user1CompetitionEntryId! == id ? .user1 : .user2
+            }
+            DispatchQueue.main.async {
+                self.configureVoteButton()
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -172,6 +186,7 @@ class ViewCompetitionVC: UIViewController {
         view.bringSubview(toFront: user1SelectorButton)
         displayCompetitionMedia()
         configureVoteButton()
+        updateVoteCount()
     }
     
     @IBAction func user2SelectorButtonAction() {
@@ -183,6 +198,7 @@ class ViewCompetitionVC: UIViewController {
         view.bringSubview(toFront: user2SelectorButton)
         displayCompetitionMedia()
         configureVoteButton()
+        updateVoteCount()
     }
     
     @IBAction func hideCommentsButtonAction() {
@@ -198,14 +214,64 @@ class ViewCompetitionVC: UIViewController {
     
     
     @objc func voteForCompetition() {
+        
+        guard existingCompetitionVote == nil else {
+            displayChangeVoteAlert()
+            return
+        }
+        
+        var votedForCompetitionEntryId = ""
+        
         switch selectedUser {
         case .user1:
             votedCompetition = .user1
+            votedForCompetitionEntryId = competition.awsCompetition._user1CompetitionEntryId!
         case .user2:
             votedCompetition = .user2
+            votedForCompetitionEntryId = competition.awsCompetition._user2CompetitionEntryId!
         }
-        configureVoteButton()
+        
+        CompetitionVoteService.instance.voteForCompetition(
+            competitionId: competition.awsCompetition._id!,
+            votedForCompetitionEntryId: votedForCompetitionEntryId
+        ) { (success) in
+            DispatchQueue.main.async {
+                if !success {
+                    self.displayError(error: CustomError(error: nil, title: "", desc: "Unable to vote, try again."))
+                    self.votedCompetition = .none
+                }
+                self.configureVoteButton()
+            }
+        }
     }
+    
+    
+    private func displayChangeVoteAlert() {
+        
+        let alertVC = UIAlertController(title: "Change Vote?", message: "You already voted, do you want to change it?", preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) in
+            
+            CompetitionVoteService.instance.deleteVoteForCompetition(competitionVote: self.existingCompetitionVote!, completion: { (success, customError) in
+                DispatchQueue.main.async {
+                    if let error = customError {
+                        self.displayError(error: error)
+                    }
+                    else if success {
+                        self.existingCompetitionVote = nil
+                        self.voteForCompetition()
+                    }
+                    else {
+                        debugPrint("Failed to delete competition vote, something else went wrong.")
+                    }
+                }
+            })
+        }))
+        alertVC.addAction(UIAlertAction(title: "Leave it", style: .cancel, handler: { (action) in
+            
+        }))
+        present(alertVC, animated: true, completion: nil)
+    }
+    
     
     private func configureView() {
         switch competition.competitionType {
@@ -245,8 +311,29 @@ class ViewCompetitionVC: UIViewController {
             }
         }
         
-        configureVoteButton()
+        updateVoteCount()
     }
+    
+    
+    private func updateVoteCount() {
+        
+        let competitionEntryId = selectedUser == .user1 ? competition.awsCompetition._user1CompetitionEntryId! : competition.awsCompetition._user2CompetitionEntryId!
+        
+        CompetitionVoteService.instance.getVoteCountFor(competitionEntryId) { (voteCount, customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
+                }
+                else if let voteCount = voteCount {
+                    self.numberOfVotesLabel.text = "\(voteCount)"
+                }
+                else {
+                    debugPrint("Unknown error when getting votes")
+                }
+            }
+        }
+    }
+    
     
     private func configureVoteButton() {
         if votedCompetition == .user1 && selectedUser == .user1 {

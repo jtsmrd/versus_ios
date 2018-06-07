@@ -22,7 +22,7 @@ class AWSCompetitionVote: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _competitionId: String?
     var _createDate: String?
     var _userPoolUserId: String?
-    var _votedForUserPoolUserId: String?
+    var _votedForCompetitionEntryId: String?
     
     class func dynamoDBTableName() -> String {
 
@@ -40,7 +40,7 @@ class AWSCompetitionVote: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_competitionId" : "competitionId",
                "_createDate" : "createDate",
                "_userPoolUserId" : "userPoolUserId",
-               "_votedForUserPoolUserId" : "votedForUserPoolUserId",
+               "_votedForCompetitionEntryId" : "votedForCompetitionEntryId",
         ]
     }
 }
