@@ -58,7 +58,7 @@ class SearchVC: UIViewController {
         
         getFeaturedCompetitions()
         
-        CurrentUser.user.getFollowedUsers { (success, error) in
+        CurrentUser.user.getFollowedUsers { (followedUsers, error) in
             DispatchQueue.main.async {
                 if let error = error {
                     self.displayError(error: error)

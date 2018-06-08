@@ -131,9 +131,9 @@ class CurrentUser {
             }
         }
         
-        user.getFollowedUsers { (success, customError) in
-            if !success {
-                debugPrint("Failed to load followed users")
+        user.getFollowedUsers { (followedUsers, customError) in
+            if let customError = customError {
+                debugPrint(customError)
             }
         }
         

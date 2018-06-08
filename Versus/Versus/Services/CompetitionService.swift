@@ -7,7 +7,9 @@
 //
 
 import AWSDynamoDB
+import AWSCognitoIdentityProvider
 import AVKit
+import AWSLambda
 
 class CompetitionService {
     
@@ -47,6 +49,39 @@ class CompetitionService {
             }
             else {
                 completion(competitions, nil)
+            }
+        }
+    }
+    
+    
+    //TODO: Sort results by newest Competition
+    func getFollowedUserCompetitions(
+        _ followedUserIds: [String],
+        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void) {
+        
+        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "us-east-1:b80002bd-0582-4a26-80b9-05737c384ef5")
+        let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider:credentialsProvider)
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
+        
+        var competitions = [Competition]()
+        
+        let jsonObject: [String: Any] = ["followedUserIds": followedUserIds]
+        AWSLambdaInvoker.default().invokeFunction("versus-1_0-GetFollowedUserCompetitions", jsonObject: jsonObject) { (result, error) in
+            if let error = error {
+                completion(competitions, CustomError(error: error, title: "", desc: "Unable to get followed user Competitions"))
+            }
+            else if let result = result as? NSDictionary {
+                if let competitionsDict = result["Items"] as? NSArray {
+                    for competitionDict in competitionsDict {
+                        if let competition = CompetitionParser().fromDictionary(competitionDictionary: competitionDict as! NSDictionary) {
+                            competitions.append(competition)
+                        }
+                    }
+                }
+                completion(competitions, nil)
+            }
+            else {
+                completion(competitions, CustomError(error: nil, title: "", desc: "Error getting followed user Compeitions"))
             }
         }
     }

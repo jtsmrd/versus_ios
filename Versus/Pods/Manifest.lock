@@ -1,4 +1,6 @@
 PODS:
+  - AWSAPIGateway (2.6.14):
+    - AWSCore (= 2.6.14)
   - AWSAuthCore (2.6.14):
     - AWSCore (= 2.6.14)
   - AWSCognito (2.6.14):
@@ -9,6 +11,8 @@ PODS:
   - AWSCognitoIdentityProviderASF (1.0.1)
   - AWSCore (2.6.14)
   - AWSDynamoDB (2.6.14):
+    - AWSCore (= 2.6.14)
+  - AWSLambda (2.6.14):
     - AWSCore (= 2.6.14)
   - AWSMobileClient (2.6.14):
     - AWSAuthCore (= 2.6.14)
@@ -21,27 +25,48 @@ PODS:
   - Toast-Swift (3.0.1)
 
 DEPENDENCIES:
+  - AWSAPIGateway (~> 2.6.13)
+  - AWSAuthCore (~> 2.6.13)
   - AWSCognito (~> 2.6.13)
   - AWSDynamoDB (~> 2.6.13)
+  - AWSLambda (~> 2.6.13)
   - AWSMobileClient (~> 2.6.13)
   - AWSS3 (~> 2.6.13)
   - AWSUserPoolsSignIn (~> 2.6.13)
   - SwiftyCam
   - Toast-Swift (~> 3.0.1)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AWSAPIGateway
+    - AWSAuthCore
+    - AWSCognito
+    - AWSCognitoIdentityProvider
+    - AWSCognitoIdentityProviderASF
+    - AWSCore
+    - AWSDynamoDB
+    - AWSLambda
+    - AWSMobileClient
+    - AWSS3
+    - AWSUserPoolsSignIn
+    - SwiftyCam
+    - Toast-Swift
+
 SPEC CHECKSUMS:
+  AWSAPIGateway: 43be27e3f79b740bbb7abf2a257405d4d49cf1f4
   AWSAuthCore: b13b0cb87abac6d44c52d8b965bbdb4cd0842017
   AWSCognito: 12fcffc5751f65a39a65dbb9ab413134fd580cfb
   AWSCognitoIdentityProvider: 5055dd6a04040582191b0f3a80723e67fc55eaf4
   AWSCognitoIdentityProviderASF: f94f1a502e72ef3d0a1de93e10bf7a79c8698118
   AWSCore: 8c883c2623d314dd82cca3809527784e1d1a02e5
   AWSDynamoDB: ecbc36963c5dd62354d8e844312a3a45f59046b9
+  AWSLambda: 3b878eaad7e39fc8caa82b8b499bbcfb3a75b262
   AWSMobileClient: 4467dd19e5e50d9a115b37e7be3ffb689c0b285c
   AWSS3: a8cf89448c74637e34c46839ce5b5f7850f206e6
   AWSUserPoolsSignIn: 8c52ad458e6e6fbf385a41a6b5d35a99c707db37
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
   Toast-Swift: ba0b01b095aada709d915f9beb1d38184a2721c3
 
-PODFILE CHECKSUM: 4a1555a0e13a7c0e4bfcdd7ecc60ba761d663c67
+PODFILE CHECKSUM: e40c276b0e538ffa1ea8b5a3c922f2e76b78e479
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.3

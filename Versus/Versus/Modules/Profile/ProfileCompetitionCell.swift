@@ -18,11 +18,11 @@ class ProfileCompetitionCell: UICollectionViewCell {
         competitionImageView.image = nil
     }
     
-    func configureCell(competition: Competition) {
+    func configureCell(competition: Competition, user: User) {
 
         // We want to display the competition image for the current user,
         // so just check if the CurrentUser userPoolUserId matches user1 or user 2.
-        let competitionUser: CompetitionUser = competition.awsCompetition._user1userPoolUserId! == CurrentUser.userPoolUserId ? .user1 : .user2
+        let competitionUser: CompetitionUser = competition.awsCompetition._user1userPoolUserId! == user.awsUser._userPoolUserId! ? .user1 : .user2
         
         switch competition.competitionType {
         case .image:

@@ -186,7 +186,7 @@ extension ProfileVC: UICollectionViewDataSource {
         if let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: PROFILE_COMPETITION_CELL,
             for: indexPath) as? ProfileCompetitionCell {
-            cell.configureCell(competition: user.competitions[indexPath.row])
+            cell.configureCell(competition: user.competitions[indexPath.row], user: user)
             return cell
         }
         return ProfileCompetitionCell()

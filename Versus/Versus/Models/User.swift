@@ -91,15 +91,22 @@ class User {
         }
     }
     
-    func getFollowedUsers(completion: @escaping SuccessErrorCompletion) {
+    
+    //TODO: If new users are followed, they won't be accounted for. Integrate AWS caching for this
+    func getFollowedUsers(completion: @escaping (_ followedUsers: [Follower]?, _ customError: CustomError?) -> Void) {
+        
+        guard self.followedUsers.count == 0 else {
+            completion(self.followedUsers, nil)
+            return
+        }
         
         FollowerService.instance.getFollowedUsers(for: awsUser) { (followedUsers, error) in
             if let error = error {
-                completion(false, error)
+                completion(nil, error)
             }
             else {
                 self.followedUsers = followedUsers
-                completion(true, nil)
+                completion(followedUsers, nil)
             }
         }
     }

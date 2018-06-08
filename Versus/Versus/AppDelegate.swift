@@ -83,8 +83,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func showMain() {
         let tabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+        window = UIWindow()
         window?.rootViewController = tabBarController
-        window?.becomeKey()
+        window?.makeKeyAndVisible()
     }
     
     private func showLogin() {

@@ -107,14 +107,14 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
         }
         
         // Get followed users and update followed users label count
-        user.getFollowedUsers { (success, error) in
+        user.getFollowedUsers { (followedUsers, customError) in
             DispatchQueue.main.async {
-                if let error = error {
-                    self.parentViewController?.displayError(error: error)
+                if let customError = customError {
+                    self.parentViewController?.displayError(error: customError)
                 }
-                else if success {
+                else if let followedUsers = followedUsers {
                     self.followingLabel.attributedText = NSMutableAttributedString()
-                        .bold("\(user.followedUsers.count)", self.followingLabel.font.pointSize)
+                        .bold("\(followedUsers.count)", self.followingLabel.font.pointSize)
                         .normal(" following")
                 }
             }
