@@ -11,7 +11,7 @@ import AVKit
 
 class ViewCompetitionVC: UIViewController {
     
-    enum VotedCompetition {
+    enum VotedCompetition: String {
         case user1
         case user2
         case none
@@ -70,13 +70,16 @@ class ViewCompetitionVC: UIViewController {
         configureView()
         configureCompetitionAVPlayer()
         
-        let imageVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
-        imageVoteGestureRecognizer.numberOfTapsRequired = 2
-        competitionImageContainerView.addGestureRecognizer(imageVoteGestureRecognizer)
-        
-        let videoVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
-        videoVoteGestureRecognizer.numberOfTapsRequired = 2
-        competitionVideoContainerView.addGestureRecognizer(videoVoteGestureRecognizer)
+        if !competition.isExpired {
+            
+            let imageVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
+            imageVoteGestureRecognizer.numberOfTapsRequired = 2
+            competitionImageContainerView.addGestureRecognizer(imageVoteGestureRecognizer)
+            
+            let videoVoteGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewCompetitionVC.voteForCompetition))
+            videoVoteGestureRecognizer.numberOfTapsRequired = 2
+            competitionVideoContainerView.addGestureRecognizer(videoVoteGestureRecognizer)
+        }
         
         
         // If the current user previously voted, set the votedCompetition and update the vote button.
@@ -89,6 +92,12 @@ class ViewCompetitionVC: UIViewController {
                 self.configureVoteButton()
             }
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        configureExpireCountdown()
     }
     
     override func viewDidLayoutSubviews() {
@@ -215,6 +224,8 @@ class ViewCompetitionVC: UIViewController {
     
     @objc func voteForCompetition() {
         
+        guard votedCompetition.rawValue != selectedUser.rawValue else { return }
+        
         guard existingCompetitionVote == nil else {
             displayChangeVoteAlert()
             return
@@ -312,6 +323,10 @@ class ViewCompetitionVC: UIViewController {
         }
         
         updateVoteCount()
+        
+        if competition.isExpired {
+            voteButton.isEnabled = false
+        }
     }
     
     
@@ -459,6 +474,34 @@ class ViewCompetitionVC: UIViewController {
     }
     
     
+    private func configureExpireCountdown() {
+        
+        guard !competition.isExpired else {
+            competitionTimeRemainingLabel.text = String(format: "%02i:%02i:%02i:%02i", 0, 0, 0, 0)
+            return
+        }
+        
+        guard let secondsUntilExpire = competition.secondsUntilExpire else {
+            debugPrint("Could not get competition seconds until expire")
+            return
+        }
+        
+        updateExpireCountdown(timeRemaining: secondsUntilExpire)
+        
+        let countdownTimer = CountdownTimer(countdownSeconds: secondsUntilExpire, delegate: self)
+        countdownTimer.start()
+    }
+    
+    private func updateExpireCountdown(timeRemaining: Int) {
+        let timeRemainingInterval = TimeInterval(timeRemaining)
+        let days = Int(timeRemainingInterval) / 86400
+        let hours = (Int(timeRemainingInterval) % 86400) / 3600
+        let minutes = (Int(timeRemainingInterval) % 3600) / 60
+        let seconds = (Int(timeRemainingInterval) % 60)
+        competitionTimeRemainingLabel.text = String(format: "%02i:%02i:%02i:%02i", days, hours, minutes, seconds)
+    }
+    
+    
     private func configureCompetitionAVPlayer() {
         
         user1CompetitionPlayerLayer = AVPlayerLayer()
@@ -541,18 +584,6 @@ class ViewCompetitionVC: UIViewController {
     private func optionReportAction() {
         displayMessage(message: "Report Competition")
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 
@@ -619,5 +650,16 @@ extension ViewCompetitionVC: UICollectionViewDelegate {
                 optionReportAction()
             }
         }
+    }
+}
+
+extension ViewCompetitionVC: CountdownTimerDelegate {
+    
+    func timerTick(timeRemaining: Int) {
+        updateExpireCountdown(timeRemaining: timeRemaining)
+    }
+    
+    func timerExpired() {
+        competitionTimeRemainingLabel.text = String(format: "%02i:%02i:%02i:%02i", 0, 0, 0, 0)
     }
 }

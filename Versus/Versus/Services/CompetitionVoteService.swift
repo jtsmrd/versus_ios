@@ -22,7 +22,7 @@ class CompetitionVoteService {
         
         let competitionVote: AWSCompetitionVote = AWSCompetitionVote()
         competitionVote._competitionId = competitionId
-        competitionVote._createDate = Date().iso8601
+        competitionVote._createDate = Date().toISO8601String
         competitionVote._id = UUID().uuidString
         competitionVote._userPoolUserId = CurrentUser.userPoolUserId
         competitionVote._votedForCompetitionEntryId = votedForCompetitionEntryId

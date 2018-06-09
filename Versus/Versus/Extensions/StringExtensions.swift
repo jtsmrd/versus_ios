@@ -50,7 +50,7 @@ extension String {
     }
     
     // Get date from ISO8601 string
-    var dateFromISO8601: Date? {
+    var toISO8601Date: Date? {
         return Formatter.iso8601.date(from: self)   // "Mar 22, 2017, 10:22 AM"
     }
 }

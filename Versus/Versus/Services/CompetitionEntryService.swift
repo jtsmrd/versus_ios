@@ -35,9 +35,9 @@ class CompetitionEntryService {
         let competitionEntry: AWSCompetitionEntry = AWSCompetitionEntry()
         competitionEntry._id = UUID().uuidString
         competitionEntry._caption = caption
-        competitionEntry._categoryId = NSNumber(integerLiteral: categoryType.rawValue)
-        competitionEntry._competitionTypeId = NSNumber(integerLiteral: competitionType.rawValue)
-        competitionEntry._createDate = Date().iso8601
+        competitionEntry._categoryId = categoryType.rawValue.toNSNumber
+        competitionEntry._competitionTypeId = competitionType.rawValue.toNSNumber
+        competitionEntry._createDate = Date().toISO8601String
         competitionEntry._imageId = imageId ?? "0"
         competitionEntry._imageSmallId = imageSmallId ?? "0"
         competitionEntry._isFeatured = CurrentUser.user.awsUser._isFeatured

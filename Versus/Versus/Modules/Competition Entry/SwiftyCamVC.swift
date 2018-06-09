@@ -14,7 +14,7 @@ class SwiftyCamVC: SwiftyCamViewController, CountdownTimerDelegate {
     @IBOutlet weak var cameraButton: SwiftyCamProgressButton!
     @IBOutlet weak var recordTimeRemainingLabel: UILabel!
     
-    let MAX_TIME: Double = 60.0
+    let MAX_TIME: Int = 60
     var countdownTimer: CountdownTimer!
     
     override func viewDidLoad() {
@@ -39,19 +39,12 @@ class SwiftyCamVC: SwiftyCamViewController, CountdownTimerDelegate {
         cameraButton.stopAnimatingTimeRemaining()
     }
     
-    func timerTick(timeRemaining: Double) {
-        recordTimeRemainingLabel.text = "0:\(Int(timeRemaining))"
+    func timerTick(timeRemaining: Int) {
+//        recordTimeRemainingLabel.text = "0:\(Int(timeRemaining))"
+        recordTimeRemainingLabel.text = String(format: "0:%02i", timeRemaining)
     }
     
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func timerExpired() {
+        // Already handled by SwiftyCam time limit
     }
-    */
-
 }

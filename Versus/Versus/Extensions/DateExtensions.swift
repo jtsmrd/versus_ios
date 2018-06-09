@@ -10,7 +10,12 @@ import Foundation
 
 extension Date {
     
-    var iso8601: String {
+    var toISO8601String: String {
         return Formatter.iso8601.string(from: self)
+    }
+    
+    /// Returns the amount of seconds until another date
+    func seconds(until date: Date) -> Int {
+        return Calendar.current.dateComponents([.second], from: self, to: date).second ?? 0
     }
 }

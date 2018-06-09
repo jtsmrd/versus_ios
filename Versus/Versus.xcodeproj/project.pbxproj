@@ -14,6 +14,7 @@
 		32D9C97C20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */; };
 		32D9C97F20CB008100F174B2 /* CompetitionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97E20CB008100F174B2 /* CompetitionParser.swift */; };
 		32D9C98120CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32D9C98020CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard */; };
+		32D9C98420CB46E200F174B2 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C98320CB46E200F174B2 /* IntExtensions.swift */; };
 		589C140C381C23DC0BEB472F /* Pods_Versus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A999CFBAD01983D013158ED9 /* Pods_Versus.framework */; };
 		6B01D8B02086A4200021421F /* FollowerSuggestionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B01D8AF2086A4200021421F /* FollowerSuggestionCell.swift */; };
 		6B04B73D20914219007BF021 /* AWSCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04B73C20914219007BF021 /* AWSCompetition.swift */; };
@@ -125,6 +126,7 @@
 		32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m; sourceTree = "<group>"; };
 		32D9C97E20CB008100F174B2 /* CompetitionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParser.swift; sourceTree = "<group>"; };
 		32D9C98020CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = FeaturedFollowingCompetitions.storyboard; sourceTree = "<group>"; };
+		32D9C98320CB46E200F174B2 /* IntExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtensions.swift; sourceTree = "<group>"; };
 		3755991080BE762D5B01C76C /* Pods-Versus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Versus.release.xcconfig"; path = "Pods/Target Support Files/Pods-Versus/Pods-Versus.release.xcconfig"; sourceTree = "<group>"; };
 		6B01D8AF2086A4200021421F /* FollowerSuggestionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerSuggestionCell.swift; sourceTree = "<group>"; };
 		6B04B73C20914219007BF021 /* AWSCompetition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSCompetition.swift; sourceTree = "<group>"; };
@@ -446,6 +448,7 @@
 				6B1B29992083CE230070848C /* StringExtensions.swift */,
 				6B079FEE208D3E02003BBB87 /* FormatterExtensions.swift */,
 				6B079FF0208D3F1E003BBB87 /* DateExtensions.swift */,
+				32D9C98320CB46E200F174B2 /* IntExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -756,6 +759,7 @@
 				6BC1E13120895D7D005404E1 /* CategoryCollection.swift in Sources */,
 				6B04B741209142A7007BF021 /* CompetitionService.swift in Sources */,
 				6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */,
+				32D9C98420CB46E200F174B2 /* IntExtensions.swift in Sources */,
 				6BC01AC120927B5F00FDAC44 /* CircleView.swift in Sources */,
 				6B6DE28E20A264AC005368C4 /* CompetitionVote.swift in Sources */,
 				6BDE76DD208FE5FD009621D0 /* SwiftyCamVC.swift in Sources */,

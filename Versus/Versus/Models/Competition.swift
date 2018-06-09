@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum CompetitionUser {
+enum CompetitionUser: String {
     case user1
     case user2
 }
@@ -50,6 +50,22 @@ class Competition {
         get {
             return CategoryCollection.instance.categoryIconFor(categoryTypeId: awsCompetition._categoryId as! Int)
         }
+    }
+    
+    var isExpired: Bool {
+        guard let expireDate = awsCompetition._expireDate!.toISO8601Date else {
+            debugPrint("Could not convert competition expire date, defaulting to expired")
+            return true
+        }
+        return expireDate < Date()
+    }
+    
+    var secondsUntilExpire: Int? {
+        guard let expireDate = awsCompetition._expireDate!.toISO8601Date else {
+            debugPrint("Could not convert competition expire date")
+            return nil
+        }
+        return Date().seconds(until: expireDate)
     }
     
     init(awsCompetition: AWSCompetition) {

@@ -9,7 +9,8 @@
 import Foundation
 
 protocol CountdownTimerDelegate {
-    func timerTick(timeRemaining: Double)
+    func timerTick(timeRemaining: Int)
+    func timerExpired()
 }
 
 class CountdownTimer {
@@ -21,10 +22,10 @@ class CountdownTimer {
     
     var timer: Timer!
     private var countdownTimerType: CountdownTimerType!
-    private var countdownSeconds: Double
+    private var countdownSeconds: Int
     private var delegate: CountdownTimerDelegate!
     
-    init(countdownSeconds: Double, delegate: CountdownTimerDelegate) {
+    init(countdownSeconds: Int, delegate: CountdownTimerDelegate) {
         self.countdownSeconds = countdownSeconds
         self.delegate = delegate
     }
@@ -46,7 +47,14 @@ class CountdownTimer {
     }
     
     @objc func timerTick() {
-        self.countdownSeconds -= 1.0
-        self.delegate.timerTick(timeRemaining: self.countdownSeconds)
+        
+        countdownSeconds -= 1
+        if countdownSeconds > 0 {
+            delegate.timerTick(timeRemaining: self.countdownSeconds)
+        }
+        else {
+            delegate.timerExpired()
+            stop()
+        }
     }
 }

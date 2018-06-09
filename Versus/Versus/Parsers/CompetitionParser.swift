@@ -41,18 +41,18 @@ struct CompetitionParser {
         guard let user2userPoolUserId = competitionDictionary["user2userPoolUserId"] as? String else { return nil }
         
         let awsCompetition: AWSCompetition = AWSCompetition()
-        awsCompetition._categoryId = NSNumber(integerLiteral: categoryId)
-        awsCompetition._competitionTypeId = NSNumber(integerLiteral: competitionTypeId)
+        awsCompetition._categoryId = categoryId.toNSNumber
+        awsCompetition._competitionTypeId = competitionTypeId.toNSNumber
         awsCompetition._expireDate = expireDate
         awsCompetition._id = id
-        awsCompetition._isFeatured = NSNumber(integerLiteral: isFeatured)
+        awsCompetition._isFeatured = isFeatured.toNSNumber
         awsCompetition._startDate = startDate
         awsCompetition._status = status
         
         awsCompetition._user1CompetitionEntryId = user1CompetitionEntryId
         awsCompetition._user1ImageId = user1ImageId
         awsCompetition._user1ImageSmallId = user1ImageSmallId
-        awsCompetition._user1RankId = NSNumber(integerLiteral: user1RankId)
+        awsCompetition._user1RankId = user1RankId.toNSNumber
         awsCompetition._user1Username = user1Username
         awsCompetition._user1VideoId = user1VideoId
         awsCompetition._user1VideoPreviewImageId = user1VideoPreviewImageId
@@ -62,7 +62,7 @@ struct CompetitionParser {
         awsCompetition._user2CompetitionEntryId = user2CompetitionEntryId
         awsCompetition._user2ImageId = user2ImageId
         awsCompetition._user2ImageSmallId = user2ImageSmallId
-        awsCompetition._user2RankId = NSNumber(integerLiteral: user2RankId)
+        awsCompetition._user2RankId = user2RankId.toNSNumber
         awsCompetition._user2Username = user2Username
         awsCompetition._user2VideoId = user2VideoId
         awsCompetition._user2VideoPreviewImageId = user2VideoPreviewImageId
