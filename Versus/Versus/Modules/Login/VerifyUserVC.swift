@@ -21,6 +21,7 @@ class VerifyUserVC: UIViewController {
     // MARK: - Variables
     
     var signInCredentials: SignInCredentials!
+    var keyboardToolbar: KeyboardToolbar!
     
     // MARK: - View Functions
     
@@ -28,6 +29,8 @@ class VerifyUserVC: UIViewController {
         super.viewDidLoad()
 
         signInCredentials = CurrentUser.getSignInCredentials()
+        
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
     }
     
     
@@ -122,5 +125,13 @@ class VerifyUserVC: UIViewController {
             
         }))
         present(cancelAlertController, animated: true, completion: nil)
+    }
+}
+
+extension VerifyUserVC: UITextFieldDelegate {
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        textField.inputAccessoryView = keyboardToolbar
+        return true
     }
 }

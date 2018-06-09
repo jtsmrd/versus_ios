@@ -28,13 +28,20 @@ class FollowerVC: UIViewController {
     
     var followersViewType: FollowersViewType = .following
     var followerViewMode: FollowersViewMode = .viewOnly
-    var followers = [Follower]()
+    var allFollowers = [Follower]()
+    var filteredFollowers: [Follower]?
+    var followers: [Follower] {
+        return filteredFollowers ?? allFollowers
+    }
+    var keyboardToolbar: KeyboardToolbar!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureView()
+        
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,13 +54,52 @@ class FollowerVC: UIViewController {
     func initData(followersViewType: FollowersViewType, followerViewMode: FollowersViewMode, followers: [Follower]) {
         self.followersViewType = followersViewType
         self.followerViewMode = followerViewMode
-        self.followers = followers
+        self.allFollowers = followers
     }
     
     
     private func configureView() {
         
         viewTitleLabel.text = followersViewType.rawValue
+    }
+    
+    
+    private func filterFollowers(filter: String) {
+        
+        guard !filter.isEmpty else {
+            filteredFollowers = nil
+            followerTableView.reloadData()
+            return
+        }
+        
+        let filterText = filter.lowercased()
+        
+        filteredFollowers = allFollowers.filter({ (follower) -> Bool in
+
+            var filterUsername: String?
+            var filterDisplayName: String?
+            
+            // Filter attribute is different for following/ follower
+            switch followersViewType {
+            case .following:
+                filterUsername = follower.awsFollower._followedUserUsername?.lowercased()
+                filterDisplayName = follower.awsFollower._followedUserDisplayName?.lowercased()
+            case .follower:
+                filterUsername = follower.awsFollower._followerUsername?.lowercased()
+                filterDisplayName = follower.awsFollower._followerDisplayName?.lowercased()
+            }
+            
+            guard let username = filterUsername else { return false }
+            
+            if let displayName = filterDisplayName {
+                return username.contains(filterText) || displayName.contains(filterText)
+            }
+            else {
+                return username.contains(filterText)
+            }
+        })
+        
+        followerTableView.reloadData()
     }
     
     
@@ -78,7 +124,13 @@ class FollowerVC: UIViewController {
     
     
     private func removeRow(at index: Int) {
-        followers.remove(at: index)
+        allFollowers.remove(at: index)
+        
+        // If the followers are filtered, remove from the filtered collection as well
+        if filteredFollowers != nil {
+            filteredFollowers!.remove(at: index)
+        }
+        
         DispatchQueue.main.async {
             self.followerTableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .top)
         }
@@ -88,18 +140,6 @@ class FollowerVC: UIViewController {
     @IBAction func backButtonAction() {
         navigationController?.popViewController(animated: true)
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 extension FollowerVC: ProfileVCDelegate {
@@ -115,6 +155,37 @@ extension FollowerVC: ProfileVCDelegate {
 
 extension FollowerVC: UISearchBarDelegate {
     
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.inputAccessoryView = keyboardToolbar
+        return true
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: true)
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(false, animated: true)
+        
+        if followers.isEmpty {
+            searchBar.text?.removeAll()
+            filteredFollowers = nil
+            followerTableView.reloadData()
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text?.removeAll()
+        searchBar.setShowsCancelButton(false, animated: true)
+        view.endEditing(true)
+        
+        filteredFollowers = nil
+        followerTableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filterFollowers(filter: searchText)
+    }
 }
 
 extension FollowerVC: FollowerCellDelegate {

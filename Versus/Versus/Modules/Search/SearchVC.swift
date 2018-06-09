@@ -22,6 +22,7 @@ class SearchVC: UIViewController {
     var searchResultUsers = [User]()
     var featuredCompetitions = [Competition]()
     var selectedCategoryIndexPath: IndexPath?
+    var keyboardToolbar: KeyboardToolbar!
     let leaderboardCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     let browseCategoryCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
@@ -45,6 +46,10 @@ class SearchVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        browseTableView.register(UINib(nibName: COMPETITION_CELL, bundle: nil), forCellReuseIdentifier: COMPETITION_CELL)
+        
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        
         configureView()
     }
     
@@ -257,9 +262,23 @@ extension SearchVC: UITableViewDelegate {
 
 extension SearchVC: UISearchBarDelegate {
     
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.inputAccessoryView = keyboardToolbar
+        return true
+    }
+    
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchUserTableView.isHidden = false
         searchBar.setShowsCancelButton(true, animated: true)
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(false, animated: true)
+        
+        if searchResultUsers.isEmpty {
+            searchUserTableView.isHidden = true
+            searchBar.text?.removeAll()
+        }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {

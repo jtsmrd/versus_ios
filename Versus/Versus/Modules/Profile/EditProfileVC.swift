@@ -10,7 +10,7 @@ import UIKit
 import AWSUserPoolsSignIn
 import MobileCoreServices
 
-class EditProfileVC: UIViewController, UITextViewDelegate {
+class EditProfileVC: UIViewController {
 
     
     enum EditImageType {
@@ -32,6 +32,7 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
     var editImageType: EditImageType!
     var profileImage: UIImage?
     var backgroundImage: UIImage?
+    var keyboardToolbar: KeyboardToolbar!
     
     
     override func viewDidLoad() {
@@ -39,6 +40,8 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
 
         configureView()
         configureImagePicker()
+        
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: true)
     }
     
     
@@ -249,25 +252,26 @@ class EditProfileVC: UIViewController, UITextViewDelegate {
         editImageVC.initData(imageToCrop: image, cropImageType: cropImageType, delegate: self)
         present(editImageVC, animated: true, completion: nil)
     }
+}
+
+extension EditProfileVC: UITextViewDelegate {
     
-    
-    // MARK: - UITextViewDelegate Functions
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        textView.inputAccessoryView = keyboardToolbar
+        return true
+    }
     
     func textViewDidChange(_ textView: UITextView) {
         user.awsUser._bio = textView.text
     }
-    
-    
-    /*
-    // MARK: - Navigation
+}
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+extension EditProfileVC: UITextFieldDelegate {
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        textField.inputAccessoryView = keyboardToolbar
+        return true
     }
-    */
-
 }
 
 extension EditProfileVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {

@@ -379,7 +379,7 @@
                                             <constraint firstAttribute="width" secondItem="J0J-Z6-x4b" secondAttribute="height" multiplier="4:5" id="I7g-ZP-GpI"/>
                                         </constraints>
                                     </imageView>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Write a caption..." translatesAutoresizingMaskIntoConstraints="NO" id="nI4-cz-mKg">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" tag="100" contentMode="scaleToFill" text="Write a caption..." translatesAutoresizingMaskIntoConstraints="NO" id="nI4-cz-mKg">
                                         <rect key="frame" x="107" y="16" width="252" height="94"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

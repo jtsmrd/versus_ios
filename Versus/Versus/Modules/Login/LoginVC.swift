@@ -21,6 +21,7 @@ class LoginVC: UIViewController {
     
     
     var signInCredentials: SignInCredentials!
+    var keyboardToolbar: KeyboardToolbar!
     
     
     // MARK: - View Functions
@@ -28,7 +29,7 @@ class LoginVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: true)
     }
 
     
@@ -108,6 +109,14 @@ class LoginVC: UIViewController {
             return false
         }
         
+        return true
+    }
+}
+
+extension LoginVC: UITextFieldDelegate {
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        textField.inputAccessoryView = keyboardToolbar
         return true
     }
 }

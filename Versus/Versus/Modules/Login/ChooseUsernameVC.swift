@@ -9,7 +9,7 @@
 import UIKit
 import AWSUserPoolsSignIn
 
-class ChooseUsernameVC: UIViewController, UITextFieldDelegate {
+class ChooseUsernameVC: UIViewController {
 
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var usernameInfoLabel: UILabel!
@@ -17,11 +17,14 @@ class ChooseUsernameVC: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var continueButton: RoundButton!
     
     var usernameAvailable = false
+    var keyboardToolbar: KeyboardToolbar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         usernameExistsLabel.isHidden = true
+        
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
     }
     
     
@@ -94,9 +97,14 @@ class ChooseUsernameVC: UIViewController, UITextFieldDelegate {
             }
         }
     }
+}
+
+extension ChooseUsernameVC: UITextFieldDelegate {
     
-    
-    // MARK: - UITextFieldDelegate
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        textField.inputAccessoryView = keyboardToolbar
+        return true
+    }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
@@ -125,19 +133,6 @@ class ChooseUsernameVC: UIViewController, UITextFieldDelegate {
                 checkUsernameAvailability(username: String(existingText.prefix(upTo: existingText.endIndex)))
             }
         }
-        
         return true
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

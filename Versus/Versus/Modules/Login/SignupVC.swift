@@ -20,12 +20,14 @@ class SignupVC: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var passwordRequirementsLabel: UILabel!
     @IBOutlet weak var signupButton: RoundButton!
+    @IBOutlet weak var backButton: UIButton!
     
     
     // MARK: - Variables
     
     var signupMethod: SignupMethod = .email
     var signInCredentials: SignInCredentials!
+    var keyboardToolbar: KeyboardToolbar!
     
     
     // MARK: - View Functions
@@ -33,11 +35,15 @@ class SignupVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: true)
+        
         switch signupMethod {
         case .email:
             emailPhoneNumberTextField.placeholder = "Email"
+            emailPhoneNumberTextField.keyboardType = .emailAddress
         case .phoneNumber:
             emailPhoneNumberTextField.placeholder = "Phone number"
+            emailPhoneNumberTextField.keyboardType = .phonePad
         }
     }
 
@@ -143,5 +149,13 @@ class SignupVC: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
+    }
+}
+
+extension SignupVC: UITextFieldDelegate {
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        textField.inputAccessoryView = keyboardToolbar
+        return true
     }
 }

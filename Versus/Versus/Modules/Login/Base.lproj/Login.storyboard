@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="woa-Xr-emK">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="woa-Xr-emK">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -148,23 +147,29 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="YnJ-Qb-idI">
                                         <rect key="frame" x="37.5" y="40" width="300" height="108"/>
                                         <subviews>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username or email" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HeL-jO-6IM">
+                                            <textField opaque="NO" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username or email" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HeL-jO-6IM">
                                                 <rect key="frame" x="0.0" y="0.0" width="300" height="48"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="HeL-jO-6IM" secondAttribute="height" multiplier="25:4" id="Aqo-Rk-vaR"/>
                                                 </constraints>
                                                 <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="7Cd-fT-GUa" id="Ebd-de-WGE"/>
+                                                </connections>
                                             </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mZn-cV-9Y7">
+                                            <textField opaque="NO" tag="200" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mZn-cV-9Y7">
                                                 <rect key="frame" x="0.0" y="60" width="300" height="48"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="mZn-cV-9Y7" secondAttribute="height" multiplier="25:4" id="qb7-hf-CmB"/>
                                                 </constraints>
                                                 <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" secureTextEntry="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="7Cd-fT-GUa" id="Niq-l5-Mi0"/>
+                                                </connections>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -284,7 +289,7 @@
                                             <constraint firstAttribute="width" constant="40" id="PYH-HV-gCB"/>
                                             <constraint firstAttribute="height" constant="40" id="gmF-n4-bju"/>
                                         </constraints>
-                                        <state key="normal" image="back_icon"/>
+                                        <state key="normal" image="Back"/>
                                         <connections>
                                             <action selector="backButtonAction" destination="tHp-MF-gkN" eventType="touchUpInside" id="vGM-XU-Giq"/>
                                         </connections>
@@ -304,26 +309,26 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="m9h-fX-5zu">
                                         <rect key="frame" x="38" y="40" width="300" height="108"/>
                                         <subviews>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dRz-bo-3Ea">
+                                            <textField opaque="NO" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dRz-bo-3Ea">
                                                 <rect key="frame" x="0.0" y="0.0" width="300" height="48"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="dRz-bo-3Ea" secondAttribute="height" multiplier="25:4" id="PLI-sU-UdG"/>
                                                 </constraints>
                                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="tHp-MF-gkN" id="6Mh-eR-PbG"/>
                                                 </connections>
                                             </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Tz-Tj-bSh">
+                                            <textField opaque="NO" tag="200" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Tz-Tj-bSh">
                                                 <rect key="frame" x="0.0" y="60" width="300" height="48"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="2Tz-Tj-bSh" secondAttribute="height" multiplier="25:4" id="VgO-0Y-eAB"/>
                                                 </constraints>
                                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" secureTextEntry="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="tHp-MF-gkN" id="5PI-N8-OZi"/>
                                                 </connections>
@@ -390,6 +395,7 @@
                         <viewLayoutGuide key="safeArea" id="QAZ-VB-fS9"/>
                     </view>
                     <connections>
+                        <outlet property="backButton" destination="O6B-WV-Ygb" id="vrw-5c-gd4"/>
                         <outlet property="emailPhoneNumberTextField" destination="dRz-bo-3Ea" id="MZL-4j-LIF"/>
                         <outlet property="passwordRequirementsLabel" destination="bUu-Ny-HYl" id="S3w-PM-Q0n"/>
                         <outlet property="passwordTextField" destination="2Tz-Tj-bSh" id="Nz8-rJ-JML"/>
@@ -470,14 +476,17 @@
                                             <action selector="submitButtonAction" destination="Ydl-N7-tyL" eventType="touchUpInside" id="MgD-xS-pIj"/>
                                         </connections>
                                     </button>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Verification code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ikl-3d-P1n">
+                                    <textField opaque="NO" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Verification code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ikl-3d-P1n">
                                         <rect key="frame" x="37.5" y="100" width="300" height="48"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="ikl-3d-P1n" secondAttribute="height" multiplier="25:4" id="nLx-rk-p55"/>
                                         </constraints>
                                         <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="Ydl-N7-tyL" id="xMy-Vc-Vpp"/>
+                                        </connections>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4xz-Aq-SUe">
                                         <rect key="frame" x="151" y="338.5" width="72" height="29"/>
@@ -578,7 +587,7 @@
                                             <action selector="continueButtonAction" destination="Kwi-jm-2ro" eventType="touchUpInside" id="JV9-g8-E6y"/>
                                         </connections>
                                     </button>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ujw-L1-XXq">
+                                    <textField opaque="NO" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ujw-L1-XXq">
                                         <rect key="frame" x="37.5" y="100" width="300" height="48"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Ujw-L1-XXq" secondAttribute="height" multiplier="25:4" id="F8A-bw-bec"/>
@@ -803,6 +812,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Back" width="200" height="200"/>
         <image name="back_icon" width="200" height="200"/>
         <image name="temp_icon_green" width="355" height="355"/>
         <image name="temp_wordmark_white" width="365" height="57"/>

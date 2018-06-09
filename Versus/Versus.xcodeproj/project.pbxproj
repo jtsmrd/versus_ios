@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		323A7B3620CBFCBE0011AF95 /* CompetitionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */; };
 		327E604520C49F64000980CD /* CompetitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604420C49F64000980CD /* CompetitionManager.swift */; };
 		327E604920C4AD26000980CD /* KeyboardToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604820C4AD26000980CD /* KeyboardToolbar.swift */; };
 		32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97620C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m */; };
@@ -115,6 +116,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CompetitionCell.xib; sourceTree = "<group>"; };
 		327E604420C49F64000980CD /* CompetitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionManager.swift; sourceTree = "<group>"; };
 		327E604820C4AD26000980CD /* KeyboardToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardToolbar.swift; sourceTree = "<group>"; };
 		32D9C97320C9F0AB00F174B2 /* Versus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Versus-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -278,7 +280,6 @@
 		32D9C98220CB209700F174B2 /* Featured Following Competitions */ = {
 			isa = PBXGroup;
 			children = (
-				6B04B74420914B8A007BF021 /* CompetitionCell.swift */,
 				32D9C98020CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard */,
 				6B04B74220914ADF007BF021 /* FeaturedFollowingVC.swift */,
 			);
@@ -309,6 +310,8 @@
 			isa = PBXGroup;
 			children = (
 				6B160C6A209231F2003F2F9D /* Competition.storyboard */,
+				6B04B74420914B8A007BF021 /* CompetitionCell.swift */,
+				323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */,
 				6BD5E36220A65A1E00A9C054 /* CompetitionOptionCell.swift */,
 				6BD5E36020A65A0B00A9C054 /* CompetitionShareCell.swift */,
 				6BC01AC22092824700FDAC44 /* ViewCompetitionVC.swift */,
@@ -639,6 +642,7 @@
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,
 				6BC1E12720894276005404E1 /* CompetitionEntry.storyboard in Resources */,
 				6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */,
+				323A7B3620CBFCBE0011AF95 /* CompetitionCell.xib in Resources */,
 				6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */,
 				6B13B93C20AE180F00769AFD /* EditImage.storyboard in Resources */,
 			);

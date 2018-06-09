@@ -20,13 +20,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="temp_icon_green" translatesAutoresizingMaskIntoConstraints="NO" id="fig-2q-Z19">
-                                <rect key="frame" x="94" y="70" width="187.5" height="187.5"/>
+                                <rect key="frame" x="94" y="156.5" width="187.5" height="187.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="fig-2q-Z19" secondAttribute="height" multiplier="1:1" id="F2p-V0-jTQ"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="temp_wordmark_white" translatesAutoresizingMaskIntoConstraints="NO" id="XaZ-3A-gGq">
-                                <rect key="frame" x="37.5" y="287.5" width="300" height="50"/>
+                                <rect key="frame" x="37.5" y="374" width="300" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="WHt-qU-Mc3"/>
                                     <constraint firstAttribute="width" constant="300" id="cqo-3Q-4HW"/>
@@ -37,9 +37,9 @@
                         <constraints>
                             <constraint firstItem="XaZ-3A-gGq" firstAttribute="centerX" secondItem="aUm-oX-fmm" secondAttribute="centerX" id="8e5-Rl-bT2"/>
                             <constraint firstItem="XaZ-3A-gGq" firstAttribute="top" secondItem="fig-2q-Z19" secondAttribute="bottom" constant="30" id="DSe-li-FBe"/>
-                            <constraint firstItem="fig-2q-Z19" firstAttribute="top" secondItem="qTL-R9-ec6" secondAttribute="top" constant="50" id="W8H-jV-ih3"/>
                             <constraint firstItem="fig-2q-Z19" firstAttribute="width" secondItem="aUm-oX-fmm" secondAttribute="width" multiplier="0.5" id="ktJ-aG-haO"/>
                             <constraint firstItem="fig-2q-Z19" firstAttribute="centerX" secondItem="aUm-oX-fmm" secondAttribute="centerX" id="xgi-V4-Cu4"/>
+                            <constraint firstItem="fig-2q-Z19" firstAttribute="centerY" secondItem="aUm-oX-fmm" secondAttribute="centerY" multiplier="0.75" id="zSr-A1-Wnk"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="qTL-R9-ec6"/>
                     </view>

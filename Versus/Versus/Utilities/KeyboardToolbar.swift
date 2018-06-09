@@ -50,14 +50,24 @@ class KeyboardToolbar: UIToolbar {
     }
     
     @objc func previousAction() {
-//        self.parentViewController
+        
+        if let firstResponderTag = parentViewController?.view.firstResponder?.tag {
+            if let previousView = parentViewController?.view.viewWithTag(firstResponderTag - 100) {
+                previousView.becomeFirstResponder()
+            }
+        }
     }
     
     @objc func nextAction() {
-//        self.parentViewController
+        
+        if let firstResponderTag = parentViewController?.view.firstResponder?.tag {
+            if let nextView = parentViewController?.view.viewWithTag(firstResponderTag + 100) {
+                nextView.becomeFirstResponder()
+            }
+        }
     }
     
     @objc func doneAction() {
-        self.parentViewController?.view.endEditing(true)
+        parentViewController?.view.firstResponder?.resignFirstResponder()
     }
 }
