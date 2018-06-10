@@ -23,6 +23,7 @@ class AWSNotification: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _notificationInfo: [String: String]?
     var _notificationTypeId: NSNumber?
     var _notifyUserPoolUserId: String?
+    var _wasViewed: NSNumber?
     
     class func dynamoDBTableName() -> String {
 
@@ -41,6 +42,7 @@ class AWSNotification: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                "_notificationInfo" : "notificationInfo",
                "_notificationTypeId" : "notificationTypeId",
                "_notifyUserPoolUserId" : "notifyUserPoolUserId",
+               "_wasViewed" : "wasViewed",
         ]
     }
 }

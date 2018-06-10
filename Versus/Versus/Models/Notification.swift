@@ -25,6 +25,9 @@ class Notification {
     var notificationType: NotificationType {
         return NotificationType(rawValue: (awsNotification._notificationTypeId?.intValue)!)!
     }
+    var wasViewed: Bool {
+        return awsNotification._wasViewed?.boolValue ?? false
+    }
     
     init(awsNotification: AWSNotification) {
         self.awsNotification = awsNotification

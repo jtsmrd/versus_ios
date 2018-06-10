@@ -21,7 +21,6 @@ class CurrentUser {
             return AWSCognitoIdentityUserPool.default().currentUser()?.username ?? ""
         }
     }
-    static var notifications = [Notification]()
     
     private init() { }
     
@@ -153,9 +152,9 @@ class CurrentUser {
     }
     
     static func getNotifications() {
-        NotificationService.instance.getCurrentUserNotifications { (success, customError) in
-            if !success {
-                debugPrint("Failed to load user notifications")
+        NotificationManager.instance.getCurrentUserNotifications { (notifications, customError) in
+            if let customError = customError {
+                debugPrint("Error getting notifications: \(customError.error!.localizedDescription)")
             }
         }
     }

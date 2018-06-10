@@ -90,6 +90,24 @@ class FollowerService {
     }
     
     
+    func getFollower(
+        with followerUserPoolUserId: String,
+        completion: @escaping (_ follower: Follower?, _ customError: CustomError?) -> Void) {
+        
+        AWSDynamoDBObjectMapper.default().load(AWSFollower.self, hashKey: followerUserPoolUserId, rangeKey: nil) { (awsFollower, error) in
+            if let error = error {
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to load follower."))
+            }
+            else if let awsFollower = awsFollower as? AWSFollower {
+                completion(Follower(awsFollower: awsFollower, followerType: .follower), nil)
+            }
+            else {
+                debugPrint("Something else went wrong with getFollower")
+                completion(nil, nil)
+            }
+        }
+    }
+    
     
     func getFollowers(
         for awsUser: AWSUser,

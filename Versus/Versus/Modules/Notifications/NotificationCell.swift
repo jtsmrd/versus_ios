@@ -34,6 +34,9 @@ class NotificationCell: UITableViewCell {
         // The default notification image, will be overwritten in some cases
         notificationImageView.image = UIImage(named: "versus_icon_white")
         
+        // New notifications will have a background color. Once viewed, it will be clear.
+        backgroundColor = notification.wasViewed ? UIColor.white : #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 0.05)
+        
         switch notification.notificationType {
         case .competitionComment, .competitionLost, .competitionRemoved, .competitionStarted, .competitionWon:
             

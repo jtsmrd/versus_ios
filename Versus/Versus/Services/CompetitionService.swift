@@ -59,10 +59,6 @@ class CompetitionService {
         _ followedUserIds: [String],
         completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void) {
         
-        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "us-east-1:b80002bd-0582-4a26-80b9-05737c384ef5")
-        let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider:credentialsProvider)
-        AWSServiceManager.default().defaultServiceConfiguration = configuration
-        
         var competitions = [Competition]()
         
         let jsonObject: [String: Any] = ["followedUserIds": followedUserIds]

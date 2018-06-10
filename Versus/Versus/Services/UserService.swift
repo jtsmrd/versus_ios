@@ -42,6 +42,63 @@ class UserService {
         }
     }
     
+    
+    func saveUserSNSEndpointARN(
+        _ endpointArn: String,
+        _ userPoolUserId: String,
+        completion: @escaping SuccessErrorCompletion) {
+        
+        let userSnsEndpointArn: AWSUserSNSEndpointARN = AWSUserSNSEndpointARN()
+        userSnsEndpointArn._userPoolUserId = userPoolUserId
+        userSnsEndpointArn._endpointArn = endpointArn
+        
+        AWSDynamoDBObjectMapper.default().save(userSnsEndpointArn) { (error) in
+            if let error = error {
+                completion(false, CustomError(error: error, title: "", desc: "Failed to save user SNS Endpoint ARN: \(error.localizedDescription)"))
+            }
+            completion(true, nil)
+        }
+    }
+    
+    
+    func loadUserSNSEndpointARN(
+        _ awsUser: AWSUser,
+        completion: @escaping (_ endpointArnRecord: AWSUserSNSEndpointARN?, _ customError: CustomError?) -> Void) {
+        
+        AWSDynamoDBObjectMapper.default().load(AWSUserSNSEndpointARN.self, hashKey: awsUser._userPoolUserId!, rangeKey: nil) { (record, error) in
+            if let error = error {
+                completion(nil, CustomError(error: error, title: "", desc: "Could not load User SNS Endpoint ARN"))
+            }
+            else if let record = record as? AWSUserSNSEndpointARN {
+                completion(record, nil)
+            }
+            else {
+                debugPrint("Error: Something else went wrong in loadUserSNSEndpointARN")
+                completion(nil, nil)
+            }
+        }
+    }
+    
+    
+    func loadUser(
+        _ username: String,
+        completion: @escaping (_ user: User?, _ customError: CustomError?) -> Void) {
+        
+        AWSDynamoDBObjectMapper.default().load(AWSUser.self, hashKey: username, rangeKey: nil) { (awsUser, error) in
+            if let error = error {
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to load user."))
+            }
+            else if let awsUser = awsUser as? AWSUser {
+                completion(User(awsUser: awsUser), nil)
+            }
+            else {
+                debugPrint("Something else went wrong with loadUser with username")
+                completion(nil, nil)
+            }
+        }
+    }
+    
+    
     func loadUser(
         userPoolUserId: String,
         completion: @escaping (_ awsUser: AWSUser?, _ error: CustomError?) -> ()) {
