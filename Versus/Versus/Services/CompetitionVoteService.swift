@@ -18,7 +18,7 @@ class CompetitionVoteService {
     func voteForCompetition(
         competitionId: String,
         votedForCompetitionEntryId: String,
-        completion: @escaping SuccessCompletion) {
+        completion: @escaping (_ competitionVote: CompetitionVote?, _ customError: CustomError?) -> Void) {
         
         let competitionVote: AWSCompetitionVote = AWSCompetitionVote()
         competitionVote._competitionId = competitionId
@@ -29,11 +29,10 @@ class CompetitionVoteService {
         
         AWSDynamoDBObjectMapper.default().save(competitionVote) { (error) in
             if let error = error {
-                debugPrint("Error when saving Competition Vote: \(error.localizedDescription)")
-                completion(false)
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to vote on competition."))
             }
             debugPrint("Successfully voted")
-            completion(true)
+            completion(CompetitionVote(awsCompetitionVote: competitionVote), nil)
         }
     }
     

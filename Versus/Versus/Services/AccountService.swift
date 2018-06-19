@@ -238,6 +238,67 @@ class AccountService {
     }
     
     
+    func resetPassword(
+        for user: AWSCognitoIdentityUser,
+        completion: @escaping (_ successMessage: String?, _ customError: CustomError?) -> Void) {
+        
+        let resetPasswordDispatchGroup = DispatchGroup()
+        var responseTask: AWSTask<AWSCognitoIdentityUserForgotPasswordResponse>!
+        
+        resetPasswordDispatchGroup.enter()
+        user.forgotPassword().continueWith(executor: AWSExecutor.mainThread()) { (response) -> Any? in
+            responseTask = response
+            resetPasswordDispatchGroup.leave()
+            return nil
+        }
+        
+        resetPasswordDispatchGroup.notify(queue: .main) {
+            if let error = responseTask.error {
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to reset password"))
+            }
+            else if let result = responseTask.result, let deliveryDetails = result.codeDeliveryDetails {
+                switch deliveryDetails.deliveryMedium {
+                case .email:
+                    completion("A verification code has been sent to your email", nil)
+                case .sms:
+                    completion("A verification code has been sent to your phone", nil)
+                case .unknown:
+                    completion(nil, CustomError(error: nil, title: "", desc: "Unable to reset password"))
+                }
+            }
+        }
+    }
+    
+    
+    func confirmPasswordChange(
+        for user: AWSCognitoIdentityUser,
+        _ verificationCode: String,
+        _ password: String,
+        completion: @escaping SuccessErrorCompletion) {
+        
+        let confirmForgotPasswordDispatchGroup = DispatchGroup()
+        var responseTask: AWSTask<AWSCognitoIdentityUserConfirmForgotPasswordResponse>!
+        
+        confirmForgotPasswordDispatchGroup.enter()
+        user.confirmForgotPassword(
+            verificationCode,
+            password: password).continueWith(executor: AWSExecutor.mainThread()) { (response) -> Any? in
+                responseTask = response
+                confirmForgotPasswordDispatchGroup.leave()
+                return nil
+        }
+        
+        confirmForgotPasswordDispatchGroup.notify(queue: .main) {
+            if let error = responseTask.error {
+                completion(false, CustomError(error: error, title: "", desc: "Unable to change password"))
+            }
+            else {
+                completion(true, nil)
+            }
+        }
+    }
+    
+    
     func signOut(completion: @escaping (Bool) -> ()) {
         AWSCognitoIdentityUserPool.default().currentUser()?.signOut()
         completion(true)

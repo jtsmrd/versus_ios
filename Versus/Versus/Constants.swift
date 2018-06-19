@@ -87,6 +87,7 @@ let COMPETITION_ENTRY_VC = "CompetitionEntryVC"
 let VIEW_COMPETITION_VC = "ViewCompetitionVC"
 let PROFILE_VC = "ProfileVC"
 let EDIT_PROFILE_VC = "EditProfileVC"
+let CHANGE_PASSWORD_VC = "ChangePasswordVC"
 
 
 // Storyboards

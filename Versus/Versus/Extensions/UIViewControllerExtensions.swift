@@ -9,6 +9,10 @@
 import UIKit
 import Toast_Swift
 
+struct AssociatedKeys {
+    static var activeFirstResponder: UIView = UIView()
+}
+
 extension UIViewController {
     
     func displayError(error: CustomError) {
@@ -33,5 +37,17 @@ extension UIViewController {
             style: .init(),
             completion: nil
         )
+    }
+    
+    var activeFirstResponder: UIView {
+        get {
+            guard let value = objc_getAssociatedObject(self, &AssociatedKeys.activeFirstResponder) as? UIView else {
+                return UIView()
+            }
+            return value
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.activeFirstResponder, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
 }

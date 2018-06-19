@@ -242,14 +242,18 @@ class ViewCompetitionVC: UIViewController {
             votedForCompetitionEntryId = competition.awsCompetition._user2CompetitionEntryId!
         }
         
+        //TODO: Return competition vote and assign to existingCompetitionVote
         CompetitionVoteService.instance.voteForCompetition(
             competitionId: competition.awsCompetition._id!,
             votedForCompetitionEntryId: votedForCompetitionEntryId
-        ) { (success) in
+        ) { (competitionVote, customError) in
             DispatchQueue.main.async {
-                if !success {
-                    self.displayError(error: CustomError(error: nil, title: "", desc: "Unable to vote, try again."))
+                if let customError = customError {
+                    self.displayError(error: customError)
                     self.votedCompetition = .none
+                }
+                else {
+                    self.existingCompetitionVote = competitionVote
                 }
                 self.configureVoteButton()
             }

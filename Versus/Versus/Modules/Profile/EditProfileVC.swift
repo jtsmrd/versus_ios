@@ -19,6 +19,7 @@ class EditProfileVC: UIViewController {
     }
     
     
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var profileImageView: CircleImageView!
     @IBOutlet weak var displayNameTextField: UITextField!
@@ -33,6 +34,8 @@ class EditProfileVC: UIViewController {
     var profileImage: UIImage?
     var backgroundImage: UIImage?
     var keyboardToolbar: KeyboardToolbar!
+    var keyboardWillShowObserver: NSObjectProtocol!
+    var keyboardWillHideObserver: NSObjectProtocol!
     
     
     override func viewDidLoad() {
@@ -44,9 +47,58 @@ class EditProfileVC: UIViewController {
         keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: true)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow(notification:)),
+            name: NSNotification.Name.UIKeyboardWillShow,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide(notification:)),
+            name: NSNotification.Name.UIKeyboardWillHide,
+            object: nil
+        )
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(
+            self,
+            name: NSNotification.Name.UIKeyboardWillShow,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: NSNotification.Name.UIKeyboardWillHide,
+            object: nil
+        )
+    }
     
     func initData(user: User) {
         self.user = user
+    }
+    
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        
+        let userInfo: NSDictionary = notification.userInfo! as NSDictionary
+        let keyboardFrame: NSValue = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
+        let keyboardHeight = keyboardFrame.cgRectValue.height
+        let currentTextFieldOrigin = activeFirstResponder.frame.origin
+        let currentTextFieldHeight = activeFirstResponder.frame.size.height
+        var visibleRect = view.frame
+        visibleRect.size.height -= keyboardHeight
+        let scrollPoint = CGPoint(x: 0.0, y: currentTextFieldOrigin.y - visibleRect.size.height + (currentTextFieldHeight + 100))
+        scrollView.setContentOffset(scrollPoint, animated: true)
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        scrollView.setContentOffset(CGPoint.zero, animated: true)
     }
     
     
@@ -261,6 +313,10 @@ extension EditProfileVC: UITextViewDelegate {
         return true
     }
     
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        activeFirstResponder = textView
+    }
+    
     func textViewDidChange(_ textView: UITextView) {
         user.awsUser._bio = textView.text
     }
@@ -271,6 +327,10 @@ extension EditProfileVC: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         textField.inputAccessoryView = keyboardToolbar
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        activeFirstResponder = textField
     }
 }
 
