@@ -68,7 +68,7 @@ class CompetitionEntryVC: UIViewController {
             performSegue(withIdentifier: SHOW_COMPETITION_DETAILS, sender: image)
         }
         else if let videoUrlAsset = selectedVideoAVUrlAsset {
-            performSegue(withIdentifier: SHOW_COMPETITION_DETAILS, sender: videoUrlAsset)
+            performSegue(withIdentifier: SHOW_SELECT_PREVIEW_IMAGE, sender: videoUrlAsset)
         }
     }
     
@@ -170,10 +170,7 @@ class CompetitionEntryVC: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let competitionDetailsVC = segue.destination as? CompetitionDetailsVC {
             if let image = sender as? UIImage {
-                competitionDetailsVC.initData(image: image, videoUrlAsset: nil)
-            }
-            else if let videoUrlAsset = sender as? AVURLAsset {
-                competitionDetailsVC.initData(image: nil, videoUrlAsset: videoUrlAsset)
+                competitionDetailsVC.initData(image: image, videoUrlAsset: nil, videoPreviewImage: nil)
             }
         }
         else if let swiftyCamVC = segue.destination as? SwiftyCamVC {
@@ -181,6 +178,10 @@ class CompetitionEntryVC: UIViewController {
             swiftyCamVC.videoGravity = .resizeAspectFill
             swiftyCamVC.maximumVideoDuration = 60
             swiftyCamVC.cameraDelegate = self
+        }
+        else if let selectPreviewImageVC = segue.destination as? SelectPreviewImageVC,
+            let videoAVUrlAsset = sender as? AVURLAsset {
+            selectPreviewImageVC.initData(videoAVUrlAsset: videoAVUrlAsset)
         }
     }
 }

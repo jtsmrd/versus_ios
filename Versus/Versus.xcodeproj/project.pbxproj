@@ -14,6 +14,7 @@
 		325F561120D9AE8E001A06C4 /* ChangePasswordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325F561020D9AE8E001A06C4 /* ChangePasswordVC.swift */; };
 		327E604520C49F64000980CD /* CompetitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604420C49F64000980CD /* CompetitionManager.swift */; };
 		327E604920C4AD26000980CD /* KeyboardToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604820C4AD26000980CD /* KeyboardToolbar.swift */; };
+		327FA2B220DC501400B13C6D /* SelectPreviewImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */; };
 		32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97620C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m */; };
 		32D9C97B20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97720C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m */; };
 		32D9C97C20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */; };
@@ -127,6 +128,7 @@
 		325F561020D9AE8E001A06C4 /* ChangePasswordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordVC.swift; sourceTree = "<group>"; };
 		327E604420C49F64000980CD /* CompetitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionManager.swift; sourceTree = "<group>"; };
 		327E604820C4AD26000980CD /* KeyboardToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardToolbar.swift; sourceTree = "<group>"; };
+		327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPreviewImageVC.swift; sourceTree = "<group>"; };
 		32D9C97320C9F0AB00F174B2 /* Versus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Versus-Bridging-Header.h"; sourceTree = "<group>"; };
 		32D9C97420C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_RequestSchema.h; sourceTree = "<group>"; };
 		32D9C97520C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h; sourceTree = "<group>"; };
@@ -506,6 +508,7 @@
 				6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */,
 				6B2A22E9208AAAC500D65C9A /* PhotoLibraryCell.swift */,
 				6BDE76DC208FE5FD009621D0 /* SwiftyCamVC.swift */,
+				327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */,
 			);
 			path = "Competition Entry";
 			sourceTree = "<group>";
@@ -748,6 +751,7 @@
 				6B36E1D020703D5D00F92375 /* UserService.swift in Sources */,
 				6B079FED208D3500003BBB87 /* Utilities.swift in Sources */,
 				32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */,
+				327FA2B220DC501400B13C6D /* SelectPreviewImageVC.swift in Sources */,
 				6B3DAEC620827D9800946EB1 /* UIViewExtensions.swift in Sources */,
 				6BB9A386207ED21E006881BE /* SearchUserCell.swift in Sources */,
 				32D9C97B20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m in Sources */,

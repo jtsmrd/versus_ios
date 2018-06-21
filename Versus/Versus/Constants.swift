@@ -45,6 +45,7 @@ let SHOW_FOLLOWERS = "FollowerVC"
 let SHOW_COMPETITION_DETAILS = "CompetitionDetailsVC"
 let SHOW_COMPETITION_SUBMITTED = "CompetitionSubmittedVC"
 let SHOW_COMPETITION = "ViewCompetitionVC"
+let SHOW_SELECT_PREVIEW_IMAGE = "SelectPreviewImageVC"
 
 let UNWIND_TO_LANDING = "LandingVC"
 

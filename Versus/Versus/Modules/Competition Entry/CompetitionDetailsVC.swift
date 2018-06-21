@@ -42,9 +42,10 @@ class CompetitionDetailsVC: UIViewController {
     }
 
     
-    func initData(image: UIImage?, videoUrlAsset: AVURLAsset?) {
+    func initData(image: UIImage?, videoUrlAsset: AVURLAsset?, videoPreviewImage: UIImage?) {
         competitionImage = image
         competitionVideoUrlAsset = videoUrlAsset
+        competitionVideoPreviewImage = videoPreviewImage
         competitionType = image != nil ? .image : .video
     }
     
@@ -190,7 +191,6 @@ class CompetitionDetailsVC: UIViewController {
         case .image:
             previewImageView.image = competitionImage
         case .video:
-            competitionVideoPreviewImage = Utilities.generatePreviewImage(for: competitionVideoUrlAsset!)
             previewImageView.image = competitionVideoPreviewImage
         }
     }
