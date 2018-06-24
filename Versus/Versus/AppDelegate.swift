@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider:credentialsProvider)
         AWSServiceManager.default().defaultServiceConfiguration = configuration
         
-        if AWSSignInManager.sharedInstance().isLoggedIn {
+        if AWSSignInManager.sharedInstance().isLoggedIn && AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.localUserPoolUserId {
             loadCurrentUser { (success, error) in
                 DispatchQueue.main.async {
                     if let customError = error, let customErrorError = customError.error {
@@ -67,6 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         else {
+            AWSCognitoIdentityUserPool.default().clearAll()
             showLogin()
         }
         
@@ -220,12 +221,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func loadCurrentUser(completion: @escaping SuccessErrorCompletion) {
-        UserService.instance.loadUser(userPoolUserId: CurrentUser.userPoolUserId) { (awsUser, error) in
+        UserService.instance.loadUserWithUserPoolUserId(
+            CurrentUser.userPoolUserId
+        ) { (user, error) in
             if let error = error {
                 completion(false, error)
             }
-            else if let awsUser = awsUser {
-                CurrentUser.user = User(awsUser: awsUser)
+            else if let user = user {
+                CurrentUser.user = user
                 completion(true, nil)
             }
             else {

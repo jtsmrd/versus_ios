@@ -23,10 +23,10 @@ class UserService {
         }
         
         let user: AWSUser = AWSUser()
+        user._userPoolUserId = userPoolUserId
         user._username = username
         user._createDate = Date().toISO8601String
         user._isFeatured = 0.toNSNumber
-        user._userPoolUserId = userPoolUserId
         user._rankId = 1.toNSNumber
         user._wins = 0.toNSNumber
         user._votes = 0.toNSNumber
@@ -65,7 +65,11 @@ class UserService {
         _ awsUser: AWSUser,
         completion: @escaping (_ endpointArnRecord: AWSUserSNSEndpointARN?, _ customError: CustomError?) -> Void) {
         
-        AWSDynamoDBObjectMapper.default().load(AWSUserSNSEndpointARN.self, hashKey: awsUser._userPoolUserId!, rangeKey: nil) { (record, error) in
+        AWSDynamoDBObjectMapper.default().load(
+            AWSUserSNSEndpointARN.self,
+            hashKey: awsUser._userPoolUserId!,
+            rangeKey: nil
+        ) { (record, error) in
             if let error = error {
                 completion(nil, CustomError(error: error, title: "", desc: "Could not load User SNS Endpoint ARN"))
             }
@@ -80,39 +84,23 @@ class UserService {
     }
     
     
-    func loadUser(
+    /*
+     Loads an AWSUser with the given username.
+    */
+    func loadUserWithUsername(
         _ username: String,
         completion: @escaping (_ user: User?, _ customError: CustomError?) -> Void) {
         
-        AWSDynamoDBObjectMapper.default().load(AWSUser.self, hashKey: username, rangeKey: nil) { (awsUser, error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, title: "", desc: "Unable to load user."))
-            }
-            else if let awsUser = awsUser as? AWSUser {
-                completion(User(awsUser: awsUser), nil)
-            }
-            else {
-                debugPrint("Something else went wrong with loadUser with username")
-                completion(nil, nil)
-            }
-        }
-    }
-    
-    
-    func loadUser(
-        userPoolUserId: String,
-        completion: @escaping (_ awsUser: AWSUser?, _ error: CustomError?) -> ()) {
-        
         let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#userPoolUserId = :userPoolUserId"
+        queryExpression.keyConditionExpression = "#username = :username"
         queryExpression.expressionAttributeNames = [
-            "#userPoolUserId": "userPoolUserId"
+            "#username": "username"
         ]
         queryExpression.expressionAttributeValues = [
-            ":userPoolUserId": userPoolUserId
+            ":username": username
         ]
-        queryExpression.indexName = "userPoolUserIdIndex"
-
+        queryExpression.indexName = "usernameIndex"
+        
         AWSDynamoDBObjectMapper.default().query(
             AWSUser.self,
             expression: queryExpression
@@ -122,8 +110,8 @@ class UserService {
                 completion(nil, CustomError(error: error, title: "", desc: "Unable to load user"))
             }
             else if let result = paginatedOutput {
-                if let user = result.items.first as? AWSUser {
-                    completion(user, nil)
+                if let awsUser = result.items.first as? AWSUser {
+                    completion(User(awsUser: awsUser), nil)
                 }
                 else {
                     completion(nil, nil)
@@ -133,9 +121,35 @@ class UserService {
     }
     
     
-    func loadUser(
-        fromFollower follower: Follower,
-        completion: @escaping (_ awsUser: AWSUser?, _ error: CustomError?) -> ()) {
+    /*
+     Loads an AWSUser with the given userPoolUserId.
+     */
+    func loadUserWithUserPoolUserId(
+        _ userPoolUserId: String,
+        completion: @escaping (_ user: User?, _ customError: CustomError?) -> Void) {
+        
+        AWSDynamoDBObjectMapper.default().load(
+            AWSUser.self,
+            hashKey: userPoolUserId,
+            rangeKey: nil
+        ) { (awsUser, error) in
+            if let error = error {
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to load user."))
+            }
+            else if let awsUser = awsUser as? AWSUser {
+                completion(User(awsUser: awsUser), nil)
+            }
+            else {
+                debugPrint("Something else went wrong with loadUser with userPoolUserId")
+                completion(nil, nil)
+            }
+        }
+    }
+    
+    
+    func loadUserFromFollower(
+        _ follower: Follower,
+        completion: @escaping (_ user: User?, _ error: CustomError?) -> ()) {
         
         var userPoolUserId = ""
         switch follower.followerType! {
@@ -145,28 +159,12 @@ class UserService {
             userPoolUserId = follower.awsFollower._followedUserId!
         }
         
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#userPoolUserId = :userPoolUserId"
-        queryExpression.expressionAttributeNames = [
-            "#userPoolUserId": "userPoolUserId"
-        ]
-        queryExpression.expressionAttributeValues = [
-            ":userPoolUserId": userPoolUserId
-        ]
-        queryExpression.indexName = "userPoolUserIdIndex"
-        
-        AWSDynamoDBObjectMapper.default().query(
-            AWSUser.self,
-            expression: queryExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                debugPrint("Error loading user: \(error.localizedDescription)")
-                completion(nil, CustomError(error: error, title: "", desc: "Unable to load user"))
+        loadUserWithUserPoolUserId(userPoolUserId) { (user, customError) in
+            if let customError = customError {
+                completion(nil, customError)
             }
-            else if let result = paginatedOutput {
-                if let user = result.items.first as? AWSUser {
-                    completion(user, nil)
-                }
+            else if let user = user {
+                completion(user, nil)
             }
         }
     }
@@ -288,7 +286,7 @@ class UserService {
         }
     }
     
-    func queryUsers(queryString: String, completion: @escaping ([AWSUser]?) -> Void) {
+    func queryUsers(queryString: String, completion: @escaping ([User], _ custoError: CustomError?) -> Void) {
         
         let scanExpression = AWSDynamoDBScanExpression()
         scanExpression.filterExpression = "begins_with(#username, :username) OR begins_with(#displayName, :displayName)"
@@ -302,23 +300,25 @@ class UserService {
             ":displayName": queryString
         ]
         
+        var users = [User]()
+        
         AWSDynamoDBObjectMapper.default().scan(AWSUser.self, expression: scanExpression) { (paginatedOutput, error) in
             if let error = error {
                 debugPrint("Error loading user: \(error.localizedDescription)")
-                completion(nil)
+                completion(users, CustomError(error: error, title: "", desc: "Unable to load users"))
             }
             else if let result = paginatedOutput {
-                if let users = result.items as? [AWSUser] {
-                    completion(users)
+                if let awsUsers = result.items as? [AWSUser] {
+                    for awsUser in awsUsers {
+                        users.append(User(awsUser: awsUser))
+                    }
                 }
-                else {
-                    completion([AWSUser]())
-                }
+                completion(users, nil)
             }
         }
     }
     
-    func querySuggestedFollowUsers(completion: @escaping ([AWSUser]?) -> Void) {
+    func querySuggestedFollowUsers(completion: @escaping ([User], _ customError: CustomError?) -> Void) {
         
         let scanExpression = AWSDynamoDBScanExpression()
         scanExpression.filterExpression = "#isFeatured = :isFeatured"
@@ -330,18 +330,20 @@ class UserService {
             ":isFeatured": 1
         ]
         
+        var users = [User]()
+        
         AWSDynamoDBObjectMapper.default().scan(AWSUser.self, expression: scanExpression) { (paginatedOutput, error) in
             if let error = error {
                 debugPrint("Error loading user: \(error.localizedDescription)")
-                completion(nil)
+                completion(users, CustomError(error: error, title: "", desc: "Unable to load suggested users"))
             }
             else if let result = paginatedOutput {
-                if let users = result.items as? [AWSUser] {
-                    completion(users)
+                if let awsUsers = result.items as? [AWSUser] {
+                    for awsUser in awsUsers {
+                        users.append(User(awsUser: awsUser))
+                    }
                 }
-                else {
-                    completion([AWSUser]())
-                }
+                completion(users, nil)
             }
         }
     }

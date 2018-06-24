@@ -15,6 +15,12 @@
 		327E604520C49F64000980CD /* CompetitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604420C49F64000980CD /* CompetitionManager.swift */; };
 		327E604920C4AD26000980CD /* KeyboardToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604820C4AD26000980CD /* KeyboardToolbar.swift */; };
 		327FA2B220DC501400B13C6D /* SelectPreviewImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */; };
+		329C4E7B20E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7520E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py */; };
+		329C4E7C20E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7620E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py */; };
+		329C4E7D20E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7720E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py */; };
+		329C4E7E20E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7820E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py */; };
+		329C4E7F20E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7920E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py */; };
+		329C4E8020E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */; };
 		32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97620C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m */; };
 		32D9C97B20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97720C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m */; };
 		32D9C97C20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */; };
@@ -129,6 +135,12 @@
 		327E604420C49F64000980CD /* CompetitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionManager.swift; sourceTree = "<group>"; };
 		327E604820C4AD26000980CD /* KeyboardToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardToolbar.swift; sourceTree = "<group>"; };
 		327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPreviewImageVC.swift; sourceTree = "<group>"; };
+		329C4E7520E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-PublishNotifications.py"; sourceTree = "<group>"; };
+		329C4E7620E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-GetFollowedUserCompetitions.py"; sourceTree = "<group>"; };
+		329C4E7720E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-CreateCompetition.py"; sourceTree = "<group>"; };
+		329C4E7820E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-CreateCompetitionNotifications.py"; sourceTree = "<group>"; };
+		329C4E7920E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-CreateNewFollowerNotification.py"; sourceTree = "<group>"; };
+		329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-DetermineCompetitionWinner.py"; sourceTree = "<group>"; };
 		32D9C97320C9F0AB00F174B2 /* Versus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Versus-Bridging-Header.h"; sourceTree = "<group>"; };
 		32D9C97420C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_RequestSchema.h; sourceTree = "<group>"; };
 		32D9C97520C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h; sourceTree = "<group>"; };
@@ -264,6 +276,19 @@
 				3218AF7F20CD9AA5006361CB /* NotificationManager.swift */,
 			);
 			path = Managers;
+			sourceTree = "<group>";
+		};
+		329C4E7220DE963D00E4E8E9 /* AWS Lambda Functions */ = {
+			isa = PBXGroup;
+			children = (
+				329C4E7720E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py */,
+				329C4E7820E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py */,
+				329C4E7920E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py */,
+				329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */,
+				329C4E7620E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py */,
+				329C4E7520E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py */,
+			);
+			path = "AWS Lambda Functions";
 			sourceTree = "<group>";
 		};
 		32D9C97220C9F07400F174B2 /* Api */ = {
@@ -545,6 +570,7 @@
 		6BEACB55206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXGroup;
 			children = (
+				329C4E7220DE963D00E4E8E9 /* AWS Lambda Functions */,
 				32D9C97D20CB006200F174B2 /* Parsers */,
 				32D9C97220C9F07400F174B2 /* Api */,
 				6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */,
@@ -650,13 +676,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				329C4E8020E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py in Resources */,
 				6B160C6B209231F2003F2F9D /* Competition.storyboard in Resources */,
 				6BD67D0920AA3981001F2751 /* Notifications.storyboard in Resources */,
+				329C4E7B20E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py in Resources */,
+				329C4E7F20E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py in Resources */,
 				32D9C98120CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard in Resources */,
 				6B8316E8207D9DFD0067EE0E /* Profile.storyboard in Resources */,
+				329C4E7C20E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py in Resources */,
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
+				329C4E7D20E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py in Resources */,
 				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
 				6BAC02EB20A899E000792E34 /* Search.storyboard in Resources */,
+				329C4E7E20E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py in Resources */,
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,
 				6BC1E12720894276005404E1 /* CompetitionEntry.storyboard in Resources */,
 				6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */,

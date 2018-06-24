@@ -105,14 +105,14 @@ class FollowerVC: UIViewController {
     
     private func showFollowerProfile(follower: Follower) {
         
-        UserService.instance.loadUser(fromFollower: follower) { (awsUser, error) in
+        UserService.instance.loadUserFromFollower(follower) { (user, customError) in
             DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
+                if let customError = customError {
+                    self.displayError(error: customError)
                 }
-                else if let awsUser = awsUser {
+                else if let user = user {
                     if let profileVC = UIStoryboard.init(name: "Profile", bundle: nil).instantiateViewController(withIdentifier: "ProfileVC") as? ProfileVC {
-                        profileVC.initData(profileViewMode: .viewOnly, user: User(awsUser: awsUser))
+                        profileVC.initData(profileViewMode: .viewOnly, user: user)
                         profileVC.delegate = self.followerViewMode == .edit ? self : nil
                         profileVC.hidesBottomBarWhenPushed = true
                         self.navigationController?.pushViewController(profileVC, animated: true)

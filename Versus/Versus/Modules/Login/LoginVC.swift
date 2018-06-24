@@ -76,15 +76,15 @@ class LoginVC: UIViewController {
     }
     
     private func loadCurrentUser() {
-        UserService.instance.loadUser(
-            userPoolUserId: CurrentUser.userPoolUserId
-        ) { (awsUser, error) in
+        UserService.instance.loadUserWithUserPoolUserId(
+            CurrentUser.userPoolUserId
+        ) { (user, error) in
             DispatchQueue.main.async {
                 if let error = error {
                     self.displayError(error: error)
                 }
-                else if let awsUser = awsUser {
-                    CurrentUser.user = User(awsUser: awsUser)
+                else if let user = user {
+                    CurrentUser.user = user
                     self.performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
                 }
                 else {

@@ -58,7 +58,7 @@ class NotificationsVC: UIViewController {
             return
         }
         
-        UserService.instance.loadUser(notificationInfo.followerUsername) { (user, customError) in
+        UserService.instance.loadUserWithUserPoolUserId(notificationInfo.followerUserPoolUserId) { (user, customError) in
             if let customError = customError {
                 self.displayError(error: customError)
             }
@@ -157,6 +157,7 @@ extension NotificationsVC: UITableViewDelegate {
                     }
                     else {
                         self.notifications.remove(at: indexPath.row)
+                        NotificationManager.instance.removeNotification(notification: notificationToDelete)
                         self.notificationsTableView.deleteRows(at: [indexPath], with: .fade)
                     }
                 }

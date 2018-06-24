@@ -16,8 +16,9 @@ class NotificationManager {
     
     private init() { }
     
-    
-    /// Gets Notification records for the current user. Also stores results locally in NotificationManager instance.
+    /*
+     Gets Notification records for the current user. Also stores results locally in NotificationManager instance.
+     */
     func getCurrentUserNotifications(completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void) {
         
         NotificationService.instance.getCurrentUserNotifications { (notifications, customError) in
@@ -34,6 +35,16 @@ class NotificationManager {
                 }
                 completion(self.notifications, nil)
             }
+        }
+    }
+    
+    
+    /*
+     Removes the given Notification record from the stored collection. Used after deleting notificaiton from the database.
+    */
+    func removeNotification(notification: Notification) {
+        if let index = notifications.index(where: { $0 === notification }) {
+            notifications.remove(at: index)
         }
     }
 }

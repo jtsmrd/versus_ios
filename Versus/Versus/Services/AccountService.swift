@@ -196,15 +196,22 @@ class AccountService {
     }
     
     
-    func checkAvailability(
-        for username: String,
+    /*
+     Checks whether or not the given username is taken or not.
+    */
+    func checkAvailabilityOfUsername(
+        _ username: String,
         completion: @escaping (_ isAvailable: Bool) -> Void) {
         
         let queryExpression = AWSDynamoDBQueryExpression()
-
         queryExpression.keyConditionExpression = "#username = :username"
-        queryExpression.expressionAttributeNames = ["#username": "username"]
-        queryExpression.expressionAttributeValues = [":username" : username]
+        queryExpression.expressionAttributeNames = [
+            "#username": "username"
+        ]
+        queryExpression.expressionAttributeValues = [
+            ":username" : username
+        ]
+        queryExpression.indexName = "usernameIndex"
         
         var responseTask: AWSTask<AWSDynamoDBPaginatedOutput>!
         let availabilityDispatchGroup = DispatchGroup()
@@ -236,6 +243,7 @@ class AccountService {
             }
         }
     }
+    
     
     
     func resetPassword(
@@ -301,6 +309,7 @@ class AccountService {
     
     func signOut(completion: @escaping (Bool) -> ()) {
         AWSCognitoIdentityUserPool.default().currentUser()?.signOut()
+        AWSCognitoIdentityUserPool.default().clearAll()
         completion(true)
     }
 }

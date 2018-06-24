@@ -104,6 +104,9 @@ class FeaturedFollowingVC: UIViewController {
                         }
                     }
                 }
+                else {
+                    self.followedUsersTableView.refreshControl?.endRefreshing()
+                }
             }
         }
     }

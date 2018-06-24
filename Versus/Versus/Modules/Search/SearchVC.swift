@@ -298,20 +298,20 @@ extension SearchVC: UISearchBarDelegate {
             return
         }
         
-        UserService.instance.queryUsers(queryString: searchText) { (awsUsers) in
-            if let awsUsers = awsUsers {
-                self.searchResultUsers.removeAll()
-                for awsUser in awsUsers {
-                    if !CurrentUser.userIsMe(awsUser: awsUser) {
-                        self.searchResultUsers.append(User(awsUser: awsUser))
-                    }
+        UserService.instance.queryUsers(queryString: searchText) { (users, customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
                 }
-                DispatchQueue.main.async {
+                else {
+                    self.searchResultUsers.removeAll()
+                    for user in users {
+                        if !CurrentUser.userIsMe(awsUser: user.awsUser) {
+                            self.searchResultUsers.append(user)
+                        }
+                    }
                     self.searchUserTableView.reloadData()
                 }
-            }
-            else {
-                debugPrint("No users found")
             }
         }
     }

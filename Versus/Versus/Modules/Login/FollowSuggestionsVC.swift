@@ -29,12 +29,13 @@ class FollowSuggestionsVC: UIViewController {
     
     
     private func getFollowerSuggestions() {
-        UserService.instance.querySuggestedFollowUsers { (awsUsers) in
-            if let awsUsers = awsUsers {
-                for awsUser in awsUsers {
-                    self.followerSuggestions.append(User(awsUser: awsUser))
+        UserService.instance.querySuggestedFollowUsers { (users, customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
                 }
-                DispatchQueue.main.async {
+                else {
+                    self.followerSuggestions = users
                     self.followSuggestionsCollectionView.reloadData()
                 }
             }

@@ -41,6 +41,8 @@ class CompetitionEntryService {
         competitionEntry._imageId = imageId ?? "0"
         competitionEntry._imageSmallId = imageSmallId ?? "0"
         competitionEntry._isFeatured = CurrentUser.user.awsUser._isFeatured
+        competitionEntry._matchStatus = "NOTMATCHED"
+        competitionEntry._matchDate = "0"
         competitionEntry._userPoolUserId = CurrentUser.userPoolUserId
         competitionEntry._userRankId = CurrentUser.user.awsUser._rankId
         competitionEntry._username = CurrentUser.user.awsUser._username

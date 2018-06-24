@@ -80,17 +80,15 @@ class ChooseUsernameVC: UIViewController {
     
     private func checkUsernameAvailability(username: String) {
         
-        AccountService.instance.checkAvailability(for: username) { (isAvailable) in
-            if isAvailable {
-                self.usernameAvailable = true
-                DispatchQueue.main.async {
+        AccountService.instance.checkAvailabilityOfUsername(username) { (isAvailable) in
+            DispatchQueue.main.async {
+                if isAvailable {
+                    self.usernameAvailable = true
                     self.usernameExistsLabel.isHidden = true
                     self.usernameTextField.layer.borderColor = UIColor.green.cgColor
                 }
-            }
-            else {
-                self.usernameAvailable = false
-                DispatchQueue.main.async {
+                else {
+                    self.usernameAvailable = false
                     self.usernameExistsLabel.isHidden = false
                     self.usernameTextField.layer.borderColor = UIColor.red.cgColor
                 }

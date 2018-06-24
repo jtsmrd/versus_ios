@@ -8,17 +8,32 @@
 
 import UIKit
 import AWSUserPoolsSignIn
+let userDefaults = UserDefaults.standard
 
 class CurrentUser {
     
     static var user: User! {
         didSet {
             loadUserData()
+            localUserPoolUserId = userPoolUserId
         }
     }
     static var userPoolUserId: String {
         get {
             return AWSCognitoIdentityUserPool.default().currentUser()?.username ?? ""
+        }
+    }
+    
+    /*
+     Stores the userPoolUserId of the active user after signing up or signing in.
+     Used for instance where a user deletes the app, but doesn't sign out.
+    */
+    static var localUserPoolUserId: String {
+        get {
+            return userDefaults.string(forKey: "localUserPoolUserId") ?? ""
+        }
+        set(value) {
+            userDefaults.set(value, forKey: "localUserPoolUserId")
         }
     }
     
