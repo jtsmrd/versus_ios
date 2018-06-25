@@ -15,7 +15,7 @@ class CurrentUser {
     static var user: User! {
         didSet {
             loadUserData()
-            localUserPoolUserId = userPoolUserId
+            lastSignedInUserPoolUserId = userPoolUserId
         }
     }
     static var userPoolUserId: String {
@@ -28,12 +28,73 @@ class CurrentUser {
      Stores the userPoolUserId of the active user after signing up or signing in.
      Used for instance where a user deletes the app, but doesn't sign out.
     */
-    static var localUserPoolUserId: String {
+    static var lastSignedInUserPoolUserId: String {
         get {
-            return userDefaults.string(forKey: "localUserPoolUserId") ?? ""
+            return userDefaults.string(forKey: "lastSignedInUserPoolUserId") ?? ""
         }
         set(value) {
-            userDefaults.set(value, forKey: "localUserPoolUserId")
+            userDefaults.set(value, forKey: "lastSignedInUserPoolUserId")
+        }
+    }
+    
+    /*
+     Used to control initially displaying the tutorial. The tutorialDisplayed key won't exist on first startup
+     so it returns false by default. After user enters the app the value is set to true.
+    */
+    static var tutorialDisplayed: Bool {
+        get {
+            return userDefaults.bool(forKey: "tutorialDisplayed")
+        }
+        set(value) {
+            userDefaults.set(value, forKey: "tutorialDisplayed")
+        }
+    }
+    
+    /*
+     Used to populate the email/ username textfield when a user signs out and back in again.
+    */
+    static var lastSignedInUsername: String? {
+        get {
+            return userDefaults.string(forKey: "lastSignedInUsername")
+        }
+        set(value) {
+            userDefaults.set(value, forKey: "lastSignedInUsername")
+        }
+    }
+    
+    /*
+     Stores the device token for remote notifications after the user registers for notifications.
+     */
+    static var remoteNotificationDeviceToken: String? {
+        get {
+            return userDefaults.string(forKey: "remoteNotificationDeviceToken")
+        }
+        set(value) {
+            userDefaults.set(value, forKey: "remoteNotificationDeviceToken")
+        }
+    }
+    
+    /*
+     Stores whether or not the user allowed push notifation authouization.
+     */
+    static var userGrantedAccessForNotifications: Bool {
+        get {
+            return userDefaults.bool(forKey: "userGrantedAccessForNotifications")
+        }
+        set(value) {
+            userDefaults.set(value, forKey: "userGrantedAccessForNotifications")
+        }
+    }
+    
+    /*
+     Stores the AWS SNS Endpoint ARN for remote notifications after the user registers for notifications.
+     */
+    static var userAWSSNSEndpointARN: String? {
+        get {
+            return userDefaults.string(forKey: "userAWSSNSEndpointARN")
+        }
+        set(value) {
+            userDefaults.set(value, forKey: "userAWSSNSEndpointARN")
         }
     }
     

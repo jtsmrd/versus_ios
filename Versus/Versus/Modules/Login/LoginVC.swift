@@ -30,6 +30,11 @@ class LoginVC: UIViewController {
         super.viewDidLoad()
 
         keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: true)
+        
+        if let lastSignedInUsername = CurrentUser.lastSignedInUsername {
+            usernameOrEmailTextField.text = lastSignedInUsername
+            passwordTextField.becomeFirstResponder()
+        }
     }
 
     
@@ -70,6 +75,7 @@ class LoginVC: UIViewController {
                 return
             }
             else {
+                CurrentUser.lastSignedInUsername = username
                 self.loadCurrentUser()
             }
         }

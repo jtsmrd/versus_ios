@@ -40,36 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider:credentialsProvider)
         AWSServiceManager.default().defaultServiceConfiguration = configuration
         
-        if AWSSignInManager.sharedInstance().isLoggedIn && AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.localUserPoolUserId {
-            loadCurrentUser { (success, error) in
-                DispatchQueue.main.async {
-                    if let customError = error, let customErrorError = customError.error {
-                        debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
-                        self.showLogin()
-                    }
-                    else if success {
-                        
-                        //TODO: Call from somewhere in the app after user successfully creates account
-                        self.registerForPushNotifications()
-                        
-                        if let notification = launchOptions?[.remoteNotification] as? [String: AnyObject] {
-                            let aps = notification["aps"] as! [String: AnyObject]
-                            self.handleNotification(aps: aps)
-                        }
-                        else {
-                            self.showMain()
-                        }
-                    }
-                    else {
-                        self.showChooseUsername()
-                    }
-                }
-            }
-        }
-        else {
-            AWSCognitoIdentityUserPool.default().clearAll()
-            showLogin()
-        }
+        showInitialView(launchOptions)
         
         return interceptReturn
     }
@@ -104,10 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return String(format: "%02.2hhx", data)
         }
         let token = tokenParts.joined()
-        debugPrint("Device Token: \(token)")
-        
-        //TODO: Move this to UserDefaults class when created
-        UserDefaults.standard.set(token, forKey: "deviceTokenForSNS")
+        CurrentUser.remoteNotificationDeviceToken = token
         
         let request: AWSSNSCreatePlatformEndpointInput = AWSSNSCreatePlatformEndpointInput()
         request.token = token
@@ -120,30 +88,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             else {
                 let createEndpointResponse = task.result! as AWSSNSCreateEndpointResponse
                 if let endpointArnForSNS = createEndpointResponse.endpointArn {
+                    CurrentUser.userAWSSNSEndpointARN = endpointArnForSNS
                     debugPrint("Endpoint Arn: \(endpointArnForSNS)")
                     
-                    //TODO: Move this to UserDefaults class when created
-                    UserDefaults.standard.set(endpointArnForSNS, forKey: "endpointArnForSNS")
-                    
-                    //TODO: Save endpointArn to AWSUserEndpointArn
-//                    UserService.instance.loadUserSNSEndpointARN(CurrentUser.user.awsUser, completion: { (endpointArnRecord, customError) in
-//                        if let error = customError {
-//                            debugPrint("Error loading user endpoint arn: \(error.error!)")
-//                        }
-//                        else if let _ = endpointArnRecord {
-//                            //TODO: Check if new endpointARN is different
-//                        }
-//                        else {
-//                            // Save endpoint arn
-//                        }
-//                    })
-                    
+                    // Save endpointArn to AWSUserEndpointArn                    
                     UserService.instance.saveUserSNSEndpointARN(endpointArnForSNS, CurrentUser.userPoolUserId, completion: { (success, error) in
                         if let error = error {
                             debugPrint("Failed to save User SNS Endpoint ARN: \(error.error!)")
                         }
                         else if success {
                             //TODO: Save value in UserDefaults in order to try again later.
+                            debugPrint("Successfully saved endpoint arn")
                         }
                         else {
                             debugPrint("Error: Something went wrong when saving endpoint arn")
@@ -165,6 +120,59 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         handleNotification(aps: aps)
     }
     
+    /*
+     Checks the sign in status and the CurrentUser, then navigates to login, main view, or choose username.
+    */
+    func showInitialView(_ launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
+        
+        if !CurrentUser.tutorialDisplayed {
+            showTutorial()
+            return
+        }
+        
+        if AWSSignInManager.sharedInstance().isLoggedIn {
+            
+            guard AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.lastSignedInUserPoolUserId else {
+                AWSCognitoIdentityUserPool.default().clearAll()
+                showLogin()
+                return
+            }
+            
+            loadCurrentUser { (success, error) in
+                DispatchQueue.main.async {
+                    if let customError = error, let customErrorError = customError.error {
+                        debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
+                        self.showLogin()
+                    }
+                    else if success {
+                        
+                        // User closed app when choosing username
+                        if CurrentUser.user.awsUser._username == nil {
+                            self.showChooseUsername()
+                            return
+                        }
+                        
+                        if let notification = launchOptions?[.remoteNotification] as? [String: AnyObject] {
+                            let aps = notification["aps"] as! [String: AnyObject]
+                            self.handleNotification(aps: aps)
+                            return
+                        }
+                        else {
+                            self.showMain()
+                        }
+                    }
+                    else {
+                        // Failed to load user
+                        self.showLogin()
+                    }
+                }
+            }
+        }
+        else {
+            // User isn't logged in
+            showLogin()
+        }
+    }
     
     
     func registerForPushNotifications() {
@@ -194,6 +202,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DispatchQueue.main.async {
             self.showMain()
         }
+    }
+    
+    private func showTutorial() {
+        let tutorialVC = UIStoryboard(name: "Tutorial", bundle: nil).instantiateInitialViewController()
+        window?.rootViewController = tutorialVC
+        window?.makeKeyAndVisible()
     }
     
     private func showMain() {

@@ -11,6 +11,7 @@ import UIKit
 class NotificationsVC: UIViewController {
 
     @IBOutlet weak var notificationsTableView: UITableView!
+    @IBOutlet weak var noNotificationsView: UIView!
     
     var notifications = [Notification]()
     var notificationsRefreshControl: UIRefreshControl!
@@ -31,6 +32,17 @@ class NotificationsVC: UIViewController {
         
         notificationsRefreshControl.beginRefreshing()
         getNotifications()
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // If there were no previous notifications and the user navigates back to this screen
+        // check for notifications
+        if noNotificationsView.isHidden == false {
+            getNotifications()
+        }
     }
 
     
@@ -102,7 +114,9 @@ extension NotificationsVC: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notifications.count
+        let notificationsCount = notifications.count
+        noNotificationsView.isHidden = notificationsCount > 0 ? true : false
+        return notificationsCount
     }
     
     

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Uav-Yt-fze">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--TutorialVC-->
+        <scene sceneID="J5V-bP-dJu">
+            <objects>
+                <viewController id="Uav-Yt-fze" customClass="TutorialVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="iQK-Ey-VEv">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BSc-0u-aFX">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <connections>
+                                    <segue destination="MD9-wE-f2Z" kind="embed" id="YlZ-AB-Lve"/>
+                                </connections>
+                            </containerView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hvx-bL-Z2S" customClass="RoundButton" customModule="Versus" customModuleProvider="target">
+                                <rect key="frame" x="112" y="595" width="150" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="8XT-rL-yet"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="18"/>
+                                <state key="normal" title="Launch">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="_hasBorder" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="_borderColor">
+                                        <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="_borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="launchButtonAction" destination="Uav-Yt-fze" eventType="touchUpInside" id="T5a-Wj-kH0"/>
+                                </connections>
+                            </button>
+                            <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="03A-yO-std">
+                                <rect key="frame" x="168" y="526" width="39" height="37"/>
+                            </pageControl>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="hvx-bL-Z2S" firstAttribute="width" secondItem="iQK-Ey-VEv" secondAttribute="width" multiplier="0.4" id="EQS-wR-CTd"/>
+                            <constraint firstItem="hvx-bL-Z2S" firstAttribute="top" secondItem="03A-yO-std" secondAttribute="bottom" constant="32" id="IUJ-oP-jBK"/>
+                            <constraint firstItem="mFJ-D9-xwo" firstAttribute="trailing" secondItem="BSc-0u-aFX" secondAttribute="trailing" id="JY6-iG-XP3"/>
+                            <constraint firstItem="mFJ-D9-xwo" firstAttribute="bottom" secondItem="hvx-bL-Z2S" secondAttribute="bottom" constant="32" id="L4n-ul-bdf"/>
+                            <constraint firstItem="hvx-bL-Z2S" firstAttribute="centerX" secondItem="iQK-Ey-VEv" secondAttribute="centerX" id="OZT-Li-ONu"/>
+                            <constraint firstItem="03A-yO-std" firstAttribute="centerX" secondItem="iQK-Ey-VEv" secondAttribute="centerX" id="PFw-bC-q6D"/>
+                            <constraint firstItem="mFJ-D9-xwo" firstAttribute="bottom" secondItem="BSc-0u-aFX" secondAttribute="bottom" id="UBz-h6-DWe"/>
+                            <constraint firstItem="BSc-0u-aFX" firstAttribute="top" secondItem="mFJ-D9-xwo" secondAttribute="top" id="gDq-2j-3ME"/>
+                            <constraint firstItem="BSc-0u-aFX" firstAttribute="leading" secondItem="mFJ-D9-xwo" secondAttribute="leading" id="hwc-Ui-h7t"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="mFJ-D9-xwo"/>
+                    </view>
+                    <connections>
+                        <outlet property="tutorialPageControl" destination="03A-yO-std" id="1v8-BT-Ynh"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ckf-ZW-eyw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="108" y="169"/>
+        </scene>
+        <!--Tutorial PageVC-->
+        <scene sceneID="qXW-Oc-MNl">
+            <objects>
+                <viewController storyboardIdentifier="TutorialPageVC" id="rSV-dr-fAZ" customClass="TutorialPageVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8Ed-MN-Qp8">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rCd-ob-oj5">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="foT-K2-PcS">
+                                <rect key="frame" x="37" y="100" width="300" height="300"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="foT-K2-PcS" secondAttribute="height" multiplier="1:1" id="bVq-vs-yka"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Versus is the first competition app that brings talent from all over the world together face-to-face on your phone." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="d6e-ls-2Ia">
+                                <rect key="frame" x="37" y="424" width="300" height="74"/>
+                                <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="18"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="foT-K2-PcS" firstAttribute="centerX" secondItem="8Ed-MN-Qp8" secondAttribute="centerX" id="1lQ-cK-PKY"/>
+                            <constraint firstItem="rCd-ob-oj5" firstAttribute="top" secondItem="zcL-ne-Zjh" secondAttribute="top" id="2JR-bD-lN9"/>
+                            <constraint firstItem="d6e-ls-2Ia" firstAttribute="centerX" secondItem="8Ed-MN-Qp8" secondAttribute="centerX" id="KHz-hy-7fY"/>
+                            <constraint firstItem="d6e-ls-2Ia" firstAttribute="width" secondItem="8Ed-MN-Qp8" secondAttribute="width" multiplier="0.8" id="VMJ-m3-GhV"/>
+                            <constraint firstItem="foT-K2-PcS" firstAttribute="width" secondItem="8Ed-MN-Qp8" secondAttribute="width" multiplier="0.8" id="XV2-bN-7Uh"/>
+                            <constraint firstItem="zcL-ne-Zjh" firstAttribute="bottom" secondItem="rCd-ob-oj5" secondAttribute="bottom" id="dU6-Yt-UBf"/>
+                            <constraint firstItem="d6e-ls-2Ia" firstAttribute="top" secondItem="foT-K2-PcS" secondAttribute="bottom" constant="24" id="fHA-dF-zZ5"/>
+                            <constraint firstItem="zcL-ne-Zjh" firstAttribute="trailing" secondItem="rCd-ob-oj5" secondAttribute="trailing" id="jlg-ov-oId"/>
+                            <constraint firstItem="foT-K2-PcS" firstAttribute="centerY" secondItem="8Ed-MN-Qp8" secondAttribute="centerY" multiplier="0.75" id="o9g-fA-rS8"/>
+                            <constraint firstItem="rCd-ob-oj5" firstAttribute="leading" secondItem="zcL-ne-Zjh" secondAttribute="leading" id="yTC-mU-wvk"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="zcL-ne-Zjh"/>
+                    </view>
+                    <connections>
+                        <outlet property="backgroundImageView" destination="rCd-ob-oj5" id="I99-3B-2kn"/>
+                        <outlet property="tutorialImageView" destination="foT-K2-PcS" id="YjS-pK-P8d"/>
+                        <outlet property="tutorialLabel" destination="d6e-ls-2Ia" id="cJL-pD-Pcc"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="f2n-36-c4C" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1844" y="169"/>
+        </scene>
+        <!--TutorialPVC-->
+        <scene sceneID="Q6q-Bu-D9C">
+            <objects>
+                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="MD9-wE-f2Z" customClass="TutorialPVC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Igj-IE-dj7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1007" y="169"/>
+        </scene>
+    </scenes>
+</document>

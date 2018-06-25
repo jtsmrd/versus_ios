@@ -15,8 +15,19 @@ class FeaturedFollowingVC: UIViewController {
         case following
     }
     
+    
+    @IBOutlet weak var featuredCompetitionsContainerView: UIView!
     @IBOutlet weak var featuredTableView: UITableView!
+    @IBOutlet weak var noFeaturedCompetitionsView: UIView!
+    @IBOutlet weak var noFeaturedCompetitionsActivityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var noFeaturedCompetitionsReloadButton: UIButton!
+    @IBOutlet weak var followedUserCompetitionsContainerView: UIView!
     @IBOutlet weak var followedUsersTableView: UITableView!
+    @IBOutlet weak var noFollowedUserCompetitionsView: UIView!
+    @IBOutlet weak var noFollowedUserCompetitionsActivityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var noFollowedUserCompetitionsReloadButton: UIButton!
+    
+    
     
     var activeCompetitionFeedType: CompetitionFeedType = .featured
     var featuredCompetitions = [Competition]()
@@ -55,6 +66,23 @@ class FeaturedFollowingVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Check for featured/ followed user competitions when the user switches back to this screen
+        // only there are no competitions for the specific competitions feed
+        if noFeaturedCompetitionsView.isHidden == false {
+            getFeaturedCompetitions()
+        }
+        
+        if noFollowedUserCompetitionsView.isHidden == false {
+            getFollowedUserCompetitions()
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Request authorization for push notifications here, since it's the first screen the user
+        // will see after signing up.
+        appDelegate.registerForPushNotifications()
     }
     
     
@@ -62,6 +90,20 @@ class FeaturedFollowingVC: UIViewController {
         activeCompetitionFeedType = sender.selectedSegmentIndex == 0 ? .featured : .following
         
         toggleCompetitionFeedTableView()
+    }
+    
+    
+    @IBAction func noFeaturedCompetitionsReloadButtonAction() {
+        noFeaturedCompetitionsReloadButton.isEnabled = false
+        noFeaturedCompetitionsActivityIndicator.startAnimating()
+        getFeaturedCompetitions()
+    }
+    
+    
+    @IBAction func noFollowedUserCompetitionsReloadButtonAction() {
+        noFollowedUserCompetitionsReloadButton.isEnabled = false
+        noFollowedUserCompetitionsActivityIndicator.startAnimating()
+        getFollowedUserCompetitions()
     }
     
     
@@ -75,18 +117,23 @@ class FeaturedFollowingVC: UIViewController {
                 else {
                     self.featuredCompetitions = competitions
                     self.featuredTableView.reloadData()
-                    self.featuredTableView.refreshControl?.endRefreshing()
                 }
+                self.noFeaturedCompetitionsReloadButton.isEnabled = true
+                self.noFeaturedCompetitionsActivityIndicator.stopAnimating()
+                self.featuredTableView.refreshControl?.endRefreshing()
             }
         }
     }
     
     @objc func getFollowedUserCompetitions() {
         
+        //TODO: Remove getFollowedUsers after handled elsewhere to automatically refresh
         CurrentUser.user.getFollowedUsers { (followedUsers, customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
                     self.displayError(error: customError)
+                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
+                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
                 }
                 else if let followedUsers = followedUsers, followedUsers.count > 0 {
                     let followedUserIds = followedUsers.map({ $0.awsFollower._followedUserId! })
@@ -101,10 +148,14 @@ class FeaturedFollowingVC: UIViewController {
                                 self.followedUsersTableView.reloadData()
                                 self.followedUsersTableView.refreshControl?.endRefreshing()
                             }
+                            self.noFollowedUserCompetitionsReloadButton.isEnabled = true
+                            self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
                         }
                     }
                 }
                 else {
+                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
+                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
                     self.followedUsersTableView.refreshControl?.endRefreshing()
                 }
             }
@@ -115,12 +166,12 @@ class FeaturedFollowingVC: UIViewController {
     private func toggleCompetitionFeedTableView() {
         switch activeCompetitionFeedType {
         case .featured:
-            followedUsersTableView.isHidden = true
-            featuredTableView.isHidden = false
+            followedUserCompetitionsContainerView.isHidden = true
+            featuredCompetitionsContainerView.isHidden = false
             featuredTableView.reloadData()
         case .following:
-            featuredTableView.isHidden = true
-            followedUsersTableView.isHidden = false
+            featuredCompetitionsContainerView.isHidden = true
+            followedUserCompetitionsContainerView.isHidden = false
             followedUsersTableView.reloadData()
         }
     }
@@ -148,8 +199,12 @@ extension FeaturedFollowingVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch activeCompetitionFeedType {
         case .featured:
-            return featuredCompetitions.count
+            let featuredCompetitionsCount = featuredCompetitions.count
+            noFeaturedCompetitionsView.isHidden = featuredCompetitionsCount > 0 ? true : false
+            return featuredCompetitionsCount
         case .following:
+            let followedUserCompetitionsCount = followedUserCompetitions.count
+            noFollowedUserCompetitionsView.isHidden = followedUserCompetitionsCount > 0 ? true : false
             return followedUserCompetitions.count
         }
     }
