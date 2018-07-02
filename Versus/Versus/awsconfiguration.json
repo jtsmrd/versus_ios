@@ -47,5 +47,12 @@
       "Bucket": "versus-userfiles-mobilehub-387870640",
       "Region": "us-east-1"
     }
-  }
+  },
+    "ContentManager": {
+        "Default": {
+            "Bucket": "versus-hosting-mobilehub-387870640",
+            "Region": "us-east-1",
+            "CloudFrontURL": "https://d5tkwibvkmlit.cloudfront.net"
+        }
+    }
 }

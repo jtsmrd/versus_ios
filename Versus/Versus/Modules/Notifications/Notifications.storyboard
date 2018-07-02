@@ -30,11 +30,9 @@
                                     </label>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="Yke-pe-NRm"/>
                                     <constraint firstAttribute="height" constant="50" id="cNQ-Us-eSr"/>
                                     <constraint firstItem="Xfy-8M-XIN" firstAttribute="centerY" secondItem="wvm-I9-h1G" secondAttribute="centerY" id="hMQ-Ec-n6v"/>
                                     <constraint firstItem="Xfy-8M-XIN" firstAttribute="centerX" secondItem="wvm-I9-h1G" secondAttribute="centerX" id="nM3-1P-cLn"/>
-                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="50" id="xq3-2S-4Gl"/>
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="8uW-T4-c4F">

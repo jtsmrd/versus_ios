@@ -50,7 +50,13 @@ class SearchVC: UIViewController {
         
         keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
         
+        getLeaderboards()
         configureView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -67,6 +73,20 @@ class SearchVC: UIViewController {
             DispatchQueue.main.async {
                 if let error = error {
                     self.displayError(error: error)
+                }
+            }
+        }
+    }
+    
+    private func getLeaderboards() {
+        
+        LeaderboardCollection.instance.getLeaderboards { (success, customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
+                }
+                else if success {
+                    self.leaderboardCollectionView.reloadData()
                 }
             }
         }
@@ -167,7 +187,10 @@ class SearchVC: UIViewController {
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+        if let leaderboardVC = segue.destination as? LeaderboardVC,
+            let leaderboard = sender as? Leaderboard {
+            leaderboardVC.initData(leaderboard: leaderboard)
+        }
     }
 }
 
@@ -322,7 +345,7 @@ extension SearchVC: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == leaderboardCollectionView {
-            return testLeaderboardNames.count
+            return LeaderboardCollection.instance.leaderboards.count
         }
         else if collectionView == browseCategoryCollectionView {
             return CategoryCollection.instance.categories.count
@@ -333,7 +356,7 @@ extension SearchVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == leaderboardCollectionView {
             if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LEADERBOARD_CELL, for: indexPath) as? LeaderboardCell {
-                cell.configureCell(title: testLeaderboardNames[indexPath.row])
+                cell.configureCell(leaderboard: LeaderboardCollection.instance.leaderboards[indexPath.row])
                 return cell
             }
             return LeaderboardCell()
@@ -360,7 +383,8 @@ extension SearchVC: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == leaderboardCollectionView {
-            
+            let selectedLeaderboard = LeaderboardCollection.instance.leaderboards[indexPath.row]
+            performSegue(withIdentifier: "LeaderboardVC", sender: selectedLeaderboard)
         }
         else if collectionView == browseCategoryCollectionView {
             

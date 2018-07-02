@@ -307,7 +307,7 @@ class ViewCompetitionVC: UIViewController {
         competition.getCompetitionImage(for: .user1, bucketType: .profileImageSmall) { (image, error) in
             DispatchQueue.main.async {
                 if let error = error {
-                    self.displayError(error: error)
+                    debugPrint(error.title)
                 }
                 else {
                     self.user1SelectorButton._imageView.image = image
@@ -318,7 +318,7 @@ class ViewCompetitionVC: UIViewController {
         competition.getCompetitionImage(for: .user2, bucketType: .profileImageSmall) { (image, error) in
             DispatchQueue.main.async {
                 if let error = error {
-                    self.displayError(error: error)
+                    debugPrint(error.title)
                 }
                 else {
                     self.user2SelectorButton._imageView.image = image
