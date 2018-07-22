@@ -18,11 +18,10 @@ import AWSDynamoDB
 @objcMembers
 class AWSNotification: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _id: String?
+    var _notifyUserPoolUserId: String?
     var _createDate: String?
     var _notificationInfo: [String: String]?
     var _notificationTypeId: NSNumber?
-    var _notifyUserPoolUserId: String?
     var _wasViewed: NSNumber?
     
     class func dynamoDBTableName() -> String {
@@ -32,16 +31,20 @@ class AWSNotification: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     class func hashKeyAttribute() -> String {
 
-        return "_id"
+        return "_notifyUserPoolUserId"
+    }
+    
+    class func rangeKeyAttribute() -> String {
+
+        return "_createDate"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_id" : "id",
+               "_notifyUserPoolUserId" : "notifyUserPoolUserId",
                "_createDate" : "createDate",
                "_notificationInfo" : "notificationInfo",
                "_notificationTypeId" : "notificationTypeId",
-               "_notifyUserPoolUserId" : "notifyUserPoolUserId",
                "_wasViewed" : "wasViewed",
         ]
     }

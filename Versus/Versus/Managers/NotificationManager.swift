@@ -29,7 +29,7 @@ class NotificationManager {
                 
                 // Don't add Notifications that already exist
                 for notification in notifications {
-                    if !self.notifications.contains(where: { $0.awsNotification._id == notification.awsNotification._id }) {
+                    if !self.notifications.contains(where: { $0 == notification }) {
                         self.notifications.append(notification)
                     }
                 }

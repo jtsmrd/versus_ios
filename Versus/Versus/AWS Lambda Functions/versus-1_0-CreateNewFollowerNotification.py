@@ -25,13 +25,11 @@ def lambda_handler(event, context):
 
 
 def createNotification(followerRecord, notifyUserPoolUserId):
-    notificationUUID = str(uuid.uuid4())
     notificationDate = str(datetime.utcnow().isoformat()+'Z')
 
     response = notificationTable.put_item(
         Item={
             'createDate': notificationDate,
-            'id': notificationUUID,
             'notificationInfo': {
                 'followerUsername': followerRecord['followerUsername']['S'],
                 'followerUserPoolUserId': followerRecord['followerUserId']['S'],

@@ -25,7 +25,7 @@ class NotificationService {
         queryExpression.expressionAttributeValues = [
             ":notifyUserPoolUserId": CurrentUser.userPoolUserId
         ]
-        queryExpression.indexName = "notifyUserPoolUserIdIndex"
+        queryExpression.scanIndexForward = false
         
         var notifications = [Notification]()
         

@@ -29,7 +29,6 @@ def lambda_handler(event, context):
 
 # Create a Notification record for the winning user
 def createCompetitionStartNotificationForUserPoolUserId(notifyUserPoolUserId, competitionRecord):
-    notificationUUID = str(uuid.uuid4())
     notificationDate = str(datetime.utcnow().isoformat()+'Z')
 
     competitionId = competitionRecord['id']['S']
@@ -46,7 +45,6 @@ def createCompetitionStartNotificationForUserPoolUserId(notifyUserPoolUserId, co
     response = notificationTable.put_item(
         Item={
             'createDate': notificationDate,
-            'id': notificationUUID,
             'notificationInfo': {
                 'userPoolUserId': opponentUserPoolUserId,
                 'username': opponentUsername,
@@ -68,7 +66,6 @@ def createCompetitionStartNotificationForUserPoolUserId(notifyUserPoolUserId, co
 
 # Create a Notification record for the winning user
 def createNotificationForWinningUser(competitionRecord):
-    notificationUUID = str(uuid.uuid4())
     notificationDate = str(datetime.utcnow().isoformat()+'Z')
 
     winningUserPoolUserId = competitionRecord['winningUserPoolUserId']['S']
@@ -86,7 +83,6 @@ def createNotificationForWinningUser(competitionRecord):
     response = notificationTable.put_item(
         Item={
             'createDate': notificationDate,
-            'id': notificationUUID,
             'notificationInfo': {
                 'userPoolUserId': losingUserPoolUserId,
                 'username': losingUserUsername,
@@ -108,7 +104,6 @@ def createNotificationForWinningUser(competitionRecord):
 
 # Create a Notification record for the losing user
 def createNotificationForLosingUser(competitionRecord):
-    notificationUUID = str(uuid.uuid4())
     notificationDate = str(datetime.utcnow().isoformat()+'Z')
 
     winningUserPoolUserId = competitionRecord['winningUserPoolUserId']['S']
@@ -126,7 +121,6 @@ def createNotificationForLosingUser(competitionRecord):
     response = notificationTable.put_item(
         Item={
             'createDate': notificationDate,
-            'id': notificationUUID,
             'notificationInfo': {
                 'userPoolUserId': winningUserPoolUserId,
                 'username': winningUserUsername,

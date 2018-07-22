@@ -48,6 +48,16 @@ class Notification {
     }
 }
 
+extension Notification: Equatable {
+    
+    static func == (lhs: Notification, rhs: Notification) -> Bool {
+        return
+            lhs.awsNotification._createDate == rhs.awsNotification._createDate &&
+            lhs.awsNotification._notificationInfo == rhs.awsNotification._notificationInfo &&
+            lhs.awsNotification._notificationTypeId == rhs.awsNotification._notificationTypeId
+    }
+}
+
 struct FollowerNotificationInfo {
     
     var followerUserPoolUserId: String!
