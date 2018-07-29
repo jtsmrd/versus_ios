@@ -281,8 +281,10 @@ class UserService {
                 debugPrint("Error when updating User: \(error.localizedDescription)")
                 completion(false)
             }
-            debugPrint("User was successfully updated.")
-            completion(true)
+            else {
+                debugPrint("User was successfully updated.")
+                completion(true)
+            }
         }
     }
     

@@ -27,29 +27,33 @@ class ProfileCompetitionCell: UICollectionViewCell {
         switch competition.competitionType {
         case .image:
             
-            competition.getCompetitionImage(for: competitionUser, bucketType: .competitionImageSmall) { (image, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.parentViewController?.displayError(error: error)
-                    }
-                    else {
-                        self.competitionImageView.image = image
+            DispatchQueue.global(qos: .userInitiated).async {
+                competition.getCompetitionImage(for: competitionUser, bucketType: .competitionImageSmall) { (image, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.parentViewController?.displayError(error: error)
+                        }
+                        else {
+                            self.competitionImageView.image = image
+                        }
                     }
                 }
             }
             
         case .video:
             
-            competition.getCompetitionImage(for: competitionUser, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.parentViewController?.displayError(error: error)
-                    }
-                    else {
-                        self.competitionImageView.image = image
+            DispatchQueue.global(qos: .userInitiated).async {
+                competition.getCompetitionImage(for: competitionUser, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.parentViewController?.displayError(error: error)
+                        }
+                        else {
+                            self.competitionImageView.image = image
+                        }
                     }
                 }
-            }
+            }            
         }
     }
 }

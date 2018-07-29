@@ -1,5 +1,5 @@
 //
-//  AWSCompetitionVote.swift
+//  AWSComment.swift
 //  MySampleApp
 //
 //
@@ -16,30 +16,38 @@ import UIKit
 import AWSDynamoDB
 
 @objcMembers
-class AWSCompetitionVote: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
+class AWSComment: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _competitionIdUserPoolUserId: String?
     var _competitionEntryId: String?
+    var _createDate: String?
+    var _commentId: String?
+    var _commentText: String?
+    var _userPoolUserId: String?
+    var _username: String?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_CompetitionVote"
+        return "versus-mobilehub-387870640-AWS_Comment"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_competitionIdUserPoolUserId"
+        return "_competitionEntryId"
     }
     
     class func rangeKeyAttribute() -> String {
 
-        return "_competitionEntryId"
+        return "_createDate"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_competitionIdUserPoolUserId" : "competitionIdUserPoolUserId",
                "_competitionEntryId" : "competitionEntryId",
+               "_createDate" : "createDate",
+               "_commentId" : "commentId",
+               "_commentText" : "commentText",
+               "_userPoolUserId" : "userPoolUserId",
+               "_username" : "username",
         ]
     }
 }

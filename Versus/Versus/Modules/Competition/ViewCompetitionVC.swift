@@ -35,7 +35,10 @@ class ViewCompetitionVC: UIViewController {
     @IBOutlet weak var user2SelectorButton: ProgressIndicatorButton!
     
     @IBOutlet weak var commentsContainerView: UIView!
-    @IBOutlet weak var commentsTableView: UITableView!
+    @IBOutlet weak var commentsContainerViewBottom: NSLayoutConstraint!
+    @IBOutlet weak var commentsContainerViewHeight: NSLayoutConstraint!
+    private var originalCommentsContainerViewHeight: CGFloat!
+    
     
     @IBOutlet weak var optionsContainerView: UIView!
     @IBOutlet weak var competitionShareCollectionView: UICollectionView!
@@ -49,6 +52,11 @@ class ViewCompetitionVC: UIViewController {
     
     var competition: Competition!
     var selectedUser: CompetitionUser = .user1
+    var competitionEntryIdForSelectedUser: String {
+        get {
+            return selectedUser == .user1 ? competition.awsCompetition._user1CompetitionEntryId! : competition.awsCompetition._user2CompetitionEntryId!
+        }
+    }
     var votedCompetition: VotedCompetition = .none
     let collectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
@@ -63,10 +71,13 @@ class ViewCompetitionVC: UIViewController {
     var user2CompetitionAVPlayerObserver: NSObjectProtocol!
     
     var existingCompetitionVote: CompetitionVote?
+    var competitionCommentsVC: CompetitionCommentsVC!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        originalCommentsContainerViewHeight = commentsContainerView.frame.height
+        
         configureView()
         configureCompetitionAVPlayer()
         
@@ -84,7 +95,7 @@ class ViewCompetitionVC: UIViewController {
         
         // If the current user previously voted, set the votedCompetition and update the vote button.
         CompetitionVoteService.instance.getVoteForCompetition(competitionId: competition.awsCompetition._id!) { (competitionVote) in
-            if let competitionVote = competitionVote, let id = competitionVote.awsCompetitionVote._votedForCompetitionEntryId {
+            if let competitionVote = competitionVote, let id = competitionVote.awsCompetitionVote._competitionEntryId {
                 self.existingCompetitionVote = competitionVote
                 self.votedCompetition = self.competition.awsCompetition._user1CompetitionEntryId! == id ? .user1 : .user2
             }
@@ -178,8 +189,9 @@ class ViewCompetitionVC: UIViewController {
     }
     
     @IBAction func commentButtonAction() {
-        view.bringSubview(toFront: commentsContainerView)
-        commentsContainerView.isHidden = false
+        
+        commentsContainerViewBottom.constant = 0
+        competitionCommentsVC.loadCommentsFor(competitionEntryId: competitionEntryIdForSelectedUser)
     }
     
     @IBAction func voteButtonAction() {
@@ -192,10 +204,17 @@ class ViewCompetitionVC: UIViewController {
         user1SelectorButtonHeight.constant = 80
         user2SelectorButtonHeight.constant = 60
         user1SelectorButton.layoutIfNeeded()
-        view.bringSubview(toFront: user1SelectorButton)
+        
+        if let user1SelectorIndex = view.subviews.index(of: user1SelectorButton),
+            let user2SelectorIndex = view.subviews.index(of: user2SelectorButton) {
+            
+            view.exchangeSubview(at: user2SelectorIndex, withSubviewAt: user1SelectorIndex)
+        }
+        
         displayCompetitionMedia()
         configureVoteButton()
         updateVoteCount()
+        updateCommentCount()
     }
     
     @IBAction func user2SelectorButtonAction() {
@@ -204,15 +223,17 @@ class ViewCompetitionVC: UIViewController {
         user2SelectorButtonHeight.constant = 80
         user1SelectorButtonHeight.constant = 60
         user2SelectorButton.layoutIfNeeded()
-        view.bringSubview(toFront: user2SelectorButton)
+        
+        if let user1SelectorIndex = view.subviews.index(of: user1SelectorButton),
+            let user2SelectorIndex = view.subviews.index(of: user2SelectorButton) {
+            
+            view.exchangeSubview(at: user1SelectorIndex, withSubviewAt: user2SelectorIndex)
+        }
+        
         displayCompetitionMedia()
         configureVoteButton()
         updateVoteCount()
-    }
-    
-    @IBAction func hideCommentsButtonAction() {
-        commentsContainerView.isHidden = true
-        view.endEditing(true)
+        updateCommentCount()
     }
     
     @IBAction func competitionOptionsCancelButtonAction() {
@@ -254,8 +275,23 @@ class ViewCompetitionVC: UIViewController {
                 }
                 else {
                     self.existingCompetitionVote = competitionVote
+                    self.incrementVoteCountForCurrentUser()
                 }
                 self.configureVoteButton()
+            }
+        }
+    }
+    
+    
+    private func incrementVoteCountForCurrentUser() {
+        
+        guard let voteCount = CurrentUser.user.awsUser._votes?.intValue else { return }
+        
+        CurrentUser.user.awsUser._votes = (voteCount + 1).toNSNumber
+        
+        UserService.instance.updateUser(user: CurrentUser.user.awsUser) { (success) in
+            if !success {
+                debugPrint("Error updating user after vote count incremented")
             }
         }
     }
@@ -273,6 +309,13 @@ class ViewCompetitionVC: UIViewController {
                     }
                     else if success {
                         self.existingCompetitionVote = nil
+                        
+                        // When deleting/changing votes, decrement to number of user votes by 1. After saving a new vote,
+                        // the number of user votes is incremented by 1 and updated.
+                        if let voteCount = CurrentUser.user.awsUser._votes?.intValue, voteCount > 0 {
+                            CurrentUser.user.awsUser._votes = (voteCount - 1).toNSNumber
+                        }
+                        
                         self.voteForCompetition()
                     }
                     else {
@@ -281,9 +324,7 @@ class ViewCompetitionVC: UIViewController {
                 }
             })
         }))
-        alertVC.addAction(UIAlertAction(title: "Leave it", style: .cancel, handler: { (action) in
-            
-        }))
+        alertVC.addAction(UIAlertAction(title: "Leave it", style: .cancel, handler: nil))
         present(alertVC, animated: true, completion: nil)
     }
     
@@ -327,6 +368,7 @@ class ViewCompetitionVC: UIViewController {
         }
         
         updateVoteCount()
+        updateCommentCount()
         
         if competition.isExpired {
             voteButton.isEnabled = false
@@ -365,6 +407,23 @@ class ViewCompetitionVC: UIViewController {
             voteButton.setImage(UIImage(named: "Voting-Star-White"), for: .normal)
         }
     }
+    
+    
+    private func updateCommentCount() {
+        
+        CommentService.instance.getCommentCountFor(competitionEntryId: competitionEntryIdForSelectedUser) { (commentCount, customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.numberOfCommentsLabel.text = "--"
+                    self.displayError(error: customError)
+                }
+                else if let commentCount = commentCount {
+                    self.numberOfCommentsLabel.text = String(format: "%i", commentCount)
+                }
+            }
+        }
+    }
+    
     
     private func displayCompetitionMedia() {
         
@@ -588,6 +647,14 @@ class ViewCompetitionVC: UIViewController {
     private func optionReportAction() {
         displayMessage(message: "Report Competition")
     }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let competitionCommentsVC = segue.destination as? CompetitionCommentsVC {
+            self.competitionCommentsVC = competitionCommentsVC
+            competitionCommentsVC.initData(delegate: self)
+        }
+    }
 }
 
 
@@ -665,5 +732,20 @@ extension ViewCompetitionVC: CountdownTimerDelegate {
     
     func timerExpired() {
         competitionTimeRemainingLabel.text = String(format: "%02i:%02i:%02i:%02i", 0, 0, 0, 0)
+    }
+}
+
+extension ViewCompetitionVC: CompetitionCommentsVCDelegate {
+    
+    func dismissComments() {
+        commentsContainerViewBottom.constant = -originalCommentsContainerViewHeight
+    }
+    
+    func expandCommentsView() {
+        commentsContainerViewHeight.constant = view.frame.height - 20
+    }
+    
+    func retractCommentsView() {
+        commentsContainerViewHeight.constant = originalCommentsContainerViewHeight
     }
 }

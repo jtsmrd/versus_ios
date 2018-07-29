@@ -63,6 +63,7 @@ let SEARCH_USER_CELL = "SearchUserCell"
 let CATEGORY_CELL = "CategoryCell"
 let COMPETITION_CELL = "CompetitionCell"
 let NOTIFICATION_CELL = "NotificationCell"
+let COMPETITION_COMMENT_CELL = "CompetitionCommentCell"
 
 
 // CollectionViewCell Identifiers

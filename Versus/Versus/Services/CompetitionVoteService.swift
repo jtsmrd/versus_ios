@@ -7,6 +7,7 @@
 //
 
 import AWSDynamoDB
+import AWSLambda
 
 class CompetitionVoteService {
     
@@ -21,11 +22,8 @@ class CompetitionVoteService {
         completion: @escaping (_ competitionVote: CompetitionVote?, _ customError: CustomError?) -> Void) {
         
         let competitionVote: AWSCompetitionVote = AWSCompetitionVote()
-        competitionVote._competitionId = competitionId
-        competitionVote._createDate = Date().toISO8601String
-        competitionVote._id = UUID().uuidString
-        competitionVote._userPoolUserId = CurrentUser.userPoolUserId
-        competitionVote._votedForCompetitionEntryId = votedForCompetitionEntryId
+        competitionVote._competitionIdUserPoolUserId = String(format: "%@%@", competitionId, CurrentUser.userPoolUserId)
+        competitionVote._competitionEntryId = votedForCompetitionEntryId
         
         AWSDynamoDBObjectMapper.default().save(competitionVote) { (error) in
             if let error = error {
@@ -39,30 +37,22 @@ class CompetitionVoteService {
     
     func getVoteForCompetition(competitionId: String, completion: @escaping (_ competitionVote: CompetitionVote?) -> Void) {
         
-        let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "#competitionId = :competitionId AND #userPoolUserId = :userPoolUserId"
-        scanExpression.expressionAttributeNames = [
-            "#competitionId": "competitionId",
-            "#userPoolUserId": "userPoolUserId"
-        ]
+        let hashKey = String(format: "%@%@", competitionId, CurrentUser.userPoolUserId)
         
-        scanExpression.expressionAttributeValues = [
-            ":competitionId": competitionId,
-            ":userPoolUserId": CurrentUser.userPoolUserId
-        ]
-        
-        AWSDynamoDBObjectMapper.default().scan(AWSCompetitionVote.self, expression: scanExpression) { (paginatedOutput, error) in
+        AWSDynamoDBObjectMapper.default().load(
+            AWSCompetitionVote.self,
+            hashKey: hashKey,
+            rangeKey: nil
+        ) { (awsCompetitionVote, error) in
             if let error = error {
                 debugPrint("Error getting vote for competition: \(error.localizedDescription)")
                 completion(nil)
             }
-            else if let result = paginatedOutput {
-                if let competitionVote = result.items.first as? AWSCompetitionVote {
-                    completion(CompetitionVote(awsCompetitionVote: competitionVote))
-                }
-                else {
-                    completion(nil)
-                }
+            else if let awsCompetitionVote = awsCompetitionVote as? AWSCompetitionVote {
+                completion(CompetitionVote(awsCompetitionVote: awsCompetitionVote))
+            }
+            else {
+                completion(nil)
             }
         }
     }
@@ -78,32 +68,19 @@ class CompetitionVoteService {
         }
     }
     
-    //TODO: Update to only get COUNT instead of returning all records, or create/ call function in API Gateway instead
-    /// Returns the vote count for the given competitionEntryId.
+    
     func getVoteCountFor(
         _ competitionEntryId: String,
         completion: @escaping (_ voteCount: Int?, _ error: CustomError?) -> Void
     ) {
         
-        let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "#votedForCompetitionEntryId = :votedForCompetitionEntryId"
-        scanExpression.expressionAttributeNames = [
-            "#votedForCompetitionEntryId": "votedForCompetitionEntryId"
-        ]
-        
-        scanExpression.expressionAttributeValues = [
-            ":votedForCompetitionEntryId": competitionEntryId
-        ]
-        
-        AWSDynamoDBObjectMapper.default().scan(
-            AWSCompetitionVote.self,
-            expression: scanExpression
-        ) { (paginatedOutput, error) in
+        let jsonObject: [String: Any] = ["competitionEntryId": competitionEntryId]
+        AWSLambdaInvoker.default().invokeFunction("versus-1_0-GetCompetitionEntryVoteCount", jsonObject: jsonObject) { (result, error) in
             if let error = error {
-                completion(nil, CustomError(error: error, title: "", desc: "Unable to get competition votes"))
+                completion(nil, CustomError(error: error, title: "", desc: "Unable to get comment count"))
             }
-            else if let result = paginatedOutput {
-                completion(result.items.count, nil)
+            else if let count = result as? Int {
+                completion(count, nil)
             }
         }
     }

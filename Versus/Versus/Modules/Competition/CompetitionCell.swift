@@ -40,52 +40,94 @@ class CompetitionCell: UITableViewCell {
         switch competition.competitionType {
         case .image:
             
-            competition.getCompetitionImage(for: .user1, bucketType: .competitionImageSmall) { (image, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.parentViewController?.displayError(error: error)
-                    }
-                    else {
-                        self.user1ImageView.image = image
+            DispatchQueue.global(qos: .userInitiated).async {
+                competition.getCompetitionImage(for: .user1, bucketType: .competitionImageSmall) { (image, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.parentViewController?.displayError(error: error)
+                        }
+                        else {
+                            self.user1ImageView.image = image
+                        }
                     }
                 }
             }
             
-            competition.getCompetitionImage(for: .user2, bucketType: .competitionImageSmall) { (image, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.parentViewController?.displayError(error: error)
-                    }
-                    else {
-                        self.user2ImageView.image = image
+            DispatchQueue.global(qos: .userInitiated).async {
+                competition.getCompetitionImage(for: .user2, bucketType: .competitionImageSmall) { (image, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.parentViewController?.displayError(error: error)
+                        }
+                        else {
+                            self.user2ImageView.image = image
+                        }
                     }
                 }
             }
             
         case .video:
             
-            competition.getCompetitionImage(for: .user1, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.parentViewController?.displayError(error: error)
-                    }
-                    else {
-                        self.user1ImageView.image = image
+            DispatchQueue.global(qos: .userInitiated).async {
+                competition.getCompetitionImage(for: .user1, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.parentViewController?.displayError(error: error)
+                        }
+                        else {
+                            self.user1ImageView.image = image
+                        }
                     }
                 }
             }
             
-            competition.getCompetitionImage(for: .user2, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.parentViewController?.displayError(error: error)
-                    }
-                    else {
-                        self.user2ImageView.image = image
+            DispatchQueue.global(qos: .userInitiated).async {
+                competition.getCompetitionImage(for: .user2, bucketType: .competitionVideoPreviewImageSmall) { (image, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.parentViewController?.displayError(error: error)
+                        }
+                        else {
+                            self.user2ImageView.image = image
+                        }
                     }
                 }
             }
         }
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            CompetitionVoteService.instance.getVoteCountFor(competition.awsCompetition._user1CompetitionEntryId!) { (voteCount, customError) in
+                DispatchQueue.main.async {
+                    if let _ = customError {
+                        debugPrint("Error getting votes for user1")
+                    }
+                    else if let voteCount = voteCount {
+                        self.user1VotesLabel.text = String(format: "%i", voteCount)
+                    }
+                    else {
+                        self.user1VotesLabel.text = "--"
+                    }
+                }
+            }
+        }
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            CompetitionVoteService.instance.getVoteCountFor(competition.awsCompetition._user2CompetitionEntryId!) { (voteCount, customError) in
+                DispatchQueue.main.async {
+                    if let _ = customError {
+                        debugPrint("Error getting votes for user1")
+                    }
+                    else if let voteCount = voteCount {
+                        self.user2VotesLabel.text = String(format: "%i", voteCount)
+                    }
+                    else {
+                        self.user2VotesLabel.text = "--"
+                    }
+                }
+            }
+        }
+        
+        
         
         versusCircleView._backgroundColor = competition.competitionCategoryColor
         versusCircleView.setNeedsDisplay()

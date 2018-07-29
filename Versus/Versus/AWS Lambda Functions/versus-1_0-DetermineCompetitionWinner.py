@@ -105,8 +105,8 @@ def getExpiredActiveCompetitions():
 # Query the database for the count of votes for the given competitionEntryId
 def getVoteCountFor(competitionEntryId):
     response = competitionVoteTable.query(
-        IndexName="votedForCompetitionEntryIdIndex",
-        KeyConditionExpression=Key('votedForCompetitionEntryId').eq(competitionEntryId),
+        IndexName="competitionEntryIdIndex",
+        KeyConditionExpression=Key('competitionEntryId').eq(competitionEntryId),
         Select="COUNT"
     )
     return response['Count']
