@@ -18,20 +18,21 @@ import AWSDynamoDB
 @objcMembers
 class AWSNotification: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _notifyUserPoolUserId: String?
+    var _userId: String?
     var _createDate: String?
+    var _notificationId: String?
     var _notificationInfo: [String: String]?
     var _notificationTypeId: NSNumber?
     var _wasViewed: NSNumber?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_Notification"
+        return "AWS_Notification"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_notifyUserPoolUserId"
+        return "_userId"
     }
     
     class func rangeKeyAttribute() -> String {
@@ -41,8 +42,9 @@ class AWSNotification: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_notifyUserPoolUserId" : "notifyUserPoolUserId",
+               "_userId" : "userId",
                "_createDate" : "createDate",
+               "_notificationId" : "notificationId",
                "_notificationInfo" : "notificationInfo",
                "_notificationTypeId" : "notificationTypeId",
                "_wasViewed" : "wasViewed",

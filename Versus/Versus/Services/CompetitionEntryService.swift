@@ -17,91 +17,213 @@ enum CompetitionImageSizeType: CGFloat {
 class CompetitionEntryService {
     
     static let instance = CompetitionEntryService()
+    private let dynamoDB = AWSDynamoDBObjectMapper.default()
+    private let s3BucketService = S3BucketService.instance
     
     private init() { }
     
     
-    func createCompetitionEntry(
+    /**
+     
+     */
+    func submitImageCompetitionEntry(
+        categoryType: CategoryType,
+        caption: String?,
+        image: UIImage,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        let mediaId = UUID().uuidString
+        var uploadError: CustomError?
+        let uploadDG = DispatchGroup()
+        
+        uploadDG.enter()
+        uploadImageMedia(
+            image: image,
+            mediaId: mediaId
+        ) { (customError) in
+            uploadError = customError
+            uploadDG.leave()
+        }
+        uploadDG.wait()
+        
+        if let uploadError = uploadError {
+            completion(uploadError)
+            return
+        }
+        
+        createCompetitionEntry(
+            categoryType: categoryType,
+            competitionType: .image,
+            caption: caption,
+            mediaId: mediaId,
+            completion: completion
+        )
+    }
+    
+    
+    /**
+     
+     */
+    func submitVideoCompetitionEntry(
+        categoryType: CategoryType,
+        caption: String?,
+        image: UIImage,
+        video: AVURLAsset,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        let mediaId = UUID().uuidString
+        var uploadError: CustomError?
+        let uploadDG = DispatchGroup()
+        
+        uploadDG.enter()
+        uploadVideoMedia(
+            image: image,
+            video: video,
+            mediaId: mediaId
+        ) { (customError) in
+            uploadError = customError
+            uploadDG.leave()
+        }
+        uploadDG.wait()
+        
+        if let uploadError = uploadError {
+            completion(uploadError)
+            return
+        }
+        
+        createCompetitionEntry(
+            categoryType: categoryType,
+            competitionType: .video,
+            caption: caption,
+            mediaId: mediaId,
+            completion: completion
+        )
+    }
+    
+    
+    /**
+ 
+     */
+    private func createCompetitionEntry(
         categoryType: CategoryType,
         competitionType: CompetitionType,
         caption: String?,
-        videoPreviewImageId: String?,
-        videoPreviewImageSmallId: String?,
-        videoId: String?,
-        imageId: String?,
-        imageSmallId: String?,
-        completion: @escaping SuccessCompletion) {
+        mediaId: String,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        let awsCompetitionEntry: AWSCompetitionEntry = AWSCompetitionEntry()
+        awsCompetitionEntry._awaitingMatch = 1.toNSNumber
+        awsCompetitionEntry._caption = caption
+        awsCompetitionEntry._categoryTypeId = categoryType.rawValue.toNSNumber
+        awsCompetitionEntry._competitionEntryId = UUID().uuidString
+        awsCompetitionEntry._compTypeIdCatTypeIdRankIdMatched = String(
+            format: "%d|%d|%d|%d",
+            competitionType.rawValue,
+            categoryType.rawValue,
+            CurrentUser.rankId,
+            0
+        )
+        awsCompetitionEntry._competitionTypeId = competitionType.rawValue.toNSNumber
+        awsCompetitionEntry._createDate = Date().toISO8601String
+        awsCompetitionEntry._displayName = CurrentUser.displayName
+        awsCompetitionEntry._isFeatured = NSNumber(booleanLiteral: CurrentUser.isFeatured)
+        awsCompetitionEntry._mediaId = mediaId
+        awsCompetitionEntry._rankId = CurrentUser.rankId.toNSNumber
+        awsCompetitionEntry._userId = CurrentUser.userId
+        awsCompetitionEntry._username = CurrentUser.username
         
-        let competitionEntry: AWSCompetitionEntry = AWSCompetitionEntry()
-        competitionEntry._id = UUID().uuidString
-        competitionEntry._caption = caption
-        competitionEntry._categoryId = categoryType.rawValue.toNSNumber
-        competitionEntry._competitionTypeId = competitionType.rawValue.toNSNumber
-        competitionEntry._createDate = Date().toISO8601String
-        competitionEntry._imageId = imageId ?? "0"
-        competitionEntry._imageSmallId = imageSmallId ?? "0"
-        competitionEntry._isFeatured = CurrentUser.user.awsUser._isFeatured
-        competitionEntry._matchStatus = "NOTMATCHED"
-        competitionEntry._matchDate = "0"
-        competitionEntry._userPoolUserId = CurrentUser.userPoolUserId
-        competitionEntry._userRankId = CurrentUser.user.awsUser._rankId
-        competitionEntry._username = CurrentUser.user.awsUser._username
-        competitionEntry._videoId = videoId ?? "0"
-        competitionEntry._videoPreviewImageId = videoPreviewImageId ?? "0"
-        competitionEntry._videoPreviewImageSmallId = videoPreviewImageSmallId ?? "0"
-        
-        AWSDynamoDBObjectMapper.default().save(competitionEntry) { (error) in
+        dynamoDB.save(
+            awsCompetitionEntry
+        ) { (error) in
             if let error = error {
-                debugPrint("Error when creating competition entry: \(error.localizedDescription)")
-                completion(false)
+                completion(CustomError(error: error, message: "Unable to submit competition"))
+                return
             }
-            debugPrint("Competition entry successfully created.")
-            completion(true)
-        }
-    }
-    
-    
-    func uploadCompetitionImage(
-        image: UIImage,
-        bucketType: S3BucketType,
-        competitionImageSizeType: CompetitionImageSizeType,
-        completion: @escaping (_ imageFilename: String?) -> Void
-    ) {
-        guard let uploadImage = resizeImage(image: image, newWidth: competitionImageSizeType.rawValue) else {
             completion(nil)
-            return
-        }
-        S3BucketService.instance.uploadImage(
-            image: uploadImage,
-            bucketType: bucketType
-        ) { (imageFilename) in
-            completion(imageFilename)
         }
     }
     
-    func uploadCompetitionVideo(
-        videoUrlAsset: AVURLAsset,
-        bucketType: S3BucketType,
-        completion: @escaping (_ videoFilename: String?) -> Void
+    
+    /**
+     
+     */
+    private func uploadImageMedia(
+        image: UIImage,
+        mediaId: String,
+        completion: @escaping (_ customError: CustomError?) -> Void
     ) {
-        S3BucketService.instance.uploadVideo(
-            videoUrlAsset: videoUrlAsset,
-            bucketType: bucketType
-        ) { (videoFilename) in
-            completion(videoFilename)
+        var uploadError: CustomError?
+        let uploadDG = DispatchGroup()
+        
+        uploadDG.enter()
+        s3BucketService.uploadImage(
+            image: image,
+            imageType: .regular,
+            mediaId: mediaId
+        ) { (customError) in
+            uploadError = customError
+            uploadDG.leave()
+        }
+        
+        uploadDG.enter()
+        s3BucketService.uploadImage(
+            image: image,
+            imageType: .small,
+            mediaId: mediaId
+        ) { (customError) in
+            uploadError = customError
+            uploadDG.leave()
+        }
+        
+        uploadDG.notify(queue: .global(qos: .userInitiated)) {
+            completion(uploadError)
         }
     }
     
     
-    private func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage? {
-        let scale = newWidth / image.size.width
-        let newHeight = image.size.height * scale
-        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
-        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+    /**
+     
+     */
+    private func uploadVideoMedia(
+        image: UIImage,
+        video: AVURLAsset,
+        mediaId: String,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        var uploadError: CustomError?
+        let uploadDG = DispatchGroup()
         
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        uploadDG.enter()
+        s3BucketService.uploadVideo(
+            video: video,
+            mediaId: mediaId
+        ) { (customError) in
+            uploadError = customError
+            uploadDG.leave()
+        }
         
-        return newImage
+        uploadDG.enter()
+        s3BucketService.uploadImage(
+            image: image,
+            imageType: .regular,
+            mediaId: mediaId
+        ) { (customError) in
+            uploadError = customError
+            uploadDG.leave()
+        }
+        
+        uploadDG.enter()
+        s3BucketService.uploadImage(
+            image: image,
+            imageType: .small,
+            mediaId: mediaId
+        ) { (customError) in
+            uploadError = customError
+            uploadDG.leave()
+        }
+        
+        uploadDG.notify(queue: .global(qos: .userInitiated)) {
+            completion(uploadError)
+        }
     }
 }

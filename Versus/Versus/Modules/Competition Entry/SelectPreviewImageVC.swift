@@ -88,7 +88,7 @@ class SelectPreviewImageVC: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let competitionDetailsVC = segue.destination as? CompetitionDetailsVC,
             let previewImage = sender as? UIImage {
-            competitionDetailsVC.initData(image: nil, videoUrlAsset: videoAVUrlAsset, videoPreviewImage: previewImage)
+            competitionDetailsVC.initData(image: previewImage, video: videoAVUrlAsset)
         }
     }
 }

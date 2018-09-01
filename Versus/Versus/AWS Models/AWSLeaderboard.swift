@@ -20,12 +20,12 @@ class AWSLeaderboard: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     var _leaderboardTypeId: NSNumber?
     var _isActive: NSNumber?
-    var _leaderboardName: String?
+    var _name: String?
     var _numberOfResults: NSNumber?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_Leaderboard"
+        return "AWS_Leaderboard"
     }
     
     class func hashKeyAttribute() -> String {
@@ -37,7 +37,7 @@ class AWSLeaderboard: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
         return [
                "_leaderboardTypeId" : "leaderboardTypeId",
                "_isActive" : "isActive",
-               "_leaderboardName" : "leaderboardName",
+               "_name" : "name",
                "_numberOfResults" : "numberOfResults",
         ]
     }

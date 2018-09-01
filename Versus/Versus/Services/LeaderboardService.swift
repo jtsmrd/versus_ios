@@ -11,36 +11,40 @@ import AWSDynamoDB
 class LeaderboardService {
     
     static let instance = LeaderboardService()
+    private let dynamoDB = AWSDynamoDBObjectMapper.default()
     
     private init() { }
     
     
-    func getLeaderboards(completion: @escaping (_ leaderboards: [Leaderboard], _ customError: CustomError?) -> Void) {
-        
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#isActive = :isActive"
-        queryExpression.expressionAttributeNames = [
+    /**
+ 
+     */
+    func getLeaderboards(
+        completion: @escaping (_ leaderboards: [Leaderboard], _ customError: CustomError?) -> Void
+    ) {
+        let scanExpression = AWSDynamoDBScanExpression()
+        scanExpression.filterExpression = "#isActive = :val"
+        scanExpression.expressionAttributeNames = [
             "#isActive": "isActive"
         ]
-        queryExpression.expressionAttributeValues = [
-            ":isActive": 1
+        scanExpression.expressionAttributeValues = [
+            ":val": 1
         ]
-        queryExpression.indexName = "isActiveIndex"
-        
-        var leaderboards = [Leaderboard]()
-        
-        AWSDynamoDBObjectMapper.default().query(AWSLeaderboard.self, expression: queryExpression) { (paginatedOutput, error) in
+        var leaderboards = [Leaderboard]()        
+        dynamoDB.scan(
+            AWSLeaderboard.self,
+            expression: scanExpression
+        ) { (paginatedOutput, error) in
             if let error = error {
-                completion(leaderboards, CustomError(error: error, title: "", desc: "Unable to load leaderboards"))
+                completion(leaderboards, CustomError(error: error, message: "Unable to load leaderboards"))
+                return
             }
-            else if let result = paginatedOutput {
-                if let awsLeaderboards = result.items as? [AWSLeaderboard] {
-                    for awsLeaderboard in awsLeaderboards {
-                        leaderboards.append(Leaderboard(awsLeaderboard: awsLeaderboard))
-                    }
+            if let awsLeaderboards = paginatedOutput?.items as? [AWSLeaderboard] {
+                for awsLeaderboard in awsLeaderboards {
+                    leaderboards.append(Leaderboard(awsLeaderboard: awsLeaderboard))
                 }
-                completion(leaderboards, nil)
             }
+            completion(leaderboards, nil)
         }
     }
 }

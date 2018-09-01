@@ -1,5 +1,5 @@
 //
-//  CompetitionCommentsVC.swift
+//  CommentsVC.swift
 //  Versus
 //
 //  Created by JT Smrdel on 7/22/18.
@@ -14,7 +14,7 @@ protocol CompetitionCommentsVCDelegate {
     func retractCommentsView()
 }
 
-class CompetitionCommentsVC: UIViewController {
+class CommentsVC: UIViewController {
 
     
     @IBOutlet weak var commentsHeaderView: UIView!
@@ -38,7 +38,7 @@ class CompetitionCommentsVC: UIViewController {
         view.layer.cornerRadius = 10
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         
-        commentsHeaderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(CompetitionCommentsVC.dismissComments)))
+        commentsHeaderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(CommentsVC.dismissComments)))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,13 +46,13 @@ class CompetitionCommentsVC: UIViewController {
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(CompetitionCommentsVC.keyboardWillShow(notification:)),
+            selector: #selector(CommentsVC.keyboardWillShow(notification:)),
             name: NSNotification.Name.UIKeyboardWillShow,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(CompetitionCommentsVC.keyboardWillHide(notification:)),
+            selector: #selector(CommentsVC.keyboardWillHide(notification:)),
             name: NSNotification.Name.UIKeyboardWillHide,
             object: nil
         )
@@ -103,14 +103,16 @@ class CompetitionCommentsVC: UIViewController {
         CommentService.instance.postComment(
             competitionEntryId: competitionEntryId,
             commentText: commentTextView.text
-        ) { (success) in
+        ) { (customError) in
             DispatchQueue.main.async {
-                if success {
-                    self.view.endEditing(true)
-                    self.commentTextView.text.removeAll()
-                    self.commentPlaceholderLabel.isHidden = false
-                    self.loadCommentsFor(competitionEntryId: self.competitionEntryId)
+                if let customError = customError {
+                    self.displayError(error: customError)
+                    return
                 }
+                self.view.endEditing(true)
+                self.commentTextView.text.removeAll()
+                self.commentPlaceholderLabel.isHidden = false
+                self.loadCommentsFor(competitionEntryId: self.competitionEntryId)
             }
         }
     }
@@ -126,7 +128,7 @@ class CompetitionCommentsVC: UIViewController {
                     self.displayError(error: customError)
                 }
                 else {
-                    self.comments = comments.sorted { $0.awsComment._createDate! < $1.awsComment._createDate! }
+                    self.comments = comments.sorted { $0.createDate < $1.createDate }
                     self.commentsTableView.reloadData()
                     
                     if !self.comments.isEmpty {
@@ -138,7 +140,7 @@ class CompetitionCommentsVC: UIViewController {
     }
 }
 
-extension CompetitionCommentsVC: UITableViewDataSource {
+extension CommentsVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let commentsCount = comments.count
@@ -156,14 +158,14 @@ extension CompetitionCommentsVC: UITableViewDataSource {
     }
 }
 
-extension CompetitionCommentsVC: UITableViewDelegate {
+extension CommentsVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
 }
 
-extension CompetitionCommentsVC: UITextViewDelegate {
+extension CommentsVC: UITextViewDelegate {
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         

@@ -19,38 +19,48 @@
 		320105BB20E971D00099C056 /* LeaderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320105BA20E971D00099C056 /* LeaderService.swift */; };
 		3218AF8020CD9AA5006361CB /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3218AF7F20CD9AA5006361CB /* NotificationManager.swift */; };
 		3218DADE210CABCE00915A90 /* CompetitionCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3218DADD210CABCE00915A90 /* CompetitionCommentCell.swift */; };
-		3218DAE0210D0C5B00915A90 /* versus-1_0-GetCompetitionEntryCommentCount.py in Resources */ = {isa = PBXBuildFile; fileRef = 3218DADF210D0C5B00915A90 /* versus-1_0-GetCompetitionEntryCommentCount.py */; };
-		3218DAE2210D158E00915A90 /* versus-1_0-GetCompetitionEntryVoteCount.py in Resources */ = {isa = PBXBuildFile; fileRef = 3218DAE1210D158E00915A90 /* versus-1_0-GetCompetitionEntryVoteCount.py */; };
-		3218DAE4210D272C00915A90 /* AWSCompetitionVote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3218DAE3210D272C00915A90 /* AWSCompetitionVote.swift */; };
+		3218DAE4210D272C00915A90 /* AWSVote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3218DAE3210D272C00915A90 /* AWSVote.swift */; };
 		321E57E92104F24500F94E2E /* AWSComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57E82104F24500F94E2E /* AWSComment.swift */; };
 		321E57EB2104F29500F94E2E /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57EA2104F29500F94E2E /* Comment.swift */; };
 		321E57ED2104F30400F94E2E /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57EC2104F30400F94E2E /* CommentService.swift */; };
-		321E57EF2104F9DC00F94E2E /* CompetitionCommentsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57EE2104F9DC00F94E2E /* CompetitionCommentsVC.swift */; };
+		321E57EF2104F9DC00F94E2E /* CommentsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57EE2104F9DC00F94E2E /* CommentsVC.swift */; };
 		323A7B3620CBFCBE0011AF95 /* CompetitionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */; };
 		323A7B3820CC9E950011AF95 /* AWSUserSNSEndpointARN.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323A7B3720CC9E950011AF95 /* AWSUserSNSEndpointARN.swift */; };
 		3251CA6420E8577100F9434D /* LeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3251CA6320E8577100F9434D /* LeaderCell.swift */; };
 		32580E0820E6E2DC00D138AD /* LeaderboardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32580E0720E6E2DC00D138AD /* LeaderboardVC.swift */; };
+		325CA3562131D38B00A6C47B /* Competitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325CA3552131D38B00A6C47B /* Competitor.swift */; };
+		325CA3582131FA3D00A6C47B /* Competitor.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 325CA3572131FA3D00A6C47B /* Competitor.storyboard */; };
+		325CA35A2132004700A6C47B /* CompetitorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325CA3592132004700A6C47B /* CompetitorVC.swift */; };
 		325F560F20D9A451001A06C4 /* ResetPasswordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325F560E20D9A451001A06C4 /* ResetPasswordVC.swift */; };
 		325F561120D9AE8E001A06C4 /* ChangePasswordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325F561020D9AE8E001A06C4 /* ChangePasswordVC.swift */; };
+		326784272139D89A00068428 /* NotificationExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326784262139D89A00068428 /* NotificationExtensions.swift */; };
+		326784292139F85F00068428 /* ViewCompetitionOptionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326784282139F85F00068428 /* ViewCompetitionOptionsVC.swift */; };
+		327C1EC5213AAE96001E2C8B /* UserCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327C1EC4213AAE96001E2C8B /* UserCollectionManager.swift */; };
 		327E604520C49F64000980CD /* CompetitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604420C49F64000980CD /* CompetitionManager.swift */; };
 		327E604920C4AD26000980CD /* KeyboardToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604820C4AD26000980CD /* KeyboardToolbar.swift */; };
 		327FA2B220DC501400B13C6D /* SelectPreviewImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */; };
-		329C4E7B20E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7520E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py */; };
-		329C4E7C20E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7620E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py */; };
-		329C4E7D20E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7720E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py */; };
-		329C4E7E20E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7820E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py */; };
-		329C4E7F20E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7920E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py */; };
+		329C4E7B20E00EAE00E4E8E9 /* AWS_Notification_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7520E00EAE00E4E8E9 /* AWS_Notification_Trigger.py */; };
+		329C4E7C20E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7620E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py */; };
+		329C4E7D20E00EAE00E4E8E9 /* MatchCompetitionEntries.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7720E00EAE00E4E8E9 /* MatchCompetitionEntries.py */; };
+		329C4E7E20E00EAE00E4E8E9 /* AWS_Competition_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7820E00EAE00E4E8E9 /* AWS_Competition_Trigger.py */; };
+		329C4E7F20E00EAE00E4E8E9 /* AWS_Follower_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7920E00EAE00E4E8E9 /* AWS_Follower_Trigger.py */; };
 		329C4E8020E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */; };
 		329C4E8320E02ED000E4E8E9 /* Tutorial.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E8220E02ED000E4E8E9 /* Tutorial.storyboard */; };
 		329C4E8520E0332900E4E8E9 /* TutorialVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C4E8420E0332900E4E8E9 /* TutorialVC.swift */; };
 		329C4E8720E0348000E4E8E9 /* TutorialPVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C4E8620E0348000E4E8E9 /* TutorialPVC.swift */; };
 		329C4E8920E0355B00E4E8E9 /* TutorialPageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C4E8820E0355B00E4E8E9 /* TutorialPageVC.swift */; };
+		329E1D9D2124CCE800924A7E /* FollowedUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329E1D9C2124CCE800924A7E /* FollowedUserVC.swift */; };
+		329E1D9F2124D8AC00924A7E /* FollowedUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329E1D9E2124D8AC00924A7E /* FollowedUserCell.swift */; };
+		32B5F3C9212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 32B5F3C8212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py */; };
 		32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97620C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m */; };
 		32D9C97B20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97720C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m */; };
 		32D9C97C20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */; };
 		32D9C97F20CB008100F174B2 /* CompetitionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97E20CB008100F174B2 /* CompetitionParser.swift */; };
 		32D9C98120CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32D9C98020CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard */; };
 		32D9C98420CB46E200F174B2 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C98320CB46E200F174B2 /* IntExtensions.swift */; };
+		32E085E021233C5800DF395D /* AWSFollowedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E085DF21233C5800DF395D /* AWSFollowedUser.swift */; };
+		32E085E221233CBE00DF395D /* FollowedUserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E085E121233CBE00DF395D /* FollowedUserService.swift */; };
+		32E085E421233CFA00DF395D /* FollowedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E085E321233CFA00DF395D /* FollowedUser.swift */; };
 		589C140C381C23DC0BEB472F /* Pods_Versus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A999CFBAD01983D013158ED9 /* Pods_Versus.framework */; };
 		6B01D8B02086A4200021421F /* FollowerSuggestionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B01D8AF2086A4200021421F /* FollowerSuggestionCell.swift */; };
 		6B04B73D20914219007BF021 /* AWSCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04B73C20914219007BF021 /* AWSCompetition.swift */; };
@@ -65,7 +75,7 @@
 		6B079FF5208D429D003BBB87 /* CompetitionEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF4208D429D003BBB87 /* CompetitionEntry.swift */; };
 		6B079FF7208D4315003BBB87 /* CompetitionEntryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF6208D4315003BBB87 /* CompetitionEntryService.swift */; };
 		6B08CC4820AB83AF009D85A7 /* AWSNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B08CC4720AB83AF009D85A7 /* AWSNotification.swift */; };
-		6B08CC4A20AB83CB009D85A7 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B08CC4920AB83CB009D85A7 /* Notification.swift */; };
+		6B08CC4A20AB83CB009D85A7 /* VersusNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B08CC4920AB83CB009D85A7 /* VersusNotification.swift */; };
 		6B13B93920AE00BD00769AFD /* RoundedCornerImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B13B93820AE00BD00769AFD /* RoundedCornerImageView.swift */; };
 		6B13B93C20AE180F00769AFD /* EditImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B13B93B20AE180F00769AFD /* EditImage.storyboard */; };
 		6B13B93E20AE1BFA00769AFD /* EditImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B13B93D20AE1BFA00769AFD /* EditImageVC.swift */; };
@@ -92,8 +102,8 @@
 		6B525F8F208114D7007A7FC7 /* FollowerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B525F8E208114D7007A7FC7 /* FollowerVC.swift */; };
 		6B5D0A11207AE46600091DA1 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A10207AE46600091DA1 /* GameKit.framework */; };
 		6B5D0A13207AE46C00091DA1 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A12207AE46C00091DA1 /* StoreKit.framework */; };
-		6B6DE28E20A264AC005368C4 /* CompetitionVote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28D20A264AC005368C4 /* CompetitionVote.swift */; };
-		6B6DE29020A26510005368C4 /* CompetitionVoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28F20A26510005368C4 /* CompetitionVoteService.swift */; };
+		6B6DE28E20A264AC005368C4 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28D20A264AC005368C4 /* Vote.swift */; };
+		6B6DE29020A26510005368C4 /* VoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28F20A26510005368C4 /* VoteService.swift */; };
 		6B7FCC552086C63B00B69DEA /* MainTBC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7FCC542086C63B00B69DEA /* MainTBC.swift */; };
 		6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316DC207D71EC0067EE0E /* RankCell.swift */; };
 		6B8316DF207D73070067EE0E /* UserRankView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316DE207D73070067EE0E /* UserRankView.swift */; };
@@ -122,7 +132,7 @@
 		6BB8178C207A718400503620 /* AccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB8178B207A718400503620 /* AccountService.swift */; };
 		6BB8178F207A842400503620 /* FollowSuggestionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB8178D207A842400503620 /* FollowSuggestionsVC.swift */; };
 		6BB81790207A842400503620 /* ChooseUsernameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB8178E207A842400503620 /* ChooseUsernameVC.swift */; };
-		6BB9A384207ED1FB006881BE /* SearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB9A383207ED1FB006881BE /* SearchVC.swift */; };
+		6BB9A384207ED1FB006881BE /* SearchBrowseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB9A383207ED1FB006881BE /* SearchBrowseVC.swift */; };
 		6BB9A386207ED21E006881BE /* SearchUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB9A385207ED21E006881BE /* SearchUserCell.swift */; };
 		6BC01AC120927B5F00FDAC44 /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC01AC020927B5F00FDAC44 /* CircleView.swift */; };
 		6BC01AC32092824700FDAC44 /* ViewCompetitionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC01AC22092824700FDAC44 /* ViewCompetitionVC.swift */; };
@@ -162,32 +172,39 @@
 		320105BA20E971D00099C056 /* LeaderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderService.swift; sourceTree = "<group>"; };
 		3218AF7F20CD9AA5006361CB /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		3218DADD210CABCE00915A90 /* CompetitionCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionCommentCell.swift; sourceTree = "<group>"; };
-		3218DADF210D0C5B00915A90 /* versus-1_0-GetCompetitionEntryCommentCount.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "versus-1_0-GetCompetitionEntryCommentCount.py"; sourceTree = "<group>"; };
-		3218DAE1210D158E00915A90 /* versus-1_0-GetCompetitionEntryVoteCount.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "versus-1_0-GetCompetitionEntryVoteCount.py"; sourceTree = "<group>"; };
-		3218DAE3210D272C00915A90 /* AWSCompetitionVote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSCompetitionVote.swift; sourceTree = "<group>"; };
+		3218DAE3210D272C00915A90 /* AWSVote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSVote.swift; sourceTree = "<group>"; };
 		321E57E82104F24500F94E2E /* AWSComment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSComment.swift; sourceTree = "<group>"; };
 		321E57EA2104F29500F94E2E /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		321E57EC2104F30400F94E2E /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
-		321E57EE2104F9DC00F94E2E /* CompetitionCommentsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionCommentsVC.swift; sourceTree = "<group>"; };
+		321E57EE2104F9DC00F94E2E /* CommentsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsVC.swift; sourceTree = "<group>"; };
 		323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CompetitionCell.xib; sourceTree = "<group>"; };
 		323A7B3720CC9E950011AF95 /* AWSUserSNSEndpointARN.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSUserSNSEndpointARN.swift; sourceTree = "<group>"; };
 		3251CA6320E8577100F9434D /* LeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderCell.swift; sourceTree = "<group>"; };
 		32580E0720E6E2DC00D138AD /* LeaderboardVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardVC.swift; sourceTree = "<group>"; };
+		325CA3552131D38B00A6C47B /* Competitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competitor.swift; sourceTree = "<group>"; };
+		325CA3572131FA3D00A6C47B /* Competitor.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Competitor.storyboard; sourceTree = "<group>"; };
+		325CA3592132004700A6C47B /* CompetitorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitorVC.swift; sourceTree = "<group>"; };
 		325F560E20D9A451001A06C4 /* ResetPasswordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordVC.swift; sourceTree = "<group>"; };
 		325F561020D9AE8E001A06C4 /* ChangePasswordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordVC.swift; sourceTree = "<group>"; };
+		326784262139D89A00068428 /* NotificationExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensions.swift; sourceTree = "<group>"; };
+		326784282139F85F00068428 /* ViewCompetitionOptionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewCompetitionOptionsVC.swift; sourceTree = "<group>"; };
+		327C1EC4213AAE96001E2C8B /* UserCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCollectionManager.swift; sourceTree = "<group>"; };
 		327E604420C49F64000980CD /* CompetitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionManager.swift; sourceTree = "<group>"; };
 		327E604820C4AD26000980CD /* KeyboardToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardToolbar.swift; sourceTree = "<group>"; };
 		327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPreviewImageVC.swift; sourceTree = "<group>"; };
-		329C4E7520E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-PublishNotifications.py"; sourceTree = "<group>"; };
-		329C4E7620E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-GetFollowedUserCompetitions.py"; sourceTree = "<group>"; };
-		329C4E7720E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-CreateCompetition.py"; sourceTree = "<group>"; };
-		329C4E7820E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-CreateCompetitionNotifications.py"; sourceTree = "<group>"; };
-		329C4E7920E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-CreateNewFollowerNotification.py"; sourceTree = "<group>"; };
+		329C4E7520E00EAE00E4E8E9 /* AWS_Notification_Trigger.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = AWS_Notification_Trigger.py; sourceTree = "<group>"; };
+		329C4E7620E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = GetFollowedUserCompetitions.py; sourceTree = "<group>"; };
+		329C4E7720E00EAE00E4E8E9 /* MatchCompetitionEntries.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = MatchCompetitionEntries.py; sourceTree = "<group>"; };
+		329C4E7820E00EAE00E4E8E9 /* AWS_Competition_Trigger.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = AWS_Competition_Trigger.py; sourceTree = "<group>"; };
+		329C4E7920E00EAE00E4E8E9 /* AWS_Follower_Trigger.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = AWS_Follower_Trigger.py; sourceTree = "<group>"; };
 		329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-DetermineCompetitionWinner.py"; sourceTree = "<group>"; };
 		329C4E8220E02ED000E4E8E9 /* Tutorial.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Tutorial.storyboard; sourceTree = "<group>"; };
 		329C4E8420E0332900E4E8E9 /* TutorialVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialVC.swift; sourceTree = "<group>"; };
 		329C4E8620E0348000E4E8E9 /* TutorialPVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialPVC.swift; sourceTree = "<group>"; };
 		329C4E8820E0355B00E4E8E9 /* TutorialPageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialPageVC.swift; sourceTree = "<group>"; };
+		329E1D9C2124CCE800924A7E /* FollowedUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowedUserVC.swift; sourceTree = "<group>"; };
+		329E1D9E2124D8AC00924A7E /* FollowedUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowedUserCell.swift; sourceTree = "<group>"; };
+		32B5F3C8212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = AWS_FollowedUser_Trigger.py; sourceTree = "<group>"; };
 		32D9C97320C9F0AB00F174B2 /* Versus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Versus-Bridging-Header.h"; sourceTree = "<group>"; };
 		32D9C97420C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_RequestSchema.h; sourceTree = "<group>"; };
 		32D9C97520C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h; sourceTree = "<group>"; };
@@ -198,6 +215,9 @@
 		32D9C97E20CB008100F174B2 /* CompetitionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParser.swift; sourceTree = "<group>"; };
 		32D9C98020CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = FeaturedFollowingCompetitions.storyboard; sourceTree = "<group>"; };
 		32D9C98320CB46E200F174B2 /* IntExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtensions.swift; sourceTree = "<group>"; };
+		32E085DF21233C5800DF395D /* AWSFollowedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSFollowedUser.swift; sourceTree = "<group>"; };
+		32E085E121233CBE00DF395D /* FollowedUserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowedUserService.swift; sourceTree = "<group>"; };
+		32E085E321233CFA00DF395D /* FollowedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowedUser.swift; sourceTree = "<group>"; };
 		3755991080BE762D5B01C76C /* Pods-Versus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Versus.release.xcconfig"; path = "Pods/Target Support Files/Pods-Versus/Pods-Versus.release.xcconfig"; sourceTree = "<group>"; };
 		6B01D8AF2086A4200021421F /* FollowerSuggestionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerSuggestionCell.swift; sourceTree = "<group>"; };
 		6B04B73C20914219007BF021 /* AWSCompetition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSCompetition.swift; sourceTree = "<group>"; };
@@ -212,7 +232,7 @@
 		6B079FF4208D429D003BBB87 /* CompetitionEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntry.swift; sourceTree = "<group>"; };
 		6B079FF6208D4315003BBB87 /* CompetitionEntryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntryService.swift; sourceTree = "<group>"; };
 		6B08CC4720AB83AF009D85A7 /* AWSNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSNotification.swift; sourceTree = "<group>"; };
-		6B08CC4920AB83CB009D85A7 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		6B08CC4920AB83CB009D85A7 /* VersusNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersusNotification.swift; sourceTree = "<group>"; };
 		6B13B93820AE00BD00769AFD /* RoundedCornerImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornerImageView.swift; sourceTree = "<group>"; };
 		6B13B93B20AE180F00769AFD /* EditImage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = EditImage.storyboard; sourceTree = "<group>"; };
 		6B13B93D20AE1BFA00769AFD /* EditImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImageVC.swift; sourceTree = "<group>"; };
@@ -240,8 +260,8 @@
 		6B5D0A10207AE46600091DA1 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		6B5D0A12207AE46C00091DA1 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		6B5D0A14207AE48000091DA1 /* Versus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Versus.entitlements; sourceTree = "<group>"; };
-		6B6DE28D20A264AC005368C4 /* CompetitionVote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionVote.swift; sourceTree = "<group>"; };
-		6B6DE28F20A26510005368C4 /* CompetitionVoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionVoteService.swift; sourceTree = "<group>"; };
+		6B6DE28D20A264AC005368C4 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
+		6B6DE28F20A26510005368C4 /* VoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteService.swift; sourceTree = "<group>"; };
 		6B7FCC542086C63B00B69DEA /* MainTBC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTBC.swift; sourceTree = "<group>"; };
 		6B8316DC207D71EC0067EE0E /* RankCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankCell.swift; sourceTree = "<group>"; };
 		6B8316DE207D73070067EE0E /* UserRankView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRankView.swift; sourceTree = "<group>"; };
@@ -270,7 +290,7 @@
 		6BB8178B207A718400503620 /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 		6BB8178D207A842400503620 /* FollowSuggestionsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowSuggestionsVC.swift; sourceTree = "<group>"; };
 		6BB8178E207A842400503620 /* ChooseUsernameVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChooseUsernameVC.swift; sourceTree = "<group>"; };
-		6BB9A383207ED1FB006881BE /* SearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVC.swift; sourceTree = "<group>"; };
+		6BB9A383207ED1FB006881BE /* SearchBrowseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBrowseVC.swift; sourceTree = "<group>"; };
 		6BB9A385207ED21E006881BE /* SearchUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserCell.swift; sourceTree = "<group>"; };
 		6BC01AC020927B5F00FDAC44 /* CircleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
 		6BC01AC22092824700FDAC44 /* ViewCompetitionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewCompetitionVC.swift; sourceTree = "<group>"; };
@@ -320,6 +340,7 @@
 			children = (
 				327E604420C49F64000980CD /* CompetitionManager.swift */,
 				3218AF7F20CD9AA5006361CB /* NotificationManager.swift */,
+				327C1EC4213AAE96001E2C8B /* UserCollectionManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -327,14 +348,13 @@
 		329C4E7220DE963D00E4E8E9 /* AWS Lambda Functions */ = {
 			isa = PBXGroup;
 			children = (
-				329C4E7720E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py */,
-				329C4E7820E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py */,
-				329C4E7920E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py */,
+				329C4E7820E00EAE00E4E8E9 /* AWS_Competition_Trigger.py */,
+				32B5F3C8212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py */,
+				329C4E7920E00EAE00E4E8E9 /* AWS_Follower_Trigger.py */,
+				329C4E7520E00EAE00E4E8E9 /* AWS_Notification_Trigger.py */,
+				329C4E7620E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py */,
+				329C4E7720E00EAE00E4E8E9 /* MatchCompetitionEntries.py */,
 				329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */,
-				329C4E7620E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py */,
-				329C4E7520E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py */,
-				3218DADF210D0C5B00915A90 /* versus-1_0-GetCompetitionEntryCommentCount.py */,
-				3218DAE1210D158E00915A90 /* versus-1_0-GetCompetitionEntryVoteCount.py */,
 			);
 			path = "AWS Lambda Functions";
 			sourceTree = "<group>";
@@ -404,13 +424,16 @@
 		6B160C69209231DB003F2F9D /* Competition */ = {
 			isa = PBXGroup;
 			children = (
+				321E57EE2104F9DC00F94E2E /* CommentsVC.swift */,
 				6B160C6A209231F2003F2F9D /* Competition.storyboard */,
 				6B04B74420914B8A007BF021 /* CompetitionCell.swift */,
 				323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */,
 				3218DADD210CABCE00915A90 /* CompetitionCommentCell.swift */,
-				321E57EE2104F9DC00F94E2E /* CompetitionCommentsVC.swift */,
 				6BD5E36220A65A1E00A9C054 /* CompetitionOptionCell.swift */,
 				6BD5E36020A65A0B00A9C054 /* CompetitionShareCell.swift */,
+				325CA3572131FA3D00A6C47B /* Competitor.storyboard */,
+				325CA3592132004700A6C47B /* CompetitorVC.swift */,
+				326784282139F85F00068428 /* ViewCompetitionOptionsVC.swift */,
 				6BC01AC22092824700FDAC44 /* ViewCompetitionVC.swift */,
 			);
 			path = Competition;
@@ -434,7 +457,8 @@
 				321E57EC2104F30400F94E2E /* CommentService.swift */,
 				6B079FF6208D4315003BBB87 /* CompetitionEntryService.swift */,
 				6B04B740209142A7007BF021 /* CompetitionService.swift */,
-				6B6DE28F20A26510005368C4 /* CompetitionVoteService.swift */,
+				6B6DE28F20A26510005368C4 /* VoteService.swift */,
+				32E085E121233CBE00DF395D /* FollowedUserService.swift */,
 				6B334FD8208187B3005B010F /* FollowerService.swift */,
 				320105B220E930990099C056 /* LeaderboardService.swift */,
 				320105BA20E971D00099C056 /* LeaderService.swift */,
@@ -452,17 +476,19 @@
 				321E57EA2104F29500F94E2E /* Comment.swift */,
 				6B04B73E20914251007BF021 /* Competition.swift */,
 				6B079FF4208D429D003BBB87 /* CompetitionEntry.swift */,
-				6B6DE28D20A264AC005368C4 /* CompetitionVote.swift */,
+				325CA3552131D38B00A6C47B /* Competitor.swift */,
 				6B8316E5207D977A0067EE0E /* CurrentUser.swift */,
+				32E085E321233CFA00DF395D /* FollowedUser.swift */,
 				6B334FD620818738005B010F /* Follower.swift */,
 				320105B820E96F3C0099C056 /* Leader.swift */,
 				320105B020E92E310099C056 /* Leaderboard.swift */,
 				320105AC20E92B9A0099C056 /* LeaderboardCollection.swift */,
-				6B08CC4920AB83CB009D85A7 /* Notification.swift */,
+				6B08CC4920AB83CB009D85A7 /* VersusNotification.swift */,
 				6B3B771320A79F2100E3FFDE /* OptionIconCollection.swift */,
 				6B8316E1207D791A0067EE0E /* RankCollection.swift */,
 				6B3B771520A7A11E00E3FFDE /* ShareIconCollection.swift */,
 				6B85343D208020C100985BDD /* User.swift */,
+				6B6DE28D20A264AC005368C4 /* Vote.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -471,6 +497,8 @@
 			isa = PBXGroup;
 			children = (
 				6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */,
+				329E1D9E2124D8AC00924A7E /* FollowedUserCell.swift */,
+				329E1D9C2124CCE800924A7E /* FollowedUserVC.swift */,
 				6B525F8C2081143B007A7FC7 /* FollowerCell.swift */,
 				6B525F8E208114D7007A7FC7 /* FollowerVC.swift */,
 				6B8316E7207D9DFD0067EE0E /* Profile.storyboard */,
@@ -490,13 +518,14 @@
 				321E57E82104F24500F94E2E /* AWSComment.swift */,
 				6B04B73C20914219007BF021 /* AWSCompetition.swift */,
 				6B079FF2208D41DE003BBB87 /* AWSCompetitionEntry.swift */,
-				3218DAE3210D272C00915A90 /* AWSCompetitionVote.swift */,
+				32E085DF21233C5800DF395D /* AWSFollowedUser.swift */,
 				6B26563620854790001D733A /* AWSFollower.swift */,
 				320105AE20E92D1B0099C056 /* AWSLeaderboard.swift */,
 				320105B520E96DCF0099C056 /* AWSMonthlyLeader.swift */,
 				6B08CC4720AB83AF009D85A7 /* AWSNotification.swift */,
 				6B85343B2080021F00985BDD /* AWSUser.swift */,
 				323A7B3720CC9E950011AF95 /* AWSUserSNSEndpointARN.swift */,
+				3218DAE3210D272C00915A90 /* AWSVote.swift */,
 				320105A820E8FFAE0099C056 /* AWSWeeklyLeader.swift */,
 			);
 			path = "AWS Models";
@@ -565,6 +594,7 @@
 				6B079FEE208D3E02003BBB87 /* FormatterExtensions.swift */,
 				6B079FF0208D3F1E003BBB87 /* DateExtensions.swift */,
 				32D9C98320CB46E200F174B2 /* IntExtensions.swift */,
+				326784262139D89A00068428 /* NotificationExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -579,7 +609,7 @@
 				3251CA6320E8577100F9434D /* LeaderCell.swift */,
 				6BAC02EA20A899E000792E34 /* Search.storyboard */,
 				6BB9A385207ED21E006881BE /* SearchUserCell.swift */,
-				6BB9A383207ED1FB006881BE /* SearchVC.swift */,
+				6BB9A383207ED1FB006881BE /* SearchBrowseVC.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -756,24 +786,24 @@
 				329C4E8020E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py in Resources */,
 				6B160C6B209231F2003F2F9D /* Competition.storyboard in Resources */,
 				6BD67D0920AA3981001F2751 /* Notifications.storyboard in Resources */,
-				329C4E7B20E00EAE00E4E8E9 /* versus-1_0-PublishNotifications.py in Resources */,
-				329C4E7F20E00EAE00E4E8E9 /* versus-1_0-CreateNewFollowerNotification.py in Resources */,
+				329C4E7B20E00EAE00E4E8E9 /* AWS_Notification_Trigger.py in Resources */,
+				32B5F3C9212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py in Resources */,
+				329C4E7F20E00EAE00E4E8E9 /* AWS_Follower_Trigger.py in Resources */,
 				32D9C98120CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard in Resources */,
 				6B8316E8207D9DFD0067EE0E /* Profile.storyboard in Resources */,
-				3218DAE2210D158E00915A90 /* versus-1_0-GetCompetitionEntryVoteCount.py in Resources */,
-				329C4E7C20E00EAE00E4E8E9 /* versus-1_0-GetFollowedUserCompetitions.py in Resources */,
+				329C4E7C20E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py in Resources */,
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
-				329C4E7D20E00EAE00E4E8E9 /* versus-1_0-CreateCompetition.py in Resources */,
+				329C4E7D20E00EAE00E4E8E9 /* MatchCompetitionEntries.py in Resources */,
 				329C4E8320E02ED000E4E8E9 /* Tutorial.storyboard in Resources */,
 				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
 				6BAC02EB20A899E000792E34 /* Search.storyboard in Resources */,
-				329C4E7E20E00EAE00E4E8E9 /* versus-1_0-CreateCompetitionNotifications.py in Resources */,
+				325CA3582131FA3D00A6C47B /* Competitor.storyboard in Resources */,
+				329C4E7E20E00EAE00E4E8E9 /* AWS_Competition_Trigger.py in Resources */,
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,
 				6BC1E12720894276005404E1 /* CompetitionEntry.storyboard in Resources */,
 				6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */,
 				323A7B3620CBFCBE0011AF95 /* CompetitionCell.xib in Resources */,
 				6BEACB5C206EB3DD00C221A0 /* Login.storyboard in Resources */,
-				3218DAE0210D0C5B00915A90 /* versus-1_0-GetCompetitionEntryCommentCount.py in Resources */,
 				6B13B93C20AE180F00769AFD /* EditImage.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -868,6 +898,7 @@
 				6B36E1D020703D5D00F92375 /* UserService.swift in Sources */,
 				321E57ED2104F30400F94E2E /* CommentService.swift in Sources */,
 				6B079FED208D3500003BBB87 /* Utilities.swift in Sources */,
+				327C1EC5213AAE96001E2C8B /* UserCollectionManager.swift in Sources */,
 				32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */,
 				327FA2B220DC501400B13C6D /* SelectPreviewImageVC.swift in Sources */,
 				6B3DAEC620827D9800946EB1 /* UIViewExtensions.swift in Sources */,
@@ -887,21 +918,25 @@
 				6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */,
 				6B334FD720818738005B010F /* Follower.swift in Sources */,
 				3218DADE210CABCE00915A90 /* CompetitionCommentCell.swift in Sources */,
+				32E085E221233CBE00DF395D /* FollowedUserService.swift in Sources */,
 				6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */,
 				32D9C97F20CB008100F174B2 /* CompetitionParser.swift in Sources */,
 				6B079FF7208D4315003BBB87 /* CompetitionEntryService.swift in Sources */,
 				6BB6AD772093980000B2C1A1 /* ProgressIndicatorButton.swift in Sources */,
 				6B3DAEC82082DBE700946EB1 /* FollowButton.swift in Sources */,
-				6BB9A384207ED1FB006881BE /* SearchVC.swift in Sources */,
+				6BB9A384207ED1FB006881BE /* SearchBrowseVC.swift in Sources */,
 				6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */,
 				6BB8178C207A718400503620 /* AccountService.swift in Sources */,
 				6BF687F520ACDE9100F69B68 /* NotificationService.swift in Sources */,
 				6B13B93920AE00BD00769AFD /* RoundedCornerImageView.swift in Sources */,
+				32E085E421233CFA00DF395D /* FollowedUser.swift in Sources */,
 				6B04B73D20914219007BF021 /* AWSCompetition.swift in Sources */,
 				6B85343C2080021F00985BDD /* AWSUser.swift in Sources */,
 				6B26563720854790001D733A /* AWSFollower.swift in Sources */,
 				6BDE76DF208FF0A3009621D0 /* SwiftyCamProgressButton.swift in Sources */,
+				325CA3562131D38B00A6C47B /* Competitor.swift in Sources */,
 				320105B920E96F3C0099C056 /* Leader.swift in Sources */,
+				326784272139D89A00068428 /* NotificationExtensions.swift in Sources */,
 				6BAC02EF20A8A6D900792E34 /* BrowseCategoryCell.swift in Sources */,
 				6B079FF5208D429D003BBB87 /* CompetitionEntry.swift in Sources */,
 				6B04B74520914B8A007BF021 /* CompetitionCell.swift in Sources */,
@@ -912,24 +947,28 @@
 				32D9C98420CB46E200F174B2 /* IntExtensions.swift in Sources */,
 				321E57EB2104F29500F94E2E /* Comment.swift in Sources */,
 				6BC01AC120927B5F00FDAC44 /* CircleView.swift in Sources */,
-				6B6DE28E20A264AC005368C4 /* CompetitionVote.swift in Sources */,
+				32E085E021233C5800DF395D /* AWSFollowedUser.swift in Sources */,
+				6B6DE28E20A264AC005368C4 /* Vote.swift in Sources */,
 				6BDE76DD208FE5FD009621D0 /* SwiftyCamVC.swift in Sources */,
 				6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */,
+				329E1D9F2124D8AC00924A7E /* FollowedUserCell.swift in Sources */,
 				6BC1E12D20894B92005404E1 /* CompetitionEntryVC.swift in Sources */,
 				6BB8178F207A842400503620 /* FollowSuggestionsVC.swift in Sources */,
 				6BD67D0120AA34F6001F2751 /* NotificationsVC.swift in Sources */,
 				323A7B3820CC9E950011AF95 /* AWSUserSNSEndpointARN.swift in Sources */,
-				3218DAE4210D272C00915A90 /* AWSCompetitionVote.swift in Sources */,
+				3218DAE4210D272C00915A90 /* AWSVote.swift in Sources */,
 				6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */,
 				320105AF20E92D1B0099C056 /* AWSLeaderboard.swift in Sources */,
 				6BD5E36320A65A1E00A9C054 /* CompetitionOptionCell.swift in Sources */,
 				327E604920C4AD26000980CD /* KeyboardToolbar.swift in Sources */,
+				326784292139F85F00068428 /* ViewCompetitionOptionsVC.swift in Sources */,
 				6B3B771420A79F2100E3FFDE /* OptionIconCollection.swift in Sources */,
 				6B079FF3208D41DE003BBB87 /* AWSCompetitionEntry.swift in Sources */,
 				329C4E8720E0348000E4E8E9 /* TutorialPVC.swift in Sources */,
 				6B525F8D2081143B007A7FC7 /* FollowerCell.swift in Sources */,
 				6B334FD9208187B3005B010F /* FollowerService.swift in Sources */,
 				6BAC02ED20A8A6BB00792E34 /* LeaderboardCell.swift in Sources */,
+				329E1D9D2124CCE800924A7E /* FollowedUserVC.swift in Sources */,
 				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
 				6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */,
 				6BD5E36120A65A0B00A9C054 /* CompetitionShareCell.swift in Sources */,
@@ -938,14 +977,15 @@
 				6BC1E12B20894B54005404E1 /* CategoryCell.swift in Sources */,
 				6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */,
 				325F561120D9AE8E001A06C4 /* ChangePasswordVC.swift in Sources */,
+				325CA35A2132004700A6C47B /* CompetitorVC.swift in Sources */,
 				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
 				6B13B93E20AE1BFA00769AFD /* EditImageVC.swift in Sources */,
 				329C4E8920E0355B00E4E8E9 /* TutorialPageVC.swift in Sources */,
 				320105B120E92E310099C056 /* Leaderboard.swift in Sources */,
 				6B85343E208020C100985BDD /* User.swift in Sources */,
-				321E57EF2104F9DC00F94E2E /* CompetitionCommentsVC.swift in Sources */,
+				321E57EF2104F9DC00F94E2E /* CommentsVC.swift in Sources */,
 				320105BB20E971D00099C056 /* LeaderService.swift in Sources */,
-				6B6DE29020A26510005368C4 /* CompetitionVoteService.swift in Sources */,
+				6B6DE29020A26510005368C4 /* VoteService.swift in Sources */,
 				321E57E92104F24500F94E2E /* AWSComment.swift in Sources */,
 				6BB6AD792093A8AC00B2C1A1 /* CountdownTimer.swift in Sources */,
 				6B334FD120816032005B010F /* CustomError.swift in Sources */,
@@ -957,7 +997,7 @@
 				6BA4B0CB2074360100BC23A0 /* EditProfileVC.swift in Sources */,
 				6B8316E4207D7C6A0067EE0E /* RankVC.swift in Sources */,
 				6B525F8F208114D7007A7FC7 /* FollowerVC.swift in Sources */,
-				6B08CC4A20AB83CB009D85A7 /* Notification.swift in Sources */,
+				6B08CC4A20AB83CB009D85A7 /* VersusNotification.swift in Sources */,
 				6BB8178A207A6E2E00503620 /* UIImageExtensions.swift in Sources */,
 				6B04B73F20914251007BF021 /* Competition.swift in Sources */,
 				32D9C97C20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m in Sources */,

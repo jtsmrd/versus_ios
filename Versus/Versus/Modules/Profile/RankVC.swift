@@ -10,12 +10,9 @@ import UIKit
 
 class RankVC: UIViewController {
 
-    
     @IBOutlet weak var rankTableView: UITableView!
     
-    
-    var user: User!
-    
+    var user: User!    
     
     override func viewDidLoad() {
         super.viewDidLoad()

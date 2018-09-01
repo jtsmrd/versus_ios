@@ -11,25 +11,24 @@ import AWSDynamoDB
 class LeaderService {
     
     static let instance = LeaderService()
+    private let dynamoDB = AWSDynamoDBObjectMapper.default()
     
     private init() { }
     
     
-    /*
-     Get the leaders for the given leaderboard
+    /**
+        Get the leaders for the given leaderboard
      */
     func getLeaders(
         for leaderboard: Leaderboard,
-        completion: @escaping (_ leaders: [Leader], _ customError: CustomError?) -> Void) {
-        
+        completion: @escaping (_ leaders: [Leader], _ customError: CustomError?) -> Void
+    ) {
         var resultClass: AnyClass!
         let queryExpression = AWSDynamoDBQueryExpression()
         
         switch leaderboard.leaderboardType {
         case .weekly:
-            
             resultClass = AWSWeeklyLeader.self
-            
             let lastTwoDigitsOfYear = Calendar.current.component(.year, from: Date()) % 100
             let weekOfYear = Calendar.current.component(.weekOfYear, from: Date())
             let weekYear = Int(String(format: "%i%i", weekOfYear, lastTwoDigitsOfYear))!    //2718
@@ -44,9 +43,7 @@ class LeaderService {
             queryExpression.indexName = "weekYearIndex"
             
         case .monthly:
-            
             resultClass = AWSMonthlyLeader.self
-            
             let lastTwoDigitsOfYear = Calendar.current.component(.year, from: Date()) % 100
             let monthOfYear = Calendar.current.component(.month, from: Date())
             let yearMonth = Int(String(format: "%i%02i", lastTwoDigitsOfYear, monthOfYear))!    //1807
@@ -69,39 +66,38 @@ class LeaderService {
         
         var leaders = [Leader]()
         
-        AWSDynamoDBObjectMapper.default().query(
+        dynamoDB.query(
             resultClass,
             expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
-                completion(leaders, CustomError(error: error, title: "", desc: "Unable to load leaders"))
+                completion(leaders, CustomError(error: error, message: "Unable to load leaders"))
+                return
             }
-            else if let result = paginatedOutput {
+            if let result = paginatedOutput {
                 for awsLeader in result.items {
                     leaders.append(Leader(awsLeader: awsLeader))
                 }
-                completion(leaders, nil)
             }
+            completion(leaders, nil)
         }
     }
     
     
     
-    /*
-     Get the leaders for the given leaderboard
+    /**
+        Get the leaders for the given leaderboard
      */
     func getTopLeader(
         for leaderboard: Leaderboard,
-        completion: @escaping (_ leader: Leader?, _ customError: CustomError?) -> Void) {
-        
+        completion: @escaping (_ leader: Leader?, _ customError: CustomError?) -> Void
+    ) {
         var resultClass: AnyClass!
         let queryExpression = AWSDynamoDBQueryExpression()
         
         switch leaderboard.leaderboardType {
         case .weekly:
-            
             resultClass = AWSWeeklyLeader.self
-            
             let lastTwoDigitsOfYear = Calendar.current.component(.year, from: Date()) % 100
             let weekOfYear = Calendar.current.component(.weekOfYear, from: Date())
             let weekYear = Int(String(format: "%i%i", weekOfYear, lastTwoDigitsOfYear))!    //2718
@@ -116,9 +112,7 @@ class LeaderService {
             queryExpression.indexName = "weekYearIndex"
             
         case .monthly:
-            
             resultClass = AWSMonthlyLeader.self
-            
             let lastTwoDigitsOfYear = Calendar.current.component(.year, from: Date()) % 100
             let monthOfYear = Calendar.current.component(.month, from: Date())
             let yearMonth = Int(String(format: "%i%02i", lastTwoDigitsOfYear, monthOfYear))!    //1807
@@ -139,16 +133,19 @@ class LeaderService {
         queryExpression.scanIndexForward = false
         queryExpression.limit = 1.toNSNumber
         
-        AWSDynamoDBObjectMapper.default().query(
+        dynamoDB.query(
             resultClass,
             expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
-                completion(nil, CustomError(error: error, title: "", desc: "Unable to load top leader"))
+                completion(nil, CustomError(error: error, message: "Unable to load top leader"))
+                return
             }
-            else if let awsLeader = paginatedOutput?.items.first {
+            if let awsLeader = paginatedOutput?.items.first {
                 completion(Leader(awsLeader: awsLeader), nil)
+                return
             }
+            completion(nil, nil)
         }
     }
 }

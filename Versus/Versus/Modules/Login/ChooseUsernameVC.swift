@@ -11,6 +11,9 @@ import AWSUserPoolsSignIn
 
 class ChooseUsernameVC: UIViewController {
 
+    private let accountService = AccountService.instance
+    private let userService = UserService.instance
+    
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var usernameInfoLabel: UILabel!
     @IBOutlet weak var usernameExistsLabel: UILabel!
@@ -23,18 +26,17 @@ class ChooseUsernameVC: UIViewController {
         super.viewDidLoad()
 
         usernameExistsLabel.isHidden = true
-        
         keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
     }
     
     
     @IBAction func cancelButtonAction() {
-        AccountService.instance.signOut { (success) in
+        accountService.signOut { (success) in
             if success {
                 DispatchQueue.main.async {
                     if let loginVC = UIStoryboard(name: "Login", bundle: nil).instantiateInitialViewController() {
-                        (UIApplication.shared.delegate as! AppDelegate).window?.rootViewController = loginVC
-                        (UIApplication.shared.delegate as! AppDelegate).window?.makeKeyAndVisible()
+                        appDelegate.window?.rootViewController = loginVC
+                        appDelegate.window?.makeKeyAndVisible()
                     }
                 }
             }
@@ -50,15 +52,15 @@ class ChooseUsernameVC: UIViewController {
     
     
     private func createUser(username: String) {
-        
-        UserService.instance.createUser(username: username) { (success) in
-            if success {
-                DispatchQueue.main.async {
-                    self.performSegue(withIdentifier: SHOW_FOLLOW_SUGGESTIONS, sender: nil)
+        userService.createUser(
+            username: username
+        ) { (customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
+                    return
                 }
-            }
-            else {
-                debugPrint("Failed to create user!!!")
+                self.performSegue(withIdentifier: SHOW_FOLLOW_SUGGESTIONS, sender: nil)
             }
         }
     }
@@ -79,9 +81,14 @@ class ChooseUsernameVC: UIViewController {
     }
     
     private func checkUsernameAvailability(username: String) {
-        
-        AccountService.instance.checkAvailabilityOfUsername(username) { (isAvailable) in
+        userService.checkAvailabilityOfUsername(
+            username: username
+        ) { (isAvailable, customError)  in
             DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
+                    return
+                }
                 if isAvailable {
                     self.usernameAvailable = true
                     self.usernameExistsLabel.isHidden = true

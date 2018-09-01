@@ -30,7 +30,6 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     @IBOutlet weak var rankTitleLabel: UILabel!
     @IBOutlet weak var followButton: FollowButton!
     
-    
     private var user: User!
     private var followStatus: FollowStatus = .notFollowing
     private var delegate: ProfileInfoCollectionViewHeaderDelegate!
@@ -38,9 +37,30 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        followingContainerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showFollowing)))
-        followersContainerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showFollowers)))
-        rankContainerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showRanks)))
+        followingContainerView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(showFollowedUsers)
+            )
+        )
+        followersContainerView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(showFollowers)
+            )
+        )
+        rankContainerView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(showRanks)
+            )
+        )
+    }
+    
+    deinit {
+        followingContainerView.gestureRecognizers?.removeAll()
+        followersContainerView.gestureRecognizers?.removeAll()
+        rankContainerView.gestureRecognizers?.removeAll()
     }
     
     @IBAction func directMessageButtonAction() {
@@ -68,18 +88,18 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
         self.parentViewController?.performSegue(withIdentifier: SHOW_RANKS, sender: nil)
     }
     
-    @objc func showFollowing() {
-        self.parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWERS, sender: FollowersViewType.following)
+    @objc func showFollowedUsers() {
+        self.parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWED_USERS, sender: nil)
     }
     
     @objc func showFollowers() {
-        self.parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWERS, sender: FollowersViewType.follower)
+        self.parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWERS, sender: nil)
     }
     
     
     
-    func configureView(user: User, profileViewMode: ProfileViewMode, delegate: ProfileInfoCollectionViewHeaderDelegate) {
-        
+    func configureView(user: User?, profileViewMode: ProfileViewMode, delegate: ProfileInfoCollectionViewHeaderDelegate) {
+        guard let user = user else { return }
         self.user = user
         self.delegate = delegate
         
@@ -88,37 +108,17 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
             determineUserFollowStatus()
         }
         
-        displayNameLabel.text = user.awsUser._displayName
-        bioLabel.text = user.awsUser._bio
-        winsLabel.text = "\(String(describing: user.awsUser._wins!))"
+        displayNameLabel.text = user.displayName
+        bioLabel.text = user.bio
+        winsLabel.text = String(format: "%d", user.totalWins)
         
-        // Get followers and update followers label count
-        user.getFollowers { (success, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    self.parentViewController?.displayError(error: error)
-                }
-                else if success {
-                    self.followersLabel.attributedText = NSMutableAttributedString()
-                        .bold("\(user.followers.count)", self.followersLabel.font.pointSize)
-                        .normal(" followers")
-                }
-            }
-        }
+        self.followersLabel.attributedText = NSMutableAttributedString()
+            .bold("\(user.followerCount)", self.followersLabel.font.pointSize)
+            .normal(" followers")
         
-        // Get followed users and update followed users label count
-        user.getFollowedUsers { (followedUsers, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.parentViewController?.displayError(error: customError)
-                }
-                else if let followedUsers = followedUsers {
-                    self.followingLabel.attributedText = NSMutableAttributedString()
-                        .bold("\(followedUsers.count)", self.followingLabel.font.pointSize)
-                        .normal(" following")
-                }
-            }
-        }
+        self.followingLabel.attributedText = NSMutableAttributedString()
+            .bold("\(user.followedUserCount)", self.followingLabel.font.pointSize)
+            .normal(" following")
         
         rankImageView.image = UIImage(named: user.rank.imageName)
         rankTitleLabel.text = user.rank.title
@@ -130,7 +130,7 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
             followButton.isHidden = true
         case .viewOnly:
             
-            if CurrentUser.userIsMe(user: user) {
+            if CurrentUser.userIsMe(userId: user.userId) {
                 followButton.isHidden = true
             }
             else {
@@ -140,16 +140,20 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
         }
         
         // Get profile image
-        user.getProfileImage { (image) in
+        user.getProfileImage { (image, error) in
             DispatchQueue.main.async {
-                self.profileImageView.image = image
+                if let image = image {
+                    self.profileImageView.image = image
+                }
             }
         }
         
         // Get background image
-        user.getProfileBackgroundImage { (image) in
+        user.getProfileBackgroundImage { (image, error) in
             DispatchQueue.main.async {
-                self.backgroundImageView.image = image
+                if let image = image {
+                    self.backgroundImageView.image = image
+                }
             }
         }
     }
@@ -157,7 +161,7 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
     
     private func determineUserFollowStatus() {
-        followStatus = CurrentUser.followStatus(for: user)
+        followStatus = CurrentUser.getFollowedUserStatusFor(userId: user.userId)
     }
     
     
@@ -167,55 +171,66 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
     
     private func displayConfirmUnfollowUser() {
-        let confirmUnfollowAlertVC = UIAlertController(title: "Confirm Unfollow", message: "Are you sure you want to unfollow @\(user.awsUser._username!)", preferredStyle: .actionSheet)
-        confirmUnfollowAlertVC.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { (action) in
-            self.unfollowUser()
-        }))
-        confirmUnfollowAlertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
-            
-        }))
+        let confirmUnfollowAlertVC = UIAlertController(
+            title: "Confirm Unfollow",
+            message: "Are you sure you want to unfollow @\(user.username)",
+            preferredStyle: .actionSheet
+        )
+        confirmUnfollowAlertVC.addAction(
+            UIAlertAction(
+                title: "Unfollow",
+                style: .destructive,
+                handler: { (action) in
+                    self.unfollowUser()
+                }
+            )
+        )
+        confirmUnfollowAlertVC.addAction(
+            UIAlertAction(
+                title: "Cancel",
+                style: .cancel,
+                handler: nil
+            )
+        )
         self.parentViewController?.present(confirmUnfollowAlertVC, animated: true, completion: nil)
     }
     
     
+    /**
+     
+     */
     private func followUser() {
-        FollowerService.instance.followUser(
-            userToFollow: user,
-            currentUser: CurrentUser.user
-        ) { (success, error) in
+        CurrentUser.follow(
+            user: user
+        ) { (customError) in
             DispatchQueue.main.async {
-                if let error = error {
-                    self.parentViewController?.displayError(error: error)
+                if let customError = customError {
+                    self.parentViewController?.displayError(error: customError)
+                    return
                 }
-                else if success {
-                    self.determineUserFollowStatus()
-                    self.configureFollowerButton()
-                }
+                self.determineUserFollowStatus()
+                self.configureFollowerButton()
             }
         }
     }
     
     
+    /**
+ 
+     */
     private func unfollowUser() {
-        if let follower = CurrentUser.getFollower(for: user) {
-            FollowerService.instance.unfollowUser(
-                followedUser: follower,
-                currentUser: CurrentUser.user
-            ) { (success, error) in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.parentViewController?.displayError(error: error)
-                    }
-                    else if success {
-                        self.determineUserFollowStatus()
-                        self.configureFollowerButton()
-                        self.delegate.unfollowedUser(user: self.user)
-                    }
+        CurrentUser.unfollow(
+            user: user
+        ) { (customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.parentViewController?.displayError(error: customError)
+                    return
                 }
+                self.determineUserFollowStatus()
+                self.configureFollowerButton()
+                self.delegate.unfollowedUser(user: self.user)
             }
-        }
-        else {
-            self.parentViewController?.displayError(error: CustomError(error: nil, title: "", desc: "Unable to unfollow user"))
         }
     }
 }

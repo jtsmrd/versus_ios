@@ -39,6 +39,13 @@ class CategoryCollection {
     func categoryColorFor(categoryTypeId: Int) -> UIColor {
         return categories.first(where: {$0.categoryType.rawValue == categoryTypeId })!.backgroundColor
     }
+    
+    func getCategory(categoryType: CategoryType) -> Category? {
+        guard let index = categories.index(where: { $0.categoryType == categoryType }) else {
+            return nil
+        }
+        return categories[index]
+    }
 }
 
 enum CategoryType: Int {
@@ -56,5 +63,8 @@ struct Category {
     var title: String
     var iconName: String
     var backgroundColor: UIColor
+    var iconImage: UIImage? {
+        return UIImage(named: iconName)
+    }
 }
 

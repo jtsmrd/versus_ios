@@ -5,11 +5,11 @@ from datetime import datetime
 from boto3.dynamodb.conditions import Key, Attr
 
 dynamodb = boto3.resource('dynamodb')
-competitionTable = dynamodb.Table('versus-mobilehub-387870640-AWS_Competition')
-competitionVoteTable = dynamodb.Table('versus-mobilehub-387870640-AWS_CompetitionVote')
-userTable = dynamodb.Table('versus-mobilehub-387870640-AWS_User')
-weeklyLeaderTable = dynamodb.Table('versus-mobilehub-387870640-AWS_WeeklyLeader')
-monthlyLeaderTable = dynamodb.Table('versus-mobilehub-387870640-AWS_MonthlyLeader')
+competitionTable = dynamodb.Table('AWS_Competition')
+competitionVoteTable = dynamodb.Table('AWS_CompetitionVote')
+userTable = dynamodb.Table('AWS_User')
+weeklyLeaderTable = dynamodb.Table('AWS_WeeklyLeader')
+monthlyLeaderTable = dynamodb.Table('AWS_MonthlyLeader')
 
 def lambda_handler(event, context):
 
@@ -22,46 +22,51 @@ def lambda_handler(event, context):
     if expiredActiveCompetitions is not None:
 
         for competition in expiredActiveCompetitions:
-            user1CompetitionEntryId = competition['user1CompetitionEntryId']
-            user2CompetitionEntryId = competition['user2CompetitionEntryId']
+            firstEntryCompetitionEntryId = competition['firstEntryCompetitionEntryId']
+            secondEntryCompetitionEntryId = competition['secondEntryCompetitionEntryId']
 
             # Get the vote count for each of the CompetitionEntry records
-            user1CompetitionEntryVoteCount = getVoteCountFor(user1CompetitionEntryId)
-            user2CompetitionEntryVoteCount = getVoteCountFor(user2CompetitionEntryId)
+            firstEntryVoteCount = int(competition['firstEntryCommentCount'])
+            secondEntryVoteCount = int(competition['secondEntryCommentCount'])
+            
+            firstEntryUserId = competition['firstEntryUserId']
+            firstEntryUsername = competition['firstEntryUsername']
+            secondEntryUserId = competition['secondEntryUserId']
+            secondEntryUsername = competition['secondEntryUsername']
 
             # Assign the winning user based on votes
-            winningUserPoolUserId = None
-            winningUserUsername = None
-            losingUserPoolUserId = None
-            losingUserUsername = None
+            winningUserId = None
+            winningUsername = None
+            losingUserId = None
+            losingUsername = None
             totalWinningVotes = None
 
-            if user1CompetitionEntryVoteCount > user2CompetitionEntryVoteCount:
-                winningUserPoolUserId = competition['user1userPoolUserId']
-                losingUserPoolUserId = competition['user2userPoolUserId']
-                winningUserUsername = competition['user1Username']
-                losingUserUsername = competition['user2Username']
-                totalWinningVotes = user1CompetitionEntryVoteCount
-            elif user1CompetitionEntryVoteCount < user2CompetitionEntryVoteCount:
-                winningUserPoolUserId = competition['user2userPoolUserId']
-                losingUserPoolUserId = competition['user1userPoolUserId']
-                winningUserUsername = competition['user2Username']
-                losingUserUsername = competition['user1Username']
-                totalWinningVotes = user2CompetitionEntryVoteCount
+            if firstEntryVoteCount > secondEntryVoteCount:
+                winningUserId = firstEntryUserId
+                losingUserId = secondEntryUserId
+                winningUsername = firstEntryUsername
+                losingUsername = secondEntryUsername
+                totalWinningVotes = firstEntryVoteCount
+            elif firstEntryVoteCount < secondEntryVoteCount:
+                winningUserId = secondEntryUserId
+                losingUserId = firstEntryUserId
+                winningUsername = secondEntryUsername
+                losingUsername = firstEntryUsername
+                totalWinningVotes = secondEntryVoteCount
 
-            competitionId = competition['id']
+            competitionId = competition['competitionId']
 
             # If there is a tie, extend the Competition by 1 hourd
             if winningUserPoolUserId is None:
                 print('Competition {} is a tie.'.format(competitionId))
                 continue
             else:
-                updatedCompetitionSuccessfully = updateCompetitionRecordToComplete(competitionId, user1CompetitionEntryVoteCount, user2CompetitionEntryVoteCount, winningUserPoolUserId)
-                if updatedCompetitionSuccessfully == True:
+                statusCode = updateCompetitionRecordToComplete(competitionId, winningUserId)
+                if statusCode == 200:
 
                     # Update user record
-                    updatedUserWinsSuccessfully = updateWinningUserWinCount(winningUserPoolUserId)
-                    if updatedUserWinsSuccessfully == True:
+                    statusCode = updateWinningUserWinCount(winningUserId)
+                    if statusCode == 200:
                         
                         # Update WeeklyLeader record
                         year = datetime.utcnow().isocalendar()[0] % 100
@@ -91,8 +96,8 @@ def lambda_handler(event, context):
 def getExpiredActiveCompetitions():
     currentDateTime = str(datetime.utcnow().isoformat()+'Z')
     response = competitionTable.query(
-        IndexName="statusIndex",
-        KeyConditionExpression=Key('status').eq('ACTIVE'),
+        IndexName="competitionIsActive-index",
+        KeyConditionExpression=Key('competitionIsActive').eq(1),
         FilterExpression=Key('expireDate').lt(currentDateTime)
     )
     expiredActiveCompetitions = response['Items']
@@ -102,64 +107,32 @@ def getExpiredActiveCompetitions():
         return None
 
 
-# Query the database for the count of votes for the given competitionEntryId
-def getVoteCountFor(competitionEntryId):
-    response = competitionVoteTable.query(
-        IndexName="competitionEntryIdIndex",
-        KeyConditionExpression=Key('competitionEntryId').eq(competitionEntryId),
-        Select="COUNT"
-    )
-    return response['Count']
-
-
 # Update Competition status, final vote count, and winning competition entry
-def updateCompetitionRecordToComplete(competitionId, user1CompetitionEntryFinalVoteCount, user2CompetitionEntryFinalVoteCount, winningUserPoolUserId):
+def updateCompetitionRecordToComplete(competitionId, winningUserId):
     response = competitionTable.update_item(
         Key={
-            'id': competitionId
+            'competitionId': competitionId
         },
-        UpdateExpression="""set
-            #status = :status,
-            user1CompetitionEntryFinalVoteCount = :user1CompetitionEntryFinalVoteCount,
-            user2CompetitionEntryFinalVoteCount = :user2CompetitionEntryFinalVoteCount,
-            winningUserPoolUserId = :winningUserPoolUserId""",
-        ExpressionAttributeNames={
-            '#status': 'status'
-        },
+        UpdateExpression="set winnerUserId = :userId REMOVE competitionIsActive",
         ExpressionAttributeValues={
-            ':status': 'COMPLETE',
-            ':user1CompetitionEntryFinalVoteCount': user1CompetitionEntryFinalVoteCount,
-            ':user2CompetitionEntryFinalVoteCount': user2CompetitionEntryFinalVoteCount,
-            ':winningUserPoolUserId': winningUserPoolUserId
+            ':userId': winningUserId
         }
     )
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        print('Updated Competition record successfully')
-        return True
-    else:
-        print('Failed to update Competition record: {}'.format(response))
-        return False
+    return response['ResponseMetadata']['HTTPStatusCode']
 
 
 # Increment the winning users' wins
-def updateWinningUserWinCount(winningUserPoolUserId):
+def updateWinningUserWinCount(winningUserId):
     response = userTable.update_item(
         Key={
-            'userPoolUserId': winningUserPoolUserId
+            'userId': winningUserId
         },
-        UpdateExpression="set wins = :val",
+        UpdateExpression="ADD wins :val",
         ExpressionAttributeValues={
             ':val': decimal.Decimal(1)
         }
     )
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        print('Updated User record successfully')
-        return True
-    else:
-        print('Failed to update User record: {}'.format(response))
-        return False
-
-
+    return response['ResponseMetadata']['HTTPStatusCode']
 
 
 # Update AWS_WeeklyLeader table for winning user. Increment wins and update total vote count.

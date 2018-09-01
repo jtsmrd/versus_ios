@@ -12,34 +12,165 @@ let userDefaults = UserDefaults.standard
 
 class CurrentUser {
     
-    static var user: User! {
-        didSet {
-            loadUserData()
-            lastSignedInUserPoolUserId = userPoolUserId
-        }
-    }
-    static var userPoolUserId: String {
+    static private let followedUserService = FollowedUserService.instance
+    static private let userService = UserService.instance
+    static private let notificationManager = NotificationManager.instance
+    
+    static private var awsUser: AWSUser!
+    static private var user: User!
+    
+    static var bio: String {
         get {
-            return AWSCognitoIdentityUserPool.default().currentUser()?.username ?? ""
+            return awsUser._bio ?? ""
+        }
+        set {
+            awsUser._bio = newValue
         }
     }
     
-    /*
-     Stores the userPoolUserId of the active user after signing up or signing in.
-     Used for instance where a user deletes the app, but doesn't sign out.
+    static var displayName: String {
+        get {
+            return awsUser._displayName ?? ""
+        }
+        set {
+            awsUser._displayName = newValue
+        }
+    }
+    
+    static var searchDisplayName: String {
+        get {
+            return awsUser._searchDisplayName ?? ""
+        }
+        set {
+            awsUser._searchDisplayName = newValue
+        }
+    }
+    
+    static var searchUsername: String {
+        get {
+            return awsUser._searchUsername ?? ""
+        }
+        set {
+            awsUser._searchUsername = newValue
+        }
+    }
+    
+    static var followedUserCount: Int {
+        return awsUser._followedUserCount?.intValue ?? 0
+    }
+    
+    static var followerCount: Int {
+        return awsUser._followerCount?.intValue ?? 0
+    }
+    
+    static var isFeatured: Bool {
+        return awsUser._isFeatured?.boolValue ?? false
+    }
+    
+    static var rankId: Int {
+        return awsUser._rankId?.intValue ?? 1
+    }
+    
+    static var totalTimesVoted: Int {
+        get {
+            return awsUser._totalTimesVoted?.intValue ?? 0
+        }
+        set {
+            awsUser._totalTimesVoted = newValue.toNSNumber
+        }
+    }
+    
+    static var totalWins: Int {
+        return awsUser._totalWins?.intValue ?? 0
+    }
+    
+    static var userId: String {
+        return AWSCognitoIdentityUserPool.default().currentUser()?.username ?? ""
+    }
+    
+    static var username: String {
+        get {
+            return awsUser._username ?? ""
+        }
+        set {
+            awsUser._username = newValue
+        }
+    }
+    
+    static var directMessageConversationIds: [String: String] {
+        return awsUser._directMessageConversationIds ?? [:]
+    }
+    
+    static var profileImage: UIImage? {
+        get {
+            return CurrentUser.user.profileImage
+        }
+        set {
+            CurrentUser.user.profileImage = newValue
+        }
+    }
+    static var profileBackgroundImage: UIImage? {
+        get {
+            return CurrentUser.user.profileBackgroundImage
+        }
+        set {
+            CurrentUser.user.profileBackgroundImage = newValue
+        }
+    }
+    static var rank: Rank {
+        return CurrentUser.user.rank
+    }
+    static var followers: [Follower] {
+        get {
+            return CurrentUser.user.followers
+        }
+        set {
+            CurrentUser.user.followers = newValue
+        }
+    }
+    static var followedUsers: [FollowedUser] {
+        get {
+            return CurrentUser.user.followedUsers
+        }
+        set {
+            CurrentUser.user.followedUsers = newValue
+        }
+    }
+    static var competitions: [Competition] {
+        return CurrentUser.user.competitions
+    }
+    
+    private init() { }
+    
+    
+    /**
+     
+     */
+    static func setAWSUser(awsUser: AWSUser) {
+        CurrentUser.awsUser = awsUser
+        CurrentUser.user = User(awsUser: awsUser)
+        CurrentUser.loadUserData()
+        CurrentUser.lastSignedInUserId = awsUser._userId ?? "userId nil"
+    }
+    
+    
+    /**
+        Stores the userPoolUserId of the active user after signing up or signing in.
+        Used for instance where a user deletes the app, but doesn't sign out.
     */
-    static var lastSignedInUserPoolUserId: String {
+    static var lastSignedInUserId: String {
         get {
-            return userDefaults.string(forKey: "lastSignedInUserPoolUserId") ?? ""
+            return userDefaults.string(forKey: "lastSignedInUserId") ?? ""
         }
-        set(value) {
-            userDefaults.set(value, forKey: "lastSignedInUserPoolUserId")
+        set {
+            userDefaults.set(newValue, forKey: "lastSignedInUserId")
         }
     }
     
-    /*
-     Used to control initially displaying the tutorial. The tutorialDisplayed key won't exist on first startup
-     so it returns false by default. After user enters the app the value is set to true.
+    
+    /**
+        Used to control initially displaying the tutorial. The tutorialDisplayed key won't exist on first startup
+        so it returns false by default. After user enters the app the value is set to true.
     */
     static var tutorialDisplayed: Bool {
         get {
@@ -50,8 +181,9 @@ class CurrentUser {
         }
     }
     
-    /*
-     Used to populate the email/ username textfield when a user signs out and back in again.
+    
+    /**
+        Used to populate the email/ username textfield when a user signs out and back in again.
     */
     static var lastSignedInUsername: String? {
         get {
@@ -62,8 +194,9 @@ class CurrentUser {
         }
     }
     
-    /*
-     Stores the device token for remote notifications after the user registers for notifications.
+    
+    /**
+        Stores the device token for remote notifications after the user registers for notifications.
      */
     static var remoteNotificationDeviceToken: String? {
         get {
@@ -74,8 +207,9 @@ class CurrentUser {
         }
     }
     
-    /*
-     Stores whether or not the user allowed push notifation authouization.
+    
+    /**
+        Stores whether or not the user allowed push notifation authouization.
      */
     static var userGrantedAccessForNotifications: Bool {
         get {
@@ -86,8 +220,9 @@ class CurrentUser {
         }
     }
     
-    /*
-     Stores the AWS SNS Endpoint ARN for remote notifications after the user registers for notifications.
+    
+    /**
+        Stores the AWS SNS Endpoint ARN for remote notifications after the user registers for notifications.
      */
     static var userAWSSNSEndpointARN: String? {
         get {
@@ -98,137 +233,318 @@ class CurrentUser {
         }
     }
     
-    private init() { }
     
+    /**
+     
+     */
     static func setSignInCredentials(signInCredentials: SignInCredentials) {
         UserDefaults.standard.set(signInCredentials.username, forKey: "signupUsername")
         UserDefaults.standard.set(signInCredentials.password, forKey: "signupPassword")
     }
     
+    
+    /**
+     
+     */
     static func getSignInCredentials() -> SignInCredentials {
         let username = UserDefaults.standard.string(forKey: "signupUsername") ?? ""
         let password = UserDefaults.standard.string(forKey: "signupPassword") ?? ""
         return SignInCredentials(username: username, password: password)
     }
     
+    
+    /**
+     
+     */
     static func clearSignupCredentials() {
         UserDefaults.standard.set(nil, forKey: "signupUsername")
         UserDefaults.standard.set(nil, forKey: "signupPassword")
     }
     
     
-    static func followerIsMe(follower: Follower) -> Bool {
-        switch follower.followerType! {
-        case .follower:
-            return follower.awsFollower._followerUserId == userPoolUserId
-        case .following:
-            return follower.awsFollower._followedUserId == userPoolUserId
+    /**
+     
+     */
+    static func getUser() -> User {
+        return CurrentUser.user
+    }
+    
+    
+    /**
+     
+     */
+    static func getProfileImage(
+        completion: @escaping (_ image: UIImage?, _ error: CustomError?) -> Void
+    ) {
+        CurrentUser.user.getProfileImage(completion: completion)
+    }
+    
+    
+    /**
+     
+     */
+    static func getProfileBackgroundImage(
+        completion: @escaping (_ image: UIImage?, _ error: CustomError?) -> Void
+    ) {
+        CurrentUser.user.getProfileBackgroundImage(completion: completion)
+    }
+    
+    
+    /**
+     
+     */
+    static func getFollowers(
+        completion: @escaping (_ followers: [Follower], _ customError: CustomError?) -> Void
+    ) {
+        CurrentUser.user.getFollowers(completion: completion)
+    }
+    
+    
+    /**
+     
+     */
+    static func getFollowedUser(userId: String) -> FollowedUser? {
+        return followedUsers.first(where: { $0.followedUserUserId == userId })
+    }
+    
+    
+    /**
+     
+     */
+    static func getFollowedUsers(
+        completion: @escaping (_ followedUsers: [FollowedUser], _ customError: CustomError?) -> Void
+    ) {
+        CurrentUser.user.getFollowedUsers(completion: completion)
+    }
+    
+    
+    /**
+ 
+     */
+    static func follow(
+        user: User,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        follow(
+            userId: user.userId,
+            username: user.username,
+            displayName: user.displayName
+        ) { (followedUser, customError) in
+            if let followedUser = followedUser {
+                self.followedUsers.append(followedUser)
+            }
+            completion(customError)
         }
     }
     
     
-    static func userIsMe(user: User) -> Bool {
-        return user.awsUser._userPoolUserId == userPoolUserId
+    /**
+     
+     */
+    static func follow(
+        follower: Follower,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        follow(
+            userId: follower.followerUserId,
+            username: follower.username,
+            displayName: follower.displayName
+        ) { (followedUser, customError) in
+            if let followedUser = followedUser {
+                self.followedUsers.append(followedUser)
+            }
+            completion(customError)
+        }
     }
     
-    static func userIsMe(awsUser: AWSUser) -> Bool {
-        return awsUser._userPoolUserId == userPoolUserId
-    }
     
-    
-    static func isFollowing(user: User) -> Bool {
-        return self.user.followedUsers.contains(
-            where: {$0.awsFollower._followedUserId == user.awsUser._userPoolUserId}
+    /**
+     
+     */
+    private static func follow(
+        userId: String,
+        username: String,
+        displayName: String,
+        completion: @escaping (_ followedUser: FollowedUser?, _ customError: CustomError?) -> Void
+    ) {
+        followedUserService.follow(
+            userId: userId,
+            username: username,
+            displayName: displayName,
+            completion: completion
         )
     }
     
-    static func followStatus(for user: User) -> FollowStatus {
-        if self.user.followedUsers.contains(where: {$0.awsFollower._followedUserId == user.awsUser._userPoolUserId}) {
+    
+    /**
+     
+     */
+    static func unfollow(
+        followedUser: FollowedUser,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        followedUserService.unfollow(
+            followedUser: followedUser
+        ) { (customError) in
+            if let customError = customError {
+                completion(customError)
+            }
+            self.removeFollowedUser(followedUser: followedUser)
+            completion(nil)
+        }
+    }
+    
+    
+    /**
+     
+     */
+    static func unfollow(
+        user: User,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        guard let followedUser = getFollowedUser(userId: user.userId) else {
+            completion(CustomError(error: nil, message: "Failed to unfollow user"))
+            return
+        }
+        unfollow(followedUser: followedUser, completion: completion)
+    }
+    
+    
+    /**
+     
+     */
+    private static func removeFollowedUser(followedUser: FollowedUser) {
+        if let index = followedUsers.index(where: { $0.followedUserUserId == followedUser.followedUserUserId }) {
+            followedUsers.remove(at: index)
+        }
+    }
+    
+    
+    /**
+     
+     */
+    static func getCompetitions(
+        completion: @escaping (_ competitions: [Competition], _ customError: CustomError?) -> Void
+    ) {
+        CurrentUser.user.getCompetitions(completion: completion)
+    }
+    
+    
+    /**
+     
+     */
+    static func userIsMe(userId: String) -> Bool {
+        return userId == CurrentUser.userId
+    }
+    
+    
+    /**
+     
+     */
+    static func getFollowedUserStatusFor(userId: String) -> FollowStatus {
+        if CurrentUser.followedUsers.contains(where: { $0.followedUserUserId == userId }) {
             return .following
         }
         return .notFollowing
     }
     
-    static func followStatus(for userPoolUserId: String) -> FollowStatus {
-        if self.user.followedUsers.contains(where: {$0.awsFollower._followedUserId == userPoolUserId}) {
+    
+    /**
+     
+     */
+    static func getFollowerStatusFor(userId: String) -> FollowStatus {
+        if CurrentUser.followers.contains(where: { $0.followerUserId == userId }) {
             return .following
         }
         return .notFollowing
     }
     
-    static func isFollowing(follower: Follower) -> Bool {
-        switch follower.followerType! {
-        case .follower:
-            return user.followedUsers.contains(
-                where: {$0.awsFollower._followedUserId == follower.awsFollower._followerUserId}
-            )
-        case .following:
-            return user.followedUsers.contains(
-                where: {$0.awsFollower._followedUserId == follower.awsFollower._followedUserId}
-            )
-        }
+    
+    /**
+     
+     */
+    static func getFollowerFor(userId: String) -> Follower? {
+        return CurrentUser.followers.first(where: { $0.followerUserId == userId })
     }
     
-    static func followStatus(for follower: Follower) -> FollowStatus {
-        switch follower.followerType! {
-        case .follower:
-            if user.followedUsers.contains(where: {$0.awsFollower._followedUserId == follower.awsFollower._followerUserId}) {
-                return .following
-            }
-            return .notFollowing
-        case .following:
-            if user.followedUsers.contains(where: {$0.awsFollower._followedUserId == follower.awsFollower._followedUserId}) {
-                return .following
-            }
-            return .notFollowing
-        }
+    
+    /**
+     
+     */
+    static func incrementVoteCount() {
+        awsUser._totalTimesVoted = (CurrentUser.totalTimesVoted + 1).toNSNumber
     }
     
-    static func getFollower(for user: User) -> Follower? {
-        return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == user.awsUser._userPoolUserId})
+    
+    /**
+     
+     */
+    static func update(
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        userService.updateUser(
+            user: awsUser,
+            completion: completion
+        )
     }
     
-    static func getFollower(for followedUser: Follower) -> Follower? {
-        switch followedUser.followerType! {
-        case .follower:
-            return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == followedUser.awsFollower._followerUserId})
-        case .following:
-            return self.user.followedUsers.first(where: {$0.awsFollower._followedUserId == followedUser.awsFollower._followedUserId})
-        }
+    
+    /**
+     
+     */
+    static func updateProfile(
+        profileImage: UIImage?,
+        backgroundImage: UIImage?,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        userService.updateProfile(
+            awsUser: awsUser,
+            profileImage: profileImage,
+            backgroundImage: backgroundImage,
+            completion: completion
+        )
     }
     
+    
+    /**
+     
+     */
     static func loadUserData() {
         getNotifications()
         
-        user.getFollowers { (success, customError) in
-            if !success {
-                debugPrint("Failed to load followers")
-            }
-        }
-        
-        user.getFollowedUsers { (followedUsers, customError) in
+        getFollowers { (followers, customError) in
             if let customError = customError {
                 debugPrint(customError)
             }
         }
         
-        user.getCompetitions { (success, customError) in
-            if !success {
-                debugPrint("Failed to load user competitions")
+        getFollowedUsers { (followedUsers, customError) in
+            if let customError = customError {
+                debugPrint(customError)
             }
         }
         
-        user.getProfileBackgroundImage { (image) in
+        getCompetitions { (competitions, customError) in
+            if let customError = customError {
+                debugPrint(customError)
+            }
+        }
+        
+        getProfileImage { (image, error) in
             
         }
         
-        user.getProfileImage { (image) in
+        getProfileBackgroundImage { (image, error) in
             
         }
     }
     
+    
+    /**
+     
+     */
     static func getNotifications() {
-        NotificationManager.instance.getCurrentUserNotifications { (notifications, customError) in
+        notificationManager.getCurrentUserNotifications { (notifications, customError) in
             if let customError = customError {
                 debugPrint("Error getting notifications: \(customError.error!.localizedDescription)")
             }

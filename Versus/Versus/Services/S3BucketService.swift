@@ -13,42 +13,38 @@ import AWSUserPoolsSignIn
 import AVKit
 
 enum S3BucketType {
-    case profileImage
-    case profileImageSmall
-    case profileBackgroundImage
-    case competitionImage
-    case competitionImageSmall
-    case competitionVideo
-    case competitionVideoPreviewImage
-    case competitionVideoPreviewImageSmall
+    case image
+    case video
+}
+
+enum ImageType: String {
+    case regular = ""
+    case small = "_S"
+    case background = "_BG"
 }
 
 class S3BucketService {
     
     static let instance = S3BucketService()
+    private let transferUtility = AWSS3TransferUtility.default()
     
     private init() { }
     
+    
+    //TODO: resize image based on bucket type
     func uploadImage(
         image: UIImage,
-        bucketType: S3BucketType,
-        completion: @escaping (_ imageFilename: String?) -> Void
+        imageType: ImageType,
+        mediaId: String,
+        completion: @escaping (_ customError: CustomError?) -> Void
     ) {
-        
-        guard let imageData = UIImageJPEGRepresentation(image, 1.0) else {
-            debugPrint("Could not convert image to jpeg data")
-            completion(nil)
+        guard let compressedImage = image.compressImage(imageType: imageType),
+            let imageData = UIImageJPEGRepresentation(compressedImage, 1.0) else {
+            completion(CustomError(error: nil, message: "Unable to upload image"))
             return
         }
         
-        var imageFilename = CurrentUser.userPoolUserId
-        
-        if bucketType == .competitionImage || bucketType == .competitionImageSmall
-            || bucketType == .competitionVideoPreviewImage || bucketType == .competitionVideoPreviewImageSmall {
-            imageFilename = UUID().uuidString
-        }
-        
-        let mediaKey = generateMediaKey(filename: imageFilename, bucketType: bucketType)
+        let mediaKey = generateImageMediaKey(mediaId: mediaId, imageType: imageType)
         
         let expression = AWSS3TransferUtilityUploadExpression()
         expression.progressBlock = {(task, progress) in
@@ -57,25 +53,23 @@ class S3BucketService {
             }
         }
         
-        var completionHandler: AWSS3TransferUtilityUploadCompletionHandlerBlock!
-        completionHandler = {(task, error) -> Void in
-            if let _ = error {
+        let completionHandler: AWSS3TransferUtilityUploadCompletionHandlerBlock = {
+            (task, error) -> Void in
+                if let error = error {
+                    completion(CustomError(error: error, message: "Error uploading image"))
+                    return
+                }
                 completion(nil)
-            }
-            else {
-                debugPrint("Successfully uploaded image")
-                completion(imageFilename)
-            }
         }
         
-        AWSS3TransferUtility.default().uploadData(
+        transferUtility.uploadData(
             imageData,
             bucket: S3_BUCKET,
             key: mediaKey,
             contentType: "image/jpeg",
             expression: expression,
             completionHandler: completionHandler
-        ).continueWith(executor: AWSExecutor.mainThread()) { (task) -> Any? in
+        ).continueWith { (task) -> Any? in
             if let error = task.error {
                 debugPrint("Error uploading image: \(error.localizedDescription)")
             }
@@ -87,12 +81,11 @@ class S3BucketService {
     }
     
     func downloadImage(
-        imageName: String,
-        bucketType: S3BucketType,
-        completion: @escaping (UIImage?, Error?) -> Void
+        mediaId: String,
+        imageType: ImageType,
+        completion: @escaping (_ image: UIImage?, _ customError: CustomError?) -> Void
     ) {
-        
-        let mediaKey = generateMediaKey(filename: imageName, bucketType: bucketType)
+        let mediaKey = generateImageMediaKey(mediaId: mediaId, imageType: imageType)
         
         let expression = AWSS3TransferUtilityDownloadExpression()
         expression.progressBlock = {(task, progress) in
@@ -101,19 +94,21 @@ class S3BucketService {
             }
         }
         
-        var completionHandler: AWSS3TransferUtilityDownloadCompletionHandlerBlock!
-        completionHandler = {(task, url, data, error) -> Void in
-            if let error = error {
-                debugPrint("Failed to download image: \(error.localizedDescription)")
-                completion(nil, error)
-            }
-            else if let imageData = data, let image = UIImage(data: imageData) {
-                debugPrint("Successfully downloaded image")
-                completion(image, nil)
-            }
+        let completionHandler: AWSS3TransferUtilityDownloadCompletionHandlerBlock = {
+            (task, url, data, error) -> Void in
+                if let error = error {
+                    completion(nil, CustomError(error: error, message: "Unable to download image"))
+                    return
+                }
+                if let imageData = data {
+                    completion(UIImage(data: imageData), nil)
+                    return
+                }
+                completion(nil, CustomError(error: nil, message: "Unable to download image - non-error"))
+            
         }
-
-        AWSS3TransferUtility.default().downloadData(
+        
+        transferUtility.downloadData(
             fromBucket: S3_BUCKET,
             key: mediaKey,
             expression: expression,
@@ -130,19 +125,17 @@ class S3BucketService {
     }
     
     func uploadVideo(
-        videoUrlAsset: AVURLAsset,
-        bucketType: S3BucketType,
-        completion: @escaping (_ videoFilename: String?) -> Void
+        video: AVURLAsset,
+        mediaId: String,
+        completion: @escaping (_ customError: CustomError?) -> Void
     ) {
         
-        guard let videoData = try? Data(contentsOf: videoUrlAsset.url) else {
-            completion(nil)
+        guard let videoData = try? Data(contentsOf: video.url) else {
+            completion(CustomError(error: nil, message: "Unable to upload video"))
             return
         }
         
-        let videoFilename = UUID().uuidString
-        
-        let mediaKey = generateMediaKey(filename: videoFilename, bucketType: bucketType)
+        let mediaKey = generateVideoMediaKey(mediaId: mediaId)
         
         let expression = AWSS3TransferUtilityUploadExpression()
         expression.progressBlock = {(task, progress) in
@@ -151,25 +144,23 @@ class S3BucketService {
             }
         }
         
-        var completionHandler: AWSS3TransferUtilityUploadCompletionHandlerBlock!
-        completionHandler = {(task, error) -> Void in
-            if let _ = error {
+        let completionHandler: AWSS3TransferUtilityUploadCompletionHandlerBlock = {
+            (task, error) -> Void in
+                if let error = error {
+                    completion(CustomError(error: error, message: "Error uploading video"))
+                    return
+                }
                 completion(nil)
-            }
-            else {
-                debugPrint("Successfully uploaded video")
-                completion(videoFilename)
-            }
         }
         
-        AWSS3TransferUtility.default().uploadData(
+        transferUtility.uploadData(
             videoData,
             bucket: S3_BUCKET,
             key: mediaKey,
             contentType: "video/quicktime",
             expression: expression,
             completionHandler: completionHandler
-        ).continueWith(executor: AWSExecutor.mainThread()) { (task) -> Any? in
+        ).continueWith { (task) -> Any? in
             if let error = task.error {
                 debugPrint("Error uploading video: \(error.localizedDescription)")
             }
@@ -180,13 +171,13 @@ class S3BucketService {
         }
     }
     
+    
     func downloadVideo(
-        videoName: String,
+        mediaId: String,
         bucketType: S3BucketType,
-        completion: @escaping (AVURLAsset?, Error?) -> Void
+        completion: @escaping (_ videoAsset: AVURLAsset?, _ customError: CustomError?) -> Void
     ) {
-        
-        let mediaKey = generateMediaKey(filename: videoName, bucketType: bucketType)
+        let mediaKey = generateVideoMediaKey(mediaId: mediaId)
         
         let expression = AWSS3TransferUtilityDownloadExpression()
         expression.progressBlock = {(task, progress) in
@@ -195,38 +186,36 @@ class S3BucketService {
             }
         }
         
-        var completionHandler: AWSS3TransferUtilityDownloadCompletionHandlerBlock!
-        completionHandler = {(task, url, data, error) -> Void in
-            if let error = error {
-                debugPrint("Failed to download video: \(error.localizedDescription)")
-                completion(nil, error)
-            }
-            else if let data = data {
-                debugPrint("Successfully downloaded video")
-                
-                var videoUrl: URL?
-                do {
-                    videoUrl = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent(videoName + ".mov")
-                    if let videoUrl = videoUrl {
-                        try data.write(to: videoUrl)
-                    }
-                    else {
-                        debugPrint("Video url is nil")
-                    }
+        let completionHandler: AWSS3TransferUtilityDownloadCompletionHandlerBlock = {
+            (task, url, data, error) -> Void in
+                if let error = error {
+                    completion(nil, CustomError(error: error, message: "Error downloading video"))
                 }
-                catch {
-                    debugPrint("Could not write video data to file system: \(error.localizedDescription)")
+                else if let data = data {
+                    
+                    var videoUrl: URL?
+                    do {
+                        videoUrl = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent(mediaId + ".mov")
+                        if let videoUrl = videoUrl {
+                            try data.write(to: videoUrl)
+                        }
+                        else {
+                            debugPrint("Video url is nil")
+                        }
+                    }
+                    catch {
+                        debugPrint("Could not write video data to file system: \(error.localizedDescription)")
+                    }
+                    
+                    let videoUrlAsset = AVURLAsset(url: videoUrl!)
+                    completion(videoUrlAsset, nil)
                 }
-                
-                let videoUrlAsset = AVURLAsset(url: videoUrl!)
-                completion(videoUrlAsset, nil)
-            }
-            else {
-                debugPrint("Failed to receive video data")
-            }
+                else {
+                    debugPrint("Failed to receive video data")
+                }
         }
         
-        AWSS3TransferUtility.default().downloadData(
+        transferUtility.downloadData(
             fromBucket: S3_BUCKET,
             key: mediaKey,
             expression: expression,
@@ -242,25 +231,57 @@ class S3BucketService {
         }
     }
     
-    private func generateMediaKey(filename: String, bucketType: S3BucketType) -> String {
+    
+    private func generateImageMediaKey(mediaId: String, imageType: ImageType) -> String {
+        return String(format: "%@%@%@.jpg", IMAGE_BUCKET, mediaId, imageType.rawValue)
+    }
+    
+    
+    private func generateVideoMediaKey(mediaId: String) -> String {
+        return String(format: "%@%@.mov", VIDEO_BUCKET, mediaId)
+    }
+    
+    
+    private func resizeImage(image: UIImage, imageType: ImageType) -> UIImage? {
+        var newWidth: CGFloat = 0
+        var scale: CGFloat = 0
+        var newHeight: CGFloat = 0
         
-        switch bucketType {
-        case .profileImage:
-            return "\(PROFILE_IMAGE_BUCKET_PATH)\(filename).jpg"
-        case .profileImageSmall:
-            return "\(PROFILE_IMAGE_SMALL_BUCKET_PATH)\(filename).jpg"
-        case .profileBackgroundImage:
-            return "\(PROFILE_BACKGROUND_IMAGE_BUCKET_PATH)\(filename).jpg"
-        case .competitionImage:
-            return "\(COMPETITION_IMAGE_BUCKET_PATH)\(filename).jpg"
-        case .competitionImageSmall:
-            return "\(COMPETITION_IMAGE_SMALL_BUCKET_PATH)\(filename).jpg"
-        case .competitionVideo:
-            return "\(COMPETITION_VIDEO_BUCKET_PATH)\(filename).mov"
-        case .competitionVideoPreviewImage:
-            return "\(COMPETITION_VIDEO_PREVIEW_IMAGE_BUCKET_PATH)\(filename).jpg"
-        case .competitionVideoPreviewImageSmall:
-            return "\(COMPETITION_VIDEO_PREVIEW_IMAGE_SMALL_BUCKET_PATH)\(filename).jpg"
+        switch imageType {
+        case .regular:
+            newWidth = 300
+            scale = newWidth / image.size.width
+            newHeight = image.size.height * scale
+            
+        case .small:
+            newWidth = 150
+            scale = newWidth / image.size.width
+            newHeight = image.size.height * scale
+            
+        case .background:
+            newWidth = 600
+            scale = 6/25
+            newHeight = image.size.width * scale
         }
+        
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    
+    private func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage? {
+        let scale = newWidth / image.size.width
+        let newHeight = image.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
 }

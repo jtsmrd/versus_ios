@@ -20,10 +20,12 @@ let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    private let SNSPlatformApplicationArn = "arn:aws:sns:us-east-1:853109377079:app/APNS_SANDBOX/VersusSmrdel"
+    private let userService = UserService.instance
+    
     var window: UIWindow?
     var passwordAuthenticationCompletion: AWSTaskCompletionSource<AnyObject>?
     var signInCredentials: SignInCredentials!
-    let SNSPlatformApplicationArn = "arn:aws:sns:us-east-1:853109377079:app/APNS_SANDBOX/VersusSmrdel"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -91,19 +93,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     CurrentUser.userAWSSNSEndpointARN = endpointArnForSNS
                     debugPrint("Endpoint Arn: \(endpointArnForSNS)")
                     
-                    // Save endpointArn to AWSUserEndpointArn                    
-                    UserService.instance.saveUserSNSEndpointARN(endpointArnForSNS, CurrentUser.userPoolUserId, completion: { (success, error) in
-                        if let error = error {
-                            debugPrint("Failed to save User SNS Endpoint ARN: \(error.error!)")
+                    // Save endpointArn to AWSUserEndpointArn
+                    self.userService.saveUserSNSEndpointARN(
+                        endpointArn: endpointArnForSNS,
+                        userId: CurrentUser.userId,
+                        completion: { (success, customError) in
+                            if let customError = customError {
+                                debugPrint(customError)
+                            }
+                            else if success {
+                                //TODO: Save value in UserDefaults in order to try again later.
+                                debugPrint("Successfully saved endpoint arn")
+                            }
+                            else {
+                                debugPrint("Error: Something went wrong when saving endpoint arn")
+                            }
                         }
-                        else if success {
-                            //TODO: Save value in UserDefaults in order to try again later.
-                            debugPrint("Successfully saved endpoint arn")
-                        }
-                        else {
-                            debugPrint("Error: Something went wrong when saving endpoint arn")
-                        }
-                    })
+                    )
                 }
             }
             return nil
@@ -132,7 +138,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if AWSSignInManager.sharedInstance().isLoggedIn {
             
-            guard AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.lastSignedInUserPoolUserId else {
+            guard AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.lastSignedInUserId else {
                 AWSCognitoIdentityUserPool.default().clearAll()
                 showLogin()
                 return
@@ -147,7 +153,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     else if success {
                         
                         // User closed app when choosing username
-                        if CurrentUser.user.awsUser._username == nil {
+                        if CurrentUser.username.isEmpty {
                             self.showChooseUsername()
                             return
                         }
@@ -235,14 +241,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func loadCurrentUser(completion: @escaping SuccessErrorCompletion) {
-        UserService.instance.loadUserWithUserPoolUserId(
-            CurrentUser.userPoolUserId
-        ) { (user, error) in
+        
+        UserService.instance.getUser(
+            userId: CurrentUser.lastSignedInUserId
+        ) { (awsUser, error) in
             if let error = error {
                 completion(false, error)
             }
-            else if let user = user {
-                CurrentUser.user = user
+            else if let awsUser = awsUser {
+                CurrentUser.setAWSUser(awsUser: awsUser)
                 completion(true, nil)
             }
             else {

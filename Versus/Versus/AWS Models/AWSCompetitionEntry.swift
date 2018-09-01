@@ -18,51 +18,50 @@ import AWSDynamoDB
 @objcMembers
 class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _id: String?
+    var _awaitingMatch: NSNumber?
     var _caption: String?
-    var _categoryId: NSNumber?
+    var _categoryTypeId: NSNumber?
+    var _competitionEntryId: String?
+    var _compTypeIdCatTypeIdRankIdMatched: String?
     var _competitionTypeId: NSNumber?
     var _createDate: String?
-    var _imageId: String?
-    var _imageSmallId: String?
+    var _displayName: String?
     var _isFeatured: NSNumber?
-    var _matchDate: String?
-    var _matchStatus: String?
-    var _userPoolUserId: String?
-    var _userRankId: NSNumber?
+    var _mediaId: String?
+    var _rankId: NSNumber?
+    var _userId: String?
     var _username: String?
-    var _videoId: String?
-    var _videoPreviewImageId: String?
-    var _videoPreviewImageSmallId: String?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_CompetitionEntry"
+        return "AWS_CompetitionEntry"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_id"
+        return "_userId"
+    }
+    
+    class func rangeKeyAttribute() -> String {
+        
+        return "_createDate"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_id" : "id",
+               "_awaitingMatch" : "awaitingMatch",
                "_caption" : "caption",
-               "_categoryId" : "categoryId",
+               "_categoryTypeId" : "categoryTypeId",
+               "_competitionEntryId" : "competitionEntryId",
+               "_compTypeIdCatTypeIdRankIdMatched" : "compTypeIdCatTypeIdRankIdMatched",
                "_competitionTypeId" : "competitionTypeId",
                "_createDate" : "createDate",
-               "_imageId" : "imageId",
-               "_imageSmallId" : "imageSmallId",
+               "_displayName" : "displayName",
                "_isFeatured" : "isFeatured",
-               "_matchDate" : "matchDate",
-               "_matchStatus" : "matchStatus",
-               "_userPoolUserId" : "userPoolUserId",
-               "_userRankId" : "userRankId",
+               "_mediaId" : "mediaId",
+               "_rankId" : "rankId",
+               "_userId" : "userId",
                "_username" : "username",
-               "_videoId" : "videoId",
-               "_videoPreviewImageId" : "videoPreviewImageId",
-               "_videoPreviewImageSmallId" : "videoPreviewImageSmallId",
         ]
     }
 }

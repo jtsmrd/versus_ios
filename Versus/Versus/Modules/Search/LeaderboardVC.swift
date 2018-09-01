@@ -51,20 +51,10 @@ class LeaderboardVC: UIViewController {
     
     
     private func showLeaderProfile(leader: Leader) {
-        
-        UserService.instance.loadUserWithUserPoolUserId(leader.userPoolUserId) { (user, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                }
-                else if let user = user {
-                    if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-                        profileVC.initData(profileViewMode: .viewOnly, user: user)
-                        profileVC.hidesBottomBarWhenPushed = true
-                        self.navigationController?.pushViewController(profileVC, animated: true)
-                    }
-                }
-            }
+        if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
+            profileVC.initData(userId: leader.userId)
+            profileVC.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(profileVC, animated: true)
         }
     }
     

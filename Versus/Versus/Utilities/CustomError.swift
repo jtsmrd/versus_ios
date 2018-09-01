@@ -10,6 +10,5 @@ import Foundation
 
 struct CustomError {
     var error: Error?
-    var title: String
-    var desc: String
+    var message: String
 }

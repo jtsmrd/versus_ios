@@ -11,6 +11,8 @@ import AVKit
 
 class CompetitionDetailsVC: UIViewController {
 
+    private let competitionEntryService = CompetitionEntryService.instance
+    
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var previewImageView: UIImageView!
     @IBOutlet weak var captionTextView: UITextView!
@@ -19,34 +21,56 @@ class CompetitionDetailsVC: UIViewController {
     @IBOutlet weak var categoryImageView: UIImageView!
     @IBOutlet weak var categoryTableView: UITableView!
     
-    var competitionImage: UIImage?
-    var competitionVideoUrlAsset: AVURLAsset?
-    var competitionVideoPreviewImage: UIImage?
-    var competitionType: CompetitionType = .image
+    var image: UIImage!
+    var video: AVURLAsset!
+    var competitionType: CompetitionType!
     var selectedCategory: Category?
     var keyboardToolbar: KeyboardToolbar!
     
+    
+    /**
+ 
+     */
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        keyboardToolbar = KeyboardToolbar(
+            frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50),
+            includeNavigation: false
+        )
         
         submitButton.setTitleColor(UIColor.lightGray, for: .disabled)
         
         categoryTableView.layer.cornerRadius = 10
         categoryTableView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         
-        selectCategoryView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(categoryViewTapped)))
+        selectCategoryView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(categoryViewTapped)
+            )
+        )
         
         configureView()
     }
 
     
-    func initData(image: UIImage?, videoUrlAsset: AVURLAsset?, videoPreviewImage: UIImage?) {
-        competitionImage = image
-        competitionVideoUrlAsset = videoUrlAsset
-        competitionVideoPreviewImage = videoPreviewImage
-        competitionType = image != nil ? .image : .video
+    /**
+ 
+     */
+    func initData(image: UIImage) {
+        self.image = image
+        competitionType = .image
+    }
+    
+    
+    /**
+     
+     */
+    func initData(image: UIImage, video: AVURLAsset) {
+        self.image = image
+        self.video = video
+        competitionType = .video
     }
     
     
@@ -54,109 +78,48 @@ class CompetitionDetailsVC: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    
+    /**
+     
+     */
     @IBAction func submitButtonAction() {
         
-        guard inputDataIsValid() else { return }
+//        if let originalImage = image, let originalImageData = UIImageJPEGRepresentation(originalImage, 1.0), let compressedImage = image.compressImage(), let compressedImageData = UIImageJPEGRepresentation(compressedImage, 1.0) {
+//            
+//            let bcf = ByteCountFormatter()
+//            bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
+//            bcf.countStyle = .file
+//
+//            let originalSize = bcf.string(fromByteCount: Int64(originalImageData.count))
+//            print(String(format: "There are %d bytes in original image - %@", originalImageData.count, originalSize))
+//
+//            let compressedSize = bcf.string(fromByteCount: Int64(compressedImageData.count))
+//            print(String(format: "There are %d bytes in compressed image - %@", compressedImageData.count, compressedSize))
+//        }
         
-        let uploadMediaDispatchGroup = DispatchGroup()
-        var errorMessage = ""
-        var competitionImageFilename: String?
-        var competitionImageSmallFilename: String?
-        var competitionVideoFilename: String?
-        var competitionVideoPreviewImageFilename: String?
-        var competitionVideoPreviewImageSmallFilename: String?
         
-        submitButton.isEnabled = false
-        
-        switch competitionType {
-        case .image:
-            
-            uploadMediaDispatchGroup.enter()
-            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionImage!, bucketType: .competitionImage, competitionImageSizeType: .normal) { (imageFilename) in
-                if let imageFilename = imageFilename {
-                    competitionImageFilename = imageFilename
-                }
-                else {
-                    errorMessage = "Failed to upload competition image"
-                }
-                uploadMediaDispatchGroup.leave()
-            }
-            
-            uploadMediaDispatchGroup.enter()
-            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionImage!, bucketType: .competitionImageSmall, competitionImageSizeType: .small) { (imageFilename) in
-                if let imageFilename = imageFilename {
-                    competitionImageSmallFilename = imageFilename
-                }
-                else {
-                    errorMessage = "Failed to upload competition image small"
-                }
-                uploadMediaDispatchGroup.leave()
-            }
-            
-        case .video:
-            
-            uploadMediaDispatchGroup.enter()
-            CompetitionEntryService.instance.uploadCompetitionVideo(videoUrlAsset: competitionVideoUrlAsset!, bucketType: .competitionVideo) { (videoFilename) in
-                if let videoFilename = videoFilename {
-                    competitionVideoFilename = videoFilename
-                }
-                else {
-                    errorMessage = "Failed to upload competition video"
-                }
-                uploadMediaDispatchGroup.leave()
-            }
-            
-            uploadMediaDispatchGroup.enter()
-            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionVideoPreviewImage!, bucketType: .competitionVideoPreviewImage, competitionImageSizeType: .normal) { (imageFilename) in
-                if let imageFilename = imageFilename {
-                    competitionVideoPreviewImageFilename = imageFilename
-                }
-                else {
-                    errorMessage = "Failed to upload competition video preview image"
-                }
-                uploadMediaDispatchGroup.leave()
-            }
-            
-            uploadMediaDispatchGroup.enter()
-            CompetitionEntryService.instance.uploadCompetitionImage(image: competitionVideoPreviewImage!, bucketType: .competitionVideoPreviewImageSmall, competitionImageSizeType: .small) { (imageFilename) in
-                if let imageFilename = imageFilename {
-                    competitionVideoPreviewImageSmallFilename = imageFilename
-                }
-                else {
-                    errorMessage = "Failed to upload competition video preview image small"
-                }
-                uploadMediaDispatchGroup.leave()
-            }
+        guard let category = selectedCategory else {
+            displayMessage(message: "Select a category")
+            return
         }
-        
-        
-        uploadMediaDispatchGroup.notify(queue: .main) {
-            if errorMessage.isEmpty {
-                self.createCompetitionEntry(
-                    videoPreviewImageId: competitionVideoPreviewImageFilename,
-                    videoPreviewImageSmallId: competitionVideoPreviewImageSmallFilename,
-                    videoId: competitionVideoFilename,
-                    imageId: competitionImageFilename,
-                    imageSmallId: competitionImageSmallFilename,
-                    completion: { (success) in
-                        DispatchQueue.main.async {
-                            if success {
-                                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
-                            }
-                            else {
-                                self.displayMessage(message: "Unable to submit competition entry")
-                            }
-                            self.submitButton.isEnabled = true
-                        }
-                    }
-                )
-            }
-            else {
+        let caption = captionTextView.text
+        submitButton.isEnabled = false
+        submitCompetitionEntry(
+            categoryType: category.categoryType,
+            caption: caption
+        ) { (customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
+                    self.submitButton.isEnabled = true
+                    return
+                }
+                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
                 self.submitButton.isEnabled = true
-                self.displayMessage(message: errorMessage)
             }
         }
     }
+    
     
     @IBAction func facebookButtonAction() {
         
@@ -176,7 +139,11 @@ class CompetitionDetailsVC: UIViewController {
     }
     
     
+    /**
+     
+     */
     private func configureView() {
+        previewImageView.image = image
         if let category = selectedCategory {
             categoryLabel.text = category.title
             categoryLabel.textColor = UIColor.white
@@ -186,75 +153,35 @@ class CompetitionDetailsVC: UIViewController {
         else {
             categoryLabel.textColor = UIColor.darkGray
         }
-        
-        switch competitionType {
-        case .image:
-            previewImageView.image = competitionImage
-        case .video:
-            previewImageView.image = competitionVideoPreviewImage
-        }
     }
     
-    private func inputDataIsValid() -> Bool {
-        
-        guard let _ = selectedCategory else {
-            displayMessage(message: "Select a category")
-            return false
-        }
-        
-        switch competitionType {
-        case .image:
-            guard let _ = competitionImage else {
-                displayMessage(message: "Select competition image")
-                return false
-            }
-        case .video:
-            guard let _ = competitionVideoUrlAsset else {
-                displayMessage(message: "Select competition video")
-                return false
-            }
-            guard let _ = competitionVideoPreviewImage else {
-                displayMessage(message: "Unable to generate preview image")
-                return false
-            }
-        }
-        
-        return true
-    }
     
-    private func createCompetitionEntry(
-        videoPreviewImageId: String?,
-        videoPreviewImageSmallId: String?,
-        videoId: String?,
-        imageId: String?,
-        imageSmallId: String?,
-        completion: @escaping SuccessCompletion
+    /**
+     
+     */
+    private func submitCompetitionEntry(
+        categoryType: CategoryType,
+        caption: String?,
+        completion: @escaping (_ customError: CustomError?) -> Void
     ) {
-        CompetitionEntryService.instance.createCompetitionEntry(
-            categoryType: selectedCategory!.categoryType,
-            competitionType: competitionType,
-            caption: captionTextView.text,
-            videoPreviewImageId: videoPreviewImageId,
-            videoPreviewImageSmallId: videoPreviewImageSmallId,
-            videoId: videoId,
-            imageId: imageId,
-            imageSmallId: imageSmallId
-        ) { (success) in
-            completion(success)
+        switch competitionType! {
+        case .image:
+            competitionEntryService.submitImageCompetitionEntry(
+                categoryType: categoryType,
+                caption: caption,
+                image: image,
+                completion: completion
+            )
+        case .video:
+            competitionEntryService.submitVideoCompetitionEntry(
+                categoryType: categoryType,
+                caption: caption,
+                image: image,
+                video: video,
+                completion: completion
+            )
         }
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 extension CompetitionDetailsVC: UITextViewDelegate {

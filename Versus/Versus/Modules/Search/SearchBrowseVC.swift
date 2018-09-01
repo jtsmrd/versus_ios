@@ -1,5 +1,5 @@
 //
-//  SearchVC.swift
+//  SearchBrowseVC.swift
 //  Versus
 //
 //  Created by JT Smrdel on 4/11/18.
@@ -8,8 +8,10 @@
 
 import UIKit
 
-class SearchVC: UIViewController {
+class SearchBrowseVC: UIViewController {
 
+    private let userCollectionManager = UserCollectionManager.instance
+    
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var browseTableView: UITableView!
     @IBOutlet weak var searchUserTableView: UITableView!
@@ -19,7 +21,6 @@ class SearchVC: UIViewController {
     
     @IBOutlet weak var leaderboardCategoryContainerViewTop: NSLayoutConstraint!
     
-    var searchResultUsers = [User]()
     var featuredCompetitions = [Competition]()
     var selectedCategoryIndexPath: IndexPath?
     var keyboardToolbar: KeyboardToolbar!
@@ -69,10 +70,10 @@ class SearchVC: UIViewController {
         
         getFeaturedCompetitions()
         
-        CurrentUser.user.getFollowedUsers { (followedUsers, error) in
+        CurrentUser.getFollowedUsers { (followedUsers, customError) in
             DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
+                if let customError = customError {
+                    debugPrint(customError.message)
                 }
             }
         }
@@ -83,7 +84,7 @@ class SearchVC: UIViewController {
         LeaderboardCollection.instance.getLeaderboards { (success, customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
-                    self.displayError(error: customError)
+                    debugPrint(customError.message)
                 }
                 else if success {
                     self.leaderboardCollectionView.reloadData()
@@ -94,15 +95,14 @@ class SearchVC: UIViewController {
     
     private func getFeaturedCompetitions() {
         
-        CompetitionManager.instance.getFeaturedCompetitions { (competitions, error) in
+        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
             DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
+                if let customError = customError {
+                    debugPrint(customError.message)
+                    return
                 }
-                else {
-                    self.featuredCompetitions = competitions
-                    self.browseTableView.reloadData()
-                }
+                self.featuredCompetitions = competitions
+                self.browseTableView.reloadData()
             }
         }
     }
@@ -110,18 +110,17 @@ class SearchVC: UIViewController {
     
     private func getFeaturedCompetitionsWith(categoryId: Int) {
         
-        CompetitionService.instance.getFeaturedCompetitionsWith(
+        CompetitionService.instance.getFeaturedCompetitions(
             categoryId: categoryId
-        ) { (competitions, error) in
+        ) { (competitions, customError) in
             DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
+                if let customError = customError {
+                    debugPrint(customError.message)
+                    return
                 }
-                else {
-                    self.featuredCompetitions.removeAll()
-                    self.featuredCompetitions.append(contentsOf: competitions)
-                    self.browseTableView.reloadData()
-                }
+                self.featuredCompetitions.removeAll()
+                self.featuredCompetitions.append(contentsOf: competitions)
+                self.browseTableView.reloadData()
             }
         }
     }
@@ -194,14 +193,14 @@ class SearchVC: UIViewController {
     }
 }
 
-extension SearchVC: SearchUserCellDelegate {
+extension SearchBrowseVC: SearchUserCellDelegate {
     
     func searchUserCellFollowButtonActionError(error: CustomError) {
         self.displayError(error: error)
     }
 }
 
-extension SearchVC: UITableViewDataSource {
+extension SearchBrowseVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -209,7 +208,7 @@ extension SearchVC: UITableViewDataSource {
             return featuredCompetitions.count
         }
         else if tableView == searchUserTableView {
-            return searchResultUsers.count
+            return userCollectionManager.potentialUserCount
         }
         return 0
     }
@@ -225,7 +224,8 @@ extension SearchVC: UITableViewDataSource {
         }
         else if tableView == searchUserTableView {
             if let cell = tableView.dequeueReusableCell(withIdentifier: SEARCH_USER_CELL, for: indexPath) as? SearchUserCell {
-                cell.configureCell(user: searchResultUsers[indexPath.row], delegate: self)
+                let user = userCollectionManager.getUserFor(indexPath: indexPath)
+                cell.configureCell(user: user, delegate: self)
                 return cell
             }
             return SearchUserCell()
@@ -245,7 +245,28 @@ extension SearchVC: UITableViewDataSource {
     }
 }
 
-extension SearchVC: UITableViewDelegate {
+extension SearchBrowseVC: UITableViewDataSourcePrefetching {
+    
+    /**
+        If more results exist, fetch them when the prefetch index >= the current user count
+     */
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        guard let maxIndex = indexPaths.max(), maxIndex.row >= userCollectionManager.users.count else { return }
+        if userCollectionManager.hasMoreResults {
+            userCollectionManager.fetchMoreResults { (customError) in
+                DispatchQueue.main.async {
+                    if let customError = customError {
+                        debugPrint(customError.message)
+                        return
+                    }
+                    self.searchUserTableView.reloadData()
+                }
+            }
+        }
+    }
+}
+
+extension SearchBrowseVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -256,7 +277,7 @@ extension SearchVC: UITableViewDelegate {
         else if tableView == searchUserTableView {
             
             if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-                profileVC.initData(profileViewMode: .viewOnly, user: searchResultUsers[indexPath.row])
+                profileVC.initData(userId: userCollectionManager.users[indexPath.row].userId)
                 profileVC.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(profileVC, animated: true)
             }
@@ -283,7 +304,7 @@ extension SearchVC: UITableViewDelegate {
     }
 }
 
-extension SearchVC: UISearchBarDelegate {
+extension SearchBrowseVC: UISearchBarDelegate {
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         searchBar.inputAccessoryView = keyboardToolbar
@@ -298,7 +319,7 @@ extension SearchVC: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
         
-        if searchResultUsers.isEmpty {
+        if userCollectionManager.users.isEmpty {
             searchUserTableView.isHidden = true
             searchBar.text?.removeAll()
         }
@@ -307,7 +328,7 @@ extension SearchVC: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchUserTableView.isHidden = true
         searchBar.text?.removeAll()
-        searchResultUsers.removeAll()
+        userCollectionManager.removeAllUsers()
         searchUserTableView.reloadData()
         searchBar.setShowsCancelButton(false, animated: true)
         view.endEditing(true)
@@ -316,32 +337,26 @@ extension SearchVC: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
         guard !searchText.isEmpty else {
-            searchResultUsers.removeAll()
+            userCollectionManager.removeAllUsers()
             searchUserTableView.reloadData()
             return
         }
-        
-        UserService.instance.queryUsers(queryString: searchText) { (users, customError) in
+        userCollectionManager.searchUsers(
+            searchText: searchText
+        ) { (customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
-                    self.displayError(error: customError)
+                    debugPrint(customError.message)
+                    return
                 }
-                else {
-                    self.searchResultUsers.removeAll()
-                    for user in users {
-                        if !CurrentUser.userIsMe(awsUser: user.awsUser) {
-                            self.searchResultUsers.append(user)
-                        }
-                    }
-                    self.searchUserTableView.reloadData()
-                }
+                self.searchUserTableView.reloadData()
             }
         }
     }
 }
 
 
-extension SearchVC: UICollectionViewDataSource {
+extension SearchBrowseVC: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == leaderboardCollectionView {
@@ -379,7 +394,7 @@ extension SearchVC: UICollectionViewDataSource {
 }
 
 
-extension SearchVC: UICollectionViewDelegate {
+extension SearchBrowseVC: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == leaderboardCollectionView {
@@ -404,7 +419,7 @@ extension SearchVC: UICollectionViewDelegate {
     }
 }
 
-extension SearchVC: UICollectionViewDelegateFlowLayout {
+extension SearchBrowseVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(
         _ collectionView: UICollectionView,

@@ -18,38 +18,36 @@ import AWSDynamoDB
 @objcMembers
 class AWSMonthlyLeader: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _userPoolUserId: String?
-    var _yearMonth: NSNumber?
-    var _createDate: String?
-    var _totalVotesDuringMonth: NSNumber?
-    var _totalWinsDuringMonth: NSNumber?
-    var _updateDate: String?
+    var _userId: String?
     var _username: String?
+    var _votes: NSNumber?
+    var _wins: NSNumber?
+    var _yearMonth: NSNumber?
+    var _yearMonthUserId: String?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_MonthlyLeader"
+        return "AWS_MonthlyLeader"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_userPoolUserId"
+        return "_yearMonthUserId"
     }
     
     class func rangeKeyAttribute() -> String {
 
-        return "_yearMonth"
+        return "_wins"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_userPoolUserId" : "userPoolUserId",
-               "_yearMonth" : "yearMonth",
-               "_createDate" : "createDate",
-               "_totalVotesDuringMonth" : "totalVotesDuringMonth",
-               "_totalWinsDuringMonth" : "totalWinsDuringMonth",
-               "_updateDate" : "updateDate",
-               "_username" : "username",
+                "_userId" : "userId",
+                "_username" : "username",
+                "_votes" : "votes",
+                "_wins" : "wins",
+                "_yearMonth" : "_yearMonth",
+                "_yearMonthUserId" : "yearMonthUserId",
         ]
     }
 }

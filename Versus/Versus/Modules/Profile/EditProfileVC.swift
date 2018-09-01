@@ -28,7 +28,6 @@ class EditProfileVC: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     
     
-    var user: User!
     var imagePicker: UIImagePickerController!
     var editImageType: EditImageType!
     var profileImage: UIImage?
@@ -79,10 +78,6 @@ class EditProfileVC: UIViewController {
         )
     }
     
-    func initData(user: User) {
-        self.user = user
-    }
-    
     
     @objc func keyboardWillShow(notification: NSNotification) {
         
@@ -108,57 +103,6 @@ class EditProfileVC: UIViewController {
     
     @IBAction func doneButtonAction() {
         updateUser()
-        
-//        guard let image = profileImage, let imageData = UIImageJPEGRepresentation(image, 0.5) else {
-//            debugPrint("Could not convert image to jpeg data")
-//            return
-//        }
-//
-//
-//        print("There were \(imageData.count) bytes")
-//        let bcf = ByteCountFormatter()
-//        bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
-//        bcf.countStyle = .file
-//        let string = bcf.string(fromByteCount: Int64(imageData.count))
-//        print("formatted result: \(string)")
-//
-//
-//        let resizedImage = resizeProfileImage(image: image, newWidth: 200.0)
-//        if let resizedImage = resizedImage, let resizedData = UIImageJPEGRepresentation(resizedImage, 1.0) {
-//
-//            print("Resized: There were \(resizedData.count) bytes")
-//            let bcf = ByteCountFormatter()
-//            bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
-//            bcf.countStyle = .file
-//            let string = bcf.string(fromByteCount: Int64(resizedData.count))
-//            print("Resized: formatted result: \(string)")
-//        }
-    }
-    
-    private func resizeProfileImage(image: UIImage, newWidth: CGFloat) -> UIImage? {
-        
-        let scale = newWidth / image.size.width
-        let newHeight = image.size.height * scale
-        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
-        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
-        
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return newImage
-    }
-    
-    private func resizeProfileBackgroundImage(image: UIImage, newHeight: CGFloat) -> UIImage? {
-        
-        let scale: CGFloat = 6/25
-        let newWidth = image.size.width * scale
-        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
-        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
-        
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return newImage
     }
     
     @IBAction func editBackgroundImageAction() {
@@ -172,14 +116,17 @@ class EditProfileVC: UIViewController {
     }
     
     
-    
     private func configureView() {
         
-        usernameTextField.text = user.awsUser._username
-        displayNameTextField.text = user.awsUser._displayName
-        bioTextView.text = user.awsUser._bio
-        profileImageView.image = CurrentUser.user.profileImage
-        backgroundImageView.image = CurrentUser.user.profileBackgroundImage
+        usernameTextField.text = CurrentUser.username
+        displayNameTextField.text = CurrentUser.displayName
+        bioTextView.text = CurrentUser.bio
+        if let profileImage = CurrentUser.profileImage {
+            profileImageView.image = profileImage
+        }
+        if let backgroundImage = CurrentUser.profileBackgroundImage {
+            backgroundImageView.image = backgroundImage
+        }
         
         AccountService.instance.getEmail { (email) in
             DispatchQueue.main.async {
@@ -196,80 +143,28 @@ class EditProfileVC: UIViewController {
     
     
     private func updateUser() {
-        
-        // Update images
-        let updateDispatchGroup = DispatchGroup()
-        
-        var profileImageUploadSuccess = true
-        var profileImageSmallUploadSuccess = true
-        var profileBackgroundImageUploadSuccess = true
-        
-        if let image = profileImage {
-            
-            updateDispatchGroup.enter()
-                UserService.instance.uploadImage(
-                image: image,
-                bucketType: .profileImage
-            ) { (imageFilename) in
-                profileImageUploadSuccess = imageFilename != nil
-                
-                //TODO: This will be updated and handled with AWS caching, which will get new if exists
-                // Set stored image to nil so newly saved image will be downloaded
-                CurrentUser.user.profileImage = nil
-                
-                updateDispatchGroup.leave()
-            }
-            
-            updateDispatchGroup.enter()
-            UserService.instance.uploadImage(
-                image: image,
-                bucketType: .profileImageSmall
-            ) { (imageFilename) in
-                profileImageSmallUploadSuccess = imageFilename != nil
-                updateDispatchGroup.leave()
-            }
+        if let displayName = displayNameTextField.text, !displayName.isEmpty {
+            CurrentUser.displayName = displayName
+            CurrentUser.searchDisplayName = displayName.lowercased()
+        }
+        if let username = usernameTextField.text, !username.isEmpty {
+            CurrentUser.username = username
+            CurrentUser.searchUsername = username.lowercased()
+        }
+        if let bio = bioTextView.text, !bio.isEmpty {
+            CurrentUser.bio = bio
         }
         
-        if let image = backgroundImage {
-            
-            updateDispatchGroup.enter()
-            UserService.instance.uploadImage(
-                image: image,
-                bucketType: .profileBackgroundImage
-            ) { (imageFilename) in
-                profileBackgroundImageUploadSuccess = imageFilename != nil
-                
-                //TODO: This will be updated and handled with AWS caching, which will get new if exists
-                // Set stored image to nil so newly saved image will be downloaded
-                CurrentUser.user.profileBackgroundImage = nil
-                
-                updateDispatchGroup.leave()
-            }
-        }
-        
-        updateDispatchGroup.notify(queue: .main) {
-            
-            // If all applicable image updates are successful, update user
-            if profileImageUploadSuccess && profileImageSmallUploadSuccess && profileBackgroundImageUploadSuccess {
-                
-                self.user.awsUser._displayName = self.displayNameTextField.text
-                self.user.awsUser._profileImageUpdateDate = Date().toISO8601String
-                self.user.awsUser._profileBackgroundImageUpdateDate = Date().toISO8601String
-                
-                UserService.instance.updateUser(user: self.user.awsUser) { (success) in
-                    if success {
-                        debugPrint("Successfully updated user")
-                        DispatchQueue.main.async {
-                            self.dismiss(animated: true, completion: nil)
-                        }
-                    }
-                    else {
-                        debugPrint("Failed to updated user")
-                    }
+        CurrentUser.updateProfile(
+            profileImage: profileImage,
+            backgroundImage: backgroundImage
+        ) { (customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.displayError(error: customError)
+                    return
                 }
-            }
-            else {
-                debugPrint("Failed to upload image")
+                self.dismiss(animated: true, completion: nil)
             }
         }
     }
@@ -318,7 +213,7 @@ extension EditProfileVC: UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        user.awsUser._bio = textView.text
+        CurrentUser.bio = textView.text
     }
 }
 

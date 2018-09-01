@@ -18,23 +18,25 @@ import AWSDynamoDB
 @objcMembers
 class AWSUserSNSEndpointARN: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _userPoolUserId: String?
+    var _userId: String?
     var _endpointArn: String?
+    var _isEnabled: NSNumber?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_UserSNSEndpointARN"
+        return "AWS_UserSNSEndpointARN"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_userPoolUserId"
+        return "_userId"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_userPoolUserId" : "userPoolUserId",
+               "_userId" : "userId",
                "_endpointArn" : "endpointArn",
+               "_isEnabled" : "isEnabled",
         ]
     }
 }

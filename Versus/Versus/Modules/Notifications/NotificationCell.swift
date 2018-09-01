@@ -10,6 +10,9 @@ import UIKit
 
 class NotificationCell: UITableViewCell {
 
+    private let competitionService = CompetitionService.instance
+    private let s3BucketService = S3BucketService.instance
+    
     @IBOutlet weak var notificationImageView: CircleImageView!
     @IBOutlet weak var notificationTextLabel: UILabel!
     @IBOutlet weak var followButton: FollowButton!
@@ -22,6 +25,15 @@ class NotificationCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        notificationImageView.image = nil
+        notificationTextLabel.text = nil
+        rankImageView.image = nil
+        competitionImageView.image = nil
+    }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -29,7 +41,11 @@ class NotificationCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func configureCell(notification: Notification) {
+    
+    /**
+ 
+     */
+    func configureCell(notification: VersusNotification) {
         
         // The default notification image, will be overwritten in some cases
         notificationImageView.image = UIImage(named: "versus_icon_white")
@@ -45,63 +61,60 @@ class NotificationCell: UITableViewCell {
             rankImageView.isHidden = true
             
             let notificationInfo = notification.notificationInfo as! CompetitionNotificationInfo
+            if !notificationInfo.username.isEmpty {
+                notificationTextLabel.text = notificationInfo.notificationText.replacingOccurrences(of: "#username", with: "@" + notificationInfo.username)
+            }
+            else {
+                notificationTextLabel.text = notificationInfo.notificationText
+            }
             
             // Set the notification image view image to the commenting users' profile image
-            if let userPoolUserId = notificationInfo.userPoolUserId, notification.notificationType == .competitionComment {
-                UserService.instance.downloadImage(
-                    userPoolUserId: userPoolUserId,
-                    bucketType: .profileImageSmall
-                ) { (image) in
-                    DispatchQueue.main.async {
-                        self.notificationImageView.image = image
+            if notification.notificationType == .competitionComment {
+                DispatchQueue.global(qos: .userInitiated).async {
+                    self.s3BucketService.downloadImage(
+                        mediaId: notification.userId,
+                        imageType: .small
+                    ) { [weak self] (image, customError) in
+                        if let customError = customError {
+                            self?.parentViewController?.displayError(error: customError)
+                        }
+                        self?.notificationImageView.image = image
                     }
                 }
             }
             
             // competition image view = competition image for current user
-            CompetitionService.instance.getCompetition(with: notificationInfo.competitionId) { (competition, customError) in
-                DispatchQueue.main.async {
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.competitionService.getCompetition(
+                    competitionId: notificationInfo.competitionId
+                ) { [weak self] (competition, customError) in
                     if let customError = customError {
-                        self.parentViewController?.displayError(error: customError)
+                        DispatchQueue.main.async {
+                            self?.parentViewController?.displayError(error: customError)
+                        }
                     }
                     else if let competition = competition {
                         
-                        // We want to display the competition image for the current user,
-                        // so just check if the CurrentUser userPoolUserId matches user1 or user 2.
-                        let competitionUser: CompetitionUser = competition.awsCompetition._user1userPoolUserId! == CurrentUser.userPoolUserId ? .user1 : .user2
-                        
-                        var bucketType: S3BucketType!
-                        
-                        switch competition.competitionType {
-                        case .image:
-                            bucketType = .competitionImageSmall
-                        case .video:
-                            bucketType = .competitionVideoPreviewImageSmall
+                        // Get and display the competition image for the current user
+                        var currentUserCompetitorRecord: Competitor!
+                        if competition.firstCompetitor.userId == CurrentUser.userId {
+                            currentUserCompetitorRecord = competition.firstCompetitor
                         }
-                        
-                        competition.getCompetitionImage(
-                            for: competitionUser,
-                            bucketType: bucketType,
-                            completion: { (image, error) in
+                        else {
+                            currentUserCompetitorRecord = competition.secondCompetitor
+                        }
+                        currentUserCompetitorRecord.getCompetitionImageSmall(
+                            completion: { [weak self] (image, customError) in
                                 DispatchQueue.main.async {
-                                    if let error = error {
-                                        self.parentViewController?.displayError(error: error)
+                                    if let customError = customError {
+                                        self?.parentViewController?.displayError(error: customError)
                                     }
-                                    else {
-                                        self.competitionImageView.image = image
-                                    }
+                                    self?.competitionImageView.image = image
                                 }
                             }
                         )
                     }
                 }
-            }
-            
-            if let username = notificationInfo.username {
-                notificationTextLabel.text = notificationInfo.notificationText.replacingOccurrences(of: "#username", with: "@" + username)
-            }
-            else {
-                notificationTextLabel.text = notificationInfo.notificationText
             }
             
         case .follower:
@@ -111,21 +124,27 @@ class NotificationCell: UITableViewCell {
             rankImageView.isHidden = true
             
             let notificationInfo = notification.notificationInfo as! FollowerNotificationInfo
+            notificationTextLabel.text = notificationInfo.notificationText.replacingOccurrences(of: "#username", with: "@" + notificationInfo.username)
             
-            determineUserFollowStatus(userPoolUserId: notificationInfo.followerUserPoolUserId)
+            determineUserFollowStatus(userId: notificationInfo.userId)
             configureFollowerButton()
             
             // Set the notification image view image to the following users' profile image
-            UserService.instance.downloadImage(
-                userPoolUserId: notificationInfo.followerUserPoolUserId,
-                bucketType: .profileImageSmall
-            ) { (image) in
-                DispatchQueue.main.async {
-                    self.notificationImageView.image = image
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.s3BucketService.downloadImage(
+                    mediaId: notification.userId,
+                    imageType: .small
+                ) { [weak self] (image, customError) in
+                    DispatchQueue.main.async {
+                        if let customError = customError {
+                            self?.parentViewController?.displayError(error: customError)
+                        }
+                        if let image = image {
+                            self?.notificationImageView.image = image
+                        }
+                    }
                 }
             }
-            
-            notificationTextLabel.text = notificationInfo.notificationText.replacingOccurrences(of: "#username", with: "@" + notificationInfo.followerUsername)
             
         case .rankUp:
             
@@ -144,8 +163,8 @@ class NotificationCell: UITableViewCell {
         
     }
     
-    private func determineUserFollowStatus(userPoolUserId: String) {
-        followStatus = CurrentUser.followStatus(for: userPoolUserId)
+    private func determineUserFollowStatus(userId: String) {
+        followStatus = CurrentUser.getFollowedUserStatusFor(userId: userId)
     }
     
     // Configure button to display 'follow' for unfollowed users or 'following' for followed users

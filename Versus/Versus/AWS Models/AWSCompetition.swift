@@ -18,75 +18,76 @@ import AWSDynamoDB
 @objcMembers
 class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _id: String?
-    var _categoryId: NSNumber?
+    var _categoryTypeId: NSNumber?
+    var _competitionId: String?
+    var _competitionIsActive: NSNumber?
     var _competitionTypeId: NSNumber?
     var _expireDate: String?
+    var _firstEntryCommentCount: NSNumber?
+    var _firstEntryCaption: String?
+    var _firstEntryCompetitionEntryId: String?
+    var _firstEntryMediaId: String?
+    var _firstEntryUsername: String?
+    var _firstEntryUserRankId: NSNumber?
+    var _firstEntryUserId: String?
+    var _firstEntryVoteCount: NSNumber?
     var _isFeatured: NSNumber?
+    var _isFeaturedCategoryTypeId: String?
+    var _secondEntryCommentCount: NSNumber?
+    var _secondEntryCaption: String?
+    var _secondEntryCompetitionEntryId: String?
+    var _secondEntryMediaId: String?
+    var _secondEntryUsername: String?
+    var _secondEntryUserRankId: NSNumber?
+    var _secondEntryUserId: String?
+    var _secondEntryVoteCount: NSNumber?
     var _startDate: String?
-    var _status: String?
-    var _user1CompetitionEntryFinalVoteCount: NSNumber?
-    var _user1CompetitionEntryId: String?
-    var _user1ImageId: String?
-    var _user1ImageSmallId: String?
-    var _user1RankId: NSNumber?
-    var _user1Username: String?
-    var _user1VideoId: String?
-    var _user1VideoPreviewImageId: String?
-    var _user1VideoPreviewImageSmallId: String?
-    var _user1userPoolUserId: String?
-    var _user2CompetitionEntryFinalVoteCount: NSNumber?
-    var _user2CompetitionEntryId: String?
-    var _user2ImageId: String?
-    var _user2ImageSmallId: String?
-    var _user2RankId: NSNumber?
-    var _user2Username: String?
-    var _user2VideoId: String?
-    var _user2VideoPreviewImageId: String?
-    var _user2VideoPreviewImageSmallId: String?
-    var _user2userPoolUserId: String?
-    var _winningUserPoolUserId: String?
+    var _timeExtended: NSNumber?
+    var _winnerUserId: String?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_Competition"
+        return "AWS_Competition"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_id"
+        return "_competitionId"
+    }
+    
+    class func rangeKeyAttribute() -> String {
+        
+        return "_startDate"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_id" : "id",
-               "_categoryId" : "categoryId",
-               "_competitionTypeId" : "competitionTypeId",
-               "_expireDate" : "expireDate",
-               "_isFeatured" : "isFeatured",
-               "_startDate" : "startDate",
-               "_status" : "status",
-               "_user1CompetitionEntryFinalVoteCount" : "user1CompetitionEntryFinalVoteCount",
-               "_user1CompetitionEntryId" : "user1CompetitionEntryId",
-               "_user1ImageId" : "user1ImageId",
-               "_user1ImageSmallId" : "user1ImageSmallId",
-               "_user1RankId" : "user1RankId",
-               "_user1Username" : "user1Username",
-               "_user1VideoId" : "user1VideoId",
-               "_user1VideoPreviewImageId" : "user1VideoPreviewImageId",
-               "_user1VideoPreviewImageSmallId" : "user1VideoPreviewImageSmallId",
-               "_user1userPoolUserId" : "user1userPoolUserId",
-               "_user2CompetitionEntryFinalVoteCount" : "user2CompetitionEntryFinalVoteCount",
-               "_user2CompetitionEntryId" : "user2CompetitionEntryId",
-               "_user2ImageId" : "user2ImageId",
-               "_user2ImageSmallId" : "user2ImageSmallId",
-               "_user2RankId" : "user2RankId",
-               "_user2Username" : "user2Username",
-               "_user2VideoId" : "user2VideoId",
-               "_user2VideoPreviewImageId" : "user2VideoPreviewImageId",
-               "_user2VideoPreviewImageSmallId" : "user2VideoPreviewImageSmallId",
-               "_user2userPoolUserId" : "user2userPoolUserId",
-               "_winningUserPoolUserId" : "winningUserPoolUserId",
+                "_categoryTypeId" : "categoryTypeId",
+                "_competitionId" : "competitionId",
+                "_competitionIsActive" : "competitionIsActive",
+                "_competitionTypeId" : "competitionTypeId",
+                "_expireDate" : "expireDate",
+                "_firstEntryCommentCount" : "firstEntryCommentCount",
+                "_firstEntryCaption" : "firstEntryCaption",
+                "_firstEntryCompetitionEntryId" : "firstEntryCompetitionEntryId",
+                "_firstEntryMediaId" : "firstEntryMediaId",
+                "_firstEntryUsername" : "firstEntryUsername",
+                "_firstEntryUserRankId" : "firstEntryUserRankId",
+                "_firstEntryUserId" : "firstEntryUserId",
+                "_firstEntryVoteCount" : "firstEntryVoteCount",
+                "_isFeatured" : "isFeatured",
+                "_isFeaturedCategoryTypeId" : "isFeaturedCategoryTypeId",
+                "_secondEntryCommentCount" : "secondEntryCommentCount",
+                "_secondEntryCaption" : "secondEntryCaption",
+                "_secondEntryCompetitionEntryId" : "secondEntryCompetitionEntryId",
+                "_secondEntryMediaId" : "secondEntryMediaId",
+                "_secondEntryUsername" : "secondEntryUsername",
+                "_secondEntryUserRankId" : "secondEntryUserRankId",
+                "_secondEntryUserId" : "secondEntryUserId",
+                "_secondEntryVoteCount" : "secondEntryVoteCount",
+                "_startDate" : "startDate",
+                "_timeExtended" : "timeExtended",
+                "_winnerUserId" : "winnerUserId",
         ]
     }
 }

@@ -12,41 +12,48 @@ import AWSLambda
 class CommentService {
     
     static let instance = CommentService()
+    private let dynamoDB = AWSDynamoDBObjectMapper.default()
+    private let lambda = AWSLambdaInvoker.default()
     
     private init() { }
     
     
+    /**
+     
+     */
     func postComment(
         competitionEntryId: String,
         commentText: String,
-        completion: @escaping SuccessCompletion
+        completion: @escaping (_ customError: CustomError?) -> Void
     ) {
+        let awsComment: AWSComment = AWSComment()
+        awsComment._competitionEntryId = competitionEntryId
+        awsComment._createDate = Date().toISO8601String
+        awsComment._commentId = UUID().uuidString
+        awsComment._likeCount = 0.toNSNumber
+        awsComment._message = commentText
+        awsComment._userId = CurrentUser.userId
+        awsComment._username = CurrentUser.username
         
-        let comment: AWSComment = AWSComment()
-        comment._competitionEntryId = competitionEntryId
-        comment._createDate = Date().toISO8601String
-        comment._commentId = UUID().uuidString
-        comment._commentText = commentText
-        comment._userPoolUserId = CurrentUser.userPoolUserId
-        comment._username = CurrentUser.user.awsUser._username
-        
-        AWSDynamoDBObjectMapper.default().save(comment) { (error) in
+        dynamoDB.save(
+            awsComment
+        ) { (error) in
             if let error = error {
-                debugPrint("Error when posting comment: \(error.localizedDescription)")
-                completion(false)
+                completion(CustomError(error: error, message: "Unable to post comment"))
+                return
             }
-            else {
-                completion(true)
-            }
+            completion(nil)
         }
     }
     
     
+    /**
+     
+     */
     func getComments(
         for competitionEntryId: String,
         completion: @escaping (_ comments: [Comment], _ error: CustomError?) -> Void
     ) {
-        
         let queryExpression = AWSDynamoDBQueryExpression()
         queryExpression.keyConditionExpression = "#competitionEntryId = :competitionEntryId"
         queryExpression.expressionAttributeNames = [
@@ -58,35 +65,20 @@ class CommentService {
         queryExpression.scanIndexForward = false
         
         var comments = [Comment]()
-        
-        AWSDynamoDBObjectMapper.default().query(AWSComment.self, expression: queryExpression) { (paginatedOutput, error) in
+        dynamoDB.query(
+            AWSComment.self,
+            expression: queryExpression
+        ) { (paginatedOutput, error) in
             if let error = error {
-                debugPrint("Error loading comments: \(error.localizedDescription)")
-                completion(comments, CustomError(error: error, title: "", desc: "Unable to load comments"))
+                completion(comments, CustomError(error: error, message: "Unable to load comments"))
+                return
             }
-            else if let result = paginatedOutput {
-                if let awsComments = result.items as? [AWSComment] {
-                    for awsComment in awsComments {
-                        comments.append(Comment(awsComment: awsComment))
-                    }
+            if let awsComments = paginatedOutput?.items as? [AWSComment] {
+                for awsComment in awsComments {
+                    comments.append(Comment(awsComment: awsComment))
                 }
-                completion(comments, nil)
             }
-        }
-    }
-    
-    func getCommentCountFor(
-        competitionEntryId: String,
-        completion: @escaping (_ commentCount: Int?, _ customError: CustomError?) -> Void) {
-        
-        let jsonObject: [String: Any] = ["competitionEntryId": competitionEntryId]
-        AWSLambdaInvoker.default().invokeFunction("versus-1_0-GetCompetitionEntryCommentCount", jsonObject: jsonObject) { (result, error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, title: "", desc: "Unable to get comment count"))
-            }
-            else if let count = result as? Int {
-                completion(count, nil)
-            }
+            completion(comments, nil)
         }
     }
 }

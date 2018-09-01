@@ -18,43 +18,47 @@ import AWSDynamoDB
 @objcMembers
 class AWSUser: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _userPoolUserId: String?
     var _bio: String?
     var _createDate: String?
+    var _directMessageConversationIds: [String: String]?
     var _displayName: String?
+    var _followedUserCount: NSNumber?
+    var _followerCount: NSNumber?
     var _isFeatured: NSNumber?
-    var _profileBackgroundImageUpdateDate: String?
-    var _profileImageUpdateDate: String?
     var _rankId: NSNumber?
-    var _updateDate: String?
+    var _searchDisplayName: String?
+    var _searchUsername: String?
+    var _totalTimesVoted: NSNumber?
+    var _totalWins: NSNumber?
+    var _userId: String?
     var _username: String?
-    var _votes: NSNumber?
-    var _wins: NSNumber?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_User"
+        return "AWS_User"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_userPoolUserId"
+        return "_userId"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_userPoolUserId" : "userPoolUserId",
-               "_bio" : "bio",
-               "_createDate" : "createDate",
-               "_displayName" : "displayName",
-               "_isFeatured" : "isFeatured",
-               "_profileBackgroundImageUpdateDate" : "profileBackgroundImageUpdateDate",
-               "_profileImageUpdateDate" : "profileImageUpdateDate",
-               "_rankId" : "rankId",
-               "_updateDate" : "updateDate",
-               "_username" : "username",
-               "_votes" : "votes",
-               "_wins" : "wins",
+                "_bio" : "bio",
+                "_createDate" : "createDate",
+                "_directMessageConversationIds" : "directMessageConversationIds",
+                "_displayName" : "displayName",
+                "_followedUserCount" : "followedUserCount",
+                "_followerCount" : "followerCount",
+                "_isFeatured" : "isFeatured",
+                "_rankId" : "rankId",
+                "_searchDisplayName" : "searchDisplayName",
+                "_searchUsername" : "searchUsername",
+                "_totalTimesVoted" : "totalTimesVoted",
+                "_totalWins" : "totalWins",
+                "_userId" : "userId",
+                "_username" : "username",
         ]
     }
 }

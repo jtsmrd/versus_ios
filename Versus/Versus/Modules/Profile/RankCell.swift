@@ -38,10 +38,10 @@ class RankCell: UITableViewCell {
     
     func configureCell(user: User, rank: Rank) {
         
-        userRankView.isHidden = Int(exactly: user.awsUser._rankId!) != rank.id
+        userRankView.isHidden = user.rankId != rank.id
         profileImageView.image = user.profileImage
-        winsLabel.text = "\(Int(exactly: user.awsUser._wins!)!) Wins"
-        votesLabel.text = "\(Int(exactly: user.awsUser._votes!)!) Votes"
+        winsLabel.text = String(format: "%d Wins", user.totalWins)        
+        votesLabel.text = String(format: "%d Votes", user.totalTimesVoted)
         rankTitleLabel.text = rank.title
         winsRequirementLabel.text = "10+ Wins"
         votesRequirementLabel.text = "10+ Votes"

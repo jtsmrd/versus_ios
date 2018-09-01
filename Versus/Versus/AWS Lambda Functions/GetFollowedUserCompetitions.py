@@ -1,4 +1,4 @@
-# versus-1_0-GetFollowedUserCompetitions
+# GetFollowedUserCompetitions
 import boto3
 import json
 import decimal
@@ -17,10 +17,9 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 dynamodb = boto3.resource('dynamodb')
-competitionTable = dynamodb.Table('versus-mobilehub-387870640-AWS_Competition')
+competitionTable = dynamodb.Table('AWS_Competition')
 
 def lambda_handler(event, context):
-    print('My event: {}'.format(event))
     followedUserIds = event['followedUserIds']
     response = getFollowedUserCompetitions(followedUserIds)
     #return json.dumps(response, indent=1, cls=DecimalEncoder)
@@ -28,6 +27,6 @@ def lambda_handler(event, context):
 
 def getFollowedUserCompetitions(followedUserIds):
     response = competitionTable.scan(
-        FilterExpression=Attr('user1userPoolUserId').is_in(followedUserIds) | Attr('user2userPoolUserId').is_in(followedUserIds)
+        FilterExpression=Attr('firstEntryUserId').is_in(followedUserIds) | Attr('secondEntryUserId').is_in(followedUserIds)
     )
     return response

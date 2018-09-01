@@ -11,6 +11,7 @@ import AWSUserPoolsSignIn
 
 class ChangePasswordVC: UIViewController {
 
+    private let accountService = AccountService.instance
     
     @IBOutlet weak var verificationTextField: UITextField!
     @IBOutlet weak var newPasswordTextField: UITextField!
@@ -21,6 +22,10 @@ class ChangePasswordVC: UIViewController {
     var keyboardToolbar: KeyboardToolbar!
     var user: AWSCognitoIdentityUser!
     
+    
+    /**
+ 
+     */
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,11 +33,17 @@ class ChangePasswordVC: UIViewController {
     }
 
     
+    /**
+     
+     */
     func initData(user: AWSCognitoIdentityUser) {
         self.user = user
     }
     
     
+    /**
+     
+     */
     @IBAction func changePasswordButtonAction() {
         
         guard let password = newPasswordTextField.text, let confirmPassword = confirmPasswordTextField.text else {
@@ -51,9 +62,9 @@ class ChangePasswordVC: UIViewController {
         }
         
         AccountService.instance.confirmPasswordChange(
-            for: user,
-            verificationCode,
-            password
+            user: user,
+            verificationCode: verificationCode,
+            password: password
         ) { (success, customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
@@ -66,21 +77,43 @@ class ChangePasswordVC: UIViewController {
         }
     }
     
+    
+    /**
+     
+     */
     @IBAction func cancelButtonAction() {
         navigationController?.popViewController(animated: true)
     }
     
+    
+    /**
+     
+     */
     private func displaySuccessMessage() {
-        let successAlert = UIAlertController(title: "Password Changed", message: "Log in with your new password", preferredStyle: .alert)
-        successAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
-            self.performSegue(withIdentifier: UNWIND_TO_LANDING, sender: nil)
-        }))
+        let successAlert = UIAlertController(
+            title: "Password Changed",
+            message: "Log in with your new password",
+            preferredStyle: .alert
+        )
+        successAlert.addAction(
+            UIAlertAction(
+                title: "Ok",
+                style: .default,
+                handler: { (action) in
+                    self.performSegue(withIdentifier: UNWIND_TO_LANDING, sender: nil)
+                }
+            )
+        )
         present(successAlert, animated: true, completion: nil)
     }
 }
 
 extension ChangePasswordVC: UITextFieldDelegate {
     
+    
+    /**
+     
+     */
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         textField.inputAccessoryView = keyboardToolbar
         return true

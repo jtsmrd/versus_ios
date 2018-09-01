@@ -170,7 +170,7 @@ class CompetitionEntryVC: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let competitionDetailsVC = segue.destination as? CompetitionDetailsVC {
             if let image = sender as? UIImage {
-                competitionDetailsVC.initData(image: image, videoUrlAsset: nil, videoPreviewImage: nil)
+                competitionDetailsVC.initData(image: image)
             }
         }
         else if let swiftyCamVC = segue.destination as? SwiftyCamVC {

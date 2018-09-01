@@ -9,7 +9,6 @@
 import UIKit
 
 class LeaderCell: UITableViewCell {
-
     
     @IBOutlet weak var leaderRankLabel: UILabel!
     @IBOutlet weak var leaderImageView: CircleImageView!
@@ -31,17 +30,17 @@ class LeaderCell: UITableViewCell {
     
     func configureCell(leader: Leader, leaderboardType: LeaderboardType, leaderRank: Int) {
         
-        leaderRankLabel.text = String(format: "%i", leaderRank)
+        leaderRankLabel.text = String(format: "%d", leaderRank)
         leaderUsernameLabel.text = leader.username
-        leaderWinsLabel.text = String(format: "    %i wins", leader.totalWins)
-        leaderVotesLabel.text = String(format: "    %i votes", leader.totalVotes)
+        leaderWinsLabel.text = String(format: "    %d wins", leader.wins)
+        leaderVotesLabel.text = String(format: "    %d votes", leader.votes)
         
         S3BucketService.instance.downloadImage(
-            imageName: leader.userPoolUserId,
-            bucketType: .profileImageSmall
-        ) { (image, error) in
-            if let error = error {
-                debugPrint("Could not load user profile image: \(error.localizedDescription)")
+            mediaId: leader.userId,
+            imageType: .small
+        ) { (image, customError) in
+            if let customError = customError {
+                debugPrint(customError.message)
             }
             else if let image = image {
                 DispatchQueue.main.async {

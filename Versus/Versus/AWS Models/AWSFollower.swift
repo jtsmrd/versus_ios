@@ -18,35 +18,38 @@ import AWSDynamoDB
 @objcMembers
 class AWSFollower: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _id: String?
     var _createDate: String?
-    var _followedUserDisplayName: String?
-    var _followedUserId: String?
-    var _followedUserUsername: String?
-    var _followerDisplayName: String?
+    var _displayName: String?
     var _followerUserId: String?
-    var _followerUsername: String?
+    var _searchDisplayName: String?
+    var _searchUsername: String?
+    var _username: String?
+    var _userId: String?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_Follower"
+        return "AWS_Follower"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_id"
+        return "_userId"
+    }
+    
+    class func rangeKeyAttribute() -> String {
+        
+        return "_createDate"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_id" : "id",
-               "_createDate" : "createDate",
-               "_followedUserDisplayName" : "followedUserDisplayName",
-               "_followedUserId" : "followedUserId",
-               "_followedUserUsername" : "followedUserUsername",
-               "_followerDisplayName" : "followerDisplayName",
-               "_followerUserId" : "followerUserId",
-               "_followerUsername" : "followerUsername",
+                "_createDate" : "createDate",
+                "_displayName" : "displayName",
+                "_followerUserId" : "followerUserId",
+                "_searchDisplayName" : "searchDisplayName",
+                "_searchUsername" : "searchUsername",
+                "_username" : "username",
+                "_userId" : "userId",
         ]
     }
 }

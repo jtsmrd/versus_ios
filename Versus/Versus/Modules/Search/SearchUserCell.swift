@@ -19,109 +19,131 @@ class SearchUserCell: UITableViewCell {
     @IBOutlet weak var displayNameLabel: UILabel!
     @IBOutlet weak var followButton: FollowButton!
     
-    var user: User!
-    var followStatus: FollowStatus = .notFollowing
-    var delegate: SearchUserCellDelegate!
+    weak var user: User?
+    var delegate: SearchUserCellDelegate?
+    var followStatus: FollowStatus {
+        return CurrentUser.getFollowedUserStatusFor(userId: user!.userId)
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        profileImageView.image = nil
+        usernameLabel.text = nil
+        displayNameLabel.text = nil
+        user = nil
+        delegate = nil
+    }
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
-    func configureCell(user: User, delegate: SearchUserCellDelegate) {
-        self.user = user
-        self.delegate = delegate
-        
-        determineUserFollowStatus()
-        configureFollowerButton()
-        
-        usernameLabel.text = "@\(user.awsUser._username!)"
-        displayNameLabel.text = user.awsUser._displayName
-        
-        if let _ = user.awsUser._profileImageUpdateDate, user.profileImage == nil {
-            S3BucketService.instance.downloadImage(imageName: user.awsUser._userPoolUserId!, bucketType: .profileImageSmall) { (image, error) in
-                if let error = error {
-                    debugPrint("Could not load user profile image: \(error.localizedDescription)")
-                }
-                else if let image = image {
-                    self.user.profileImage = image
-                    DispatchQueue.main.async {
-                        self.profileImageView.image = image
-                    }
-                }
-            }
-        }
-    }
     
+    /**
+     
+     */
     @IBAction func followButtonAction() {
         switch followStatus {
         case .following:
-            displayConfirmUnfollowUser()
+            displayUnfollowConfirmation()
         case .notFollowing:
             followUser()
         }
     }
     
-    private func determineUserFollowStatus() {
-        followStatus = CurrentUser.followStatus(for: user)
-    }
     
-    // Configure button to display 'follow' for unfollowed users or 'following' for followed users
-    private func configureFollowerButton() {
+    /**
+     
+     */
+    func configureCell(user: User?, delegate: SearchUserCellDelegate) {
+        guard let user = user else {
+            // Show loading state
+            return
+        }
+        self.user = user
+        self.delegate = delegate
         followButton.setButtonState(followStatus: followStatus)
-    }
-    
-    private func followUser() {
-        FollowerService.instance.followUser(
-            userToFollow: user,
-            currentUser: CurrentUser.user
-        ) { (success, error) in
-            if let error = error {
-                self.delegate.searchUserCellFollowButtonActionError(error: error)
-            }
-            else if success {
-                self.determineUserFollowStatus()
-                self.configureFollowerButton()
+        usernameLabel.text = user.username
+        displayNameLabel.text = user.displayName
+        user.getProfileImage { (image, error) in
+            DispatchQueue.main.async {
+                self.profileImageView.image = image
             }
         }
     }
     
-    private func displayConfirmUnfollowUser() {
+    
+    /**
+ 
+     */
+    private func followUser() {
+        CurrentUser.follow(
+            user: user!
+        ) { (customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.delegate?.searchUserCellFollowButtonActionError(error: customError)
+                    return
+                }
+                self.followButton.setButtonState(followStatus: self.followStatus)
+            }
+        }
+    }
+    
+    
+    /**
+     
+     */
+    private func displayUnfollowConfirmation() {
         if let parentVC = parentViewController {
-            let confirmUnfollowAlertVC = UIAlertController(title: "Confirm Unfollow", message: "Are you sure you want to unfollow @\(user.awsUser._username!)", preferredStyle: .actionSheet)
-            confirmUnfollowAlertVC.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { (action) in
-                self.unfollowUser()
-            }))
-            confirmUnfollowAlertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
-                
-            }))
+            let confirmUnfollowAlertVC = UIAlertController(
+                title: "Confirm Unfollow",
+                message: "Are you sure you want to unfollow @\(user!.username)",
+                preferredStyle: .actionSheet
+            )
+            confirmUnfollowAlertVC.addAction(
+                UIAlertAction(
+                    title: "Unfollow",
+                    style: .destructive,
+                    handler: { (action) in
+                        self.unfollowUser()
+                    }
+                )
+            )
+            confirmUnfollowAlertVC.addAction(
+                UIAlertAction(
+                    title: "Cancel",
+                    style: .cancel,
+                    handler: nil
+                )
+            )
             parentVC.present(confirmUnfollowAlertVC, animated: true, completion: nil)
         }
     }
     
+    
+    /**
+     
+     */
     private func unfollowUser() {
-        if let follower = CurrentUser.getFollower(for: user) {
-            FollowerService.instance.unfollowUser(
-                followedUser: follower,
-                currentUser: CurrentUser.user
-            ) { (success, error) in
-                if let error = error {
-                    self.delegate.searchUserCellFollowButtonActionError(error: error)
+        CurrentUser.unfollow(
+            user: user!
+        ) { (customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    self.delegate?.searchUserCellFollowButtonActionError(error: customError)
+                    return
                 }
-                else if success {
-                    self.determineUserFollowStatus()
-                    self.configureFollowerButton()
-                }
+                self.followButton.setButtonState(followStatus: self.followStatus)
             }
-        }
-        else {
-            delegate.searchUserCellFollowButtonActionError(error: CustomError(error: nil, title: "", desc: "Unable to unfollow user"))
         }
     }
 }

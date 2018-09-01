@@ -10,123 +10,137 @@ import UIKit
 
 class User {
     
-    var awsUser: AWSUser!
+    private let s3BucketService = S3BucketService.instance
+    private let competitionService = CompetitionService.instance
+    private let followerService = FollowerService.instance
+    private let followedUserService = FollowedUserService.instance
+    
+    var bio: String
+    var displayName: String
+    var followedUserCount: Int
+    var followerCount: Int
+    var isFeatured: Bool
+    var rankId: Int
+    var totalTimesVoted: Int
+    var totalWins: Int
+    var userId: String
+    var username: String
+    
     var profileImage: UIImage?
     var profileBackgroundImage: UIImage?
-    var rank: Rank {
-        get {
-            return RankCollection.instance.ranks.first(where: { $0.id == Int(exactly: awsUser._rankId!)! })!
-        }
-    }
     var followers = [Follower]()
-    var followedUsers = [Follower]()
+    var followedUsers = [FollowedUser]()
     var competitions = [Competition]()
+    var rank: Rank {
+        return RankCollection.instance.rankFor(rankId: rankId)
+    }
     
+    
+    /**
+     
+     */
     init(awsUser: AWSUser) {
-        self.awsUser = awsUser
+        self.bio = awsUser._bio ?? ""
+        self.displayName = awsUser._displayName ?? ""
+        self.followedUserCount = awsUser._followedUserCount?.intValue ?? 0
+        self.followerCount = awsUser._followerCount?.intValue ?? 0
+        self.isFeatured = awsUser._isFeatured?.boolValue ?? false
+        self.rankId = awsUser._rankId?.intValue ?? 1
+        self.totalTimesVoted = awsUser._totalTimesVoted?.intValue ?? 0
+        self.totalWins = awsUser._totalWins?.intValue ?? 0
+        self.userId = awsUser._userId ?? ""
+        self.username = awsUser._username ?? ""
     }
     
-    func getProfileImage(completion: @escaping (UIImage?) -> Void) {
-        
-        guard awsUser._profileImageUpdateDate != nil else {
-            completion(nil)
-            return
-        }
-        
+    
+    /**
+     
+     */
+    func getProfileImage(
+        completion: @escaping (_ profileImage: UIImage?, _ customError: CustomError?) -> Void
+    ) {
         guard profileImage == nil else {
-            completion(profileImage)
+            completion(profileImage, nil)
             return
         }
-        S3BucketService.instance.downloadImage(
-            imageName: awsUser._userPoolUserId!,
-            bucketType: .profileImage
-        ) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download profile image: \(error.localizedDescription)")
-                completion(nil)
-            }
-            else if let image = image {
-                self.profileImage = image
-                completion(image)
-            }
+        s3BucketService.downloadImage(
+            mediaId: userId,
+            imageType: .small
+        ) { (image, customError) in
+            self.profileImage = image
+            completion(image, customError)
         }
     }
     
-    func getProfileBackgroundImage(completion: @escaping (UIImage?) -> Void) {
-        
-        guard awsUser._profileBackgroundImageUpdateDate != nil else {
-            completion(nil)
-            return
-        }
-        
+    
+    /**
+     
+     */
+    func getProfileBackgroundImage(
+        completion: @escaping (_ profileBackgroundImage: UIImage?, _ customError: CustomError?) -> Void
+    ) {
         guard profileBackgroundImage == nil else {
-            completion(profileBackgroundImage)
+            completion(profileBackgroundImage, nil)
             return
         }
-        S3BucketService.instance.downloadImage(
-            imageName: awsUser._userPoolUserId!,
-            bucketType: .profileBackgroundImage
-        ) { (image, error) in
-            if let error = error {
-                debugPrint("Could not download profile background image: \(error.localizedDescription)")
-                completion(nil)
-            }
-            else if let image = image {
-                self.profileBackgroundImage = image
-                completion(image)
-            }
-        }
-    }
-    
-    func getFollowers(completion: @escaping SuccessErrorCompletion) {
-        
-        FollowerService.instance.getFollowers(for: awsUser) { (followers, error) in
-            if let error = error {
-                completion(false, error)
-            }
-            else {
-                self.followers = followers
-                completion(true, nil)
-            }
+        s3BucketService.downloadImage(
+            mediaId: userId,
+            imageType: .background
+        ) { (image, customError) in
+            self.profileBackgroundImage = image
+            completion(image, customError)
         }
     }
     
     
-    //TODO: If new users are followed, they won't be accounted for. Integrate AWS caching for this
-    func getFollowedUsers(completion: @escaping (_ followedUsers: [Follower]?, _ customError: CustomError?) -> Void) {
-        
-        guard self.followedUsers.count == 0 else {
-            completion(self.followedUsers, nil)
-            return
-        }
-        
-        FollowerService.instance.getFollowedUsers(for: awsUser) { (followedUsers, error) in
-            if let error = error {
-                completion(nil, error)
-            }
-            else {
-                self.followedUsers = followedUsers
-                completion(followedUsers, nil)
-            }
+    // TODO: Handle pagination
+    /**
+     
+     */
+    func getFollowers(
+        completion: @escaping (_ followers: [Follower], _ customError: CustomError?) -> Void
+    ) {
+        followerService.getFollowers(
+            userId: userId
+        ) { (followers, customError) in
+            self.followers = followers
+            completion(followers, customError)
         }
     }
     
-    func getCompetitions(completion: @escaping SuccessErrorCompletion) {
-        
-        CompetitionService.instance.getCompetitionsFor(userPoolUserId: awsUser._userPoolUserId!) { (competitions, error) in
-            if let error = error {
-                completion(false, error)
-            }
-            else {
-                
-                // Only add new competitions
-                for competition in competitions {
-                    if !self.competitions.contains(where: { $0.awsCompetition._id == competition.awsCompetition._id }) {
-                        self.competitions.append(competition)
-                    }
+    
+    // TODO: Handle pagination
+    /**
+     
+     */
+    func getFollowedUsers(
+        completion: @escaping (_ followedUsers: [FollowedUser], _ customError: CustomError?) -> Void
+    ) {
+        followedUserService.getFollowedUsers(
+            userId: userId
+        ) { (followedUsers, customError) in
+            self.followedUsers = followedUsers
+            completion(followedUsers, customError)
+        }
+    }
+    
+    
+    /**
+ 
+     */
+    func getCompetitions(
+        completion: @escaping (_ competitions: [Competition], _ customError: CustomError?) -> Void
+    ) {
+        competitionService.getCompetitionsFor(
+            userId: userId
+        ) { (competitions, error) in
+            // Only add new competitions
+            for competition in competitions {
+                if !self.competitions.contains(where: { $0.competitionId == competition.competitionId }) {
+                    self.competitions.append(competition)
                 }
-                completion(true, nil)
             }
+            completion(self.competitions, error)
         }
     }
 }

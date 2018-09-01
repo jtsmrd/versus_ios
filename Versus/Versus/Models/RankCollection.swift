@@ -12,6 +12,11 @@ class RankCollection {
     
     static let instance = RankCollection()
     var ranks = [Rank]()
+    var rank1: Rank!
+    var rank2: Rank!
+    var rank3: Rank!
+    var rank4: Rank!
+    var rank5: Rank!
     
     private init() {
         configureRanks()
@@ -19,11 +24,11 @@ class RankCollection {
     
     private func configureRanks() {
         
-        let rank1 = Rank(id: 1, imageName: "Rookie", title: "Rookie", requiredWins: 10, requiredVotes: 100)
-        let rank2 = Rank(id: 2, imageName: "Star", title: "Star", requiredWins: 50, requiredVotes: 1000)
-        let rank3 = Rank(id: 3, imageName: "SuperStar", title: "Super Star", requiredWins: 100, requiredVotes: 10000)
-        let rank4 = Rank(id: 4, imageName: "Legend", title: "Legend", requiredWins: 300, requiredVotes: 50000)
-        let rank5 = Rank(id: 5, imageName: "Hall-of-Fame", title: "Hall of Fame", requiredWins: 500, requiredVotes: 100000)
+        rank1 = Rank(id: 1, imageName: "Rookie", title: "Rookie", requiredWins: 10, requiredVotes: 100)
+        rank2 = Rank(id: 2, imageName: "Star", title: "Star", requiredWins: 50, requiredVotes: 1000)
+        rank3 = Rank(id: 3, imageName: "SuperStar", title: "Super Star", requiredWins: 100, requiredVotes: 10000)
+        rank4 = Rank(id: 4, imageName: "Legend", title: "Legend", requiredWins: 300, requiredVotes: 50000)
+        rank5 = Rank(id: 5, imageName: "Hall-of-Fame", title: "Hall of Fame", requiredWins: 500, requiredVotes: 100000)
         ranks.append(contentsOf: [rank5, rank4, rank3, rank2, rank1])
     }
     
@@ -32,6 +37,13 @@ class RankCollection {
             return UIImage(named: rank.imageName)
         }
         return nil
+    }
+    
+    func rankFor(rankId: Int) -> Rank {
+        if let rank = ranks.first(where: { $0.id == rankId }) {
+            return rank
+        }
+        return rank1
     }
 }
 
@@ -42,4 +54,7 @@ struct Rank {
     var title: String
     var requiredWins: Int
     var requiredVotes: Int
+    var image: UIImage? {
+        return UIImage(named: imageName)
+    }
 }

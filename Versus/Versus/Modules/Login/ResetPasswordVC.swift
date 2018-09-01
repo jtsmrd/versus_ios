@@ -11,6 +11,9 @@ import AWSUserPoolsSignIn
 
 class ResetPasswordVC: UIViewController {
 
+    private let accountService = AccountService.instance
+    private let cognito = AWSCognitoIdentityUserPool.default()
+    
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var resetPasswordButton: RoundButton!
     
@@ -36,9 +39,10 @@ class ResetPasswordVC: UIViewController {
             return
         }
         
-        user = AWSCognitoIdentityUserPool.default().getUser(email)
-        
-        AccountService.instance.resetPassword(for: user) { (successMessage, customError) in
+        user = cognito.getUser(email)
+        accountService.resetPassword(
+            user: user
+        ) { (successMessage, customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
                     self.displayError(error: customError)
@@ -51,10 +55,20 @@ class ResetPasswordVC: UIViewController {
     }
     
     private func displaySuccessMessage(message: String) {
-        let successAlert = UIAlertController(title: "Verification Sent", message: message, preferredStyle: .alert)
-        successAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
-            self.performSegue(withIdentifier: CHANGE_PASSWORD_VC, sender: nil)
-        }))
+        let successAlert = UIAlertController(
+            title: "Verification Sent",
+            message: message,
+            preferredStyle: .alert
+        )
+        successAlert.addAction(
+            UIAlertAction(
+                title: "Ok",
+                style: .default,
+                handler: { (action) in
+                    self.performSegue(withIdentifier: CHANGE_PASSWORD_VC, sender: nil)
+                }
+            )
+        )
         present(successAlert, animated: true, completion: nil)
     }
     

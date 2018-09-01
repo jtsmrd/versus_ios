@@ -11,68 +11,83 @@ import AWSDynamoDB
 class NotificationService {
     
     static let instance = NotificationService()
+    private let dynamoDB = AWSDynamoDBObjectMapper.default()
     
     private init() { }
     
     
-    func getCurrentUserNotifications(completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void) {
-        
+    /**
+ 
+     */
+    func getCurrentUserNotifications(
+        completion: @escaping (_ notifications: [VersusNotification], _ error: CustomError?) -> Void
+    ) {
         let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#notifyUserPoolUserId = :notifyUserPoolUserId"
+        queryExpression.keyConditionExpression = "#userId = :userId"
         queryExpression.expressionAttributeNames = [
-            "#notifyUserPoolUserId": "notifyUserPoolUserId"
+            "#userId": "userId"
         ]
         queryExpression.expressionAttributeValues = [
-            ":notifyUserPoolUserId": CurrentUser.userPoolUserId
+            ":userId": CurrentUser.userId
         ]
         queryExpression.scanIndexForward = false
         
-        var notifications = [Notification]()
-        
-        AWSDynamoDBObjectMapper.default().query(
+        var notifications = [VersusNotification]()
+        dynamoDB.query(
             AWSNotification.self,
             expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
-                debugPrint("Error loading user notifications: \(error.localizedDescription)")
-                completion(notifications, CustomError(error: error, title: "", desc: "Unable to load user notifications"))
+                completion(notifications, CustomError(error: error, message: "Unable to load user notifications"))
+                return
             }
-            else if let result = paginatedOutput {
-                if let awsNotifications = result.items as? [AWSNotification] {
-                    for awsNotification in awsNotifications {
-                        notifications.append(Notification(awsNotification: awsNotification))
-                    }
+            if let result = paginatedOutput,
+                let awsNotifications = result.items as? [AWSNotification] {
+                for awsNotification in awsNotifications {
+                    notifications.append(VersusNotification(awsNotification: awsNotification))
                 }
-                completion(notifications, nil)
             }
+            completion(notifications, nil)
         }
     }
     
     
-    /// Sets the AWSNotification records' wasViewed flag to true.
-    func setNotificationWasViewed(_ notification: Notification, completion: @escaping SuccessErrorCompletion) {
-        
-        notification.awsNotification._wasViewed = 1.toNSNumber
-        
-        AWSDynamoDBObjectMapper.default().save(notification.awsNotification) { (error) in
+    /**
+        Mark notification as viewed.
+     */
+    func markNotificationViewed(
+        awsNotification: AWSNotification,
+        completion: ((_ customError: CustomError?) -> Void)?
+    ) {
+        awsNotification._wasViewed = 1.toNSNumber
+        dynamoDB.save(
+            awsNotification
+        ) { (error) in
             if let error = error {
-                completion(false, CustomError(error: error, title: "", desc: "Unable to update notification."))
+                awsNotification._wasViewed = 0.toNSNumber
+                completion?(CustomError(error: error, message: "Unable to update notification"))
+                return
             }
-            completion(true, nil)
+            completion?(nil)
         }
     }
     
     
-    /// Deletes the Notification record from DynamoDB.
-    func deleteNotification(notification: Notification, completion: @escaping SuccessErrorCompletion) {
-        
-        AWSDynamoDBObjectMapper.default().remove(notification.awsNotification) { (error) in
+    /**
+        Deletes the Notification record from DynamoDB.
+     */
+    func deleteNotification(
+        awsNotification: AWSNotification,
+        completion: @escaping (_ customError: CustomError?) -> Void
+    ) {
+        dynamoDB.remove(
+            awsNotification
+        ) { (error) in
             if let error = error {
-                completion(false, CustomError(error: error, title: "", desc: "Unable to delete notification"))
+                completion(CustomError(error: error, message: "Unable to delete notification"))
+                return
             }
-            else {
-                completion(true, nil)
-            }
+            completion(nil)
         }
     }
 }

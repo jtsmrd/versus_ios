@@ -14,162 +14,141 @@ import AWSLambda
 class CompetitionService {
     
     static let instance = CompetitionService()
+    private let dynamoDB = AWSDynamoDBObjectMapper.default()
+    private let lambda = AWSLambdaInvoker.default()
+    private let s3BucketService = S3BucketService.instance
     
     private init() { }
     
     
-    
-    func getFeaturedCompetitions(
-        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void) {
-        
-        let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "#isFeatured = :isFeatured"
-        scanExpression.expressionAttributeNames = [
-            "#isFeatured": "isFeatured"
-        ]
-        
-        scanExpression.expressionAttributeValues = [
-            ":isFeatured": 1
-        ]
-        
-        var competitions = [Competition]()
-        
-        AWSDynamoDBObjectMapper.default().scan(
-            AWSCompetition.self,
-            expression: scanExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(competitions, CustomError(error: error, title: "", desc: "Unable to get featured competitions"))
-            }
-            else if let result = paginatedOutput {
-                for competition in result.items {
-                    competitions.append(Competition(awsCompetition: competition as! AWSCompetition))
-                }
-                completion(competitions, nil)
-            }
-            else {
-                completion(competitions, nil)
-            }
-        }
-    }
-    
-    
     //TODO: Sort results by newest Competition
+    /**
+     
+     */
     func getFollowedUserCompetitions(
-        _ followedUserIds: [String],
-        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void) {
-        
+        followedUserIds: [String],
+        completion: @escaping (_ competitions: [Competition], _ customError: CustomError?) -> Void
+    ) {
         var competitions = [Competition]()
-        
         let jsonObject: [String: Any] = ["followedUserIds": followedUserIds]
-        AWSLambdaInvoker.default().invokeFunction("versus-1_0-GetFollowedUserCompetitions", jsonObject: jsonObject) { (result, error) in
+        lambda.invokeFunction("GetFollowedUserCompetitions", jsonObject: jsonObject) { (result, error) in
             if let error = error {
-                completion(competitions, CustomError(error: error, title: "", desc: "Unable to get followed user Competitions"))
+                completion(competitions, CustomError(error: error, message: "Unable to get followed user Competitions"))
+                return
             }
-            else if let result = result as? NSDictionary {
-                if let competitionsDict = result["Items"] as? NSArray {
-                    for competitionDict in competitionsDict {
-                        if let competition = CompetitionParser().fromDictionary(competitionDictionary: competitionDict as! NSDictionary) {
-                            competitions.append(competition)
-                        }
-                    }
+            if let result = result as? NSDictionary,
+                let competitionsDict = result["Items"] as? NSArray {
+                for competitionDict in competitionsDict {
+                    let competition = CompetitionParser().fromDictionary(competitionDictionary: competitionDict as! NSDictionary)
+                    competitions.append(competition)
                 }
-                completion(competitions, nil)
             }
-            else {
-                completion(competitions, CustomError(error: nil, title: "", desc: "Error getting followed user Compeitions"))
-            }
+            completion(competitions, nil)
         }
     }
     
     
-    func getFeaturedCompetitionsWith(
-        categoryId id: Int,
-        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void) {
-        
-        let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "#isFeatured = :isFeatured AND #categoryId = :categoryId"
-        scanExpression.expressionAttributeNames = [
-            "#isFeatured": "isFeatured",
-            "#categoryId": "categoryId"
-        ]
-        
-        scanExpression.expressionAttributeValues = [
-            ":isFeatured": 1,
-            ":categoryId": id
-        ]
+    /**
+     
+     */
+    func getFeaturedCompetitions(
+        categoryId: Int?,
+        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void
+    ) {
+        let queryExpression = AWSDynamoDBQueryExpression()
+        if let categoryId = categoryId {
+            queryExpression.keyConditionExpression = "#isFeaturedCategoryTypeId = :isFeaturedCatType AND startDate < :currentDate"
+            queryExpression.expressionAttributeNames = [
+                "#isFeaturedCategoryTypeId": "isFeaturedCategoryTypeId"
+            ]
+            queryExpression.expressionAttributeValues = [
+                ":isFeaturedCatType": String(format: "1|%d", categoryId),
+                ":currentDate": Date().toISO8601String
+            ]
+            queryExpression.indexName = "isFeaturedCategoryTypeId-startDate-index"
+        }
+        else {
+            queryExpression.keyConditionExpression = "#isFeatured = :isFeatured AND startDate < :currentDate"
+            queryExpression.expressionAttributeNames = [
+                "#isFeatured": "isFeatured"
+            ]
+            queryExpression.expressionAttributeValues = [
+                ":isFeatured": 1,
+                ":currentDate": Date().toISO8601String
+            ]
+            queryExpression.indexName = "isFeatured-startDate-index"
+        }
+        queryExpression.scanIndexForward = false
         
         var competitions = [Competition]()
-        
-        AWSDynamoDBObjectMapper.default().scan(
+        dynamoDB.query(
             AWSCompetition.self,
-            expression: scanExpression
+            expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
-                completion(competitions, CustomError(error: error, title: "", desc: "Unable to get featured competitions"))
+                completion(competitions, CustomError(error: error, message: "Unable to get featured competitions"))
+                return
             }
-            else if let result = paginatedOutput {
+            if let result = paginatedOutput {
                 for competition in result.items {
                     competitions.append(Competition(awsCompetition: competition as! AWSCompetition))
                 }
-                completion(competitions, nil)
             }
-            else {
-                completion(competitions, nil)
-            }
+            completion(competitions, nil)
         }
     }
     
     
+    /**
+     
+     */
     func getCompetitionsFor(
-        userPoolUserId userId: String,
-        completion: @escaping (_ competitions: [Competition],
-        _ error: CustomError?) -> Void) {
-        
+        userId: String,
+        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void
+    ) {
         let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "#user1userPoolUserId = :userPoolUserId OR #user2userPoolUserId = :userPoolUserId"
+        scanExpression.filterExpression = "#firstEntryUserId = :userId OR #secondEntryUserId = :userId"
         scanExpression.expressionAttributeNames = [
-            "#user1userPoolUserId": "user1userPoolUserId",
-            "#user2userPoolUserId": "user2userPoolUserId"
+            "#firstEntryUserId": "firstEntryUserId",
+            "#secondEntryUserId": "secondEntryUserId"
         ]
-        
         scanExpression.expressionAttributeValues = [
-            ":userPoolUserId": userId
+            ":userId": userId
         ]
         
         var competitions = [Competition]()
-        
-        AWSDynamoDBObjectMapper.default().scan(
+        dynamoDB.scan(
             AWSCompetition.self,
             expression: scanExpression
         ) { (paginatedOutput, error) in
             if let error = error {
-                completion(competitions, CustomError(error: error, title: "", desc: "Unable to get competitions for user"))
+                completion(competitions, CustomError(error: error, message: "Unable to get competitions for user"))
+                return
             }
-            else if let result = paginatedOutput {
+            if let result = paginatedOutput {
                 for competition in result.items {
                     competitions.append(Competition(awsCompetition: competition as! AWSCompetition))
                 }
-                completion(competitions, nil)
             }
-            else {
-                completion(competitions, nil)
-            }
+            completion(competitions, nil)
         }
     }
     
     
+    /**
+     
+     */
     func getCompetition(
-        with id: String,
-        completion: @escaping (_ competition: Competition?, _ error: CustomError?) -> Void) {
-        
-        AWSDynamoDBObjectMapper.default().load(
+        competitionId: String,
+        completion: @escaping (_ competition: Competition?, _ error: CustomError?) -> Void
+    ) {
+        dynamoDB.load(
             AWSCompetition.self,
-            hashKey: id,
+            hashKey: competitionId,
             rangeKey: nil
         ) { (awsCompetition, error) in
             if let error = error {
-                completion(nil, CustomError(error: error, title: "", desc: "Unable to get competition"))
+                completion(nil, CustomError(error: error, message: "Unable to get competition"))
             }
             else if let awsCompetition = awsCompetition as? AWSCompetition {
                 completion(Competition(awsCompetition: awsCompetition), nil)
@@ -177,83 +156,6 @@ class CompetitionService {
             else {
                 completion(nil, nil)
             }
-        }
-    }
-    
-    
-    // Download the competition image corresponding to the competitionUser and bucketType
-    func getCompetitionImage(
-        for competitionUser: CompetitionUser,
-        competition: Competition,
-        bucketType: S3BucketType,
-        completion: @escaping (_ image: UIImage?, _ error: Error?) -> Void) {
-        
-        var imageName = ""
-        
-        // Get the appropriate image name for each combination of user/ bucket type
-        switch competitionUser {
-        case .user1:
-            
-            switch bucketType {
-            case .profileImage, .profileImageSmall, .profileBackgroundImage:
-                imageName = competition.awsCompetition._user1userPoolUserId!
-            case .competitionImage:
-                imageName = competition.awsCompetition._user1ImageId!
-            case .competitionImageSmall:
-                imageName = competition.awsCompetition._user1ImageSmallId!
-            case .competitionVideoPreviewImage:
-                imageName = competition.awsCompetition._user1VideoPreviewImageId!
-            case .competitionVideoPreviewImageSmall:
-                imageName = competition.awsCompetition._user1VideoPreviewImageSmallId!
-            case .competitionVideo:
-                break
-            }
-            
-        case .user2:
-            
-            switch bucketType {
-            case .profileImage, .profileImageSmall, .profileBackgroundImage:
-                imageName = competition.awsCompetition._user2userPoolUserId!
-            case .competitionImage:
-                imageName = competition.awsCompetition._user2ImageId!
-            case .competitionImageSmall:
-                imageName = competition.awsCompetition._user2ImageSmallId!
-            case .competitionVideoPreviewImage:
-                imageName = competition.awsCompetition._user2VideoPreviewImageId!
-            case .competitionVideoPreviewImageSmall:
-                imageName = competition.awsCompetition._user2VideoPreviewImageSmallId!
-            case .competitionVideo:
-                break
-            }
-        }
-        
-        S3BucketService.instance.downloadImage(
-            imageName: imageName,
-            bucketType: bucketType
-        ) { (image, error) in
-            completion(image, error)
-        }
-    }
-    
-    func getCompetitionVideo(
-        for competitionUser: CompetitionUser,
-        competition: Competition,
-        completion: @escaping (_ videoAsset: AVURLAsset?, _ error: Error?) -> Void) {
-        
-        var videoName = ""
-        
-        switch competitionUser {
-        case .user1:
-            videoName = competition.awsCompetition._user1VideoId!
-        case .user2:
-            videoName = competition.awsCompetition._user2VideoId!
-        }
-        
-        S3BucketService.instance.downloadVideo(
-            videoName: videoName,
-            bucketType: .competitionVideo
-        ) { (asset, error) in
-            completion(asset, error)
         }
     }
 }

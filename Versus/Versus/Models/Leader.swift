@@ -16,36 +16,36 @@ enum LeaderType: Int {
 
 class Leader {
     
-    var awsLeader: AWSDynamoDBObjectModel!
-    var leaderType: LeaderType!
-    var username: String!
-    var totalWins: Int!
-    var totalVotes: Int!
-    var userPoolUserId: String!
+    var awsLeader: AWSDynamoDBObjectModel
+    var leaderType: LeaderType = .allTime
+    var username: String = ""
+    var wins: Int = 0
+    var votes: Int = 0
+    var userId: String = ""
     
     init(awsLeader: AWSDynamoDBObjectModel) {
         self.awsLeader = awsLeader
         
         if let weeklyLeader = awsLeader as? AWSWeeklyLeader {
-            leaderType = .weekly
-            username = String(format: "@%@", weeklyLeader._username!)
-            totalWins = weeklyLeader._totalWinsDuringWeek!.intValue
-            totalVotes = weeklyLeader._totalVotesDuringWeek!.intValue
-            userPoolUserId = weeklyLeader._userPoolUserId!
+            self.leaderType = .weekly
+            self.userId = weeklyLeader._userId ?? ""
+            self.username = weeklyLeader._username ?? ""
+            self.wins = weeklyLeader._wins?.intValue ?? 0
+            self.votes = weeklyLeader._votes?.intValue ?? 0
         }
         else if let monthlyLeader = awsLeader as? AWSMonthlyLeader {
-            leaderType = .monthly
-            username = String(format: "@%@", monthlyLeader._username!)
-            totalWins = monthlyLeader._totalWinsDuringMonth!.intValue
-            totalVotes = monthlyLeader._totalVotesDuringMonth!.intValue
-            userPoolUserId = monthlyLeader._userPoolUserId!
+            self.leaderType = .monthly
+            self.userId = monthlyLeader._userId ?? ""
+            self.username = monthlyLeader._username ?? ""
+            self.wins = monthlyLeader._wins?.intValue ?? 0
+            self.votes = monthlyLeader._votes?.intValue ?? 0
         }
         else if let allTimeLeader = awsLeader as? AWSAllTimeLeader {
-            leaderType = .allTime
-            username = String(format: "@%@", allTimeLeader._username!)
-            totalWins = allTimeLeader._totalWins!.intValue
-            totalVotes = allTimeLeader._totalVotes!.intValue
-            userPoolUserId = allTimeLeader._userPoolUserId!
+            self.leaderType = .allTime
+            self.userId = allTimeLeader._userId ?? ""
+            self.username = allTimeLeader._username ?? ""
+            self.wins = allTimeLeader._wins?.intValue ?? 0
+            self.votes = allTimeLeader._votes?.intValue ?? 0
         }
     }
 }

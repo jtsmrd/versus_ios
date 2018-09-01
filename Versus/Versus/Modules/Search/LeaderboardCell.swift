@@ -22,12 +22,12 @@ class LeaderboardCell: UICollectionViewCell {
     
     
     func configureCell(leaderboard: Leaderboard) {
-        leaderboardTitleLabel.text = leaderboard.leaderboardName.replacingOccurrences(of: " ", with: "\n")
+        leaderboardTitleLabel.text = leaderboard.name.replacingOccurrences(of: " ", with: "\n")
         
         leaderboard.getLeaders { (success, customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
-                    self.parentViewController?.displayError(error: customError)
+                    debugPrint(customError.message)
                 }
                 else if success {
                     leaderboard.getFeaturedLeaderImage(completion: { (image) in

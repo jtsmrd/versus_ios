@@ -15,9 +15,13 @@ struct AssociatedKeys {
 
 extension UIViewController {
     
+    
+    /**
+ 
+     */
     func displayError(error: CustomError) {
         view.makeToast(
-            error.desc,
+            error.message,
             duration: 2.0,
             position: .top,
             title: nil,
@@ -27,6 +31,10 @@ extension UIViewController {
         )
     }
     
+    
+    /**
+     
+     */
     func displayMessage(message: String) {
         view.makeToast(
             message,
@@ -39,6 +47,10 @@ extension UIViewController {
         )
     }
     
+    
+    /**
+     
+     */
     var activeFirstResponder: UIView {
         get {
             guard let value = objc_getAssociatedObject(self, &AssociatedKeys.activeFirstResponder) as? UIView else {
@@ -47,7 +59,12 @@ extension UIViewController {
             return value
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.activeFirstResponder, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(
+                self,
+                &AssociatedKeys.activeFirstResponder,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
         }
     }
 }

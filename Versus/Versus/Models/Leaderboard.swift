@@ -18,25 +18,27 @@ class Leaderboard {
     
     private(set) var awsLeaderboard: AWSLeaderboard!
     
+    var isActive: Bool
+    var name: String
+    var numberOfResults: Int
+    var leaderboardTypeId: Int
+    
     var leaderboardType: LeaderboardType {
-        return LeaderboardType(rawValue: awsLeaderboard._leaderboardTypeId!.intValue)!
+        return LeaderboardType(rawValue: leaderboardTypeId)!
     }
     
-    var leaderboardName: String {
-        return awsLeaderboard._leaderboardName!
-    }
-    
-    var numberOfResults: Int {
-        return awsLeaderboard._numberOfResults!.intValue
-    }
-    
-    var featuredLeaderUserPoolUserId: String?
+    var featuredLeaderUserId: String?
     var featuredLeaderImage: UIImage?
     var leaders = [Leader]()
     
     
     init(awsLeaderboard: AWSLeaderboard) {
         self.awsLeaderboard = awsLeaderboard
+        
+        self.isActive = awsLeaderboard._isActive?.boolValue ?? false
+        self.name = awsLeaderboard._name ?? ""
+        self.numberOfResults = awsLeaderboard._numberOfResults?.intValue ?? 0
+        self.leaderboardTypeId = awsLeaderboard._leaderboardTypeId?.intValue ?? 0
     }
     
     
@@ -49,9 +51,9 @@ class Leaderboard {
             }
             else {
                 self.leaders = leaders.sorted { (leader1, leader2) -> Bool in
-                    return leader1.totalWins >= leader2.totalWins && leader1.totalVotes > leader2.totalVotes
+                    return leader1.wins >= leader2.wins && leader1.votes > leader2.votes
                 }
-                self.featuredLeaderUserPoolUserId = self.leaders.first?.userPoolUserId
+                self.featuredLeaderUserId = self.leaders.first?.userId
                 completion(true, nil)
             }
         }
@@ -60,7 +62,7 @@ class Leaderboard {
     
     func getTopLeader(completion: @escaping SuccessCompletion) {
         
-        guard featuredLeaderUserPoolUserId == nil else {
+        guard featuredLeaderUserId == nil else {
             completion(true)
             return
         }
@@ -70,7 +72,7 @@ class Leaderboard {
                 completion(false)
             }
             else if let leader = leader {
-                self.featuredLeaderUserPoolUserId = leader.userPoolUserId
+                self.featuredLeaderUserId = leader.userId
                 completion(true)
             }
         }
@@ -84,17 +86,17 @@ class Leaderboard {
             return
         }
         
-        guard let leaderUserPoolUserId = self.featuredLeaderUserPoolUserId else {
+        guard let leaderUserId = self.featuredLeaderUserId else {
             completion(nil)
             return
         }
         
         S3BucketService.instance.downloadImage(
-            imageName: leaderUserPoolUserId,
-            bucketType: .profileImageSmall
-        ) { (image, error) in
-            if let error = error {
-                debugPrint("Failed to download featured leaderboard image: \(error.localizedDescription)")
+            mediaId: leaderUserId,
+            imageType: .small
+        ) { (image, customError) in
+            if let customError = customError {
+                debugPrint(customError)
                 completion(nil)
             }
             else {

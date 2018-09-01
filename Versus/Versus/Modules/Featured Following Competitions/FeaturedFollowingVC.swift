@@ -15,6 +15,7 @@ class FeaturedFollowingVC: UIViewController {
         case following
     }
     
+    private let competitionService = CompetitionService.instance
     
     @IBOutlet weak var featuredCompetitionsContainerView: UIView!
     @IBOutlet weak var featuredTableView: UITableView!
@@ -27,13 +28,12 @@ class FeaturedFollowingVC: UIViewController {
     @IBOutlet weak var noFollowedUserCompetitionsActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var noFollowedUserCompetitionsReloadButton: UIButton!
     
-    
-    
     var activeCompetitionFeedType: CompetitionFeedType = .featured
     var featuredCompetitions = [Competition]()
     var followedUserCompetitions = [Competition]()
     var featuredRefreshControl: UIRefreshControl!
     var followedRefreshControl: UIRefreshControl!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,8 +111,8 @@ class FeaturedFollowingVC: UIViewController {
         
         CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
             DispatchQueue.main.async {
-                if let error = customError {
-                    self.displayError(error: error)
+                if let customError = customError {
+                    debugPrint(customError.message)
                 }
                 else {
                     self.featuredCompetitions = competitions
@@ -128,20 +128,22 @@ class FeaturedFollowingVC: UIViewController {
     @objc func getFollowedUserCompetitions() {
         
         //TODO: Remove getFollowedUsers after handled elsewhere to automatically refresh
-        CurrentUser.user.getFollowedUsers { (followedUsers, customError) in
+        CurrentUser.getFollowedUsers { (followedUsers, customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
-                    self.displayError(error: customError)
+                    debugPrint(customError.message)
                     self.noFollowedUserCompetitionsReloadButton.isEnabled = true
                     self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
                 }
-                else if let followedUsers = followedUsers, followedUsers.count > 0 {
-                    let followedUserIds = followedUsers.map({ $0.awsFollower._followedUserId! })
+                else if !followedUsers.isEmpty {
+                    let followedUserIds = followedUsers.map({ $0.followedUserUserId })
                     
-                    CompetitionService.instance.getFollowedUserCompetitions(followedUserIds) { (competitions, customError) in
+                    self.competitionService.getFollowedUserCompetitions(
+                        followedUserIds: followedUserIds
+                    ) { (competitions, customError) in
                         DispatchQueue.main.async {
-                            if let error = customError {
-                                self.displayError(error: error)
+                            if let customError = customError {
+                                debugPrint(customError.message)
                             }
                             else {
                                 self.followedUserCompetitions = competitions

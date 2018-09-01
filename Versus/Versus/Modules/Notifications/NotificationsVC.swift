@@ -10,16 +10,23 @@ import UIKit
 
 class NotificationsVC: UIViewController {
 
+    private let notificationService = NotificationService.instance
+    private let notificationManager = NotificationManager.instance
+    
     @IBOutlet weak var notificationsTableView: UITableView!
     @IBOutlet weak var noNotificationsView: UIView!
     
-    var notifications = [Notification]()
+    var notifications = [VersusNotification]()
     var notificationsRefreshControl: UIRefreshControl!
     
+    
+    /**
+ 
+     */
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        notifications = NotificationManager.instance.notifications
+        notifications = notificationManager.notifications
         
         let attributes = [NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
         let refreshTitle = NSAttributedString(string: "Loading Notifications", attributes: attributes)
@@ -35,6 +42,9 @@ class NotificationsVC: UIViewController {
     }
     
     
+    /**
+     
+     */
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -46,6 +56,9 @@ class NotificationsVC: UIViewController {
     }
 
     
+    /**
+     
+     */
     @objc func getNotifications() {
         NotificationManager.instance.getCurrentUserNotifications { (notifications, customError) in
             DispatchQueue.main.async {
@@ -63,47 +76,22 @@ class NotificationsVC: UIViewController {
     }
     
     
-    private func showFollowerProfile(_ notification: Notification) {
+    /**
+     
+     */
+    private func showFollowerProfile(_ notification: VersusNotification) {
         
         guard let notificationInfo = notification.notificationInfo as? FollowerNotificationInfo else {
             self.displayMessage(message: "Could not load follower data.")
             return
         }
         
-        UserService.instance.loadUserWithUserPoolUserId(notificationInfo.followerUserPoolUserId) { (user, customError) in
-            if let customError = customError {
-                self.displayError(error: customError)
-            }
-            else if let user = user {
-                
-                if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-                    profileVC.initData(profileViewMode: .viewOnly, user: user)
-                    profileVC.hidesBottomBarWhenPushed = true
-                    
-                    DispatchQueue.main.async {
-                        self.navigationController?.pushViewController(profileVC, animated: true)
-                    }
-                }
-                
-                self.updateNotificationWasViewedStatus(notification: notification)
-            }
-            else {
-                debugPrint("Something else went wrong.")
-            }
-        }
-    }
-    
-    
-    private func updateNotificationWasViewedStatus(notification: Notification) {
-        
-        NotificationService.instance.setNotificationWasViewed(notification) { (success, customError) in
+        if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
+            profileVC.initData(userId: notificationInfo.userId)
+            profileVC.hidesBottomBarWhenPushed = true
+            
             DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                }
-                else {
-                    self.notificationsTableView.reloadData()
-                }
+                self.navigationController?.pushViewController(profileVC, animated: true)
             }
         }
     }
@@ -113,6 +101,9 @@ class NotificationsVC: UIViewController {
 extension NotificationsVC: UITableViewDataSource {
     
     
+    /**
+     
+     */
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let notificationsCount = notifications.count
         noNotificationsView.isHidden = notificationsCount > 0 ? true : false
@@ -120,6 +111,9 @@ extension NotificationsVC: UITableViewDataSource {
     }
     
     
+    /**
+     
+     */
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: NOTIFICATION_CELL, for: indexPath) as? NotificationCell {
@@ -128,20 +122,28 @@ extension NotificationsVC: UITableViewDataSource {
         }
         return NotificationCell()
     }
-    
-    
 }
 
 extension NotificationsVC: UITableViewDelegate {
     
+    
+    /**
+     
+     */
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
     
+    
+    /**
+     
+     */
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let notification = notifications[indexPath.row]
+        notification.markViewed(completion: nil)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
         
         switch notification.notificationType {
         case .follower:
@@ -161,19 +163,22 @@ extension NotificationsVC: UITableViewDelegate {
         }
     }
     
+    
+    /**
+     
+     */
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let notificationToDelete = notifications[indexPath.row]
-            NotificationService.instance.deleteNotification(notification: notificationToDelete) { (success, customError) in
+            notificationToDelete.delete { (customError) in
                 DispatchQueue.main.async {
                     if let customError = customError {
                         self.displayError(error: customError)
+                        return
                     }
-                    else {
-                        self.notifications.remove(at: indexPath.row)
-                        NotificationManager.instance.removeNotification(notification: notificationToDelete)
-                        self.notificationsTableView.deleteRows(at: [indexPath], with: .fade)
-                    }
+                    self.notifications.remove(at: indexPath.row)
+                    self.notificationManager.removeNotification(notification: notificationToDelete)
+                    self.notificationsTableView.deleteRows(at: [indexPath], with: .fade)
                 }
             }
         }

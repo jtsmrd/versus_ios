@@ -18,36 +18,32 @@ import AWSDynamoDB
 @objcMembers
 class AWSAllTimeLeader: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
-    var _userPoolUserId: String?
-    var _totalWins: NSNumber?
-    var _createDate: String?
-    var _totalVotes: NSNumber?
-    var _updateDate: String?
+    var _userId: String?
     var _username: String?
+    var _votes: NSNumber?
+    var _wins: NSNumber?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_AllTimeLeader"
+        return "AWS_AllTimeLeader"
     }
     
     class func hashKeyAttribute() -> String {
 
-        return "_userPoolUserId"
+        return "_userId"
     }
     
     class func rangeKeyAttribute() -> String {
 
-        return "_totalWins"
+        return "_wins"
     }
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_userPoolUserId" : "userPoolUserId",
-               "_totalWins" : "totalWins",
-               "_createDate" : "createDate",
-               "_totalVotes" : "totalVotes",
-               "_updateDate" : "updateDate",
-               "_username" : "username",
+                "_userId" : "userId",
+                "_username" : "username",
+                "_votes" : "votes",
+                "_wins" : "wins",
         ]
     }
 }

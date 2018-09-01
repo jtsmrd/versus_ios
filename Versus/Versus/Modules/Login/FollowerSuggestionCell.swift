@@ -41,13 +41,16 @@ class FollowerSuggestionCell: UICollectionViewCell {
         determineUserFollowStatus()
         configureFollowerButton()
         
-        usernameLabel.text = "@\(user.awsUser._username!)"
-        displayNameLabel.text = user.awsUser._displayName
+        usernameLabel.text = "@\(user.username)"
+        displayNameLabel.text = user.displayName
         
-        if let _ = user.awsUser._profileImageUpdateDate, user.profileImage == nil {
-            S3BucketService.instance.downloadImage(imageName: user.awsUser._userPoolUserId!, bucketType: .profileImageSmall) { (image, error) in
-                if let error = error {
-                    debugPrint("Could not load user profile image: \(error.localizedDescription)")
+        if user.profileImage == nil {
+            S3BucketService.instance.downloadImage(
+                mediaId: user.userId,
+                imageType: .small
+            ) { (image, customError) in
+                if let customError = customError {
+                    debugPrint(customError)
                 }
                 else if let image = image {
                     self.user.profileImage = image
@@ -60,7 +63,7 @@ class FollowerSuggestionCell: UICollectionViewCell {
     }
     
     private func determineUserFollowStatus() {
-        followStatus = CurrentUser.followStatus(for: user)
+        followStatus = CurrentUser.getFollowerStatusFor(userId: user.userId)
     }
     
     // Configure button to display 'follow' for unfollowed users or 'following' for followed users
@@ -69,23 +72,21 @@ class FollowerSuggestionCell: UICollectionViewCell {
     }
     
     private func followUser() {
-        FollowerService.instance.followUser(
-            userToFollow: user,
-            currentUser: CurrentUser.user
-        ) { (success, error) in
-            if let error = error {
-                self.delegate.followerSuggestionCellFollowButtonActionError(error: error)
+        CurrentUser.follow(
+            user: user
+        ) { (customError) in
+            if let customError = customError {
+                self.delegate.followerSuggestionCellFollowButtonActionError(error: customError)
+                return
             }
-            else if success {
-                self.determineUserFollowStatus()
-                self.configureFollowerButton()
-            }
+            self.determineUserFollowStatus()
+            self.configureFollowerButton()
         }
     }
     
     private func displayConfirmUnfollowUser() {
         if let parentVC = parentViewController {
-            let confirmUnfollowAlertVC = UIAlertController(title: "Confirm Unfollow", message: "Are you sure you want to unfollow @\(user.awsUser._username!)", preferredStyle: .actionSheet)
+            let confirmUnfollowAlertVC = UIAlertController(title: "Confirm Unfollow", message: "Are you sure you want to unfollow @\(user.username)", preferredStyle: .actionSheet)
             confirmUnfollowAlertVC.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { (action) in
                 self.unfollowUser()
             }))
@@ -97,22 +98,15 @@ class FollowerSuggestionCell: UICollectionViewCell {
     }
     
     private func unfollowUser() {
-        if let follower = CurrentUser.getFollower(for: user) {
-            FollowerService.instance.unfollowUser(
-                followedUser: follower,
-                currentUser: CurrentUser.user
-            ) { (success, error) in
-                if let error = error {
-                    self.delegate.followerSuggestionCellFollowButtonActionError(error: error)
-                }
-                else if success {
-                    self.determineUserFollowStatus()
-                    self.configureFollowerButton()
-                }
+        CurrentUser.unfollow(
+            user: user
+        ) { (customError) in
+            if let customError = customError {
+                self.delegate.followerSuggestionCellFollowButtonActionError(error: customError)
+                return
             }
-        }
-        else {
-            delegate.followerSuggestionCellFollowButtonActionError(error: CustomError(error: nil, title: "", desc: "Unable to unfollow user"))
+            self.determineUserFollowStatus()
+            self.configureFollowerButton()
         }
     }
 }

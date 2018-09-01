@@ -11,185 +11,39 @@ import AWSDynamoDB
 class FollowerService {
     
     static let instance = FollowerService()
+    private let dynamoDB = AWSDynamoDBObjectMapper.default()
     
     private init() { }
     
-    
-    
-    func followUser(
-        userToFollow: User,
-        currentUser: User,
-        completion: @escaping SuccessErrorCompletion) {
-        
-        let follower: AWSFollower = AWSFollower()
-        follower._id = UUID().uuidString
-        follower._createDate = Date().toISO8601String
-        follower._followedUserId = userToFollow.awsUser._userPoolUserId
-        follower._followedUserDisplayName = userToFollow.awsUser._displayName
-        follower._followedUserUsername = userToFollow.awsUser._username
-        follower._followerUserId = currentUser.awsUser._userPoolUserId
-        follower._followerDisplayName = currentUser.awsUser._displayName
-        follower._followerUsername = currentUser.awsUser._username
-        
-        AWSDynamoDBObjectMapper.default().save(follower) { (error) in
-            if let error = error {
-                debugPrint("Error when following User: \(error.localizedDescription)")
-                completion(false, CustomError(error: error, title: "", desc: "Unable to follow user"))
-            }
-            else {
-                self.appendFollowerToFollowedUsers(user: currentUser, awsFollower: follower)
-                completion(true, nil)
-            }
-        }
-    }
-    
-    
-    func followFollower(
-        followerToFollow: Follower,
-        currentUser: User,
-        completion: @escaping SuccessErrorCompletion) {
-        
-        let follower: AWSFollower = AWSFollower()
-        follower._id = UUID().uuidString
-        follower._createDate = Date().toISO8601String
-        follower._followedUserId = followerToFollow.awsFollower._followerUserId
-        follower._followedUserDisplayName = followerToFollow.awsFollower._followerDisplayName
-        follower._followedUserUsername = followerToFollow.awsFollower._followerUsername
-        follower._followerUserId = currentUser.awsUser._userPoolUserId
-        follower._followerDisplayName = currentUser.awsUser._displayName
-        follower._followerUsername = currentUser.awsUser._username
-        
-        AWSDynamoDBObjectMapper.default().save(follower) { (error) in
-            if let error = error {
-                debugPrint("Error when following User: \(error.localizedDescription)")
-                completion(false, CustomError(error: error, title: "", desc: "Unable to follow user"))
-            }
-            else {
-                self.appendFollowerToFollowedUsers(user: currentUser, awsFollower: follower)
-                completion(true, nil)
-            }
-        }
-    }
-    
-    
-    
-    func unfollowUser(
-        followedUser: Follower,
-        currentUser: User,
-        completion: @escaping SuccessErrorCompletion) {
-        AWSDynamoDBObjectMapper.default().remove(followedUser.awsFollower) { (error) in
-            if let error = error {
-                debugPrint("Error when unfollowing User: \(error.localizedDescription)")
-                completion(false, CustomError(error: error, title: "", desc: "Unable to unfollow user"))
-            }
-            else {
-                self.removeFollowerFromFollowedUsers(user: currentUser, awsFollower: followedUser.awsFollower)
-                completion(true, nil)
-            }
-        }
-    }
-    
-    
-    func getFollower(
-        with followerUserPoolUserId: String,
-        completion: @escaping (_ follower: Follower?, _ customError: CustomError?) -> Void) {
-        
-        AWSDynamoDBObjectMapper.default().load(AWSFollower.self, hashKey: followerUserPoolUserId, rangeKey: nil) { (awsFollower, error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, title: "", desc: "Unable to load follower."))
-            }
-            else if let awsFollower = awsFollower as? AWSFollower {
-                completion(Follower(awsFollower: awsFollower, followerType: .follower), nil)
-            }
-            else {
-                debugPrint("Something else went wrong with getFollower")
-                completion(nil, nil)
-            }
-        }
-    }
-    
-    
     func getFollowers(
-        for awsUser: AWSUser,
-        completion: @escaping (_ followers: [Follower], _ error: CustomError?) -> Void) {
-        
-        let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "#followedUserId = :userPoolUserId"
-        scanExpression.expressionAttributeNames = [
-            "#followedUserId": "followedUserId"
+        userId: String,
+        completion: @escaping (_ followers: [Follower], _ error: CustomError?) -> Void
+    ) {
+        let queryExpression = AWSDynamoDBQueryExpression()
+        queryExpression.keyConditionExpression = "#userId = :userId"
+        queryExpression.expressionAttributeNames = [
+            "#userId": "userId"
         ]
-        
-        scanExpression.expressionAttributeValues = [
-            ":userPoolUserId": awsUser._userPoolUserId!
-        ]
-        
-        var followers = [Follower]()
-        
-        AWSDynamoDBObjectMapper.default().scan(
-            AWSFollower.self,
-            expression: scanExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(followers, CustomError(error: error, title: "", desc: "Unable to get followers"))
-            }
-            else if let result = paginatedOutput {
-                for awsFollower in result.items {
-                    followers.append(Follower(awsFollower: awsFollower as! AWSFollower, followerType: .follower))
-                }
-                completion(followers, nil)
-            }
-            else {
-                completion(followers, nil)
-            }
-        }
-    }
-    
-    
-    
-    func getFollowedUsers(
-        for awsUser: AWSUser,
-        completion: @escaping (_ followers: [Follower], _ error: CustomError?) -> Void) {
-        
-        let scanExpression = AWSDynamoDBScanExpression()
-        scanExpression.filterExpression = "#followerUserId = :userPoolUserId"
-        scanExpression.expressionAttributeNames = [
-            "#followerUserId": "followerUserId"
-        ]
-        
-        scanExpression.expressionAttributeValues = [
-            ":userPoolUserId": awsUser._userPoolUserId!
+        queryExpression.expressionAttributeValues = [
+            ":userId": userId
         ]
         
         var followers = [Follower]()
-        
-        AWSDynamoDBObjectMapper.default().scan(
+        dynamoDB.query(
             AWSFollower.self,
-            expression: scanExpression
+            expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
-                completion(followers, CustomError(error: error, title: "", desc: "Unable to get followed users"))
+                completion(followers, CustomError(error: error, message: "Unable to get followers"))
+                return
             }
-            else if let result = paginatedOutput {
-                for awsFollower in result.items {
-                    followers.append(Follower(awsFollower: awsFollower as! AWSFollower, followerType: .following))
+            if let result = paginatedOutput,
+                let awsFollowers = result.items as? [AWSFollower] {
+                for awsFollower in awsFollowers {
+                    followers.append(Follower(awsFollower: awsFollower))
                 }
-                completion(followers, nil)
             }
-            else {
-                completion(followers, nil)
-            }
-        }
-    }
-    
-    func removeFollowerFromFollowedUsers(user: User, awsFollower: AWSFollower) {
-        if let index = user.followedUsers.index(where: {$0.awsFollower._followedUserId == awsFollower._followedUserId }) {
-            user.followedUsers.remove(at: index)
-        }
-    }
-    
-    private func appendFollowerToFollowedUsers(user: User, awsFollower: AWSFollower) {
-        if !user.followedUsers.contains(where: {$0.awsFollower._followedUserId == awsFollower._followedUserId }) {
-            user.followedUsers.append(Follower(awsFollower: awsFollower, followerType: .following))
+            completion(followers, nil)
         }
     }
 }

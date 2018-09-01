@@ -46,19 +46,19 @@ class CompetitionCommentCell: UITableViewCell {
     func configureCell(comment: Comment) {
         
         S3BucketService.instance.downloadImage(
-            imageName: comment.awsComment._userPoolUserId!,
-            bucketType: .profileImageSmall
-        ) { (image, error) in
+            mediaId: comment.userId,
+            imageType: .small
+        ) { (image, customError) in
             DispatchQueue.main.async {
-                if let error = error {
-                    debugPrint("Error loading profile image: \(error.localizedDescription)")
+                if let customError = customError {
+                    debugPrint(customError.message)
                 }
                 self.profileImageView.image = image
             }
         }
         
-        usernameLabel.text = comment.awsComment._username!
-        commentLabel.text = comment.awsComment._commentText
-        commentTimeLabel.text = comment.awsComment._createDate?.toISO8601Date?.toElapsedTimeString_Minimal
+        usernameLabel.text = comment.username
+        commentLabel.text = comment.message
+        commentTimeLabel.text = comment.createDate.toElapsedTimeString_Minimal
     }
 }

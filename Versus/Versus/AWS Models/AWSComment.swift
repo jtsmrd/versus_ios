@@ -21,13 +21,14 @@ class AWSComment: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _competitionEntryId: String?
     var _createDate: String?
     var _commentId: String?
-    var _commentText: String?
-    var _userPoolUserId: String?
+    var _likeCount: NSNumber?
+    var _message: String?
+    var _userId: String?
     var _username: String?
     
     class func dynamoDBTableName() -> String {
 
-        return "versus-mobilehub-387870640-AWS_Comment"
+        return "AWS_Comment"
     }
     
     class func hashKeyAttribute() -> String {
@@ -42,12 +43,13 @@ class AWSComment: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
-               "_competitionEntryId" : "competitionEntryId",
-               "_createDate" : "createDate",
-               "_commentId" : "commentId",
-               "_commentText" : "commentText",
-               "_userPoolUserId" : "userPoolUserId",
-               "_username" : "username",
+                "_competitionEntryId" : "competitionEntryId",
+                "_createDate" : "createDate",
+                "_commentId" : "commentId",
+                "_likeCount" : "likeCount",
+                "_message" : "message",
+                "_userId" : "userId",
+                "_username" : "username",
         ]
     }
 }

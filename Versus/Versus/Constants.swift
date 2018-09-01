@@ -21,14 +21,8 @@ let AWSCognitoUserPoolsSignInProviderKey = "UserPool"
 // AWS S3 Bucket
 
 let S3_BUCKET = "versus-userfiles-mobilehub-387870640"
-let PROFILE_IMAGE_BUCKET_PATH = "public/profileImage/"
-let PROFILE_IMAGE_SMALL_BUCKET_PATH = "public/profileImageSmall/"
-let PROFILE_BACKGROUND_IMAGE_BUCKET_PATH = "public/profileBackgroundImage/"
-let COMPETITION_IMAGE_BUCKET_PATH = "public/competitionImage/"
-let COMPETITION_IMAGE_SMALL_BUCKET_PATH = "public/competitionImageSmall/"
-let COMPETITION_VIDEO_BUCKET_PATH = "public/competitionVideo/"
-let COMPETITION_VIDEO_PREVIEW_IMAGE_BUCKET_PATH = "public/competitionVideoPreviewImage/"
-let COMPETITION_VIDEO_PREVIEW_IMAGE_SMALL_BUCKET_PATH = "public/competitionVideoPreviewImageSmall/"
+let IMAGE_BUCKET = "public/image/"
+let VIDEO_BUCKET = "public/video/"
 
 
 // Segues
@@ -42,10 +36,13 @@ let SHOW_MAIN_STORYBOARD = "ShowMainStoryboard"
 let SHOW_RANKS = "RankVC"
 let SHOW_PROFILE = "ProfileVC"
 let SHOW_FOLLOWERS = "FollowerVC"
+let SHOW_FOLLOWED_USERS = "FollowedUserVC"
 let SHOW_COMPETITION_DETAILS = "CompetitionDetailsVC"
 let SHOW_COMPETITION_SUBMITTED = "CompetitionSubmittedVC"
 let SHOW_COMPETITION = "ViewCompetitionVC"
 let SHOW_SELECT_PREVIEW_IMAGE = "SelectPreviewImageVC"
+let FIRST_COMPETITOR = "FirstCompetitorVC"
+let SECOND_COMPETITOR = "SecondCompetitorVC"
 
 let UNWIND_TO_LANDING = "LandingVC"
 
@@ -59,6 +56,7 @@ typealias SuccessErrorCompletion = (_ success: Bool, _ error: CustomError?) -> V
 // TableViewCell Identifiers
 
 let FOLLOWER_CELL = "FollowerCell"
+let FOLLOWED_USER_CELL = "FollowedUserCell"
 let SEARCH_USER_CELL = "SearchUserCell"
 let CATEGORY_CELL = "CategoryCell"
 let COMPETITION_CELL = "CompetitionCell"
