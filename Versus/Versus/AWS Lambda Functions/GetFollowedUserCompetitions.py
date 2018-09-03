@@ -27,6 +27,6 @@ def lambda_handler(event, context):
 
 def getFollowedUserCompetitions(followedUserIds):
     response = competitionTable.scan(
-        FilterExpression=Attr('firstEntryUserId').is_in(followedUserIds) | Attr('secondEntryUserId').is_in(followedUserIds)
+        FilterExpression=Attr('firstCompetitorUserId').is_in(followedUserIds) | Attr('secondCompetitorUserId').is_in(followedUserIds)
     )
     return response

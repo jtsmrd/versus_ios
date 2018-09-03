@@ -23,24 +23,24 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     var _competitionIsActive: NSNumber?
     var _competitionTypeId: NSNumber?
     var _expireDate: String?
-    var _firstEntryCommentCount: NSNumber?
-    var _firstEntryCaption: String?
-    var _firstEntryCompetitionEntryId: String?
-    var _firstEntryMediaId: String?
-    var _firstEntryUsername: String?
-    var _firstEntryUserRankId: NSNumber?
-    var _firstEntryUserId: String?
-    var _firstEntryVoteCount: NSNumber?
+    var _firstCompetitorCommentCount: NSNumber?
+    var _firstCompetitorCaption: String?
+    var _firstCompetitorEntryId: String?
+    var _firstCompetitorMediaId: String?
+    var _firstCompetitorUsername: String?
+    var _firstCompetitorUserRankId: NSNumber?
+    var _firstCompetitorUserId: String?
+    var _firstCompetitorVoteCount: NSNumber?
     var _isFeatured: NSNumber?
     var _isFeaturedCategoryTypeId: String?
-    var _secondEntryCommentCount: NSNumber?
-    var _secondEntryCaption: String?
-    var _secondEntryCompetitionEntryId: String?
-    var _secondEntryMediaId: String?
-    var _secondEntryUsername: String?
-    var _secondEntryUserRankId: NSNumber?
-    var _secondEntryUserId: String?
-    var _secondEntryVoteCount: NSNumber?
+    var _secondCompetitorCommentCount: NSNumber?
+    var _secondCompetitorCaption: String?
+    var _secondCompetitorEntryId: String?
+    var _secondCompetitorMediaId: String?
+    var _secondCompetitorUsername: String?
+    var _secondCompetitorUserRankId: NSNumber?
+    var _secondCompetitorUserId: String?
+    var _secondCompetitorVoteCount: NSNumber?
     var _startDate: String?
     var _timeExtended: NSNumber?
     var _winnerUserId: String?
@@ -55,11 +55,6 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
         return "_competitionId"
     }
     
-    class func rangeKeyAttribute() -> String {
-        
-        return "_startDate"
-    }
-    
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
                 "_categoryTypeId" : "categoryTypeId",
@@ -67,24 +62,24 @@ class AWSCompetition: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
                 "_competitionIsActive" : "competitionIsActive",
                 "_competitionTypeId" : "competitionTypeId",
                 "_expireDate" : "expireDate",
-                "_firstEntryCommentCount" : "firstEntryCommentCount",
-                "_firstEntryCaption" : "firstEntryCaption",
-                "_firstEntryCompetitionEntryId" : "firstEntryCompetitionEntryId",
-                "_firstEntryMediaId" : "firstEntryMediaId",
-                "_firstEntryUsername" : "firstEntryUsername",
-                "_firstEntryUserRankId" : "firstEntryUserRankId",
-                "_firstEntryUserId" : "firstEntryUserId",
-                "_firstEntryVoteCount" : "firstEntryVoteCount",
+                "_firstCompetitorCommentCount" : "firstCompetitorCommentCount",
+                "_firstCompetitorCaption" : "firstCompetitorCaption",
+                "_firstCompetitorEntryId" : "firstCompetitorEntryId",
+                "_firstCompetitorMediaId" : "firstCompetitorMediaId",
+                "_firstCompetitorUsername" : "firstCompetitorUsername",
+                "_firstCompetitorUserRankId" : "firstCompetitorUserRankId",
+                "_firstCompetitorUserId" : "firstCompetitorUserId",
+                "_firstCompetitorVoteCount" : "firstCompetitorVoteCount",
                 "_isFeatured" : "isFeatured",
                 "_isFeaturedCategoryTypeId" : "isFeaturedCategoryTypeId",
-                "_secondEntryCommentCount" : "secondEntryCommentCount",
-                "_secondEntryCaption" : "secondEntryCaption",
-                "_secondEntryCompetitionEntryId" : "secondEntryCompetitionEntryId",
-                "_secondEntryMediaId" : "secondEntryMediaId",
-                "_secondEntryUsername" : "secondEntryUsername",
-                "_secondEntryUserRankId" : "secondEntryUserRankId",
-                "_secondEntryUserId" : "secondEntryUserId",
-                "_secondEntryVoteCount" : "secondEntryVoteCount",
+                "_secondCompetitorCommentCount" : "secondCompetitorCommentCount",
+                "_secondCompetitorCaption" : "secondCompetitorCaption",
+                "_secondCompetitorEntryId" : "secondCompetitorEntryId",
+                "_secondCompetitorMediaId" : "secondCompetitorMediaId",
+                "_secondCompetitorUsername" : "secondCompetitorUsername",
+                "_secondCompetitorUserRankId" : "secondCompetitorUserRankId",
+                "_secondCompetitorUserId" : "secondCompetitorUserId",
+                "_secondCompetitorVoteCount" : "secondCompetitorVoteCount",
                 "_startDate" : "startDate",
                 "_timeExtended" : "timeExtended",
                 "_winnerUserId" : "winnerUserId",

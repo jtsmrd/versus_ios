@@ -9,9 +9,12 @@
 import UIKit
 import AVKit
 
+protocol CompetitorVCDelegate {
+    func voteForCompetitor(competitionEntryId: String, competitorType: CompetitorType, isVoteSwitched: Bool)
+}
+
 class CompetitorVC: UIViewController {
 
-    private let voteService = VoteService.instance
     private let notificationCenter = NotificationCenter.default
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -31,7 +34,7 @@ class CompetitorVC: UIViewController {
     private var isExpired: Bool!
     private var videoPlayerLayer: AVPlayerLayer!
     private var player: AVPlayer!
-    private var isNewVote: Bool = false
+    private var delegate: CompetitorVCDelegate?
     private var vote: Vote? {
         didSet {
             configureVoteButton()
@@ -100,9 +103,10 @@ class CompetitorVC: UIViewController {
     /**
      
      */
-    func initData(competitor: Competitor, isExpired: Bool) {
+    func initData(competitor: Competitor, isExpired: Bool, delegate: CompetitorVCDelegate) {
         self.competitor = competitor
         self.isExpired = isExpired
+        self.delegate = delegate
     }
     
     
@@ -169,8 +173,8 @@ class CompetitorVC: UIViewController {
      
      */
     @IBAction func commentButtonAction() {
-        commentsViewBottom.constant = 0
-        commentsVC.loadCommentsFor(competitionEntryId: competitor.competitionEntryId) // Pass the id when instantiating and let handle loading (when toggled)
+//        commentsViewBottom.constant = 0
+//        commentsVC.loadCommentsFor(competitionEntryId: competitor.competitionEntryId) // Pass the id when instantiating and let handle loading (when toggled)
     }
     
     
@@ -307,8 +311,7 @@ class CompetitorVC: UIViewController {
      */
     private func configureVoteButton() {
         DispatchQueue.main.async {
-            let newVoteLocalCount = self.isNewVote ? 1 : 0
-            self.voteCountLabel.text = String(format: "%d", self.competitor.voteCount + newVoteLocalCount)
+            self.voteCountLabel.text = String(format: "%d", self.competitor.voteCount)
             if self.userVotedForCompetitor {
                 self.voteButton.setImage(UIImage(named: "Voting-Star"), for: .normal)
             }
@@ -327,23 +330,30 @@ class CompetitorVC: UIViewController {
             displayChangeVoteAlert()
             return
         }
-        voteService.voteForCompetition(
-            competitionId: competitor.competitionId,
-            competitionEntryId: competitor.competitionEntryId
-        ) { [weak self] (vote, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self?.displayError(error: customError)
-                    return
-                }
-                self?.isNewVote = true
-                self?.incrementVoteCountForCurrentUser()
-                self?.notificationCenter.post(
-                    name: NSNotification.Name.OnUserVoteUpdated,
-                    object: vote
-                )
-            }
-        }
+        delegate?.voteForCompetitor(
+            competitionEntryId: competitor.competitionEntryId,
+            competitorType: competitor.competitorType,
+            isVoteSwitched: false
+        )
+        
+//        voteService.voteForCompetition(
+//            competitionId: competitor.competitionId,
+//            competitionEntryId: competitor.competitionEntryId,
+//            competitorType: competitor.competitorType
+//        ) { [weak self] (vote, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self?.displayError(error: customError)
+//                    return
+//                }
+//                self?.isNewVote = true
+//                self?.incrementVoteCountForCurrentUser()
+//                self?.notificationCenter.post(
+//                    name: NSNotification.Name.OnUserVoteUpdated,
+//                    object: vote
+//                )
+//            }
+//        }
     }
     
     
@@ -376,23 +386,29 @@ class CompetitorVC: UIViewController {
                 title: "Yes",
                 style: .default,
                 handler: { (action) in
-                    guard let vote = self.vote else { return }
-                    vote.changeVote(
+                    guard let _ = self.vote else { return }
+                    self.delegate?.voteForCompetitor(
                         competitionEntryId: self.competitor.competitionEntryId,
-                        completion: { [weak self] (vote, customError) in
-                            DispatchQueue.main.async {
-                                if let customError = customError {
-                                    self?.displayError(error: customError)
-                                    return
-                                }
-                                self?.isNewVote = true
-                                self?.notificationCenter.post(
-                                    name: NSNotification.Name.OnUserVoteUpdated,
-                                    object: vote
-                                )
-                            }
-                        }
+                        competitorType: self.competitor.competitorType,
+                        isVoteSwitched: true
                     )
+//                    vote.changeVote(
+//                        competitionEntryId: self.competitor.competitionEntryId,
+//                        competitorType: self.competitor.competitorType,
+//                        completion: { [weak self] (vote, customError) in
+//                            DispatchQueue.main.async {
+//                                if let customError = customError {
+//                                    self?.displayError(error: customError)
+//                                    return
+//                                }
+//                                self?.isNewVote = true
+//                                self?.notificationCenter.post(
+//                                    name: NSNotification.Name.OnUserVoteUpdated,
+//                                    object: vote
+//                                )
+//                            }
+//                        }
+//                    )
                 }
             )
         )

@@ -59,30 +59,30 @@ class Competition {
         self.competitionTypeId = awsCompetition._competitionTypeId?.intValue ?? 1
         self.firstCompetitor = Competitor(
             competitorType: .first,
-            caption: awsCompetition._firstEntryCaption ?? "",
-            commentCount: awsCompetition._firstEntryCommentCount?.intValue ?? 0,
+            caption: awsCompetition._firstCompetitorCaption ?? "",
+            commentCount: awsCompetition._firstCompetitorCommentCount?.intValue ?? 0,
             competitionId: awsCompetition._competitionId ?? "",
-            competitionEntryId: awsCompetition._firstEntryCompetitionEntryId ?? "",
+            competitionEntryId: awsCompetition._firstCompetitorEntryId ?? "",
             competitionTypeId: awsCompetition._competitionTypeId?.intValue ?? 1,
-            mediaId: awsCompetition._firstEntryMediaId ?? "",
-            userId: awsCompetition._firstEntryUserId ?? "",
-            username: awsCompetition._firstEntryUsername ?? "",
-            userRankId: awsCompetition._firstEntryUserRankId?.intValue ?? 1,
-            voteCount: awsCompetition._firstEntryVoteCount?.intValue ?? 0
+            mediaId: awsCompetition._firstCompetitorMediaId ?? "",
+            userId: awsCompetition._firstCompetitorUserId ?? "",
+            username: awsCompetition._firstCompetitorUsername ?? "",
+            userRankId: awsCompetition._firstCompetitorUserRankId?.intValue ?? 1,
+            voteCount: awsCompetition._firstCompetitorVoteCount?.intValue ?? 0
         )
         self.isActive = awsCompetition._competitionIsActive?.boolValue ?? false
         self.secondCompetitor = Competitor(
             competitorType: .second,
-            caption: awsCompetition._secondEntryCaption ?? "",
-            commentCount: awsCompetition._secondEntryCommentCount?.intValue ?? 0,
+            caption: awsCompetition._secondCompetitorCaption ?? "",
+            commentCount: awsCompetition._secondCompetitorCommentCount?.intValue ?? 0,
             competitionId: awsCompetition._competitionId ?? "",
-            competitionEntryId: awsCompetition._secondEntryCompetitionEntryId ?? "",
+            competitionEntryId: awsCompetition._secondCompetitorEntryId ?? "",
             competitionTypeId: awsCompetition._competitionTypeId?.intValue ?? 1,
-            mediaId: awsCompetition._secondEntryMediaId ?? "",
-            userId: awsCompetition._secondEntryUserId ?? "",
-            username: awsCompetition._secondEntryUsername ?? "",
-            userRankId: awsCompetition._secondEntryUserRankId?.intValue ?? 1,
-            voteCount: awsCompetition._secondEntryVoteCount?.intValue ?? 0
+            mediaId: awsCompetition._secondCompetitorMediaId ?? "",
+            userId: awsCompetition._secondCompetitorUserId ?? "",
+            username: awsCompetition._secondCompetitorUsername ?? "",
+            userRankId: awsCompetition._secondCompetitorUserRankId?.intValue ?? 1,
+            voteCount: awsCompetition._secondCompetitorVoteCount?.intValue ?? 0
         )
         self.startDate = awsCompetition._startDate?.toISO8601Date ?? Date()
         self.timeExtended = awsCompetition._timeExtended?.boolValue ?? false

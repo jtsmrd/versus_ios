@@ -14,6 +14,7 @@ class Vote {
     
     private let awsVote: AWSVote
     
+    private let competitionId: String
     private let competitionIdUserId: String
     private(set) var competitionEntryId: String {
         get {
@@ -23,6 +24,17 @@ class Vote {
             awsVote._competitionEntryId = newValue
         }
     }
+    private var competitor: String {
+        get {
+            return awsVote._competitor ?? ""
+        }
+        set {
+            awsVote._competitor = newValue
+        }
+    }
+    var competitorType: CompetitorType? {
+        return CompetitorType(rawValue: competitor)
+    }
     
     
     /**
@@ -30,21 +42,7 @@ class Vote {
      */
     init(awsVote: AWSVote) {
         self.awsVote = awsVote
+        self.competitionId = awsVote._competitionId ?? ""
         self.competitionIdUserId = awsVote._competitionIdUserId ?? ""
-    }
-    
-    
-    /**
- 
-     */
-    func changeVote(
-        competitionEntryId: String,
-        completion: @escaping (_ vote: Vote?, _ customError: CustomError?) -> Void
-    ) {
-        self.competitionEntryId = competitionEntryId
-        voteService.updateVote(
-            awsVote: awsVote,
-            completion: completion
-        )
     }
 }

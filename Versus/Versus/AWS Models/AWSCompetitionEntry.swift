@@ -42,11 +42,6 @@ class AWSCompetitionEntry: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
         return "_userId"
     }
     
-    class func rangeKeyAttribute() -> String {
-        
-        return "_createDate"
-    }
-    
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
                "_awaitingMatch" : "awaitingMatch",

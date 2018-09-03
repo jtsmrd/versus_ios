@@ -22,21 +22,48 @@ class VoteService {
      
      */
     func voteForCompetition(
-        competitionId: String,
+        competition: Competition,
         competitionEntryId: String,
+        competitorType: CompetitorType,
+        isVoteSwitch: Bool,
         completion: @escaping (_ vote: Vote?, _ customError: CustomError?) -> Void
     ) {
-        let awsVote: AWSVote = AWSVote()
-        awsVote._competitionIdUserId = String(format: "%@%@", competitionId, CurrentUser.userId)
-        awsVote._competitionEntryId = competitionEntryId
-        
-        dynamoDB.save(
-            awsVote
-        ) { (error) in
+        let jsonObject: [String: Any] = [
+            "voteInfo": [
+                "competitionId": competition.competitionId,
+                "userId": CurrentUser.userId,
+                "competitionEntryId": competitionEntryId,
+                "competitor": competitorType.rawValue,
+                "voteSwitch": Int(truncating: NSNumber(value: isVoteSwitch))
+            ]
+        ]
+        lambda.invokeFunction(
+            "VoteForCompetition",
+            jsonObject: jsonObject
+        ) { (result, error) in
             if let error = error {
-                completion(nil, CustomError(error: error, message: "Unable to vote on competition."))
+                completion(nil, CustomError(error: error, message: "Unable to vote on competition"))
                 return
             }
+            switch competitorType {
+            case .first:
+                competition.firstCompetitor.voteCount += 1
+                if isVoteSwitch {
+                    competition.secondCompetitor.voteCount -= 1
+                }
+            case .second:
+                competition.secondCompetitor.voteCount += 1
+                if isVoteSwitch {
+                    competition.firstCompetitor.voteCount -= 1
+                }
+            }
+            
+            let awsVote: AWSVote = AWSVote()
+            awsVote._competitionId = competition.competitionId
+            awsVote._competitionIdUserId = String(format: "%@|%@", competition.competitionId, CurrentUser.userId)
+            awsVote._competitionEntryId = competitionEntryId
+            awsVote._competitor = competitorType.rawValue
+            
             completion(Vote(awsVote: awsVote), nil)
         }
     }
@@ -49,7 +76,7 @@ class VoteService {
         competitionId: String,
         completion: @escaping (_ vote: Vote?) -> Void
     ) {
-        let hashKey = String(format: "%@%@", competitionId, CurrentUser.userId)
+        let hashKey = String(format: "%@|%@", competitionId, CurrentUser.userId)
         dynamoDB.load(
             AWSVote.self,
             hashKey: hashKey,
@@ -65,25 +92,6 @@ class VoteService {
                 return
             }
             completion(Vote(awsVote: awsVote))
-        }
-    }
-    
-    
-    /**
-     
-     */
-    func updateVote(
-        awsVote: AWSVote,
-        completion: @escaping (_ vote: Vote?, _ customError: CustomError?) -> Void
-    ) {
-        dynamoDB.save(
-            awsVote
-        ) { (error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, message: "Unable to change vote"))
-                return
-            }
-            completion(Vote(awsVote: awsVote), nil)
         }
     }
 }

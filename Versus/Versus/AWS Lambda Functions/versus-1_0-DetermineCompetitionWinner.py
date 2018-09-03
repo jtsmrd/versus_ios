@@ -22,17 +22,17 @@ def lambda_handler(event, context):
     if expiredActiveCompetitions is not None:
 
         for competition in expiredActiveCompetitions:
-            firstEntryCompetitionEntryId = competition['firstEntryCompetitionEntryId']
-            secondEntryCompetitionEntryId = competition['secondEntryCompetitionEntryId']
+            firstEntryCompetitionEntryId = competition['firstCompetitorEntryId']
+            secondEntryCompetitionEntryId = competition['secondCompetitorEntryId']
 
             # Get the vote count for each of the CompetitionEntry records
-            firstEntryVoteCount = int(competition['firstEntryCommentCount'])
-            secondEntryVoteCount = int(competition['secondEntryCommentCount'])
+            firstEntryVoteCount = int(competition['firstCompetitorVoteCount'])
+            secondEntryVoteCount = int(competition['secondCompetitorVoteCount'])
             
-            firstEntryUserId = competition['firstEntryUserId']
-            firstEntryUsername = competition['firstEntryUsername']
-            secondEntryUserId = competition['secondEntryUserId']
-            secondEntryUsername = competition['secondEntryUsername']
+            firstEntryUserId = competition['firstCompetitorUserId']
+            firstEntryUsername = competition['firstCompetitorUsername']
+            secondEntryUserId = competition['secondCompetitorUserId']
+            secondEntryUsername = competition['secondCompetitorUsername']
 
             # Assign the winning user based on votes
             winningUserId = None
@@ -96,9 +96,10 @@ def lambda_handler(event, context):
 def getExpiredActiveCompetitions():
     currentDateTime = str(datetime.utcnow().isoformat()+'Z')
     response = competitionTable.query(
-        IndexName="competitionIsActive-index",
-        KeyConditionExpression=Key('competitionIsActive').eq(1),
-        FilterExpression=Key('expireDate').lt(currentDateTime)
+        IndexName="competitionIsActive-startDate-index",
+        KeyConditionExpression=Key('competitionIsActive').eq(1) & Key('startDate').lt(currentDateTime),
+        FilterExpression=Key('expireDate').lt(currentDateTime),
+        ScanIndexForward=False
     )
     expiredActiveCompetitions = response['Items']
     if len(expiredActiveCompetitions) > 0:
@@ -127,7 +128,7 @@ def updateWinningUserWinCount(winningUserId):
         Key={
             'userId': winningUserId
         },
-        UpdateExpression="ADD wins :val",
+        UpdateExpression="ADD totalWins :val",
         ExpressionAttributeValues={
             ':val': decimal.Decimal(1)
         }
@@ -137,53 +138,51 @@ def updateWinningUserWinCount(winningUserId):
 
 # Update AWS_WeeklyLeader table for winning user. Increment wins and update total vote count.
 # If a record doesn't exist, insert new with 1 win and the total votes for the winning user as the total vote count.
-def updateWeeklyLeaderForWinner(winningUserPoolUserId, winningUserUsername, totalWinningVotes, weekYear):
+def updateWeeklyLeaderForWinner(winningUserId, winningUsername, totalWinningVotes, weekYear):
 
     totalWins = 1
     totalVotes = totalWinningVotes
 
-    userWeeklyLeaderRecord = getWeeklyLeaderRecordForUser(winningUserPoolUserId, weekYear)
+    userWeeklyLeaderRecord = getWeeklyLeaderRecordForUser(winningUserId, weekYear)
     if userWeeklyLeaderRecord is not None:
-        totalWins = totalWins + int(userWeeklyLeaderRecord['totalWinsDuringWeek'])
-        totalVotes = totalVotes + int(userWeeklyLeaderRecord['totalVotesDuringWeek'])
+        totalWins = totalWins + int(userWeeklyLeaderRecord['wins'])
+        totalVotes = totalVotes + int(userWeeklyLeaderRecord['votes'])
 
-        updateWeeklyLeaderRecordForUser(winningUserPoolUserId, totalVotes, totalWins, weekYear)
+        updateWeeklyLeaderRecordForUser(winningUserId, totalVotes, totalWins, weekYear)
     else:
-        createWeeklyLeaderRecordForUser(winningUserPoolUserId, winningUserUsername, totalVotes, totalWins, weekYear)
+        createWeeklyLeaderRecordForUser(winningUserId, winningUsername, totalVotes, totalWins, weekYear)
 
     return
 
 
 # Get the AWS_WeeklyLeader record for the user, if one exists.
-def getWeeklyLeaderRecordForUser(winningUserPoolUserId, weekYear):
+def getWeeklyLeaderRecordForUser(winningUserId, weekYear):
+    weekYearUserId = '{}{}'.format(weekYear, winningUserId)
     response = weeklyLeaderTable.get_item(
        Key={
-            'userPoolUserId': winningUserPoolUserId,
-            'weekYear': weekYear
+            'weekYearUserId': weekYearUserId
        }
     )
     userWeeklyLeaderRecord = None
     try:
         userWeeklyLeaderRecord = response['Item']
     except Exception as e:
-        print('No WeeklyLeaderRecord found for user: {}'.format(winningUserPoolUserId))
+        print('No WeeklyLeaderRecord found for user: {}'.format(winningUserId))
         pass
     return userWeeklyLeaderRecord
 
 
 # Update AWS_WeeklyLeader record for winning user.
-def updateWeeklyLeaderRecordForUser(winningUserPoolUserId, totalVotes, totalWins, weekYear):
-    updateDate = str(datetime.utcnow().isoformat()+'Z')
+def updateWeeklyLeaderRecordForUser(winningUserId, totalVotes, totalWins, weekYear):
+    weekYearUserId = '{}{}'.format(weekYear, winningUserId)
     response = weeklyLeaderTable.update_item(
         Key={
-            'userPoolUserId': winningUserPoolUserId,
-            'weekYear': weekYear
+            'weekYearUserId': weekYearUserId
         },
-        UpdateExpression="set totalVotesDuringWeek = :totalVotes, totalWinsDuringWeek = :totalWins, updateDate = :updateDate",
+        UpdateExpression="set votes = :totalVotes, wins = :totalWins",
         ExpressionAttributeValues={
             ':totalVotes': decimal.Decimal(totalVotes),
-            ':totalWins': decimal.Decimal(totalWins),
-            ':updateDate': updateDate
+            ':totalWins': decimal.Decimal(totalWins)
         }
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -194,16 +193,16 @@ def updateWeeklyLeaderRecordForUser(winningUserPoolUserId, totalVotes, totalWins
 
 
 # Create AWS_WeeklyLeader record for winning user.
-def createWeeklyLeaderRecordForUser(winningUserPoolUserId, winningUserUsername, totalVotes, totalWins, weekYear):
-    createDate = str(datetime.utcnow().isoformat()+'Z')
+def createWeeklyLeaderRecordForUser(winningUserId, winningUsername, totalVotes, totalWins, weekYear):
+    weekYearUserId = '{}{}'.format(weekYear, winningUserId)
     response = weeklyLeaderTable.put_item(
         Item={
-            'userPoolUserId': winningUserPoolUserId,
-            'createDate': createDate,
-            'username': winningUserUsername,
-            'totalVotesDuringWeek': decimal.Decimal(totalVotes),
+            'userId': winningUserId,
+            'username': winningUsername,
+            'votes': decimal.Decimal(totalVotes),
             'weekYear': decimal.Decimal(weekYear),
-            'totalWinsDuringWeek': decimal.Decimal(totalWins)
+            'weekYearUserId': weekYearUserId,
+            'wins': decimal.Decimal(totalWins)
         }
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:

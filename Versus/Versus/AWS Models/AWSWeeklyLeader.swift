@@ -35,11 +35,6 @@ class AWSWeeklyLeader: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
         return "_weekYearUserId"
     }
     
-    class func rangeKeyAttribute() -> String {
-
-        return "_wins"
-    }
-    
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
                 "_userId" : "_userId",

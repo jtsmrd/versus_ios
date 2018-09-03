@@ -18,8 +18,10 @@ import AWSDynamoDB
 @objcMembers
 class AWSVote: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
+    var _competitionId: String?
     var _competitionIdUserId: String?
     var _competitionEntryId: String?
+    var _competitor: String?
     
     class func dynamoDBTableName() -> String {
 
@@ -33,8 +35,10 @@ class AWSVote: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
+               "_competitionId" : "competitionId",
                "_competitionIdUserId" : "competitionIdUserId",
                "_competitionEntryId" : "competitionEntryId",
+               "_competitor" : "competitor",
         ]
     }
 }

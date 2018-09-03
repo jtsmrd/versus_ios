@@ -33,13 +33,19 @@ class ViewCompetitionVC: UIViewController {
     
     private var competition: Competition!
     private var selectedCompetitor: Competitor!
-    private var existingVote: Vote?
     private var firstCompetitorVC: CompetitorVC!
     private var secondCompetitorVC: CompetitorVC!
     private var viewCompetitionOptionsVC: ViewCompetitionOptionsVC!
     private var viewSingleTapGestureRecognizer: UITapGestureRecognizer!
     private var optionsViewIsDisplayed: Bool {
         return optionsViewBottom.constant == 0
+    }
+    private var existingVote: Vote? {
+        didSet {
+            if let vote = existingVote {
+                postUserVoteUpdated(vote: vote)
+            }
+        }
     }
     
     
@@ -52,13 +58,6 @@ class ViewCompetitionVC: UIViewController {
         configureView()
         configureExpireCountdown()
         getVote()
-        
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(userVoteUpdated(notification:)),
-            name: NSNotification.Name.OnUserVoteUpdated,
-            object: nil
-        )
     }
     
     
@@ -75,18 +74,7 @@ class ViewCompetitionVC: UIViewController {
      
      */
     deinit {
-        notificationCenter.removeObserver(self)
         view.removeGestureRecognizer(viewSingleTapGestureRecognizer)
-    }
-    
-    
-    /**
-     
-     */
-    @objc func userVoteUpdated(notification: Notification) {
-        if let vote = notification.object as? Vote {
-            existingVote = vote
-        }
     }
     
     
@@ -183,7 +171,7 @@ class ViewCompetitionVC: UIViewController {
             competitionId: competition.competitionId
         ) { [weak self] (vote) in
             if let vote = vote {
-                self?.postUserVoteUpdated(vote: vote)
+                self?.existingVote = vote
             }
         }
     }
@@ -277,19 +265,43 @@ class ViewCompetitionVC: UIViewController {
             firstCompetitorVC = segue.destination as! CompetitorVC
             firstCompetitorVC.initData(
                 competitor: competition.firstCompetitor,
-                isExpired: competition.isExpired
+                isExpired: competition.isExpired,
+                delegate: self
             )
         }
         else if segue.identifier == SECOND_COMPETITOR {
             secondCompetitorVC = segue.destination as! CompetitorVC
             secondCompetitorVC.initData(
                 competitor: competition.secondCompetitor,
-                isExpired: competition.isExpired
+                isExpired: competition.isExpired,
+                delegate: self
             )
         }
         else if let viewCompetitionOptionsVC = segue.destination as? ViewCompetitionOptionsVC {
             viewCompetitionOptionsVC.initData(delegate: self)
             self.viewCompetitionOptionsVC = viewCompetitionOptionsVC
+        }
+    }
+}
+
+extension ViewCompetitionVC: CompetitorVCDelegate {
+    
+    func voteForCompetitor(
+        competitionEntryId: String,
+        competitorType: CompetitorType,
+        isVoteSwitched: Bool
+    ) {
+        voteService.voteForCompetition(
+            competition: competition,
+            competitionEntryId: competitionEntryId,
+            competitorType: competitorType,
+            isVoteSwitch: isVoteSwitched
+        ) { [weak self] (vote, customError) in
+            if let customError = customError {
+                self?.displayError(error: customError)
+                return
+            }
+            self?.existingVote = vote
         }
     }
 }

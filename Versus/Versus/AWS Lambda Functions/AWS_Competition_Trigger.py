@@ -14,14 +14,14 @@ def lambda_handler(event, context):
             competition = record['dynamodb']['NewImage']
             competitionId = competition['competitionId']['S']
             
-            notifyUserId = competition['firstEntryUserId']['S']
-            opponentUserId = competition['secondEntryUserId']['S']
-            opponentUsername = competition['secondEntryUsername']['S']
+            notifyUserId = competition['firstCompetitorUserId']['S']
+            opponentUserId = competition['secondCompetitorUserId']['S']
+            opponentUsername = competition['secondCompetitorUsername']['S']
             createCompetitionStartNotification(competitionId, notifyUserId, opponentUserId, opponentUsername)
             
-            notifyUserId = competition['secondEntryUserId']['S']
-            opponentUserId = competition['firstEntryUserId']['S']
-            opponentUsername = competition['firstEntryUsername']['S']
+            notifyUserId = competition['secondCompetitorUserId']['S']
+            opponentUserId = competition['firstCompetitorUserId']['S']
+            opponentUsername = competition['firstCompetitorUsername']['S']
             createCompetitionStartNotification(competitionId, notifyUserId, opponentUserId, opponentUsername)
         
         elif record['eventName'] == 'MODIFY':
@@ -33,22 +33,22 @@ def lambda_handler(event, context):
             if attribute_not_exists(competition['competitionIsActive']):
                 
                 winnerUserId = competition['winnerUserId']['S']
-                firstEntryUserId = competition['firstEntryUserId']['S']
-                firstEntryUsername = competition['firstEntryUsername']['S']
-                secondEntryUserId = competition['secondEntryUserId']['S']
-                secondEntryUsername = competition['secondEntryUsername']['S']
+                firstCompetitorUserId = competition['firstCompetitorUserId']['S']
+                firstCompetitorUsername = competition['firstCompetitorUsername']['S']
+                secondCompetitorUserId = competition['secondCompetitorUserId']['S']
+                secondCompetitorUsername = competition['secondCompetitorUsername']['S']
                 
                 winningUsername = None
                 losingUsername = None
                 losingUserId = None
-                if winnerUserId == firstEntryUserId:
-                    winningUsername = firstEntryUsername
-                    losingUsername = secondEntryUsername
-                    losingUserId = secondEntryUserId
+                if winnerUserId == firstCompetitorUserId:
+                    winningUsername = firstCompetitorUsername
+                    losingUsername = secondCompetitorUsername
+                    losingUserId = secondCompetitorUserId
                 else:
-                    winningUsername = secondEntryUsername
-                    losingUsername = firstEntryUsername
-                    losingUserId = firstEntryUserId
+                    winningUsername = secondCompetitorUsername
+                    losingUsername = firstCompetitorUsername
+                    losingUserId = firstCompetitorUserId
                 
                 createCompetitionWonNotification(competitionId, winnerUserId, losingUserId, losingUsername)
                 createCompetitionLostNotification(competitionId, losingUserId, winnerUserId, winningUsername)

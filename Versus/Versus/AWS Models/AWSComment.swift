@@ -19,6 +19,7 @@ import AWSDynamoDB
 class AWSComment: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     
     var _competitionEntryId: String?
+    var _competitionId: String?
     var _createDate: String?
     var _commentId: String?
     var _likeCount: NSNumber?
@@ -44,6 +45,7 @@ class AWSComment: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
     override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
         return [
                 "_competitionEntryId" : "competitionEntryId",
+                "_competitionId" : "competitionId",
                 "_createDate" : "createDate",
                 "_commentId" : "commentId",
                 "_likeCount" : "likeCount",

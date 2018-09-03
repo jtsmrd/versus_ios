@@ -8,10 +8,6 @@
 
 import UIKit
 
-protocol SearchUserCellDelegate {
-    func searchUserCellFollowButtonActionError(error: CustomError)
-}
-
 class SearchUserCell: UITableViewCell {
     
     @IBOutlet weak var profileImageView: CircleImageView!
@@ -20,7 +16,6 @@ class SearchUserCell: UITableViewCell {
     @IBOutlet weak var followButton: FollowButton!
     
     weak var user: User?
-    var delegate: SearchUserCellDelegate?
     var followStatus: FollowStatus {
         return CurrentUser.getFollowedUserStatusFor(userId: user!.userId)
     }
@@ -37,7 +32,6 @@ class SearchUserCell: UITableViewCell {
         usernameLabel.text = nil
         displayNameLabel.text = nil
         user = nil
-        delegate = nil
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -63,16 +57,20 @@ class SearchUserCell: UITableViewCell {
     /**
      
      */
-    func configureCell(user: User?, delegate: SearchUserCellDelegate) {
-        guard let user = user else {
-            // Show loading state
-            return
-        }
+    func configureCell(user: User) {
         self.user = user
-        self.delegate = delegate
         followButton.setButtonState(followStatus: followStatus)
         usernameLabel.text = user.username
         displayNameLabel.text = user.displayName
+//        if let image = user.profileImage {
+//            profileImageView.image = image
+//            // Stop activity indicator
+//        }
+//        if user.profileImageDownloadState == .failed {
+//            // Stop activity indicator
+//        }
+        
+
         user.getProfileImage { (image, error) in
             DispatchQueue.main.async {
                 self.profileImageView.image = image
@@ -90,7 +88,7 @@ class SearchUserCell: UITableViewCell {
         ) { (customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
-                    self.delegate?.searchUserCellFollowButtonActionError(error: customError)
+                    self.parentViewController?.displayError(error: customError)
                     return
                 }
                 self.followButton.setButtonState(followStatus: self.followStatus)
@@ -139,7 +137,7 @@ class SearchUserCell: UITableViewCell {
         ) { (customError) in
             DispatchQueue.main.async {
                 if let customError = customError {
-                    self.delegate?.searchUserCellFollowButtonActionError(error: customError)
+                    self.parentViewController?.displayError(error: customError)
                     return
                 }
                 self.followButton.setButtonState(followStatus: self.followStatus)

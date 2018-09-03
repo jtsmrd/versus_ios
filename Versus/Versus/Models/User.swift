@@ -27,6 +27,7 @@ class User {
     var username: String
     
     var profileImage: UIImage?
+    var profileImageDownloadState: ImageDownloadState = .new
     var profileBackgroundImage: UIImage?
     var followers = [Follower]()
     var followedUsers = [FollowedUser]()

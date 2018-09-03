@@ -68,7 +68,7 @@ class CompetitionCell: UITableViewCell {
         secondEntryUserRankImageView.image = competition.secondCompetitor.rank.image
         secondEntryUsernameLabel.text = String(format: "@%@", competition.secondCompetitor.username)
         secondEntryVotesLabel.text = String(format: "%d", competition.secondCompetitor.voteCount)
-        //TODO: Change to getCompetitionImageSmall
+        
         DispatchQueue.global(qos: .userInitiated).async {
             competition.firstCompetitor.getCompetitionImage(
                 completion: { [weak self] (image, customError) in
@@ -81,7 +81,7 @@ class CompetitionCell: UITableViewCell {
                 }
             )
         }
-        //TODO: Change to getCompetitionImageSmall
+        
         DispatchQueue.global(qos: .userInitiated).async {
             competition.secondCompetitor.getCompetitionImage(
                 completion: { [weak self] (image, customError) in

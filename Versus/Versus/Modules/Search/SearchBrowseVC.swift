@@ -9,21 +9,22 @@
 import UIKit
 
 class SearchBrowseVC: UIViewController {
-
-    private let userCollectionManager = UserCollectionManager.instance
     
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var browseTableView: UITableView!
-    @IBOutlet weak var searchUserTableView: UITableView!
     @IBOutlet weak var leaderboardCategoryContainerView: UIView!
     @IBOutlet weak var leaderboardCollectionView: UICollectionView!
     @IBOutlet weak var browseCategoryCollectionView: UICollectionView!
+    @IBOutlet weak var searchView: UIView!
     
     @IBOutlet weak var leaderboardCategoryContainerViewTop: NSLayoutConstraint!
+    @IBOutlet weak var searchViewTop: NSLayoutConstraint!
+    @IBOutlet weak var searchViewHeight: NSLayoutConstraint!
     
+    private var searchVC: SearchUserVC!
     var featuredCompetitions = [Competition]()
     var selectedCategoryIndexPath: IndexPath?
-    var keyboardToolbar: KeyboardToolbar!
     let leaderboardCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     let browseCategoryCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
@@ -41,31 +42,22 @@ class SearchBrowseVC: UIViewController {
         return leaderboardCategoryContainerViewTop.constant == expandedConstant
     }
     var browseTableViewIsScrollingUp = false
+    private var searchViewIsDisplayed: Bool {
+        return searchViewTop.constant == 0
+    }
     
-    let testLeaderboardNames = ["Weekly Leaders", "Monthly Leaders", "All-Time Leaders"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         browseTableView.register(UINib(nibName: COMPETITION_CELL, bundle: nil), forCellReuseIdentifier: COMPETITION_CELL)
-        
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        searchViewHeight.constant = contentContainerView.frame.height
         
         getLeaderboards()
         configureView()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        searchUserTableView.reloadData()
-    }
 
+    
     private func configureView() {
         
         getFeaturedCompetitions()
@@ -78,6 +70,7 @@ class SearchBrowseVC: UIViewController {
             }
         }
     }
+    
     
     private func getLeaderboards() {
         
@@ -92,6 +85,7 @@ class SearchBrowseVC: UIViewController {
             }
         }
     }
+    
     
     private func getFeaturedCompetitions() {
         
@@ -190,106 +184,80 @@ class SearchBrowseVC: UIViewController {
             let leaderboard = sender as? Leaderboard {
             leaderboardVC.initData(leaderboard: leaderboard)
         }
+        else if let searchVC = segue.destination as? SearchUserVC {
+            searchBar.delegate = searchVC
+            searchVC.delegate = self
+            self.searchVC = searchVC
+        }
     }
 }
 
-extension SearchBrowseVC: SearchUserCellDelegate {
+extension SearchBrowseVC: SearchVCDelegate {
     
-    func searchUserCellFollowButtonActionError(error: CustomError) {
-        self.displayError(error: error)
+    /**
+ 
+     */
+    func toggleSearchView(isHidden hidden: Bool) {
+        var newConstant: CGFloat = 0
+        if hidden {
+            newConstant = -(searchView.frame.height)
+            view.endEditing(true)
+        }
+        searchView.isHidden = hidden
+        searchViewTop.constant = newConstant
     }
 }
 
 extension SearchBrowseVC: UITableViewDataSource {
     
+    /**
+     
+     */
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if tableView == browseTableView {
-            return featuredCompetitions.count
-        }
-        else if tableView == searchUserTableView {
-            return userCollectionManager.potentialUserCount
-        }
-        return 0
+        return featuredCompetitions.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        if tableView == browseTableView {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: COMPETITION_CELL, for: indexPath) as? CompetitionCell {
-                cell.configureCell(competition: featuredCompetitions[indexPath.row])
-                return cell
-            }
-            return CompetitionCell()
-        }
-        else if tableView == searchUserTableView {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: SEARCH_USER_CELL, for: indexPath) as? SearchUserCell {
-                let user = userCollectionManager.getUserFor(indexPath: indexPath)
-                cell.configureCell(user: user, delegate: self)
-                return cell
-            }
-            return SearchUserCell()
-        }
-        return UITableViewCell()
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        if tableView == browseTableView {
-            return 188
-        }
-        else if tableView == searchUserTableView {
-            return 70
-        }
-        return 0
-    }
-}
-
-extension SearchBrowseVC: UITableViewDataSourcePrefetching {
     
     /**
-        If more results exist, fetch them when the prefetch index >= the current user count
+     
      */
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        guard let maxIndex = indexPaths.max(), maxIndex.row >= userCollectionManager.users.count else { return }
-        if userCollectionManager.hasMoreResults {
-            userCollectionManager.fetchMoreResults { (customError) in
-                DispatchQueue.main.async {
-                    if let customError = customError {
-                        debugPrint(customError.message)
-                        return
-                    }
-                    self.searchUserTableView.reloadData()
-                }
-            }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: COMPETITION_CELL, for: indexPath) as? CompetitionCell {
+            cell.configureCell(competition: featuredCompetitions[indexPath.row])
+            return cell
         }
+        return CompetitionCell()
+    }
+    
+    
+    /**
+     
+     */
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 188
     }
 }
 
 extension SearchBrowseVC: UITableViewDelegate {
     
+    /**
+     
+     */
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        if tableView == browseTableView {
-            showCompetition(competition: featuredCompetitions[indexPath.row])
-            tableView.deselectRow(at: indexPath, animated: false)
-        }
-        else if tableView == searchUserTableView {
-            
-            if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-                profileVC.initData(userId: userCollectionManager.users[indexPath.row].userId)
-                profileVC.hidesBottomBarWhenPushed = true
-                navigationController?.pushViewController(profileVC, animated: true)
-            }
-        }
         tableView.deselectRow(at: indexPath, animated: false)
+        showCompetition(competition: featuredCompetitions[indexPath.row])
     }
     
-    
+    /**
+     
+     */
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         handleBrowseTableViewScroll(scrollView: scrollView)
     }
     
+    /**
+     
+     */
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         
         // If the scroll view will decelerate then scrollViewDidEndDecelerating will be called instead.
@@ -299,62 +267,13 @@ extension SearchBrowseVC: UITableViewDelegate {
         }
     }
     
+    /**
+     
+     */
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         expandLeaderboardCategoriesViewIfNeeded()
     }
 }
-
-extension SearchBrowseVC: UISearchBarDelegate {
-    
-    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        searchBar.inputAccessoryView = keyboardToolbar
-        return true
-    }
-    
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchUserTableView.isHidden = false
-        searchBar.setShowsCancelButton(true, animated: true)
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(false, animated: true)
-        
-        if userCollectionManager.users.isEmpty {
-            searchUserTableView.isHidden = true
-            searchBar.text?.removeAll()
-        }
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchUserTableView.isHidden = true
-        searchBar.text?.removeAll()
-        userCollectionManager.removeAllUsers()
-        searchUserTableView.reloadData()
-        searchBar.setShowsCancelButton(false, animated: true)
-        view.endEditing(true)
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-        guard !searchText.isEmpty else {
-            userCollectionManager.removeAllUsers()
-            searchUserTableView.reloadData()
-            return
-        }
-        userCollectionManager.searchUsers(
-            searchText: searchText
-        ) { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                    return
-                }
-                self.searchUserTableView.reloadData()
-            }
-        }
-    }
-}
-
 
 extension SearchBrowseVC: UICollectionViewDataSource {
     
