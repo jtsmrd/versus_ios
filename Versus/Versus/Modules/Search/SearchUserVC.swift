@@ -133,7 +133,7 @@ extension SearchUserVC: UITableViewDataSourcePrefetching {
         If more results exist, fetch them when the prefetch index >= the current user count
      */
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        guard let maxIndex = indexPaths.max(), maxIndex.row >= userManager.users.count else { return }
+        guard let maxIndex = indexPaths.max(), maxIndex.row >= userManager.users.count - 10 else { return }
         if userManager.hasMoreResults {
             userManager.fetchMoreResults { (customError) in
                 DispatchQueue.main.async {

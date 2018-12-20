@@ -5,51 +5,66 @@ from boto3.dynamodb.conditions import Key, Attr
 
 dynamodb = boto3.resource('dynamodb')
 competitionTable = dynamodb.Table('AWS_Competition')
+userTable = dynamodb.Table('AWS_User')
 
 def lambda_handler(event, context):
-    
+
     for record in event['Records']:
         if record['eventName'] == 'INSERT':
             vote = record['dynamodb']['NewImage']
-            statusCode = incrementCompetitorVoteCount(vote)
-            if statusCode != 200:
+
+            updateCompetitionStatusCode = incrementCompetitorVoteCount(vote)
+            if updateCompetitionStatusCode != 200:
                 print('Failed to increment vote')
-                continue
-            
-            else: # status code == 200
-                continue
+
+            updateUserTotalVotes = updateUserVoteCount(vote)
+            if updateUserTotalVotes != 200:
+                print('Failed to increment user total votes')
+
         elif record['eventName'] == 'MODIFY':
             vote = record['dynamodb']['NewImage']
             statusCode = switchCompetitorVoteCount(vote)
             if statusCode != 200:
                 print('Failed to increment/ decrement vote')
-                continue
-            
-            else: # status code == 200
-                continue
-    
-    
+
+
     return 'Successfully processed Vote records'
+
+
+def updateUserVoteCount(vote):
+    competitionIdUserId = vote['competitionIdUserId']['S']
+    competitionId = vote['competitionId']['S']
+    userId = competitionIdUserId.replace(competitionId, "")
+    response = userTable.update_item(
+        Key={
+            'userId': userId
+        },
+        UpdateExpression="ADD totalTimesVoted :val",
+        ExpressionAttributeValues={
+            ':val': decimal.Decimal(1)
+        }
+    )
+    return response['ResponseMetadata']['HTTPStatusCode']
 
 
 def incrementCompetitorVoteCount(vote):
     competitionId = vote['competitionId']['S']
     competitor = vote['competitor']['S']
-    
-    incrementVoteCountProperty = None
-    if competitor == 'first':
-        incrementVoteCountProperty = 'firstCompetitorVoteCount'
-    else:
-        incrementVoteCountProperty = 'secondCompetitorVoteCount'
 
-    if incrementVoteCountProperty is not None:
+    incrementProperty = None
+    if competitor == 'first':
+        incrementProperty = 'firstCompetitorVoteCount'
+    else:
+        incrementProperty = 'secondCompetitorVoteCount'
+
+    if incrementProperty is not None:
         response = competitionTable.update_item(
             Key={
                 'competitionId': competitionId
             },
-            UpdateExpression="ADD #incrementVoteCountProperty :val",
+            UpdateExpression="ADD #incrementProperty :val",
             ExpressionAttributeNames={
-                '#incrementVoteCountProperty': incrementVoteCountProperty
+                '#incrementProperty': incrementProperty
             },
             ExpressionAttributeValues={
                 ':val': decimal.Decimal(1)
@@ -63,25 +78,25 @@ def incrementCompetitorVoteCount(vote):
 def switchCompetitorVoteCount(vote):
     competitionId = vote['competitionId']['S']
     competitor = vote['competitor']['S']
-    
-    incrementVoteCountProperty = None
-    decrementVoteCountProperty = None
-    if competitor == 'first':
-        incrementVoteCountProperty = 'firstCompetitorVoteCount'
-        decrementVoteCountProperty = 'secondCompetitorVoteCount'
-    else:
-        incrementVoteCountProperty = 'secondCompetitorVoteCount'
-        decrementVoteCountProperty = 'firstCompetitorVoteCount'
 
-    if incrementVoteCountProperty is not None and decrementVoteCountProperty is not None:
+    incrementProperty = None
+    decrementProperty = None
+    if competitor == 'first':
+        incrementProperty = 'firstCompetitorVoteCount'
+        decrementProperty = 'secondCompetitorVoteCount'
+    else:
+        incrementProperty = 'secondCompetitorVoteCount'
+        decrementProperty = 'firstCompetitorVoteCount'
+
+    if incrementProperty is not None and decrementProperty is not None:
         response = competitionTable.update_item(
             Key={
                 'competitionId': competitionId
             },
-            UpdateExpression="ADD #incrementVoteCountProperty :incVal, #decrementVoteCountProperty :decVal",
+            UpdateExpression="ADD #incrementProperty :incVal, #decrementProperty :decVal",
             ExpressionAttributeNames={
-                '#incrementVoteCountProperty': incrementVoteCountProperty,
-                '#decrementVoteCountProperty': decrementVoteCountProperty
+                '#incrementProperty': incrementProperty,
+                '#decrementProperty': decrementProperty
             },
             ExpressionAttributeValues={
                 ':incVal': decimal.Decimal(1),

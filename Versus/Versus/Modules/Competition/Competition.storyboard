@@ -413,6 +413,7 @@
                             <constraint firstItem="kFy-By-nVv" firstAttribute="top" secondItem="HOw-0r-Epf" secondAttribute="top" id="RoW-Ce-zfM"/>
                             <constraint firstItem="Gqi-59-T0e" firstAttribute="leading" secondItem="HOw-0r-Epf" secondAttribute="leading" id="ldm-fw-4DB"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="5r5-u3-kW1"/>
                     </view>
                     <connections>
                         <outlet property="optionsCollectionView" destination="SYw-Dg-Dh6" id="hf7-SG-DB4"/>

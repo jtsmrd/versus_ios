@@ -35,19 +35,31 @@ class CompetitorVC: UIViewController {
     private var videoPlayerLayer: AVPlayerLayer!
     private var player: AVPlayer!
     private var delegate: CompetitorVCDelegate?
+    
+    // When the user votes, configure the vote button and vote
+    // gesture recognizer.
     private var vote: Vote? {
         didSet {
             configureVoteButton()
+            configureVoteGestureRecognizer()
         }
     }
+    
+    /**
+     Used to determine if the user voted for the selected competitor
+    */
     private var userVotedForCompetitor: Bool {
+        
+        // The user didn't vote at all
         guard let vote = vote else { return false }
+        
+        // The user voted for this competitor if the competitionEntryId's match
         return vote.competitionEntryId == competitor.competitionEntryId
     }
     
     /**
-        Set from ViewCompetitionVC when the user switches between competitors
-        to play and pause video.
+    Set from ViewCompetitionVC when the user switches between competitors
+    to play and pause video.
      */
     var viewIsSelected: Bool = false {
         didSet {
@@ -73,7 +85,7 @@ class CompetitorVC: UIViewController {
         
         notificationCenter.addObserver(
             self,
-            selector: #selector(userVoteUpdated(notification:)),
+            selector: #selector(CompetitorVC.userVoteUpdated(notification:)),
             name: NSNotification.Name.OnUserVoteUpdated,
             object: nil
         )
@@ -86,7 +98,10 @@ class CompetitorVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if competitor.competitionType == .video {
-            videoPlayerLayer.frame = CGRect(origin: .zero, size: view.frame.size)
+            videoPlayerLayer.frame = CGRect(
+                origin: .zero,
+                size: view.frame.size
+            )
         }
     }
     
@@ -101,9 +116,13 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Initializer method for competitor view
      */
-    func initData(competitor: Competitor, isExpired: Bool, delegate: CompetitorVCDelegate) {
+    func initData(
+        competitor: Competitor,
+        isExpired: Bool,
+        delegate: CompetitorVCDelegate
+    ) {
         self.competitor = competitor
         self.isExpired = isExpired
         self.delegate = delegate
@@ -118,7 +137,8 @@ class CompetitorVC: UIViewController {
     }
     
     
-    // Remove function after finding out where to put clean up code: viewWillDisappear or deinit
+    // Remove function after finding out where to put clean
+    // up code: viewWillDisappear or deinit
     private func cleanUpResources() {
         if competitor.competitionType == .video {
             notificationCenter.removeObserver(player)
@@ -129,12 +149,13 @@ class CompetitorVC: UIViewController {
         if competitor.competitionType == .video {
             view.removeGestureRecognizer(viewSingleTapGestureRecognizer)
         }
+        
         view.removeGestureRecognizer(viewDoubleTapGestureRecognizer)
     }
     
     
     /**
-     
+     Vote for the selected competitor when view is double tapped
      */
     @objc func viewDoubleTapAction(_ sender: UITapGestureRecognizer) {
         voteForCompetitor()
@@ -142,7 +163,7 @@ class CompetitorVC: UIViewController {
     
     
     /**
-        Mute and unmute video audio if media is video
+    Mute and unmute video audio if media is video
      */
     @objc func viewSingleTapAction(_ sender: UITapGestureRecognizer) {
         
@@ -150,21 +171,11 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Handler for when the user vote is updated
      */
     @objc func userVoteUpdated(notification: Notification) {
         if let vote = notification.object as? Vote {
             self.vote = vote
-        }
-        DispatchQueue.main.async {
-            if self.isExpired || self.userVotedForCompetitor {
-                self.viewDoubleTapGestureRecognizer.isEnabled = false
-                self.voteButton.isEnabled = false
-            }
-            else {
-                self.viewDoubleTapGestureRecognizer.isEnabled = true
-                self.voteButton.isEnabled = true
-            }
         }
     }
     
@@ -179,7 +190,7 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Vote for competitor when the vote button is tapped
      */
     @IBAction func voteButtonAction() {
         voteForCompetitor()
@@ -187,11 +198,10 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Configure the view's initial state
      */
     private func configureView() {
         commentCountLabel.text = String(format: "%d", competitor.commentCount)
-        configureVoteButton()
         
         if competitor.competitionType == .video {
             
@@ -204,14 +214,19 @@ class CompetitorVC: UIViewController {
             view.addGestureRecognizer(viewSingleTapGestureRecognizer)
         }
         
-        // Used to vote for the active competitor
+        // Configure the initial state of the vote button
+        configureVoteButton()
+        
+        // Add and configure the vote gesture recognizer
         viewDoubleTapGestureRecognizer = UITapGestureRecognizer(
             target: self,
             action: #selector(CompetitorVC.viewDoubleTapAction(_:))
         )
         viewDoubleTapGestureRecognizer.numberOfTapsRequired = 2
         view.addGestureRecognizer(viewDoubleTapGestureRecognizer)
+        configureVoteGestureRecognizer()
         
+        // Configure the view based on competition type
         switch competitor.competitionType {
         case .image:
             configureForImageCompetition()
@@ -222,7 +237,7 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Configure the view for an image competition
      */
     private func configureForImageCompetition() {
         
@@ -242,7 +257,7 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Configure the view for a video competition
      */
     private func configureForVideoCompetition() {
         
@@ -285,7 +300,7 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Configure the AVPlayer for video competitions
      */
     private func configureAVPlayer() {
         player = AVPlayer()
@@ -307,25 +322,66 @@ class CompetitorVC: UIViewController {
     
     
     /**
-     
+     Configure the vote button image and vote count label when the user votes
      */
     private func configureVoteButton() {
         DispatchQueue.main.async {
+            
+            // Set the vote count label
             self.voteCountLabel.text = String(format: "%d", self.competitor.voteCount)
+            
             if self.userVotedForCompetitor {
-                self.voteButton.setImage(UIImage(named: "Voting-Star"), for: .normal)
+                
+                // The user voted for this competitor. Set vote button image
+                // to yellow star.
+                self.voteButton.setImage(
+                    UIImage(named: "Voting-Star"),
+                    for: .normal
+                )
             }
             else {
-                self.voteButton.setImage(UIImage(named: "Voting-Star-White"), for: .normal)
+                
+                // The user didn't vote for this competitor. Set vote button
+                // image to white star.
+                self.voteButton.setImage(
+                    UIImage(named: "Voting-Star-White"),
+                    for: .normal
+                )
             }
+            
+            // Disable the vote button if the competition is expired
+            // or if the user voted for this competitor.
+            if self.isExpired || self.userVotedForCompetitor {
+                self.voteButton.isEnabled = false
+            }
+            else {
+                self.voteButton.isEnabled = true
+            }
+        }
+    }
+    
+    
+    /**
+     Enable or disable vote gesture recognizer based on the current vote or if
+     the competition is expired.
+    */
+    private func configureVoteGestureRecognizer() {
+        
+        if isExpired || userVotedForCompetitor {
+            viewDoubleTapGestureRecognizer.isEnabled = false
+        }
+        else {
+            viewDoubleTapGestureRecognizer.isEnabled = true
         }
     }
 
     
     /**
-     
+     Handles voting for the selected competitor
      */
     private func voteForCompetitor() {
+        
+        // If the user already voted, display the change vote alert
         guard vote == nil else {
             displayChangeVoteAlert()
             return
@@ -335,45 +391,11 @@ class CompetitorVC: UIViewController {
             competitorType: competitor.competitorType,
             isVoteSwitched: false
         )
-        
-//        voteService.voteForCompetition(
-//            competitionId: competitor.competitionId,
-//            competitionEntryId: competitor.competitionEntryId,
-//            competitorType: competitor.competitorType
-//        ) { [weak self] (vote, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    self?.displayError(error: customError)
-//                    return
-//                }
-//                self?.isNewVote = true
-//                self?.incrementVoteCountForCurrentUser()
-//                self?.notificationCenter.post(
-//                    name: NSNotification.Name.OnUserVoteUpdated,
-//                    object: vote
-//                )
-//            }
-//        }
     }
     
     
     /**
-     
-     */
-    private func incrementVoteCountForCurrentUser() {
-        CurrentUser.incrementVoteCount()
-        CurrentUser.update { [weak self] (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self?.displayError(error: customError)
-                }
-            }
-        }
-    }
-    
-    
-    /**
-     
+     Display a change vote alert if the user already voted
      */
     private func displayChangeVoteAlert() {
         let alertVC = UIAlertController(
@@ -386,29 +408,12 @@ class CompetitorVC: UIViewController {
                 title: "Yes",
                 style: .default,
                 handler: { (action) in
-                    guard let _ = self.vote else { return }
+                    
                     self.delegate?.voteForCompetitor(
                         competitionEntryId: self.competitor.competitionEntryId,
                         competitorType: self.competitor.competitorType,
                         isVoteSwitched: true
                     )
-//                    vote.changeVote(
-//                        competitionEntryId: self.competitor.competitionEntryId,
-//                        competitorType: self.competitor.competitorType,
-//                        completion: { [weak self] (vote, customError) in
-//                            DispatchQueue.main.async {
-//                                if let customError = customError {
-//                                    self?.displayError(error: customError)
-//                                    return
-//                                }
-//                                self?.isNewVote = true
-//                                self?.notificationCenter.post(
-//                                    name: NSNotification.Name.OnUserVoteUpdated,
-//                                    object: vote
-//                                )
-//                            }
-//                        }
-//                    )
                 }
             )
         )
@@ -438,7 +443,8 @@ extension CompetitorVC: CompetitionCommentsVCDelegate {
     
     
     /**
- 
+     Hide the comments view by updating the constraint
+     TODO: Animate
      */
     func dismissComments() {
         commentsViewBottom.constant = -originalCommentsViewHeight
@@ -446,7 +452,8 @@ extension CompetitorVC: CompetitionCommentsVCDelegate {
     
     
     /**
-     
+     Move the comments view up when the keyboard is displayed
+     TODO: Animate
      */
     func expandCommentsView() {
         commentsViewHeight.constant = view.frame.height - 20
@@ -454,7 +461,8 @@ extension CompetitorVC: CompetitionCommentsVCDelegate {
     
     
     /**
-     
+     Move the comments view down then the keyboard is dismissed
+     TODO: Animate
      */
     func retractCommentsView() {
         commentsViewHeight.constant = originalCommentsViewHeight

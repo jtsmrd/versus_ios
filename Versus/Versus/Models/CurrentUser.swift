@@ -469,7 +469,7 @@ class CurrentUser {
     
     
     /**
-     
+     TODO: Is this still needed? User vote count is incremented with Vote trigger funtion.
      */
     static func incrementVoteCount() {
         awsUser._totalTimesVoted = (CurrentUser.totalTimesVoted + 1).toNSNumber

@@ -16,6 +16,7 @@ class FeaturedFollowingVC: UIViewController {
     }
     
     private let competitionService = CompetitionService.instance
+    private let notificationCenter = NotificationCenter.default
     
     @IBOutlet weak var featuredCompetitionsContainerView: UIView!
     @IBOutlet weak var featuredTableView: UITableView!
@@ -33,6 +34,7 @@ class FeaturedFollowingVC: UIViewController {
     var followedUserCompetitions = [Competition]()
     var featuredRefreshControl: UIRefreshControl!
     var followedRefreshControl: UIRefreshControl!
+    var selectedIndexPath: IndexPath?
     
     
     override func viewDidLoad() {
@@ -61,6 +63,13 @@ class FeaturedFollowingVC: UIViewController {
         
         followedRefreshControl.beginRefreshing()
         getFollowedUserCompetitions()
+        
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(FeaturedFollowingVC.userVoteUpdated(notification:)),
+            name: NSNotification.Name.OnUserVoteUpdated,
+            object: nil
+        )
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,6 +92,33 @@ class FeaturedFollowingVC: UIViewController {
         // Request authorization for push notifications here, since it's the first screen the user
         // will see after signing up.
         appDelegate.registerForPushNotifications()
+        
+        selectedIndexPath = nil
+    }
+    
+    
+    /**
+     
+     */
+    deinit {
+        notificationCenter.removeObserver(self)
+    }
+    
+    
+    /**
+     
+     */
+    @objc func userVoteUpdated(notification: Notification) {
+        if let selectedIndexPath = selectedIndexPath {
+            DispatchQueue.main.async {
+                switch self.activeCompetitionFeedType {
+                case .featured:
+                    self.featuredTableView.reloadRows(at: [selectedIndexPath], with: .automatic)
+                case .following:
+                    self.followedUsersTableView.reloadRows(at: [selectedIndexPath], with: .automatic)
+                }
+            }
+        }
     }
     
     
@@ -202,11 +238,15 @@ extension FeaturedFollowingVC: UITableViewDataSource {
         switch activeCompetitionFeedType {
         case .featured:
             let featuredCompetitionsCount = featuredCompetitions.count
-            noFeaturedCompetitionsView.isHidden = featuredCompetitionsCount > 0 ? true : false
+            DispatchQueue.main.async {
+                self.noFeaturedCompetitionsView.isHidden = featuredCompetitionsCount > 0 ? true : false
+            }
             return featuredCompetitionsCount
         case .following:
             let followedUserCompetitionsCount = followedUserCompetitions.count
-            noFollowedUserCompetitionsView.isHidden = followedUserCompetitionsCount > 0 ? true : false
+            DispatchQueue.main.async {
+                self.noFollowedUserCompetitionsView.isHidden = followedUserCompetitionsCount > 0 ? true : false
+            }
             return followedUserCompetitions.count
         }
     }
@@ -234,6 +274,7 @@ extension FeaturedFollowingVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        selectedIndexPath = indexPath
         switch activeCompetitionFeedType {
         case .featured:
             showCompetition(competition: featuredCompetitions[indexPath.row])
