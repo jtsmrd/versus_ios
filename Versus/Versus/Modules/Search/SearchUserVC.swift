@@ -20,12 +20,22 @@ class SearchUserVC: UIViewController {
     
     var delegate: SearchVCDelegate?
     var keyboardToolbar: KeyboardToolbar!
+    private let ROW_HEIGHT: CGFloat = 70.0
+    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.85
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         userManager.delegate = self
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        keyboardToolbar = KeyboardToolbar(
+            frame: CGRect(
+                x: 0,
+                y: 0,
+                width: view.frame.size.width,
+                height: 50
+            ),
+            includeNavigation: false
+        )
     }
     
     
@@ -48,7 +58,13 @@ class SearchUserVC: UIViewController {
     
     private func loadImagesForOnscreenCells() {
         if let pathsArray = searchUserTableView.indexPathsForVisibleRows {
-            let allPendingOperations = Set(userManager.pendingImageOperations.downloadsInProgress.keys)
+            
+            var downloadsInProgress =
+                userManager.pendingImageOperations.downloadsInProgress
+            
+            let allPendingOperations = Set(
+                downloadsInProgress.keys
+            )
             var toBeCancelled = allPendingOperations
             
             let visiblePaths = Set(pathsArray)
@@ -58,15 +74,23 @@ class SearchUserVC: UIViewController {
             toBeStarted.subtract(allPendingOperations)
             
             for indexPath in toBeCancelled {
-                if let pendingDownload = userManager.pendingImageOperations.downloadsInProgress[indexPath] {
+                
+                
+                
+                if let pendingDownload = downloadsInProgress[indexPath] {
                     pendingDownload.cancel()
                 }
-                userManager.pendingImageOperations.downloadsInProgress.removeValue(forKey: indexPath)
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
             }
             
             for indexPath in toBeStarted {
                 let user = userManager.users[indexPath.row]
-                userManager.startProfileImageDownloadFor(user: user, indexPath: indexPath)
+                userManager.startProfileImageDownloadFor(
+                    user: user,
+                    indexPath: indexPath
+                )
             }
         }
     }
@@ -75,11 +99,16 @@ class SearchUserVC: UIViewController {
 extension SearchUserVC: UserManagerDelegate {
     
     /**
- 
+     Called after image is downloaded for the user at the specified index.
      */
-    func reloadCell(at indexPath: IndexPath) {
+    func reloadCell(
+        at indexPath: IndexPath
+    ) {
         DispatchQueue.main.async {
-            self.searchUserTableView.reloadRows(at: [indexPath], with: .fade)
+            self.searchUserTableView.reloadRows(
+                at: [indexPath],
+                with: .fade
+            )
         }
     }
 }
@@ -87,31 +116,50 @@ extension SearchUserVC: UserManagerDelegate {
 extension SearchUserVC: UITableViewDataSource {
     
     /**
- 
+     Return the current count of users from UserManager.
      */
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return userManager.potentialUserCount
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+        return userManager.users.count
     }
     
     
     /**
-     
+     Download the user image and configure the SearchUserCell.
      */
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: SEARCH_USER_CELL, for: indexPath) as? SearchUserCell {
-            guard let user = userManager.getUserFor(indexPath: indexPath) else {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+        
+        if let cell = tableView.dequeueReusableCell(
+            withIdentifier: SEARCH_USER_CELL,
+            for: indexPath
+        ) as? SearchUserCell {
+            
+            // Make sure there's a user available for the current indexPath.
+            guard let user = userManager.getUserFor(
+                indexPath: indexPath
+            ) else {
                 return cell
             }
             
+            // TODO: Fix only downloading images for visible cells.
 //            switch user.profileImageDownloadState {
 //            case .downloaded, .new:
 //                if !tableView.isDragging && !tableView.isDecelerating {
-//                    userManager.startProfileImageDownloadFor(user: user, indexPath: indexPath)
+//                    userManager.startProfileImageDownloadFor(
+//                        user: user,
+//                        indexPath: indexPath
+//                    )
 //                }
 //            case .failed:
 //                print("Image download failed")
 //            }
             
+            // Configure the cell with a user.
             cell.configureCell(user: user)
             return cell
         }
@@ -120,29 +168,47 @@ extension SearchUserVC: UITableViewDataSource {
     
     
     /**
-     
+     Set the row height.
      */
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 70
+    func tableView(
+        _ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
+        return ROW_HEIGHT
     }
 }
 
 extension SearchUserVC: UITableViewDataSourcePrefetching {
     
     /**
-        If more results exist, fetch them when the prefetch index >= the current user count
+    If more results exist, fetch them when the prefetch index >= the
+     current user count.
      */
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        guard let maxIndex = indexPaths.max(), maxIndex.row >= userManager.users.count - 10 else { return }
-        if userManager.hasMoreResults {
-            userManager.fetchMoreResults { (customError) in
-                DispatchQueue.main.async {
-                    if let customError = customError {
-                        debugPrint(customError.message)
-                        return
-                    }
-                    self.searchUserTableView.reloadData()
+    func tableView(
+        _ tableView: UITableView,
+        prefetchRowsAt indexPaths: [IndexPath]
+    ) {
+        
+        // No need to fetch if there are no more results
+        guard userManager.hasMoreResults == true else { return }
+        
+        // Get the row number of the last visible row
+        guard let maxVisibleRowNumber =
+            tableView.indexPathsForVisibleRows?.max()?.row else { return }
+        
+        // Calculate the percentage of total rows that are scolled to
+        let scrollPercentage = CGFloat(maxVisibleRowNumber) / CGFloat(userManager.users.count)
+        
+        // Only prefetch when the scrolled percentage is >= 85%
+        guard scrollPercentage >= PREFETCH_SCROLL_PERCENTAGE else { return }
+        
+        userManager.fetchMoreResults { (customError) in
+            DispatchQueue.main.async {
+                if let customError = customError {
+                    debugPrint(customError.message)
+                    return
                 }
+                self.searchUserTableView.reloadData()
             }
         }
     }
@@ -151,27 +217,54 @@ extension SearchUserVC: UITableViewDataSourcePrefetching {
 extension SearchUserVC: UITableViewDelegate {
     
     /**
-     
+     View the profile for the user selected.
      */
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-        if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-            profileVC.initData(userId: userManager.users[indexPath.row].userId)
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        tableView.deselectRow(
+            at: indexPath,
+            animated: false
+        )
+        
+        let profileStoryboard = UIStoryboard(
+            name: PROFILE,
+            bundle: nil
+        )
+        
+        let profileVC = profileStoryboard.instantiateViewController(
+            withIdentifier: PROFILE_VC
+        )
+        
+        // Load and display the users' profile
+        if let profileVC = profileVC as? ProfileVC {
+            profileVC.initData(
+                userId: userManager.users[indexPath.row].userId
+            )
             profileVC.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(profileVC, animated: true)
+            navigationController?.pushViewController(
+                profileVC,
+                animated: true
+            )
         }
     }
 }
 
 extension SearchUserVC: UIScrollViewDelegate {
     
-    
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    // TODO: Fix
+    func scrollViewWillBeginDragging(
+        _ scrollView: UIScrollView
+    ) {
 //        suspendAllOperations()
     }
     
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    func scrollViewDidEndDragging(
+        _ scrollView: UIScrollView,
+        willDecelerate decelerate: Bool
+    ) {
         if !decelerate {
 //            loadImagesForOnscreenCells()
 //            resumeAllOperations()
@@ -179,7 +272,9 @@ extension SearchUserVC: UIScrollViewDelegate {
     }
     
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(
+        _ scrollView: UIScrollView
+    ) {
 //        loadImagesForOnscreenCells()
 //        resumeAllOperations()
     }
@@ -187,17 +282,26 @@ extension SearchUserVC: UIScrollViewDelegate {
 
 extension SearchUserVC: UISearchBarDelegate {
     
-    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+    func searchBarShouldBeginEditing(
+        _ searchBar: UISearchBar
+    ) -> Bool {
         searchBar.inputAccessoryView = keyboardToolbar
         return true
     }
     
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+    func searchBarTextDidBeginEditing(
+        _ searchBar: UISearchBar
+    ) {
         delegate?.toggleSearchView(isHidden: false)
-        searchBar.setShowsCancelButton(true, animated: true)
+        searchBar.setShowsCancelButton(
+            true,
+            animated: true
+        )
     }
     
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+    func searchBarTextDidEndEditing(
+        _ searchBar: UISearchBar
+    ) {
         searchBar.setShowsCancelButton(false, animated: true)
         
         if userManager.users.isEmpty {
@@ -206,7 +310,9 @@ extension SearchUserVC: UISearchBarDelegate {
         }
     }
     
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(
+        _ searchBar: UISearchBar
+    ) {
         view.endEditing(true)
         delegate?.toggleSearchView(isHidden: true)
         searchBar.text?.removeAll()
@@ -215,7 +321,10 @@ extension SearchUserVC: UISearchBarDelegate {
         searchBar.setShowsCancelButton(false, animated: true)
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBar(
+        _ searchBar: UISearchBar,
+        textDidChange searchText: String
+    ) {
         
         guard !searchText.isEmpty else {
             userManager.removeAllUsers()
