@@ -20,39 +20,45 @@ class EditProfileVC: UIViewController {
     
     
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var profileImageView: CircleImageView!
     @IBOutlet weak var displayNameTextField: UITextField!
+    @IBOutlet weak var bioContainerView: BorderView!
     @IBOutlet weak var bioTextView: UITextView!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     
+    private let accountService = AccountService.instance
     
-    var imagePicker: UIImagePickerController!
-    var editImageType: EditImageType!
-    var profileImage: UIImage?
-    var backgroundImage: UIImage?
-    var keyboardToolbar: KeyboardToolbar!
-    var keyboardWillShowObserver: NSObjectProtocol!
-    var keyboardWillHideObserver: NSObjectProtocol!
+    private var imagePicker: UIImagePickerController!
+    private var editImageType: EditImageType!
+    private var profileImage: UIImage?
+    private var backgroundImage: UIImage?
+    private var keyboardToolbar: KeyboardToolbar!
+    private var keyboardWillShowObserver: NSObjectProtocol!
+    private var keyboardWillHideObserver: NSObjectProtocol!
+    private var visibleRect: CGRect = .zero
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        visibleRect = view.frame
         configureView()
         configureImagePicker()
         
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: true)
+        keyboardToolbar = KeyboardToolbar(includeNavigation: true)
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillShow(notification:)),
-            name: NSNotification.Name.UIKeyboardWillShow,
+            selector: #selector(keyboardDidShow(notification:)),
+            name: NSNotification.Name.UIKeyboardDidShow,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -63,12 +69,13 @@ class EditProfileVC: UIViewController {
         )
     }
     
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         NotificationCenter.default.removeObserver(
             self,
-            name: NSNotification.Name.UIKeyboardWillShow,
+            name: NSNotification.Name.UIKeyboardDidShow,
             object: nil
         )
         NotificationCenter.default.removeObserver(
@@ -79,21 +86,35 @@ class EditProfileVC: UIViewController {
     }
     
     
-    @objc func keyboardWillShow(notification: NSNotification) {
+    @objc func keyboardDidShow(notification: NSNotification) {
         
-        let userInfo: NSDictionary = notification.userInfo! as NSDictionary
-        let keyboardFrame: NSValue = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
+        let userInfo = notification.userInfo! as NSDictionary
+        let keyboardFrame = userInfo.value(
+            forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
         let keyboardHeight = keyboardFrame.cgRectValue.height
-        let currentTextFieldOrigin = activeFirstResponder.frame.origin
-        let currentTextFieldHeight = activeFirstResponder.frame.size.height
-        var visibleRect = view.frame
+        
+        let contentInsets = UIEdgeInsetsMake(
+            0.0,
+            0.0,
+            keyboardHeight,
+            0.0
+        )
+        
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
+        
         visibleRect.size.height -= keyboardHeight
-        let scrollPoint = CGPoint(x: 0.0, y: currentTextFieldOrigin.y - visibleRect.size.height + (currentTextFieldHeight + 100))
-        scrollView.setContentOffset(scrollPoint, animated: true)
+        
+        scrollToFirstResponderIfNeeded()
     }
     
+    
     @objc func keyboardWillHide(notification: NSNotification) {
-        scrollView.setContentOffset(CGPoint.zero, animated: true)
+        
+        scrollView.contentInset = .zero
+        scrollView.scrollIndicatorInsets = .zero
+        
+        visibleRect = view.frame
     }
     
     
@@ -101,14 +122,17 @@ class EditProfileVC: UIViewController {
         dismiss(animated: true, completion: nil)
     }
     
+    
     @IBAction func doneButtonAction() {
         updateUser()
     }
+    
     
     @IBAction func editBackgroundImageAction() {
         editImageType = .background
         editImage()
     }
+    
     
     @IBAction func editProfileButtonAction() {
         editImageType = .profile
@@ -128,12 +152,13 @@ class EditProfileVC: UIViewController {
             backgroundImageView.image = backgroundImage
         }
         
-        AccountService.instance.getEmail { (email) in
+        accountService.getEmail { (email) in
             DispatchQueue.main.async {
                 self.emailTextField.text = email
             }
         }
     }
+    
     
     private func configureImagePicker() {
         imagePicker = UIImagePickerController()
@@ -164,92 +189,223 @@ class EditProfileVC: UIViewController {
                     self.displayError(error: customError)
                     return
                 }
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(
+                    animated: true,
+                    completion: nil
+                )
             }
         }
     }
     
     
     private func editImage() {
-        let imageSourceAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        imageSourceAlert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action) in
-            self.presentImagePicker(sourceType: .camera)
-        }))
         
-        imageSourceAlert.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action) in
-            self.presentImagePicker(sourceType: .photoLibrary)
-        }))
+        let imageSourceAlert = UIAlertController(
+            title: nil,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
         
-        imageSourceAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
-            
-        }))
-        present(imageSourceAlert, animated: true, completion: nil)
+        imageSourceAlert.addAction(
+            UIAlertAction(
+                title: "Camera",
+                style: .default,
+                handler: { (action) in
+                    self.presentImagePicker(
+                        sourceType: .camera
+                    )
+                }
+            )
+        )
+        
+        imageSourceAlert.addAction(
+            UIAlertAction(
+                title: "Photo Library",
+                style: .default,
+                handler: { (action) in
+                    self.presentImagePicker(
+                        sourceType: .photoLibrary
+                    )
+                }
+            )
+        )
+        
+        imageSourceAlert.addAction(
+            UIAlertAction(
+                title: "Cancel",
+                style: .cancel,
+                handler: nil
+            )
+        )
+        present(
+            imageSourceAlert,
+            animated: true,
+            completion: nil
+        )
     }
     
     
-    private func presentImagePicker(sourceType: UIImagePickerControllerSourceType) {
+    private func presentImagePicker(
+        sourceType: UIImagePickerControllerSourceType
+    ) {
         imagePicker.sourceType = sourceType
         imagePicker.mediaTypes = [String(kUTTypeImage)]
-        present(imagePicker, animated: true, completion: nil)
+        
+        present(
+            imagePicker,
+            animated: true,
+            completion: nil
+        )
     }
     
     
-    private func cropImage(image: UIImage, cropImageType: CropImageType) {
-        let editImageVC = UIStoryboard(name: EDIT_IMAGE, bundle: nil).instantiateInitialViewController() as! EditImageVC
-        editImageVC.initData(imageToCrop: image, cropImageType: cropImageType, delegate: self)
-        present(editImageVC, animated: true, completion: nil)
+    private func cropImage(
+        image: UIImage,
+        cropImageType: CropImageType
+    ) {
+        
+        let editImageStoryboard = UIStoryboard(
+            name: EDIT_IMAGE,
+            bundle: nil
+        )
+        
+        let editImageVC = editImageStoryboard.instantiateInitialViewController()
+        
+        if let editImageVC = editImageVC as? EditImageVC {
+            
+            editImageVC.initData(
+                imageToCrop: image,
+                cropImageType: cropImageType,
+                delegate: self
+            )
+            present(
+                editImageVC,
+                animated: true,
+                completion: nil
+            )
+        }
+    }
+    
+    
+    /**
+     Used to scroll to the active first responder if it's covered by the
+     keyboard.
+    */
+    private func scrollToFirstResponderIfNeeded() {
+        
+        var activeFirstResponderFrame: CGRect = activeFirstResponder.frame
+        
+        // We have to convert the view's frame if it's superview isn't
+        // the contentView.
+        if activeFirstResponder.superview != contentView {
+            
+            if activeFirstResponder.superview == bioContainerView {
+                activeFirstResponderFrame = bioContainerView.convert(
+                    activeFirstResponder.frame,
+                    to: nil
+                )
+            }
+        }
+        
+        // If the firstResponder isn't visible, scroll.
+        if !visibleRect.contains(activeFirstResponderFrame.origin) {
+            
+            scrollView.scrollRectToVisible(
+                activeFirstResponderFrame,
+                animated: true
+            )
+        }
     }
 }
 
 extension EditProfileVC: UITextViewDelegate {
     
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+    
+    func textViewShouldBeginEditing(
+        _ textView: UITextView
+    ) -> Bool {
         textView.inputAccessoryView = keyboardToolbar
         return true
     }
     
-    func textViewDidBeginEditing(_ textView: UITextView) {
+    
+    func textViewDidBeginEditing(
+        _ textView: UITextView
+    ) {
         activeFirstResponder = textView
+        scrollToFirstResponderIfNeeded()
     }
     
-    func textViewDidChange(_ textView: UITextView) {
+    
+    func textViewDidChange(
+        _ textView: UITextView
+    ) {
         CurrentUser.bio = textView.text
     }
 }
 
 extension EditProfileVC: UITextFieldDelegate {
     
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+    
+    func textFieldShouldBeginEditing(
+        _ textField: UITextField
+    ) -> Bool {
         textField.inputAccessoryView = keyboardToolbar
         return true
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    
+    func textFieldDidBeginEditing(
+        _ textField: UITextField
+    ) {
         activeFirstResponder = textField
+        scrollToFirstResponderIfNeeded()
     }
 }
 
-extension EditProfileVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension EditProfileVC:
+    UIImagePickerControllerDelegate,
+    UINavigationControllerDelegate {
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        picker.dismiss(animated: true, completion: nil)
+    
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [String : Any]
+    ) {
+        picker.dismiss(
+            animated: true,
+            completion: nil
+        )
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             switch editImageType! {
             case .profile:
-                cropImage(image: image, cropImageType: .circle)
+                cropImage(
+                    image: image,
+                    cropImageType: .circle
+                )
             case .background:
-                cropImage(image: image, cropImageType: .landscape)
+                cropImage(
+                    image: image,
+                    cropImageType: .landscape
+                )
             }
         }
     }
     
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true, completion: nil)
+    
+    func imagePickerControllerDidCancel(
+        _ picker: UIImagePickerController
+    ) {
+        picker.dismiss(
+            animated: true,
+            completion: nil
+        )
     }
 }
 
 
 extension EditProfileVC: EditImageVCDelegate {
+    
     
     func imageCropped(image: UIImage) {
         switch editImageType! {

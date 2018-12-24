@@ -34,10 +34,7 @@ class CompetitionDetailsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        keyboardToolbar = KeyboardToolbar(
-            frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50),
-            includeNavigation: false
-        )
+        keyboardToolbar = KeyboardToolbar(includeNavigation: false)
         
         submitButton.setTitleColor(UIColor.lightGray, for: .disabled)
         

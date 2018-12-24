@@ -35,7 +35,7 @@ class SignupVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: true)
+        keyboardToolbar = KeyboardToolbar(includeNavigation: true)
         
         switch signupMethod {
         case .email:

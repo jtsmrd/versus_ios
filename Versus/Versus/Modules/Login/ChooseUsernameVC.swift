@@ -26,7 +26,7 @@ class ChooseUsernameVC: UIViewController {
         super.viewDidLoad()
 
         usernameExistsLabel.isHidden = true
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        keyboardToolbar = KeyboardToolbar(includeNavigation: false)
     }
     
     

@@ -94,6 +94,8 @@
 		6B334FD32081652D005B010F /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */; };
 		6B334FD720818738005B010F /* Follower.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD620818738005B010F /* Follower.swift */; };
 		6B334FD9208187B3005B010F /* FollowerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD8208187B3005B010F /* FollowerService.swift */; };
+		6B368D8A21CDB2BE0084A150 /* DeviceSizeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B368D8921CDB2BE0084A150 /* DeviceSizeType.swift */; };
+		6B368D8C21CDB44C0084A150 /* UIDeviceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B368D8B21CDB44C0084A150 /* UIDeviceExtensions.swift */; };
 		6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1C8206FD9BA00F92375 /* Constants.swift */; };
 		6B36E1CB2070073A00F92375 /* VerifyUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */; };
 		6B36E1D020703D5D00F92375 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1CF20703D5D00F92375 /* UserService.swift */; };
@@ -255,6 +257,8 @@
 		6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		6B334FD620818738005B010F /* Follower.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follower.swift; sourceTree = "<group>"; };
 		6B334FD8208187B3005B010F /* FollowerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerService.swift; sourceTree = "<group>"; };
+		6B368D8921CDB2BE0084A150 /* DeviceSizeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSizeType.swift; sourceTree = "<group>"; };
+		6B368D8B21CDB44C0084A150 /* UIDeviceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtensions.swift; sourceTree = "<group>"; };
 		6B36E1C8206FD9BA00F92375 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6B36E1CA2070073A00F92375 /* VerifyUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyUserVC.swift; sourceTree = "<group>"; };
 		6B36E1CF20703D5D00F92375 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
@@ -468,6 +472,14 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		6B368D8821CDB27F0084A150 /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				6B368D8921CDB2BE0084A150 /* DeviceSizeType.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
 		6B36E1CE20703D3A00F92375 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -604,15 +616,16 @@
 		6BB81788207A6E0B00503620 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				6BB81789207A6E2E00503620 /* UIImageExtensions.swift */,
-				6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */,
-				6B3DAEBF20822D7300946EB1 /* NSMutableAttributedStringExtensions.swift */,
-				6B3DAEC520827D9800946EB1 /* UIViewExtensions.swift */,
-				6B1B29992083CE230070848C /* StringExtensions.swift */,
-				6B079FEE208D3E02003BBB87 /* FormatterExtensions.swift */,
 				6B079FF0208D3F1E003BBB87 /* DateExtensions.swift */,
+				6B079FEE208D3E02003BBB87 /* FormatterExtensions.swift */,
 				32D9C98320CB46E200F174B2 /* IntExtensions.swift */,
 				326784262139D89A00068428 /* NotificationExtensions.swift */,
+				6B3DAEBF20822D7300946EB1 /* NSMutableAttributedStringExtensions.swift */,
+				6B1B29992083CE230070848C /* StringExtensions.swift */,
+				6B368D8B21CDB44C0084A150 /* UIDeviceExtensions.swift */,
+				6BB81789207A6E2E00503620 /* UIImageExtensions.swift */,
+				6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */,
+				6B3DAEC520827D9800946EB1 /* UIViewExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -704,6 +717,7 @@
 				6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */,
 				6B36E1C8206FD9BA00F92375 /* Constants.swift */,
 				6BAA03F0206F1EEA0032F7F9 /* Custom Views */,
+				6B368D8821CDB27F0084A150 /* Enums */,
 				6BB81788207A6E0B00503620 /* Extensions */,
 				6BEACB62206EB3DE00C221A0 /* Info.plist */,
 				6BEACB5F206EB3DE00C221A0 /* LaunchScreen.storyboard */,
@@ -947,6 +961,7 @@
 				6B079FF7208D4315003BBB87 /* CompetitionEntryService.swift in Sources */,
 				6BB6AD772093980000B2C1A1 /* ProgressIndicatorButton.swift in Sources */,
 				6B3DAEC82082DBE700946EB1 /* FollowButton.swift in Sources */,
+				6B368D8A21CDB2BE0084A150 /* DeviceSizeType.swift in Sources */,
 				6BB9A384207ED1FB006881BE /* SearchBrowseVC.swift in Sources */,
 				6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */,
 				6BB8178C207A718400503620 /* AccountService.swift in Sources */,
@@ -998,6 +1013,7 @@
 				6BD5E36120A65A0B00A9C054 /* CompetitionShareCell.swift in Sources */,
 				6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */,
 				6B2E60C120A354AA005C1987 /* ProfileCompetitionCell.swift in Sources */,
+				6B368D8C21CDB44C0084A150 /* UIDeviceExtensions.swift in Sources */,
 				6BC1E12B20894B54005404E1 /* CategoryCell.swift in Sources */,
 				6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */,
 				325F561120D9AE8E001A06C4 /* ChangePasswordVC.swift in Sources */,

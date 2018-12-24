@@ -27,7 +27,7 @@ class FollowedUserVC: UIViewController {
         super.viewDidLoad()
 
         canEdit = CurrentUser.userId == user.userId
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        keyboardToolbar = KeyboardToolbar(includeNavigation: false)
         getFollowedUsers()
     }
 

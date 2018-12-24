@@ -30,7 +30,7 @@ class VerifyUserVC: UIViewController {
 
         signInCredentials = CurrentUser.getSignInCredentials()
         
-        keyboardToolbar = KeyboardToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50), includeNavigation: false)
+        keyboardToolbar = KeyboardToolbar(includeNavigation: false)
     }
     
     
