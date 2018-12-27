@@ -315,7 +315,7 @@ class CompetitorVC: UIViewController {
             object: player.currentItem,
             queue: nil
         ) { (notification) in
-            self.player.seek(to: kCMTimeZero)
+            self.player.seek(to: CMTime.zero)
             self.player.play()
         }
     }

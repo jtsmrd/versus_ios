@@ -17,7 +17,7 @@ class SelectPreviewImageVC: UIViewController {
     var videoAVUrlAsset: AVURLAsset!
     var videoPlayerLayer: AVPlayerLayer!
     var videoPlayer: AVPlayer!
-    var seekTime = CMTimeMakeWithSeconds(0, 1)
+    var seekTime = CMTimeMakeWithSeconds(0, preferredTimescale: 1)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,8 +68,8 @@ class SelectPreviewImageVC: UIViewController {
     private func generatePreviewImage() -> UIImage {
         let assetImageGenerator = AVAssetImageGenerator(asset: videoAVUrlAsset)
         assetImageGenerator.appliesPreferredTrackTransform = true
-        assetImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
-        assetImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
+        assetImageGenerator.requestedTimeToleranceAfter = CMTime.zero
+        assetImageGenerator.requestedTimeToleranceBefore = CMTime.zero
         
         var cgImage: CGImage!
         do {

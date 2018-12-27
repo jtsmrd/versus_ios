@@ -11,7 +11,7 @@ import UIKit
 extension NSMutableAttributedString {
     
     @discardableResult func bold(_ text: String, _ fontSize: CGFloat) -> NSMutableAttributedString {
-        let attrs: [NSAttributedStringKey: Any] = [
+        let attrs: [NSAttributedString.Key: Any] = [
             .font: UIFont(name: "AvenirNext-Bold", size: fontSize)!
         ]
         let boldString = NSMutableAttributedString(string:text, attributes: attrs)

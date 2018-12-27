@@ -14,14 +14,14 @@ class SwiftyCamProgressButton: SwiftyCamButton {
 
     @IBInspectable var _backgroundColor: UIColor = UIColor.groupTableViewBackground
     @IBInspectable var _progressIndicatorColor: UIColor = UIColor.red
-    @IBInspectable var _progressIndicatorLineWidth: CGFloat = 3.0
+    @IBInspectable var _progressIndicatorLineWidth: CGFloat = 5.0
     
-    let circlePathLayer = CAShapeLayer()
-    var circlePathFrame: CGRect = CGRect.zero
-    let circlePathDelta: CGFloat = 3
-    var circleRadius: CGFloat = 0
-    let centerView = CircleView()
-    var animation: CABasicAnimation!
+    private var backgroundCirclePathLayer: CAShapeLayer!
+    private var progressCirclePathLayer: CAShapeLayer!
+    private var circlePathFrame: CGRect = CGRect.zero
+    private let circlePathDelta: CGFloat = 3
+    private var circleRadius: CGFloat = 0
+    private var animation: CABasicAnimation!
     
     override func prepareForInterfaceBuilder() {
         setupButton()
@@ -32,62 +32,76 @@ class SwiftyCamProgressButton: SwiftyCamButton {
         setupButton()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        circlePathFrame = CGRect(x: circlePathDelta, y: circlePathDelta, width: bounds.width - (circlePathDelta * 2), height: bounds.height - (circlePathDelta * 2))
-        circlePathLayer.frame = circlePathFrame
-        centerView.frame = circlePathFrame
-        circlePathLayer.path = circlePath().cgPath
-        layer.cornerRadius = bounds.width / 2
-        circleRadius = bounds.width / 2
-    }
     
-    func setupButton() {
+    private func setupButton() {
         
-        circlePathLayer.strokeEnd = 0
-        
-        circlePathFrame = CGRect(x: circlePathDelta, y: circlePathDelta, width: bounds.width - (circlePathDelta * 2), height: bounds.height - (circlePathDelta * 2))
         clipsToBounds = true
         layer.cornerRadius = bounds.width / 2
+        backgroundColor = _backgroundColor
+        
         circleRadius = bounds.width / 2
         
-        centerView.frame = circlePathFrame
-        layer.addSublayer(centerView.layer)
+        circlePathFrame = CGRect(
+            x: circlePathDelta,
+            y: circlePathDelta,
+            width: bounds.width - (circlePathDelta * 2),
+            height: bounds.height - (circlePathDelta * 2)
+        )
         
-        circlePathLayer.frame = circlePathFrame
-        circlePathLayer.lineWidth = _progressIndicatorLineWidth
-        circlePathLayer.fillColor = UIColor.clear.cgColor
-        circlePathLayer.strokeColor = _progressIndicatorColor.cgColor
-        layer.addSublayer(circlePathLayer)
-        backgroundColor = _backgroundColor
+        backgroundCirclePathLayer = CAShapeLayer()
+        backgroundCirclePathLayer.strokeEnd = 1
+        backgroundCirclePathLayer.frame = circlePathFrame
+        backgroundCirclePathLayer.path = createCirclePath(bounds: backgroundCirclePathLayer.bounds)
+        backgroundCirclePathLayer.lineWidth = _progressIndicatorLineWidth
+        backgroundCirclePathLayer.fillColor = UIColor.clear.cgColor
+        backgroundCirclePathLayer.strokeColor = UIColor.white.cgColor
+        layer.addSublayer(backgroundCirclePathLayer)
+        
+        progressCirclePathLayer = CAShapeLayer()
+        progressCirclePathLayer.strokeEnd = 0
+        progressCirclePathLayer.frame = circlePathFrame
+        progressCirclePathLayer.path = createCirclePath(bounds: progressCirclePathLayer.bounds)
+        progressCirclePathLayer.lineWidth = _progressIndicatorLineWidth
+        progressCirclePathLayer.fillColor = UIColor.clear.cgColor
+        progressCirclePathLayer.strokeColor = _progressIndicatorColor.cgColor
+        layer.addSublayer(progressCirclePathLayer)
     }
     
-    func circlePath() -> UIBezierPath {
+    private func createCirclePath(bounds: CGRect) -> CGPath {
         
         var circleFrame = circlePathFrame
-        let circlePathBounds = circlePathLayer.bounds
+        let circlePathBounds = bounds
         circleFrame.origin.x = (circlePathBounds.midX - circleFrame.midX) + circlePathDelta
         circleFrame.origin.y = (circlePathBounds.midY - circleFrame.midY) + circlePathDelta
         
-        let path = UIBezierPath(arcCenter: CGPoint(x: circlePathBounds.midX, y: circlePathBounds.midY), radius: circleFrame.height / 2, startAngle: CGFloat(CGFloat.pi / 2) * 3.0, endAngle: CGFloat(CGFloat.pi / 2) * 3.0 + CGFloat(CGFloat.pi) * 2.0, clockwise: true)
-        return path
+        let path = UIBezierPath(
+            arcCenter: CGPoint(
+                x: circlePathBounds.midX,
+                y: circlePathBounds.midY
+            ),
+            radius: circleFrame.height / 2,
+            startAngle: CGFloat(CGFloat.pi / 2) * 3.0,
+            endAngle: CGFloat(CGFloat.pi / 2) * 3.0 + CGFloat(CGFloat.pi) * 2.0,
+            clockwise: true
+        )
+        return path.cgPath
     }
     
-    func animateTimeRemaining() {
+    func beginAnimatingProgress() {
         
         animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = 0
         animation.toValue = 1
         animation.duration = 60
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-        animation.fillMode = kCAFillModeRemoved // keep to value after finishing
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
+        animation.fillMode = CAMediaTimingFillMode.removed // keep to value after finishing
         animation.isRemovedOnCompletion = true // don't remove after finishing
-        circlePathLayer.add(animation, forKey: animation.keyPath)
+        progressCirclePathLayer.add(animation, forKey: animation.keyPath)
     }
     
-    func stopAnimatingTimeRemaining() {
+    func endAnimatingProgress() {
         
-        circlePathLayer.removeAnimation(forKey: animation.keyPath!)
-        circlePathLayer.strokeEnd = 0
+        progressCirclePathLayer.removeAnimation(forKey: animation.keyPath!)
+        progressCirclePathLayer.strokeEnd = 0
     }
 }

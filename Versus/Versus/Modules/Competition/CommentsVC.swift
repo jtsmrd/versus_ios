@@ -47,13 +47,13 @@ class CommentsVC: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(CommentsVC.keyboardWillShow(notification:)),
-            name: NSNotification.Name.UIKeyboardWillShow,
+            name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(CommentsVC.keyboardWillHide(notification:)),
-            name: NSNotification.Name.UIKeyboardWillHide,
+            name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
     }
@@ -61,8 +61,8 @@ class CommentsVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     
@@ -85,7 +85,7 @@ class CommentsVC: UIViewController {
     
     @objc func keyboardWillShow(notification: NSNotification) {
         
-        if let keyboardHeight = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect)?.height {
+        if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height {
             enterCommentsViewBottom.constant = keyboardHeight
             delegate?.expandCommentsView()
         }

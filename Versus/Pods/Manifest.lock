@@ -23,7 +23,7 @@ PODS:
   - AWSUserPoolsSignIn (2.6.14):
     - AWSAuthCore (= 2.6.14)
     - AWSCognitoIdentityProvider (= 2.6.14)
-  - SwiftyCam (2.6.0)
+  - SwiftyCam (3.0.0)
   - Toast-Swift (3.0.1)
 
 DEPENDENCIES:
@@ -36,7 +36,7 @@ DEPENDENCIES:
   - AWSS3 (~> 2.6.13)
   - AWSSNS (~> 2.6.13)
   - AWSUserPoolsSignIn (~> 2.6.13)
-  - SwiftyCam
+  - SwiftyCam (~> 3.0.0)
   - Toast-Swift (~> 3.0.1)
 
 SPEC REPOS:
@@ -69,9 +69,9 @@ SPEC CHECKSUMS:
   AWSS3: a8cf89448c74637e34c46839ce5b5f7850f206e6
   AWSSNS: 86a8a1e50bdf9b1d37ce3fb85a76d9efdf661c62
   AWSUserPoolsSignIn: 8c52ad458e6e6fbf385a41a6b5d35a99c707db37
-  SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
+  SwiftyCam: 67338308e3a5a3545c2aeee17e2c964eba4cf49f
   Toast-Swift: ba0b01b095aada709d915f9beb1d38184a2721c3
 
-PODFILE CHECKSUM: aa93bd67ad9effd602664390e1e4e4ad1ff13b83
+PODFILE CHECKSUM: 38dbccbb75d37a4b59f72487dccec16dc6d3dd61
 
 COCOAPODS: 1.5.3

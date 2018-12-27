@@ -58,13 +58,13 @@ class EditProfileVC: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardDidShow(notification:)),
-            name: NSNotification.Name.UIKeyboardDidShow,
+            name: UIResponder.keyboardDidShowNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillHide(notification:)),
-            name: NSNotification.Name.UIKeyboardWillHide,
+            name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
     }
@@ -75,12 +75,12 @@ class EditProfileVC: UIViewController {
         
         NotificationCenter.default.removeObserver(
             self,
-            name: NSNotification.Name.UIKeyboardDidShow,
+            name: UIResponder.keyboardDidShowNotification,
             object: nil
         )
         NotificationCenter.default.removeObserver(
             self,
-            name: NSNotification.Name.UIKeyboardWillHide,
+            name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
     }
@@ -90,14 +90,14 @@ class EditProfileVC: UIViewController {
         
         let userInfo = notification.userInfo! as NSDictionary
         let keyboardFrame = userInfo.value(
-            forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
+            forKey: UIResponder.keyboardFrameEndUserInfoKey) as! NSValue
         let keyboardHeight = keyboardFrame.cgRectValue.height
         
-        let contentInsets = UIEdgeInsetsMake(
-            0.0,
-            0.0,
-            keyboardHeight,
-            0.0
+        let contentInsets = UIEdgeInsets.init(
+            top: 0.0,
+            left: 0.0,
+            bottom: keyboardHeight,
+            right: 0.0
         )
         
         scrollView.contentInset = contentInsets
@@ -246,7 +246,7 @@ class EditProfileVC: UIViewController {
     
     
     private func presentImagePicker(
-        sourceType: UIImagePickerControllerSourceType
+        sourceType: UIImagePickerController.SourceType
     ) {
         imagePicker.sourceType = sourceType
         imagePicker.mediaTypes = [String(kUTTypeImage)]
@@ -370,13 +370,16 @@ extension EditProfileVC:
     
     func imagePickerController(
         _ picker: UIImagePickerController,
-        didFinishPickingMediaWithInfo info: [String : Any]
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
     ) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
         picker.dismiss(
             animated: true,
             completion: nil
         )
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
             switch editImageType! {
             case .profile:
                 cropImage(
@@ -417,4 +420,14 @@ extension EditProfileVC: EditImageVCDelegate {
             backgroundImageView.image = image
         }
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

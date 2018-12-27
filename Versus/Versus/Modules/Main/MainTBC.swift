@@ -36,8 +36,17 @@ class MainTBC: UITabBarController {
     
     @objc func newCompetitionEntryButtonAction() {
         
-        if let competitionEntryVC = UIStoryboard(name: "CompetitionEntry", bundle: nil).instantiateViewController(withIdentifier: COMPETITION_ENTRY_VC) as? CompetitionEntryVC {
-            let navController = UINavigationController(rootViewController: competitionEntryVC)
+        let competitionEntryStoryboard = UIStoryboard(name: COMPETITION_ENTRY, bundle: nil)
+        let viewController = competitionEntryStoryboard.instantiateViewController(withIdentifier: SELECT_COMPETITION_MEDIA_VC)
+        if let selectCompetitionMediaVC = viewController as? SelectCompetitionMediaVC {
+            
+            // Use full screen for capturing media.
+            selectCompetitionMediaVC.videoGravity = .resizeAspectFill
+            
+            // Set max video duration to 60 seconds.
+            selectCompetitionMediaVC.maximumVideoDuration = 60.0
+            
+            let navController = UINavigationController(rootViewController: selectCompetitionMediaVC)
             navController.isNavigationBarHidden = true
             present(navController, animated: true, completion: nil)
         }

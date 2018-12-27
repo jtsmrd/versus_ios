@@ -39,7 +39,7 @@ class S3BucketService {
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
         guard let compressedImage = image.compressImage(imageType: imageType),
-            let imageData = UIImageJPEGRepresentation(compressedImage, 1.0) else {
+            let imageData = compressedImage.jpegData(compressionQuality: 1.0) else {
             completion(CustomError(error: nil, message: "Unable to upload image"))
             return
         }

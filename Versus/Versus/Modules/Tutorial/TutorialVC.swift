@@ -35,7 +35,7 @@ class TutorialVC: UIViewController, TutorialPVCPageTransitionDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let tutorialPVC = segue.destination as? TutorialPVC {
             tutorialPVC.pageTransitionDelegate = self
-            addChildViewController(segue.destination)
+            addChild(segue.destination)
         }
     }
 }

@@ -16,5 +16,5 @@ target 'Versus' do
   pod 'AWSLambda', '~> 2.6.13'
   pod 'AWSSNS', '~> 2.6.13'
   pod 'Toast-Swift', '~> 3.0.1'
-  pod 'SwiftyCam'
+  pod 'SwiftyCam', '~> 3.0.0'
 end

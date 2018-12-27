@@ -73,7 +73,7 @@ extension UIImage {
         self.draw(in: rect)
         guard let img = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
         UIGraphicsEndImageContext()
-        guard let imageData = UIImageJPEGRepresentation(img, compressionQuality) else { return nil }
+        guard let imageData = img.jpegData(compressionQuality: compressionQuality) else { return nil }
         return UIImage(data: imageData)
     }
 }

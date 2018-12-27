@@ -243,7 +243,7 @@ extension ProfileVC: UICollectionViewDataSource {
         viewForSupplementaryElementOfKind kind: String,
         at indexPath: IndexPath) -> UICollectionReusableView {
         if let view = collectionView.dequeueReusableSupplementaryView(
-            ofKind: UICollectionElementKindSectionHeader,
+            ofKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: PROFILE_INFO_COLLECTION_VIEW_HEADER,
             for: indexPath) as? ProfileInfoCollectionViewHeader {
             view.configureView(user: user, profileViewMode: profileViewMode, delegate: self)

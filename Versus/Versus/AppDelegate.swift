@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var passwordAuthenticationCompletion: AWSTaskCompletionSource<AnyObject>?
     var signInCredentials: SignInCredentials!
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         // Make sure we're connected to AWS
@@ -129,7 +129,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     /*
      Checks the sign in status and the CurrentUser, then navigates to login, main view, or choose username.
     */
-    func showInitialView(_ launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
+    func showInitialView(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         
         if !CurrentUser.tutorialDisplayed {
             showTutorial()
@@ -234,7 +234,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .instantiateViewController(withIdentifier: CHOOSE_USERNAME_VC) as? ChooseUsernameVC {
             let navController = UINavigationController()
             navController.isNavigationBarHidden = true
-            navController.addChildViewController(chooseUsernameVC)
+            navController.addChild(chooseUsernameVC)
             window?.rootViewController = navController
             window?.makeKeyAndVisible()
         }

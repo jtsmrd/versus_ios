@@ -28,7 +28,7 @@ class NotificationsVC: UIViewController {
         
         notifications = notificationManager.notifications
         
-        let attributes = [NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
+        let attributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
         let refreshTitle = NSAttributedString(string: "Loading Notifications", attributes: attributes)
         
         notificationsRefreshControl = UIRefreshControl()
@@ -167,7 +167,7 @@ extension NotificationsVC: UITableViewDelegate {
     /**
      
      */
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let notificationToDelete = notifications[indexPath.row]
             notificationToDelete.delete { (customError) in

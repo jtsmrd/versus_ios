@@ -55,7 +55,7 @@ class KeyboardToolbar: UIToolbar {
             let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(KeyboardToolbar.doneAction))
             done.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
             
-            let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+            let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
             
             items = [previous, next, flexSpace, done]
         }
@@ -64,7 +64,7 @@ class KeyboardToolbar: UIToolbar {
             let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(KeyboardToolbar.doneAction))
             done.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
             
-            let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+            let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
             
             items = [flexSpace, done]
         }

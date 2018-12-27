@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5FBBF392C411E7B83F897400683BAA73"
+               BlueprintIdentifier = "43F24072085F57A365D921E6AB109733"
                BlueprintName = "AWSMobileClient"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "AWSMobileClient.framework">

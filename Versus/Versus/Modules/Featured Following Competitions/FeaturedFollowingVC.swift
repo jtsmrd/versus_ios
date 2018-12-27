@@ -43,7 +43,7 @@ class FeaturedFollowingVC: UIViewController {
         featuredTableView.register(UINib(nibName: COMPETITION_CELL, bundle: nil), forCellReuseIdentifier: COMPETITION_CELL)
         followedUsersTableView.register(UINib(nibName: COMPETITION_CELL, bundle: nil), forCellReuseIdentifier: COMPETITION_CELL)
         
-        let attributes = [NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
+        let attributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
         let refreshTitle = NSAttributedString(string: "Loading Competitions", attributes: attributes)
         
         featuredRefreshControl = UIRefreshControl()
