@@ -49,44 +49,62 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
     }
     
     
-    /**
-     Cancel the current media selection or dismiss selecting competition media.
-    */
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // When a video was selected and the user navigates back
+        // resume video playback.
+        if let _ = selectedMedia as? AVURLAsset {
+            player.play()
+        }
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // When a video is selected and the user navigates away
+        // pause the video playback.
+        if let _ = selectedMedia as? AVURLAsset {
+            player.pause()
+        }
+    }
+    
+    
+    /// Cancel the current media selection or dismiss selecting competition media.
     @IBAction func dismissButtonAction() {
         
         if selectedMedia != nil {
             
             // Remove the existing selected media.
+            if player.currentItem != nil {
+                player.pause()
+                player.replaceCurrentItem(with: nil)
+            }
+            
             selectedMedia = nil
             
             // Configure the view to the original state.
             configureView()
         }
         else {
+            
+            cleanUpResources()
             dismiss(animated: true, completion: nil)
         }
     }
     
     
-    /**
-     Flip the camera to front or back.
-    */
     @IBAction func flipCameraButtonAction() {
         switchCamera()
     }
     
     
-    /**
-     Select a photo or video from the photo library.
-    */
     @IBAction func selectMediaButtonAction() {
         displayImagePicker()
     }
     
     
-    /**
-     Select the current media and proceed to the competition entry details screen.
-    */
     @IBAction func continueButtonAction() {
         
         guard let media = selectedMedia else {
@@ -97,6 +115,7 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
             return
         }
         
+        // Proceed to next view controller based on media type.
         switch media {
         case is UIImage:
             
@@ -113,11 +132,9 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
     }
     
     
-    /**
-     Pause or play the video if exists.
-    */
     @objc func videoViewSingleTapAction(_ sender: UITapGestureRecognizer) {
         
+        // Pause or play the video if exists.
         if player.rate == 0 {
             player.play()
         }
@@ -127,21 +144,15 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
     }
     
     
-    /**
-     Restart the video from the beginning if exists.
-     */
     @objc func videoViewDoubleTapAction(_ sender: UITapGestureRecognizer) {
+        
+        // Restart the video from the beginning if exists.
         player.seek(to: CMTime.zero)
         player.play()
     }
     
     
-    /**
-     Configure the view for one of three states:
-     - No media selected
-     - Image selected
-     - Video selected
-    */
+    /// Configure the view based on the value of media.
     private func configureView() {
         
         guard let media = selectedMedia else {
@@ -161,18 +172,19 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
         
         // Media is selected
         switch media {
-        case is UIImage:
+        case let image as UIImage:
             
-            competitionImageView.image = (media as! UIImage)
+            competitionImageView.image = image
             competitionImageContainerView.isHidden = false
             
             competitionVideoContainerView.isHidden = true
             
-        case is AVURLAsset:
+        case let videoAsset as AVURLAsset:
             
-            let playerItem = AVPlayerItem(asset: (media as! AVURLAsset))
+            let playerItem = AVPlayerItem(asset: videoAsset)
             player.replaceCurrentItem(with: playerItem)
             player.play()
+            
             competitionVideoContainerView.isHidden = false
             
             competitionImageView.image = nil
@@ -186,6 +198,7 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
             return
         }
         
+        // Hide capture controls and show the continue button.
         flipCameraButton.isHidden = true
         cameraButton.isHidden = true
         selectMediaButton.isHidden = true
@@ -193,33 +206,33 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
     }
     
     
-    /**
-     Configure the AVPlayer for video media type.
-     */
+    /// Configure the AVPlayer for video media type.
     private func configureAVPlayer() {
         player = AVPlayer()
         videoPlayerLayer = AVPlayerLayer()
         videoPlayerLayer.player = player
         videoPlayerLayer.frame = CGRect(origin: .zero, size: view.frame.size)
         videoPlayerLayer.videoGravity = .resizeAspect
+        
         competitionVideoContainerView.layer.addSublayer(videoPlayerLayer)
         
+        // When the video reaches the end, restart the playback at the beginning.
         notificationCenter.addObserver(
             forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
             object: player.currentItem,
             queue: nil
         ) { (notification) in
+            
             self.player.seek(to: CMTime.zero)
             self.player.play()
         }
     }
     
     
-    /**
-     Add gesture recognizers for pausing, playing, and restarting video playback.
-    */
+    /// Add gesture recognizers for pausing, playing, and restarting video playback.
     private func configureGestureRecognizers() {
         
+        // Pause or play.
         videoViewSingleTap = UITapGestureRecognizer(
             target: self,
             action: #selector(SelectCompetitionMediaVC.videoViewSingleTapAction(_:))
@@ -227,6 +240,7 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
         videoViewSingleTap.numberOfTapsRequired = 1
         competitionVideoContainerView.addGestureRecognizer(videoViewSingleTap)
         
+        // Restart from beginning.
         videoViewDoubleTap = UITapGestureRecognizer(
             target: self,
             action: #selector(SelectCompetitionMediaVC.videoViewDoubleTapAction(_:))
@@ -236,21 +250,19 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
     }
     
     
-    /**
-     Present the photo library for the user to select an image or video.
-     */
+    /// Present the photo library for the user to select an image or video.
     private func displayImagePicker() {
+        
         imagePicker.delegate = self
         imagePicker.sourceType = .photoLibrary
         imagePicker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
+        
         present(imagePicker, animated: true, completion: nil)
     }
     
     
-    /**
-     Remove notificationCenter observer, pause and clear AVPlayer item, and
-     remove gesture recognizers.
-     */
+    /// Remove notificationCenter observer, pause and clear AVPlayer item, and
+    /// remove gesture recognizers.
     private func cleanUpResources() {
         
         notificationCenter.removeObserver(player)
@@ -271,7 +283,7 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if let competitionDetailsVC = segue.destination as? CompetitionDetailsVC, let image = sender as? UIImage {
-            competitionDetailsVC.initData(image: image)
+            competitionDetailsVC.initData(media: image)
         }
         else if let selectPreviewImageVC = segue.destination as? SelectPreviewImageVC, let videoAsset = sender as? AVURLAsset {
             selectPreviewImageVC.initData(videoAVUrlAsset: videoAsset)

@@ -126,6 +126,7 @@
 		6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C5207431B800BC23A0 /* BorderView.swift */; };
 		6BA4B0C9207435F200BC23A0 /* ProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C8207435F200BC23A0 /* ProfileVC.swift */; };
 		6BA4B0CB2074360100BC23A0 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */; };
+		6BA9AA9921D564A2006379E1 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA9AA9821D564A2006379E1 /* DataExtensions.swift */; };
 		6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EA206F1D8D0032F7F9 /* SignupVC.swift */; };
 		6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EE206F1E420032F7F9 /* LoginVC.swift */; };
 		6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */; };
@@ -289,6 +290,7 @@
 		6BA4B0C5207431B800BC23A0 /* BorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
 		6BA4B0C8207435F200BC23A0 /* ProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileVC.swift; sourceTree = "<group>"; };
 		6BA4B0CA2074360100BC23A0 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
+		6BA9AA9821D564A2006379E1 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		6BAA03EA206F1D8D0032F7F9 /* SignupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupVC.swift; sourceTree = "<group>"; };
 		6BAA03EE206F1E420032F7F9 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		6BAA03F3206F23AB0032F7F9 /* RoundButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
@@ -624,6 +626,7 @@
 				6BB81789207A6E2E00503620 /* UIImageExtensions.swift */,
 				6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */,
 				6B3DAEC520827D9800946EB1 /* UIViewExtensions.swift */,
+				6BA9AA9821D564A2006379E1 /* DataExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1014,6 +1017,7 @@
 				6B8316DD207D71EC0067EE0E /* RankCell.swift in Sources */,
 				325F561120D9AE8E001A06C4 /* ChangePasswordVC.swift in Sources */,
 				325CA35A2132004700A6C47B /* CompetitorVC.swift in Sources */,
+				6BA9AA9921D564A2006379E1 /* DataExtensions.swift in Sources */,
 				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
 				6B13B93E20AE1BFA00769AFD /* EditImageVC.swift in Sources */,
 				329C4E8920E0355B00E4E8E9 /* TutorialPageVC.swift in Sources */,

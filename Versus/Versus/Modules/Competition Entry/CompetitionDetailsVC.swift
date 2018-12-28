@@ -12,25 +12,30 @@ import AVKit
 class CompetitionDetailsVC: UIViewController {
 
     private let competitionEntryService = CompetitionEntryService.instance
+    private let categoryCollection = CategoryCollection.instance
+    private let CATEGORY_CELL_HEIGHT: CGFloat = 50.0
+    private let CAPTION_DEFAULT_TEXT = "Write a caption..."
     
     @IBOutlet weak var submitButton: UIButton!
+    @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var previewImageView: UIImageView!
     @IBOutlet weak var captionTextView: UITextView!
     @IBOutlet weak var selectCategoryView: BorderView!
     @IBOutlet weak var categoryLabel: UILabel!
     @IBOutlet weak var categoryImageView: UIImageView!
     @IBOutlet weak var categoryTableView: UITableView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var uploadStatusLabel: UILabel!
     
-    var image: UIImage!
-    var video: AVURLAsset!
+    @IBOutlet weak var categoryTableViewHeight: NSLayoutConstraint!
+    
+    var media: AnyObject!
+    var previewImageTime: CMTime!
     var competitionType: CompetitionType!
     var selectedCategory: Category?
     var keyboardToolbar: KeyboardToolbar!
     
     
-    /**
- 
-     */
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,7 +44,7 @@ class CompetitionDetailsVC: UIViewController {
         submitButton.setTitleColor(UIColor.lightGray, for: .disabled)
         
         categoryTableView.layer.cornerRadius = 10
-        categoryTableView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        categoryTableView.tableFooterView = UIView()
         
         selectCategoryView.addGestureRecognizer(
             UITapGestureRecognizer(
@@ -48,154 +53,289 @@ class CompetitionDetailsVC: UIViewController {
             )
         )
         
-        configureView()
-    }
-
-    
-    /**
- 
-     */
-    func initData(image: UIImage) {
-        self.image = image
-        competitionType = .image
+        determineCompetitionType()
     }
     
     
-    /**
-     
-     */
-    func initData(image: UIImage, video: AVURLAsset) {
-        self.image = image
-        self.video = video
-        competitionType = .video
+    deinit {
+        selectCategoryView.gestureRecognizers?.removeAll()
     }
     
     
+    /// Required object initializer.
+    ///
+    /// - Parameters:
+    ///   - media: An AVURLAsset or UIImage to upload for a competition.
+    ///   - previewImageTime: (Optional) When uploading a video, specify a
+    ///     time in the video to generate the preview image.
+    func initData(media: AnyObject, previewImageTime: CMTime? = nil) {
+        self.media = media
+        
+        if let time = previewImageTime {
+            self.previewImageTime = time
+        }
+        else {
+            
+            // Default the image generation time to 2 seconds
+            self.previewImageTime = CMTime(value: Int64(2), timescale: 1)
+        }
+    }
+    
+    
+    /// Navigate to the previous view controller.
     @IBAction func backButtonAction() {
         navigationController?.popViewController(animated: true)
     }
     
     
-    /**
-     
-     */
+    /// Submit the competition entry.
     @IBAction func submitButtonAction() {
-        
-//        if let originalImage = image, let originalImageData = UIImageJPEGRepresentation(originalImage, 1.0), let compressedImage = image.compressImage(), let compressedImageData = UIImageJPEGRepresentation(compressedImage, 1.0) {
-//            
-//            let bcf = ByteCountFormatter()
-//            bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
-//            bcf.countStyle = .file
-//
-//            let originalSize = bcf.string(fromByteCount: Int64(originalImageData.count))
-//            print(String(format: "There are %d bytes in original image - %@", originalImageData.count, originalSize))
-//
-//            let compressedSize = bcf.string(fromByteCount: Int64(compressedImageData.count))
-//            print(String(format: "There are %d bytes in compressed image - %@", compressedImageData.count, compressedSize))
-//        }
-        
-        
-        guard let category = selectedCategory else {
-            displayMessage(message: "Select a category")
-            return
-        }
-        let caption = captionTextView.text
-        submitButton.isEnabled = false
-        submitCompetitionEntry(
-            categoryType: category.categoryType,
-            caption: caption
-        ) { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                    self.submitButton.isEnabled = true
-                    return
-                }
-                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
-                self.submitButton.isEnabled = true
-            }
-        }
+        submitCompetitionEntry()
     }
     
     
+    /// Share to Facebook.
     @IBAction func facebookButtonAction() {
         
     }
     
+    
+    /// Share to Instagram.
     @IBAction func instagramButtonAction() {
         
     }
     
+    
+    /// Share to Twitter.
     @IBAction func twitterButtonAction() {
         
     }
     
     
+    /// Show or hide the categories table view.
     @objc func categoryViewTapped() {
-        categoryTableView.isHidden = !categoryTableView.isHidden
-    }
-    
-    
-    /**
-     
-     */
-    private func configureView() {
-        previewImageView.image = image
-        if let category = selectedCategory {
-            categoryLabel.text = category.title
-            categoryLabel.textColor = UIColor.white
-            categoryImageView.image = UIImage(named: category.iconName)
-            selectCategoryView.backgroundColor = category.backgroundColor
+        
+        if categoryTableViewHeight.constant == CATEGORY_CELL_HEIGHT {
+            showCategories()
         }
         else {
-            categoryLabel.textColor = UIColor.darkGray
+            hideCategories()
         }
     }
     
     
-    /**
-     
-     */
-    private func submitCompetitionEntry(
+    /// Show the categories table view and animate it's height constraint.
+    private func showCategories() {
+        
+        contentView.bringSubviewToFront(categoryTableView)
+        
+        let expandHeight = CGFloat(categoryCollection.categories.count) * CATEGORY_CELL_HEIGHT
+        
+        UIView.animate(withDuration: 0.5) {
+            self.categoryTableViewHeight.constant = expandHeight
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    
+    /// Hide the categories table view and animate it's height constraint.
+    private func hideCategories() {
+        
+        contentView.bringSubviewToFront(selectCategoryView)
+        
+        let contractHeight = CATEGORY_CELL_HEIGHT
+        
+        UIView.animate(withDuration: 0.5) {
+            self.categoryTableViewHeight.constant = contractHeight
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    
+    /// Sets the competitionType and preview image. Could fail if media contains
+    /// an Object other than UIImage or AVURLAsset, or if image generation failed.
+    private func determineCompetitionType() {
+        
+        switch media {
+        case let image as UIImage:
+            
+            previewImageView.image = image
+            competitionType = .image
+            return
+            
+        case let videoAsset as AVURLAsset:
+            
+            guard let image = Utilities.generateImage(videoAsset: videoAsset, time: previewImageTime) else { break }
+            
+            previewImageView.image = image
+            competitionType = .video
+            return
+            
+        default:
+            break
+        }
+        
+        displayMessage(message: "Unsupported file type, please select a new file to upload.")
+    }
+    
+    
+    /// Validate, set loading state, and submit an image or video competition
+    /// based on the type of media object.
+    private func submitCompetitionEntry() {
+        
+        view.endEditing(true)
+        
+        guard let category = selectedCategory else {
+            displayMessage(message: "Please select a category")
+            return
+        }
+        
+        setLoadingState(isLoading: true)
+        
+        switch media {
+        case let image as UIImage:
+        
+            submitImageCompetition(
+                image: image,
+                categoryType: category.categoryType,
+                caption: captionTextView.text
+            )
+            return
+            
+        case let videoAsset as AVURLAsset:
+
+            guard let image = Utilities.generateImage(videoAsset: videoAsset, time: previewImageTime) else { break }
+            
+            submitVideoCompetition(
+                videoAsset: videoAsset,
+                image: image,
+                categoryType: category.categoryType,
+                caption: captionTextView.text
+            )
+            return
+            
+        default:
+            break
+        }
+        
+        displayMessage(message: "Unable to submit competition entry, please try again.")
+    }
+    
+    
+    /// Configures the controls in the view for the loading state and
+    /// non-loading state.
+    ///
+    /// - Parameter isLoading: The loading state to be set.
+    private func setLoadingState(isLoading: Bool) {
+        
+        if isLoading {
+            
+            submitButton.isEnabled = false
+            activityIndicator.startAnimating()
+            uploadStatusLabel.isHidden = false
+        }
+        else {
+            
+            submitButton.isEnabled = true
+            activityIndicator.stopAnimating()
+            uploadStatusLabel.isHidden = true
+        }
+    }
+    
+    
+    /// Submits an image competition.
+    ///
+    /// - Parameters:
+    ///   - image: The image to upload.
+    ///   - categoryType: The category type of the competition.
+    ///   - caption: The caption for the competition.
+    private func submitImageCompetition(
+        image: UIImage,
         categoryType: CategoryType,
-        caption: String?,
-        completion: @escaping (_ customError: CustomError?) -> Void
+        caption: String
     ) {
-        switch competitionType! {
-        case .image:
-            competitionEntryService.submitImageCompetitionEntry(
-                categoryType: categoryType,
-                caption: caption,
-                image: image,
-                completion: completion
-            )
-        case .video:
-            competitionEntryService.submitVideoCompetitionEntry(
-                categoryType: categoryType,
-                caption: caption,
-                image: image,
-                video: video,
-                completion: completion
-            )
+        
+        competitionEntryService.submitImageCompetitionEntry(
+            categoryType: categoryType,
+            caption: caption,
+            image: image
+        ) { (customError) in
+            
+            DispatchQueue.main.async {
+                
+                if let customError = customError {
+                    
+                    self.displayError(error: customError)
+                    self.setLoadingState(isLoading: false)
+                    return
+                }
+                
+                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
+            }
+        }
+    }
+    
+    
+    /// Submits a video competition.
+    ///
+    /// - Parameters:
+    ///   - videoAsset: The video asset to upload.
+    ///   - image: The preview image to upload.
+    ///   - categoryType: The category type of the competition.
+    ///   - caption: The caption for the competition.
+    private func submitVideoCompetition(
+        videoAsset: AVURLAsset,
+        image: UIImage,
+        categoryType: CategoryType,
+        caption: String
+    ) {
+        
+        competitionEntryService.submitVideoCompetitionEntry(
+            categoryType: categoryType,
+            caption: caption,
+            image: image,
+            video: videoAsset
+        ) { (customError) in
+            
+            DispatchQueue.main.async {
+                
+                if let customError = customError {
+                    
+                    self.displayError(error: customError)
+                    self.setLoadingState(isLoading: false)
+                    return
+                }
+                
+                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
+            }
         }
     }
 }
 
 extension CompetitionDetailsVC: UITextViewDelegate {
     
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == "Write a caption..." {
+        
+        // Remove the default text when editing.
+        if textView.text == CAPTION_DEFAULT_TEXT {
             textView.text.removeAll()
         }
     }
     
+    
     func textViewDidEndEditing(_ textView: UITextView) {
+        
+        // Add default text if empty when editing ended.
         if textView.text.isEmpty {
-            textView.text = "Write a caption..."
+            textView.text = CAPTION_DEFAULT_TEXT
         }
     }
     
+    
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        
+        // Add keyboard toolbar to dismiss keyboard.
         textView.inputAccessoryView = keyboardToolbar
         return true
     }
@@ -203,29 +343,47 @@ extension CompetitionDetailsVC: UITextViewDelegate {
 
 extension CompetitionDetailsVC: UITableViewDataSource {
     
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return CategoryCollection.instance.categories.count
+        return categoryCollection.categories.count
     }
     
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         if let categoryCell = tableView.dequeueReusableCell(withIdentifier: CATEGORY_CELL, for: indexPath) as? CategoryCell {
-            categoryCell.configureCell(category: CategoryCollection.instance.categories[indexPath.row])
+            
+            categoryCell.configureCell(category: categoryCollection.categories[indexPath.row])
             return categoryCell
         }
+        
         return CategoryCell()
     }
     
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return CATEGORY_CELL_HEIGHT
     }
 }
 
 extension CompetitionDetailsVC: UITableViewDelegate {
     
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedCategory = CategoryCollection.instance.categories[indexPath.row]
-        configureView()
-        tableView.isHidden = true
+        
         tableView.deselectRow(at: indexPath, animated: false)
+        
+        let category = categoryCollection.categories[indexPath.row]
+        
+        // Configure the selectedCategoryView with the selected category.
+        categoryLabel.text = category.title
+        categoryLabel.textColor = UIColor.white
+        categoryImageView.image = UIImage(named: category.iconName)
+        selectCategoryView.backgroundColor = category.backgroundColor
+        
+        selectedCategory = category
+        
+        // Hide the categories tableView after category is selected.
+        hideCategories()
     }
 }

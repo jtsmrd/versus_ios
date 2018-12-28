@@ -11,18 +11,25 @@ import AVKit
 
 class Utilities {
     
-    static func generatePreviewImage(for videoAsset: AVAsset) -> UIImage? {
-        let generator = AVAssetImageGenerator(asset: videoAsset)
-        generator.appliesPreferredTrackTransform = true
+    
+    /// Generate a preview image from the given videoAsset at the specified time.
+    ///
+    /// - Parameters:
+    ///   - videoAsset: The video asset to generate the image from.
+    ///   - time: The time in the video to take the image from.
+    /// - Returns: Optional UIImage
+    static func generateImage(videoAsset: AVURLAsset, time: CMTime) -> UIImage? {
         
-        let timestamp = CMTime(seconds: 2, preferredTimescale: 60)
+        let assetImageGenerator = AVAssetImageGenerator(asset: videoAsset)
+        assetImageGenerator.appliesPreferredTrackTransform = true
+        assetImageGenerator.requestedTimeToleranceAfter = CMTime.zero
+        assetImageGenerator.requestedTimeToleranceBefore = CMTime.zero
         
         do {
-            let imageRef = try generator.copyCGImage(at: timestamp, actualTime: nil)
-            return UIImage(cgImage: imageRef)
+            let cgImage = try assetImageGenerator.copyCGImage(at: time, actualTime: nil)
+            return UIImage(cgImage: cgImage)
         }
         catch {
-            print("Image generation failed with error \(error.localizedDescription)")
             return nil
         }
     }
