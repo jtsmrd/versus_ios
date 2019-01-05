@@ -190,6 +190,9 @@ class CompetitionDetailsVC: UIViewController {
             return
         }
         
+        // If the caption text is the default text, set to nil
+        let caption = captionTextView.text == CAPTION_DEFAULT_TEXT ? nil : captionTextView.text
+        
         setLoadingState(isLoading: true)
         
         switch media {
@@ -198,7 +201,7 @@ class CompetitionDetailsVC: UIViewController {
             submitImageCompetition(
                 image: image,
                 categoryType: category.categoryType,
-                caption: captionTextView.text
+                caption: caption
             )
             return
             
@@ -210,7 +213,7 @@ class CompetitionDetailsVC: UIViewController {
                 videoAsset: videoAsset,
                 image: image,
                 categoryType: category.categoryType,
-                caption: captionTextView.text
+                caption: caption
             )
             return
             
@@ -252,7 +255,7 @@ class CompetitionDetailsVC: UIViewController {
     private func submitImageCompetition(
         image: UIImage,
         categoryType: CategoryType,
-        caption: String
+        caption: String?
     ) {
         
         competitionEntryService.submitImageCompetitionEntry(
@@ -287,7 +290,7 @@ class CompetitionDetailsVC: UIViewController {
         videoAsset: AVURLAsset,
         image: UIImage,
         categoryType: CategoryType,
-        caption: String
+        caption: String?
     ) {
         
         competitionEntryService.submitVideoCompetitionEntry(

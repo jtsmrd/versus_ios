@@ -85,7 +85,7 @@ class FollowerVC: UIViewController {
      */
     private func showFollowerProfile(followerUserId: String) {
         if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-            profileVC.initData(userId: followerUserId)
+            profileVC.initData(userId: followerUserId, profileViewMode: .viewOnly)
             profileVC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(profileVC, animated: true)
         }

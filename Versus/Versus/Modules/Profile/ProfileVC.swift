@@ -18,7 +18,8 @@ protocol ProfileVCDelegate {
     func unfollowedUser(user: User)
 }
 
-class ProfileVC: UIViewController, ProfileInfoCollectionViewHeaderDelegate {
+class ProfileVC: UIViewController {
+    
     
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var optionsButton: UIButton!
@@ -27,65 +28,108 @@ class ProfileVC: UIViewController, ProfileInfoCollectionViewHeaderDelegate {
     
     private let userService = UserService.instance
     private let accountService = AccountService.instance
+    private let competitionEntryService = CompetitionEntryService.instance
+    private let competitionService = CompetitionService.instance
     
-    private var userId: String?
+    private var userId: String!
     private var user: User?
+    private var competitions: [Competition]!
+    private var unmatchedCompetitionEntries: [API_CompetitionEntry]!
     private var profileViewMode: ProfileViewMode = .viewOnly
     
     var delegate: ProfileVCDelegate?
-    let competitionCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    let collectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    }
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        competitions = [Competition]()
+        unmatchedCompetitionEntries = [API_CompetitionEntry]()
         
-        if userId == nil {
-            userId = CurrentUser.userId
-            profileViewMode = .edit
-        }
-        guard let userId = userId else { return }
         loadUser(userId: userId)
+        
+        loadCompetitions(userId: userId)
+        
+        loadUnmatchedCompetitionEntries(userId: userId)
     }
 
     
-    func initData(userId: String) {
+    
+    func initData(userId: String, profileViewMode: ProfileViewMode) {
         self.userId = userId
+        self.profileViewMode = profileViewMode
     }
+    
     
     
     @IBAction func optionsButtonAction() {
         displayOptions()
     }
     
+    
     @IBAction func backButtonAction() {
         navigationController?.popViewController(animated: true)
     }
     
     
-    func unfollowedUser(user: User) {
-        delegate?.unfollowedUser(user: user)
+    
+    private func loadUser(userId: String) {
+        
+        userService.getUser(userId: userId) { [weak self] (awsUser, customError) in
+            
+            DispatchQueue.main.async {
+                
+                if let customError = customError {
+                    self?.displayError(error: customError)
+                    return
+                }
+                
+                guard let awsUser = awsUser else {
+                    self?.displayError(error: CustomError(error: nil, message: "Unable to load user"))
+                    return
+                }
+                
+                self?.user = User(awsUser: awsUser)
+                self?.configureView()
+            }
+        }
     }
     
     
-    private func loadUser(userId: String) {
-        userService.getUser(userId: userId) { (awsUser, customError) in
+    private func loadCompetitions(userId: String) {
+        
+        competitionService.getCompetitionsFor(userId: userId) { [weak self] (competitions, customError) in
+            
             DispatchQueue.main.async {
+                
                 if let customError = customError {
-                    self.displayError(error: customError)
+                    self?.displayError(error: customError)
                     return
                 }
-                guard let awsUser = awsUser else {
-                    self.displayError(error: CustomError(error: nil, message: "Unable to load user"))
+                
+                self?.competitions = competitions                
+                self?.competitionCollectionView.reloadData()
+            }
+        }
+    }
+    
+    
+    private func loadUnmatchedCompetitionEntries(userId: String) {
+        
+        competitionEntryService.getUnmatchedCompetitionEntries(
+            userId: CurrentUser.userId
+        ) { [weak self] (unmatchedCompetitionEntries, customError) in
+            
+            DispatchQueue.main.async {
+                
+                if let customError = customError {
+                    self?.displayError(error: customError)
                     return
                 }
-                self.user = User(awsUser: awsUser)
-                self.configureView()
+                
+                self?.unmatchedCompetitionEntries = unmatchedCompetitionEntries
+                self?.competitionCollectionView.reloadData()
             }
         }
     }
@@ -97,86 +141,69 @@ class ProfileVC: UIViewController, ProfileInfoCollectionViewHeaderDelegate {
         
         switch profileViewMode {
         case .edit:
+            
             optionsButton.isHidden = false
             backButton.isHidden = true
+            
         case .viewOnly:
+            
             optionsButton.isHidden = true
             backButton.isHidden = false
-        }
-
-        // Get user's competitions
-        user?.getCompetitions { (success, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
-                }
-                else {
-                    self.competitionCollectionView.reloadData()
-                }
-            }
         }
     }
     
     
     private func displayOptions() {
-        let optionsAlertController = UIAlertController(
-            title: "Profile Options",
-            message: nil,
-            preferredStyle: .actionSheet
-        )
-        optionsAlertController.addAction(
-            UIAlertAction(
-                title: "Edit Profile",
-                style: .default,
-                handler: { (action) in
-                    self.displayEditProfile()
-                }
-            )
-        )
-        optionsAlertController.addAction(
-            UIAlertAction(
-                title: "Change Password",
-                style: .default,
-                handler: { (action) in
+        
+        let optionsAlertController = UIAlertController(title: "Profile Options", message: nil, preferredStyle: .actionSheet)
+        
+        let editProfileAction = UIAlertAction(title: "Edit Profile", style: .default) { (action) in
+            self.displayEditProfile()
+        }
+        
+        let changePasswordAction = UIAlertAction(title: "Change Password", style: .default) { (action) in
             
-                }
-            )
-        )
-        optionsAlertController.addAction(
-            UIAlertAction(
-                title: "Sign Out",
-                style: .default,
-                handler: { (action) in
-                    self.signOut()
-                }
-            )
-        )
-        optionsAlertController.addAction(
-            UIAlertAction(
-                title: "Cancel",
-                style: .cancel,
-                handler: nil
-            )
-        )
+        }
+        
+        let signOutAction = UIAlertAction(title: "Sign Out", style: .default) { (action) in
+            self.signOut()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        optionsAlertController.addAction(editProfileAction)
+        optionsAlertController.addAction(changePasswordAction)
+        optionsAlertController.addAction(signOutAction)
+        optionsAlertController.addAction(cancelAction)
+        
         present(optionsAlertController, animated: true, completion: nil)
     }
     
     
     private func displayEditProfile() {
-        if let editProfileVC = UIStoryboard(name: MAIN, bundle: nil).instantiateViewController(withIdentifier: EDIT_PROFILE_VC) as? EditProfileVC {
+        
+        let mainStoryboard = UIStoryboard(name: MAIN, bundle: nil)
+        let viewController = mainStoryboard.instantiateViewController(withIdentifier: EDIT_PROFILE_VC)
+        
+        if let editProfileVC = viewController as? EditProfileVC {
             present(editProfileVC, animated: true, completion: nil)
         }
     }
     
     
     private func signOut() {
+        
         accountService.signOut { (success) in
+            
             if success {
+                
+                let loginStoryboard = UIStoryboard(name: LOGIN, bundle: nil)
+                let loginNavController = loginStoryboard.instantiateInitialViewController()
+                
                 DispatchQueue.main.async {
-                    if let loginVC = UIStoryboard(name: LOGIN, bundle: nil).instantiateInitialViewController() {
-                        appDelegate.window?.rootViewController = loginVC
-                        appDelegate.window?.makeKeyAndVisible()
-                    }
+                    
+                    appDelegate.window?.rootViewController = loginNavController
+                    appDelegate.window?.makeKeyAndVisible()
                 }
             }
         }
@@ -185,7 +212,11 @@ class ProfileVC: UIViewController, ProfileInfoCollectionViewHeaderDelegate {
     
     private func showCompetition(competition: Competition) {
         
-        if let viewCompetitionVC = UIStoryboard(name: COMPETITION, bundle: nil).instantiateInitialViewController() as? ViewCompetitionVC {
+        let competitionStoryboard = UIStoryboard(name: COMPETITION, bundle: nil)
+        let viewController = competitionStoryboard.instantiateInitialViewController()
+        
+        if let viewCompetitionVC = viewController as? ViewCompetitionVC {
+            
             viewCompetitionVC.initData(competition: competition)
             navigationController?.pushViewController(viewCompetitionVC, animated: true)
         }
@@ -201,7 +232,9 @@ class ProfileVC: UIViewController, ProfileInfoCollectionViewHeaderDelegate {
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
         guard let user = user else { return }
+        
         if let rankVC = segue.destination as? RankVC {
             rankVC.initData(user: user)
         }
@@ -211,43 +244,57 @@ class ProfileVC: UIViewController, ProfileInfoCollectionViewHeaderDelegate {
         else if let followedUserVC = segue.destination as? FollowedUserVC {
             followedUserVC.initData(user: user)
         }
+        else if let unmatchedEntriesVC = segue.destination as? UnmatchedEntriesVC, let unmatchedEntries = sender as? [API_CompetitionEntry] {
+            unmatchedEntriesVC.initData(unmatchedEntries: unmatchedEntries)
+        }
+    }
+}
+
+extension ProfileVC: ProfileInfoCollectionViewHeaderDelegate {
+    
+    
+    func unfollowedUser(user: User) {
+        delegate?.unfollowedUser(user: user)
     }
 }
 
 extension ProfileVC: UICollectionViewDataSource {
     
+    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        numberOfItemsInSection section: Int) -> Int {
-        return user?.competitions.count ?? 0
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return competitions.count
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: PROFILE_COMPETITION_CELL,
-            for: indexPath) as? ProfileCompetitionCell {
-            cell.configureCell(competitionIndex: indexPath.row, user: user)
-            return cell
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PROFILE_COMPETITION_CELL, for: indexPath)
+        
+        if let profileCompetitionCell = cell as? ProfileCompetitionCell {
+            
+            let competition = competitions[indexPath.row]
+            profileCompetitionCell.configureCell(competition: competition, userId: userId)
+            
+            return profileCompetitionCell
         }
         return ProfileCompetitionCell()
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind kind: String,
-        at indexPath: IndexPath) -> UICollectionReusableView {
-        if let view = collectionView.dequeueReusableSupplementaryView(
-            ofKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: PROFILE_INFO_COLLECTION_VIEW_HEADER,
-            for: indexPath) as? ProfileInfoCollectionViewHeader {
-            view.configureView(user: user, profileViewMode: profileViewMode, delegate: self)
-            return view
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: PROFILE_INFO_COLLECTION_VIEW_HEADER, for: indexPath)
+        
+        if let profileInfoCollectionViewHeader = view as? ProfileInfoCollectionViewHeader {
+            
+            profileInfoCollectionViewHeader.configureView(user: user, profileViewMode: profileViewMode, unmatchedCompetitionEntries: unmatchedCompetitionEntries, delegate: self)
+            
+            return profileInfoCollectionViewHeader
         }
         return ProfileInfoCollectionViewHeader()
     }
@@ -255,43 +302,39 @@ extension ProfileVC: UICollectionViewDataSource {
 
 extension ProfileVC: UICollectionViewDelegate {
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        didSelectItemAt indexPath: IndexPath) {
-        showCompetition(competition: (user?.competitions[indexPath.row])!)
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         collectionView.deselectItem(at: indexPath, animated: false)
+        
+        let competition = competitions[indexPath.row]
+        showCompetition(competition: competition)
     }
 }
 
 extension ProfileVC: UICollectionViewDelegateFlowLayout {
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath) -> CGSize {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         let itemsPerRow: CGFloat = 3
         
-        let paddingSpace = competitionCollectionViewSectionInsets.left * (itemsPerRow + 1)
+        let paddingSpace = collectionViewSectionInsets.left * (itemsPerRow + 1)
         let availableWidth = view.frame.width - paddingSpace
         let widthPerItem = availableWidth / itemsPerRow
         
         return CGSize(width: widthPerItem, height: widthPerItem)
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        insetForSectionAt section: Int) -> UIEdgeInsets {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        return competitionCollectionViewSectionInsets
+        return collectionViewSectionInsets
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         
-        return competitionCollectionViewSectionInsets.left
+        return collectionViewSectionInsets.left
     }
 }

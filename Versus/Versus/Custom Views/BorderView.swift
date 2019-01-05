@@ -17,15 +17,15 @@ class BorderView: UIView {
     @IBInspectable var _borderWidth: CGFloat = 3.0
     
     override func prepareForInterfaceBuilder() {
-        setupButton()
+        setupView()
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        setupButton()
+        setupView()
     }
     
-    private func setupButton() {
+    private func setupView() {
         clipsToBounds = true
         layer.cornerRadius = _cornerRadius
         

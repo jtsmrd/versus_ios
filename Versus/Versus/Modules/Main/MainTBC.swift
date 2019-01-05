@@ -13,6 +13,8 @@ class MainTBC: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        delegate = self
+        
         let tabBarHeight = tabBar.frame.size.height
         
         let circleView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tabBarHeight * 0.95, height: tabBarHeight * 0.95))
@@ -63,4 +65,18 @@ class MainTBC: UITabBarController {
     }
     */
 
+}
+
+extension MainTBC: UITabBarControllerDelegate {
+    
+    
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        
+        // The profile tab was selected.
+        if let navController = viewController as? UINavigationController, let profileVC = navController.children.first as? ProfileVC {
+            
+            // Configure the ProfileVC for the current user.
+            profileVC.initData(userId: CurrentUser.userId, profileViewMode: .edit)
+        }
+    }
 }

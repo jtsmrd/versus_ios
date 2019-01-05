@@ -44,6 +44,7 @@ let SHOW_SELECT_PREVIEW_IMAGE = "SelectPreviewImageVC"
 let FIRST_COMPETITOR = "FirstCompetitorVC"
 let SECOND_COMPETITOR = "SecondCompetitorVC"
 let SHOW_SELECT_COMPETITION_MEDIA = "SelectCompetitionMediaVC"
+let SHOW_UNMATCHED_ENTRIES = "UnmatchedEntriesVC"
 
 let UNWIND_TO_LANDING = "LandingVC"
 
@@ -63,6 +64,7 @@ let CATEGORY_CELL = "CategoryCell"
 let COMPETITION_CELL = "CompetitionCell"
 let NOTIFICATION_CELL = "NotificationCell"
 let COMPETITION_COMMENT_CELL = "CompetitionCommentCell"
+let UNMATCHED_ENTRY_CELL = "UnmatchedEntryCell"
 
 
 // CollectionViewCell Identifiers

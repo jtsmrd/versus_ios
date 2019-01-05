@@ -129,6 +129,61 @@ class CompetitionEntryService {
     }
     
     
+    
+    /// Returns a collection of unmatched competition entries for the specified user.
+    ///
+    /// - Parameters:
+    ///   - userId: The userId for the unmatched competition entries.
+    ///   - completion: A collection of API_CompetitionEntry objects and a
+    ///     CustomError if request fails.
+    func getUnmatchedCompetitionEntries(
+        userId: String,
+        completion: @escaping ([API_CompetitionEntry], CustomError?) -> Void
+    ) {
+        
+        var responseError: CustomError?
+        var unmatchedCompetitionEntries = [API_CompetitionEntry]()
+        
+        let endpoint = Endpoints.getUnmatchedCompetitionEntries(userId: userId)
+        
+        guard let url = URL(string: endpoint) else {
+
+            responseError = CustomError(error: nil, message: "Unable to load competition entries.")
+            completion(unmatchedCompetitionEntries, responseError)
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
+        
+        let session = URLSession.shared
+        session.dataTask(with: url) { (data, response, error) in
+            
+            if let error = error {
+                responseError = CustomError(error: error, message: "Failed to load competition entries.")
+            }
+            
+            if let data = data {
+                
+                let decoder = JSONDecoder()
+                
+                do {
+                    let results = try decoder.decode([API_CompetitionEntry].self, from: data)
+                    unmatchedCompetitionEntries = results
+                }
+                catch let decodeError {
+                    responseError = CustomError(error: error, message: "Unable to parse competition entries.")
+                    debugPrint(decodeError.localizedDescription)
+                }
+            }
+            
+            completion(unmatchedCompetitionEntries, responseError)
+            
+        }.resume()
+    }
+    
+    
     /// Creates a new competition entry.
     ///
     /// - Parameters:
@@ -144,41 +199,58 @@ class CompetitionEntryService {
         mediaId: String,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
+       
+        let defaultError = CustomError(error: nil, message: "Unable to create competition entry.")
         
-        let awsCompetitionEntry: AWSCompetitionEntry = AWSCompetitionEntry()
-        awsCompetitionEntry._awaitingMatch = 1.toNSNumber
-        awsCompetitionEntry._caption = caption
-        awsCompetitionEntry._categoryTypeId = categoryType.rawValue.toNSNumber
-        awsCompetitionEntry._competitionEntryId = UUID().uuidString
-        awsCompetitionEntry._compTypeIdCatTypeIdRankIdMatched = String(
-            format: "%d|%d|%d|%d",
-            competitionType.rawValue,
-            categoryType.rawValue,
-            CurrentUser.rankId,
-            0
+        guard let url = URL(string: Endpoints.INSERT_COMPETITION_ENTRY) else {
+            
+            completion(defaultError)
+            return
+        }
+        
+        let competitionEntry = API_CompetitionEntry(
+            caption: caption,
+            categoryTypeId: categoryType.rawValue,
+            competitionTypeId: competitionType.rawValue,
+            mediaId: mediaId
         )
-        awsCompetitionEntry._competitionTypeId = competitionType.rawValue.toNSNumber
-        awsCompetitionEntry._createDate = Date().toISO8601String
-        awsCompetitionEntry._displayName = CurrentUser.displayName
-        awsCompetitionEntry._isFeatured = NSNumber(booleanLiteral: CurrentUser.isFeatured)
-        awsCompetitionEntry._mediaId = mediaId
-        awsCompetitionEntry._rankId = CurrentUser.rankId.toNSNumber
-        awsCompetitionEntry._userId = CurrentUser.userId
-        awsCompetitionEntry._username = CurrentUser.username
         
-        dynamoDB.save(
-            awsCompetitionEntry
-        ) { (error) in
+        let encoder = JSONEncoder()
+        guard let httpBody = try? encoder.encode(competitionEntry) else {
+            
+            completion(defaultError)
+            return
+        }
+        
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = httpBody
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
             
             if let error = error {
                 
-                completion(CustomError(error: error, message: "Unable to submit competition"))
+                let responseError = CustomError(error: error, message: "Failed to create competition entry.")
+                completion(responseError)
                 return
             }
+                
+            if let response = response as? HTTPURLResponse {
+                
+                if response.statusCode == 200 {
+                    completion(nil)
+                    return
+                }
+            }
             
-            completion(nil)
-        }
+            completion(defaultError)
+            
+        }.resume()
     }
+    
     
     
     private func uploadImageMedia(

@@ -24,23 +24,22 @@ class ProfileCompetitionCell: UICollectionViewCell {
     }
     
     
-    /**
-        Get and display the competition image for the current user.
-     */
-    func configureCell(competitionIndex: Int, user: User?) {
-        guard let user = user else { return }
-        let competition = user.competitions[competitionIndex]
+    func configureCell(competition: Competition, userId: String) {
+        
         var currentUserCompetitorRecord: Competitor!
-        if competition.firstCompetitor.userId == user.userId {
+        if competition.firstCompetitor.userId == userId {
             currentUserCompetitorRecord = competition.firstCompetitor
         }
         else {
             currentUserCompetitorRecord = competition.secondCompetitor
         }
+        
         DispatchQueue.global(qos: .userInitiated).async {
-            currentUserCompetitorRecord.getCompetitionImageSmall(
-                completion: { [weak self] (image, customError) in
+            
+            currentUserCompetitorRecord.getCompetitionImageSmall(completion: { [weak self] (image, customError) in
+                
                     DispatchQueue.main.async {
+                        
                         if let customError = customError {
                             self?.parentViewController?.displayError(error: customError)
                         }

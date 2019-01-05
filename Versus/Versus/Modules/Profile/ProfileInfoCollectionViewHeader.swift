@@ -14,54 +14,59 @@ protocol ProfileInfoCollectionViewHeaderDelegate {
 
 class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
+    
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var profileImageView: CircleImageView!
     @IBOutlet weak var directMessageButton: UIButton!
     @IBOutlet weak var winsButton: UIButton!
+    @IBOutlet weak var followButton: FollowButton!
     @IBOutlet weak var displayNameLabel: UILabel!
     @IBOutlet weak var winsLabel: UILabel!
     @IBOutlet weak var bioLabel: UILabel!
-    @IBOutlet weak var followingContainerView: BorderView!
+    @IBOutlet weak var followingView: BorderView!
     @IBOutlet weak var followingLabel: UILabel!
-    @IBOutlet weak var followersContainerView: BorderView!
+    @IBOutlet weak var followersView: BorderView!
     @IBOutlet weak var followersLabel: UILabel!
-    @IBOutlet weak var rankContainerView: BorderView!
+    @IBOutlet weak var rankView: BorderView!
     @IBOutlet weak var rankImageView: UIImageView!
     @IBOutlet weak var rankTitleLabel: UILabel!
-    @IBOutlet weak var followButton: FollowButton!
+    @IBOutlet weak var unmatchedCompetitionEntriesView: BorderView!
+    @IBOutlet weak var unmatchedCompetitionEntriesLabel: UILabel!
+    
+    @IBOutlet weak var unmatchedCompetitionEntriesViewHeight: NSLayoutConstraint!
     
     private var user: User!
+    private var unmatchedCompetitionEntries: [API_CompetitionEntry]!
+    private var originalUnmatchedCompetitionEntriesViewHeight: CGFloat!
+    private var profileViewMode: ProfileViewMode = .viewOnly
     private var followStatus: FollowStatus = .notFollowing
     private var delegate: ProfileInfoCollectionViewHeaderDelegate!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        followingContainerView.addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(showFollowedUsers)
-            )
-        )
-        followersContainerView.addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(showFollowers)
-            )
-        )
-        rankContainerView.addGestureRecognizer(
-            UITapGestureRecognizer(
-                target: self,
-                action: #selector(showRanks)
-            )
-        )
+        unmatchedCompetitionEntries = [API_CompetitionEntry]()
+        
+        originalUnmatchedCompetitionEntriesViewHeight = unmatchedCompetitionEntriesViewHeight.constant
+        
+        followingView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ProfileInfoCollectionViewHeader.showFollowedUsers)))
+        
+        followersView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ProfileInfoCollectionViewHeader.showFollowers)))
+        
+        rankView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ProfileInfoCollectionViewHeader.showRanks)))
+        
+        unmatchedCompetitionEntriesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ProfileInfoCollectionViewHeader.unmatchedCompetitionEntriesViewTapped)))
     }
     
+    
     deinit {
-        followingContainerView.gestureRecognizers?.removeAll()
-        followersContainerView.gestureRecognizers?.removeAll()
-        rankContainerView.gestureRecognizers?.removeAll()
+        followingView.gestureRecognizers?.removeAll()
+        followersView.gestureRecognizers?.removeAll()
+        rankView.gestureRecognizers?.removeAll()
+        unmatchedCompetitionEntriesView.gestureRecognizers?.removeAll()
     }
+    
     
     @IBAction func directMessageButtonAction() {
         
@@ -85,38 +90,47 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
     
     @objc func showRanks() {
-        self.parentViewController?.performSegue(withIdentifier: SHOW_RANKS, sender: nil)
+        parentViewController?.performSegue(withIdentifier: SHOW_RANKS, sender: nil)
     }
+    
     
     @objc func showFollowedUsers() {
-        self.parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWED_USERS, sender: nil)
+        parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWED_USERS, sender: nil)
     }
+    
     
     @objc func showFollowers() {
-        self.parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWERS, sender: nil)
+        parentViewController?.performSegue(withIdentifier: SHOW_FOLLOWERS, sender: nil)
+    }
+    
+    
+    @objc func unmatchedCompetitionEntriesViewTapped() {
+        parentViewController?.performSegue(withIdentifier: SHOW_UNMATCHED_ENTRIES, sender: unmatchedCompetitionEntries)
     }
     
     
     
-    func configureView(user: User?, profileViewMode: ProfileViewMode, delegate: ProfileInfoCollectionViewHeaderDelegate) {
+    func configureView(user: User?, profileViewMode: ProfileViewMode, unmatchedCompetitionEntries: [API_CompetitionEntry], delegate: ProfileInfoCollectionViewHeaderDelegate) {
+        
         guard let user = user else { return }
+        
         self.user = user
+        self.profileViewMode = profileViewMode
+        self.unmatchedCompetitionEntries = unmatchedCompetitionEntries
         self.delegate = delegate
         
-        // Only used when viewing other users' profiles
-        if profileViewMode == .viewOnly {
-            determineUserFollowStatus()
-        }
+        //TEMPORARY: Hide direct message button until implemented.
+        directMessageButton.isHidden = true
         
         displayNameLabel.text = user.displayName
         bioLabel.text = user.bio
         winsLabel.text = String(format: "%d", user.totalWins)
         
-        self.followersLabel.attributedText = NSMutableAttributedString()
+        followersLabel.attributedText = NSMutableAttributedString()
             .bold("\(user.followerCount)", self.followersLabel.font.pointSize)
             .normal(" followers")
         
-        self.followingLabel.attributedText = NSMutableAttributedString()
+        followingLabel.attributedText = NSMutableAttributedString()
             .bold("\(user.followedUserCount)", self.followingLabel.font.pointSize)
             .normal(" following")
         
@@ -125,74 +139,75 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
         profileImageView.image = user.profileImage
         backgroundImageView.image = user.profileBackgroundImage
         
-        switch profileViewMode {
-        case .edit:
-            followButton.isHidden = true
-        case .viewOnly:
-            
-            if CurrentUser.userIsMe(userId: user.userId) {
-                followButton.isHidden = true
-            }
-            else {
-                followButton.isHidden = false
-                configureFollowerButton()
-            }
-        }
+        configureFollowerButton()
+        
+        configureUnmatchedCompetitionEntriesView()
         
         // Get profile image
         user.getProfileImage { (image, error) in
+            
             DispatchQueue.main.async {
-                if let image = image {
-                    self.profileImageView.image = image
-                }
+                self.profileImageView.image = image
             }
         }
         
         // Get background image
         user.getProfileBackgroundImage { (image, error) in
+            
             DispatchQueue.main.async {
-                if let image = image {
-                    self.backgroundImageView.image = image
-                }
+                self.backgroundImageView.image = image
             }
         }
     }
     
     
-    
-    private func determineUserFollowStatus() {
-        followStatus = CurrentUser.getFollowedUserStatusFor(userId: user.userId)
-    }
-    
-    
     private func configureFollowerButton() {
+        
+        // Only show and configure the follow button if you're viewing another
+        // users' profile.
+        guard profileViewMode == .viewOnly && !CurrentUser.userIsMe(userId: user.userId) else {
+            
+            followButton.isHidden = true
+            return
+        }
+        
+        // See if you're following them or now.
+        followStatus = CurrentUser.getFollowedUserStatusFor(userId: user.userId)
+        
+        // Set the state of the button based on the followStatus.
         followButton.setButtonState(followStatus: followStatus)
     }
     
     
+    private func configureUnmatchedCompetitionEntriesView() {
+        
+        if CurrentUser.userIsMe(userId: user.userId) && unmatchedCompetitionEntries.count > 0 {
+            
+            unmatchedCompetitionEntriesViewHeight.constant = originalUnmatchedCompetitionEntriesViewHeight
+            unmatchedCompetitionEntriesLabel.text = String(format: "Unmatched Entries (%d)", unmatchedCompetitionEntries.count)
+        }
+        else {
+            unmatchedCompetitionEntriesViewHeight.constant = 1.0
+        }
+        
+        layoutIfNeeded()
+    }
+    
+    
     private func displayConfirmUnfollowUser() {
-        let confirmUnfollowAlertVC = UIAlertController(
-            title: "Confirm Unfollow",
-            message: "Are you sure you want to unfollow @\(user.username)",
-            preferredStyle: .actionSheet
-        )
-        confirmUnfollowAlertVC.addAction(
-            UIAlertAction(
-                title: "Unfollow",
-                style: .destructive,
-                handler: { (action) in
-                    self.unfollowUser()
-                }
-            )
-        )
-        confirmUnfollowAlertVC.addAction(
-            UIAlertAction(
-                title: "Cancel",
-                style: .cancel,
-                handler: nil
-            )
-        )
-        self.parentViewController?.present(confirmUnfollowAlertVC, animated: true, completion: nil)
+        
+        let confirmUnfollowAlertVC = UIAlertController(title: "Confirm Unfollow", message: "Are you sure you want to unfollow @\(user.username)", preferredStyle: .actionSheet)
+        
+        let unfollowAction = UIAlertAction(title: "Unfollow", style: .destructive) { (action) in
+            self.unfollowUser()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        confirmUnfollowAlertVC.addAction(unfollowAction)
+        confirmUnfollowAlertVC.addAction(cancelAction)
+        
+        parentViewController?.present(confirmUnfollowAlertVC, animated: true, completion: nil)
     }
     
     
@@ -203,12 +218,14 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
         CurrentUser.follow(
             user: user
         ) { (customError) in
+            
             DispatchQueue.main.async {
+                
                 if let customError = customError {
                     self.parentViewController?.displayError(error: customError)
                     return
                 }
-                self.determineUserFollowStatus()
+                
                 self.configureFollowerButton()
             }
         }
@@ -222,12 +239,14 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
         CurrentUser.unfollow(
             user: user
         ) { (customError) in
+            
             DispatchQueue.main.async {
+                
                 if let customError = customError {
                     self.parentViewController?.displayError(error: customError)
                     return
                 }
-                self.determineUserFollowStatus()
+                
                 self.configureFollowerButton()
                 self.delegate.unfollowedUser(user: self.user)
             }

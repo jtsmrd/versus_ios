@@ -87,7 +87,7 @@ class NotificationsVC: UIViewController {
         }
         
         if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-            profileVC.initData(userId: notificationInfo.userId)
+            profileVC.initData(userId: notificationInfo.userId, profileViewMode: .viewOnly)
             profileVC.hidesBottomBarWhenPushed = true
             
             DispatchQueue.main.async {
