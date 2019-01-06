@@ -66,7 +66,7 @@ class FollowedUserVC: UIViewController {
     
     
     /**
-     
+    
      */
     private func filterFollowedUsers(filter: String) {
         guard !filter.isEmpty else {

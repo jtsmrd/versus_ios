@@ -20,30 +20,36 @@ class FollowedUserService {
      
      */
     func follow(
-        userId: String,
-        username: String,
         displayName: String,
+        followedUserUserId: String,
+        followerDisplayName: String,
+        followerUsername: String,
+        searchDisplayName: String,
+        searchUsername: String,
+        username: String,
+        userId: String,
         completion: @escaping (_ followedUser: FollowedUser?, _ customError: CustomError?) -> Void
     ) {
-        let awsFollowedUser: AWSFollowedUser = AWSFollowedUser()
-        awsFollowedUser._createDate = Date().toISO8601String
-        awsFollowedUser._displayName = displayName
-        awsFollowedUser._followedUserUserId = userId
-        awsFollowedUser._followerDisplayName = CurrentUser.displayName
-        awsFollowedUser._followerUsername = CurrentUser.username
-        awsFollowedUser._searchDisplayName = displayName.lowercased()
-        awsFollowedUser._searchUsername = username.lowercased()
-        awsFollowedUser._userId = CurrentUser.userId
-        awsFollowedUser._username = username
+        
+        let followedUser = FollowedUser(
+            displayName: displayName,
+            followedUserUserId: followedUserUserId,
+            followerDisplayName: followerDisplayName,
+            followerUsername: followerUsername,
+            searchDisplayName: searchDisplayName,
+            searchUsername: searchUsername,
+            username: username,
+            userId: userId
+        )
         
         dynamoDB.save(
-            awsFollowedUser
+            followedUser
         ) { (error) in
             if let error = error {
                 completion(nil, CustomError(error: error, message: "Unable to follow user"))
                 return
             }
-            completion(FollowedUser(awsFollowedUser: awsFollowedUser), nil)
+            completion(followedUser, nil)
         }
     }
     
@@ -66,7 +72,7 @@ class FollowedUserService {
         
         var followedUsers = [FollowedUser]()
         dynamoDB.query(
-            AWSFollowedUser.self,
+            FollowedUser.self,
             expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
@@ -74,9 +80,9 @@ class FollowedUserService {
                 return
             }
             if let result = paginatedOutput,
-                let awsFollowedUsers = result.items as? [AWSFollowedUser] {
-                for awsFollowedUser in awsFollowedUsers {
-                    followedUsers.append(FollowedUser(awsFollowedUser: awsFollowedUser))
+                let followedUserResults = result.items as? [FollowedUser] {
+                for item in followedUserResults {
+                    followedUsers.append(item)
                 }
             }
             completion(followedUsers, nil)
@@ -92,7 +98,7 @@ class FollowedUserService {
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
         dynamoDB.remove(
-            followedUser.awsFollowedUser
+            followedUser
         ) { (error) in
             if let error = error {
                 completion(CustomError(error: error, message: "Unable to unfollow user"))

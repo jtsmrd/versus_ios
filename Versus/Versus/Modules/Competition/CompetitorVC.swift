@@ -173,7 +173,7 @@ class CompetitorVC: UIViewController {
     /**
      Handler for when the user vote is updated
      */
-    @objc func userVoteUpdated(notification: Notification) {
+    @objc func userVoteUpdated(notification: Foundation.Notification) {
         if let vote = notification.object as? Vote {
             self.vote = vote
         }
@@ -232,6 +232,8 @@ class CompetitorVC: UIViewController {
             configureForImageCompetition()
         case .video:
             configureForVideoCompetition()
+        default:
+            break
         }
     }
     
@@ -242,16 +244,17 @@ class CompetitorVC: UIViewController {
     private func configureForImageCompetition() {
         
         activityIndicator.startAnimating()
+        
+        // TODO: Remove and user operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
-            self.competitor.getCompetitionImage { [weak self] (image, customError) in
+            
+            S3BucketService.instance.downloadImage(mediaId: self.competitor.mediaId, imageType: .regular, completion: { [weak self] (image, customError) in
+                
                 DispatchQueue.main.async {
-                    if let customError = customError {
-                        self?.displayError(error: customError)
-                    }
                     self?.competitionImageView.image = image
                     self?.activityIndicator.stopAnimating()
                 }
-            }
+            })
         }
     }
     
@@ -262,25 +265,33 @@ class CompetitorVC: UIViewController {
     private func configureForVideoCompetition() {
         
         activityIndicator.startAnimating()
+        
+        
+        // TODO: Remove and user operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
-            self.competitor.getCompetitionImage { [weak self] (image, customError) in
+            
+            S3BucketService.instance.downloadImage(mediaId: self.competitor.mediaId, imageType: .regular, completion: { [weak self] (image, customError) in
+                
                 DispatchQueue.main.async {
-                    if let customError = customError {
-                        self?.displayError(error: customError)
-                    }
                     self?.competitionImageView.image = image
                     self?.activityIndicator.stopAnimating()
                 }
-            }
+            })
         }
         
         activityIndicator.startAnimating()
+        
+        // TODO: Remove and user operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
-            self.competitor.getCompetitionVideo { [weak self] (video, customError) in
+            
+            S3BucketService.instance.downloadVideo(mediaId: self.competitor.mediaId, bucketType: .video, completion: { [weak self] (video, customError) in
+                
                 DispatchQueue.main.async {
+                    
                     if let customError = customError {
                         self?.displayError(error: customError)
                     }
+                    
                     if let video = video {
                         self?.player.replaceCurrentItem(with: AVPlayerItem(asset: video))
                         if let viewIsSelected = self?.viewIsSelected, viewIsSelected {
@@ -294,7 +305,7 @@ class CompetitorVC: UIViewController {
                         self?.displayMessage(message: "Unable to download competition video")
                     }
                 }
-            }
+            })
         }
     }
     

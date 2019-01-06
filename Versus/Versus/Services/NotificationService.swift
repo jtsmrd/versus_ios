@@ -20,7 +20,7 @@ class NotificationService {
  
      */
     func getCurrentUserNotifications(
-        completion: @escaping (_ notifications: [VersusNotification], _ error: CustomError?) -> Void
+        completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void
     ) {
         let queryExpression = AWSDynamoDBQueryExpression()
         queryExpression.keyConditionExpression = "#userId = :userId"
@@ -32,9 +32,9 @@ class NotificationService {
         ]
         queryExpression.scanIndexForward = false
         
-        var notifications = [VersusNotification]()
+        var notifications = [Notification]()
         dynamoDB.query(
-            AWSNotification.self,
+            Notification.self,
             expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
@@ -42,9 +42,9 @@ class NotificationService {
                 return
             }
             if let result = paginatedOutput,
-                let awsNotifications = result.items as? [AWSNotification] {
-                for awsNotification in awsNotifications {
-                    notifications.append(VersusNotification(awsNotification: awsNotification))
+                let notificationResults = result.items as? [Notification] {
+                for item in notificationResults {
+                    notifications.append(item)
                 }
             }
             completion(notifications, nil)
@@ -56,15 +56,15 @@ class NotificationService {
         Mark notification as viewed.
      */
     func markNotificationViewed(
-        awsNotification: AWSNotification,
+        notification: Notification,
         completion: ((_ customError: CustomError?) -> Void)?
     ) {
-        awsNotification._wasViewed = 1.toNSNumber
+        notification._wasViewed = 1.toNSNumber
         dynamoDB.save(
-            awsNotification
+            notification
         ) { (error) in
             if let error = error {
-                awsNotification._wasViewed = 0.toNSNumber
+                notification._wasViewed = 0.toNSNumber
                 completion?(CustomError(error: error, message: "Unable to update notification"))
                 return
             }
@@ -77,11 +77,11 @@ class NotificationService {
         Deletes the Notification record from DynamoDB.
      */
     func deleteNotification(
-        awsNotification: AWSNotification,
+        notification: Notification,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
         dynamoDB.remove(
-            awsNotification
+            notification
         ) { (error) in
             if let error = error {
                 completion(CustomError(error: error, message: "Unable to delete notification"))

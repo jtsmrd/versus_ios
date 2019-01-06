@@ -36,21 +36,11 @@ class UnmatchedEntryCell: UITableViewCell {
     }
 
     
-    func configureCell(competitionEntry: API_CompetitionEntry) {
+    func configureCell(competitionEntry: CompetitionEntry) {
         
-        let timeSince = competitionEntry.createDate.toISO8601Date?.toElapsedTimeString_Minimal
-        submittedTimeLabel.text = String(format: "Submitted %@ ago", timeSince ?? "some time")
+        let timeSince = competitionEntry.createDate.toElapsedTimeString_Minimal
+        submittedTimeLabel.text = String(format: "Submitted %@ ago", timeSince)
         
-        let categoryType = CategoryType(rawValue: competitionEntry.categoryTypeId)
-        let competitionType = CompetitionType(rawValue: competitionEntry.competitionTypeId)
-        
-        if let categoryType = categoryType, let category = CategoryCollection.instance.getCategory(categoryType: categoryType), let competitionType = competitionType {
-            
-            let competitionTypeString = competitionType == .image ? "image" : "video"
-            categoryTypeLabel.text = String(format: "%@ %@ entry", category.title, competitionTypeString)
-        }
-        else {
-            categoryTypeLabel.text = nil
-        }
+        categoryTypeLabel.text = String(format: "%@ %@ entry", competitionEntry.category.title, competitionEntry.competitionTypeName)
     }
 }

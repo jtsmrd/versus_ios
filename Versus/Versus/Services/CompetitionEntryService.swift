@@ -32,9 +32,14 @@ class CompetitionEntryService {
     ///   - image: The competition image.
     ///   - completion: Returns nil if successful or a CustomError if failed.
     func submitImageCompetitionEntry(
-        categoryType: CategoryType,
-        caption: String?,
         image: UIImage,
+        caption: String?,
+        categoryType: CategoryType,
+        displayName: String,
+        isFeatured: Bool,
+        rank: Rank,
+        userId: String,
+        username: String,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
         
@@ -65,10 +70,15 @@ class CompetitionEntryService {
             }
             
             self.createCompetitionEntry(
-                categoryType: categoryType,
-                competitionType: .image,
                 caption: caption,
+                categoryTypeId: categoryType.rawValue,
+                competitionTypeId: CompetitionType.image.rawValue,
+                displayName: displayName,
+                isFeatured: isFeatured,
                 mediaId: mediaId,
+                rankId: rank.id,
+                userId: userId,
+                username: username,
                 completion: completion
             )
         }
@@ -84,10 +94,15 @@ class CompetitionEntryService {
     ///   - video: The competition video.
     ///   - completion: Returns nil if successful or a CustomError if failed.
     func submitVideoCompetitionEntry(
-        categoryType: CategoryType,
-        caption: String?,
         image: UIImage,
         video: AVURLAsset,
+        caption: String?,
+        categoryType: CategoryType,
+        displayName: String,
+        isFeatured: Bool,
+        rank: Rank,
+        userId: String,
+        username: String,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
         
@@ -119,10 +134,15 @@ class CompetitionEntryService {
             }
             
             self.createCompetitionEntry(
-                categoryType: categoryType,
-                competitionType: .video,
                 caption: caption,
+                categoryTypeId: categoryType.rawValue,
+                competitionTypeId: CompetitionType.video.rawValue,
+                displayName: displayName,
+                isFeatured: isFeatured,
                 mediaId: mediaId,
+                rankId: rank.id,
+                userId: userId,
+                username: username,
                 completion: completion
             )
         }
@@ -134,15 +154,15 @@ class CompetitionEntryService {
     ///
     /// - Parameters:
     ///   - userId: The userId for the unmatched competition entries.
-    ///   - completion: A collection of API_CompetitionEntry objects and a
+    ///   - completion: A collection of CompetitionEntry objects and a
     ///     CustomError if request fails.
     func getUnmatchedCompetitionEntries(
         userId: String,
-        completion: @escaping ([API_CompetitionEntry], CustomError?) -> Void
+        completion: @escaping ([CompetitionEntry], CustomError?) -> Void
     ) {
         
         var responseError: CustomError?
-        var unmatchedCompetitionEntries = [API_CompetitionEntry]()
+        var unmatchedCompetitionEntries = [CompetitionEntry]()
         
         let endpoint = Endpoints.getUnmatchedCompetitionEntries(userId: userId)
         
@@ -169,7 +189,7 @@ class CompetitionEntryService {
                 let decoder = JSONDecoder()
                 
                 do {
-                    let results = try decoder.decode([API_CompetitionEntry].self, from: data)
+                    let results = try decoder.decode([CompetitionEntry].self, from: data)
                     unmatchedCompetitionEntries = results
                 }
                 catch let decodeError {
@@ -193,10 +213,15 @@ class CompetitionEntryService {
     ///   - mediaId: The identifier for the competition media.
     ///   - completion: Returns nil if successful or a CustomError if failed.
     private func createCompetitionEntry(
-        categoryType: CategoryType,
-        competitionType: CompetitionType,
         caption: String?,
+        categoryTypeId: Int,
+        competitionTypeId: Int,
+        displayName: String,
+        isFeatured: Bool,
         mediaId: String,
+        rankId: Int,
+        userId: String,
+        username: String,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
        
@@ -208,11 +233,16 @@ class CompetitionEntryService {
             return
         }
         
-        let competitionEntry = API_CompetitionEntry(
+        let competitionEntry = CompetitionEntry(
             caption: caption,
-            categoryTypeId: categoryType.rawValue,
-            competitionTypeId: competitionType.rawValue,
-            mediaId: mediaId
+            categoryTypeId: categoryTypeId,
+            competitionTypeId: competitionTypeId,
+            displayName: displayName,
+            isFeatured: isFeatured,
+            mediaId: mediaId,
+            rankId: rankId,
+            userId: userId,
+            username: username
         )
         
         let encoder = JSONEncoder()

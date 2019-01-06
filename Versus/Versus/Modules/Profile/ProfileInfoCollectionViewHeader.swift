@@ -36,7 +36,7 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     @IBOutlet weak var unmatchedCompetitionEntriesViewHeight: NSLayoutConstraint!
     
     private var user: User!
-    private var unmatchedCompetitionEntries: [API_CompetitionEntry]!
+    private var unmatchedCompetitionEntries: [CompetitionEntry]!
     private var originalUnmatchedCompetitionEntriesViewHeight: CGFloat!
     private var profileViewMode: ProfileViewMode = .viewOnly
     private var followStatus: FollowStatus = .notFollowing
@@ -46,7 +46,7 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        unmatchedCompetitionEntries = [API_CompetitionEntry]()
+        unmatchedCompetitionEntries = [CompetitionEntry]()
         
         originalUnmatchedCompetitionEntriesViewHeight = unmatchedCompetitionEntriesViewHeight.constant
         
@@ -110,7 +110,7 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
     
     
-    func configureView(user: User?, profileViewMode: ProfileViewMode, unmatchedCompetitionEntries: [API_CompetitionEntry], delegate: ProfileInfoCollectionViewHeaderDelegate) {
+    func configureView(user: User?, profileViewMode: ProfileViewMode, unmatchedCompetitionEntries: [CompetitionEntry], delegate: ProfileInfoCollectionViewHeaderDelegate) {
         
         guard let user = user else { return }
         

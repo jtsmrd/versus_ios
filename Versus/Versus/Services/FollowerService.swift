@@ -30,7 +30,7 @@ class FollowerService {
         
         var followers = [Follower]()
         dynamoDB.query(
-            AWSFollower.self,
+            Follower.self,
             expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
@@ -38,9 +38,9 @@ class FollowerService {
                 return
             }
             if let result = paginatedOutput,
-                let awsFollowers = result.items as? [AWSFollower] {
-                for awsFollower in awsFollowers {
-                    followers.append(Follower(awsFollower: awsFollower))
+                let followerResults = result.items as? [Follower] {
+                for item in followerResults {
+                    followers.append(item)
                 }
             }
             completion(followers, nil)

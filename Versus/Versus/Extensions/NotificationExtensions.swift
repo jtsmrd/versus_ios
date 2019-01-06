@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Notification.Name {
+extension Foundation.Notification.Name {
     
-    static let OnUserVoteUpdated = Notification.Name("on_user_vote_updated")
+    static let OnUserVoteUpdated = Foundation.Notification.Name("on_user_vote_updated")
 }

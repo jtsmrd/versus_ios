@@ -11,12 +11,12 @@ import UIKit
 class RankCollection {
     
     static let instance = RankCollection()
-    var ranks = [Rank]()
-    var rank1: Rank!
-    var rank2: Rank!
-    var rank3: Rank!
-    var rank4: Rank!
-    var rank5: Rank!
+    private(set) var ranks = [Rank]()
+    private var rank1: Rank!
+    private var rank2: Rank!
+    private var rank3: Rank!
+    private var rank4: Rank!
+    private var rank5: Rank!
     
     private init() {
         configureRanks()

@@ -50,7 +50,16 @@ extension String {
     }
     
     // Get date from ISO8601 string
-    var toISO8601Date: Date? {
-        return Formatter.iso8601.date(from: self)   // "Mar 22, 2017, 10:22 AM"
+    // Example: "Mar 22, 2017, 10:22 AM"
+    var toISO8601Date: Date {
+        
+        let defaultDate = Date(timeIntervalSince1970: 0)
+        
+        // Replace '+' with '.' - occurs with php iso8601 date string
+        let formattedDateString = self.replacingOccurrences(of: "+", with: ".")
+        
+        let convertedDate = Formatter.iso8601.date(from: formattedDateString)
+        
+        return convertedDate ?? defaultDate
     }
 }

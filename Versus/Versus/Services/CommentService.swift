@@ -24,20 +24,20 @@ class CommentService {
     func postComment(
         competitionEntryId: String,
         commentText: String,
+        userId: String,
+        username: String,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
-        let awsComment: AWSComment = AWSComment()
-        awsComment._competitionEntryId = competitionEntryId
-        awsComment._createDate = Date().toISO8601String
-        awsComment._commentId = UUID().uuidString
-        awsComment._likeCount = 0.toNSNumber
-        awsComment._message = commentText
-        awsComment._userId = CurrentUser.userId
-        awsComment._username = CurrentUser.username
         
-        dynamoDB.save(
-            awsComment
-        ) { (error) in
+        let comment = Comment(
+            competitionEntryId: competitionEntryId,
+            message: commentText,
+            userId: userId,
+            username: username
+        )
+        
+        dynamoDB.save(comment) { (error) in
+            
             if let error = error {
                 completion(CustomError(error: error, message: "Unable to post comment"))
                 return
@@ -65,17 +65,18 @@ class CommentService {
         queryExpression.scanIndexForward = false
         
         var comments = [Comment]()
+        
         dynamoDB.query(
-            AWSComment.self,
+            Comment.self,
             expression: queryExpression
         ) { (paginatedOutput, error) in
             if let error = error {
                 completion(comments, CustomError(error: error, message: "Unable to load comments"))
                 return
             }
-            if let awsComments = paginatedOutput?.items as? [AWSComment] {
-                for awsComment in awsComments {
-                    comments.append(Comment(awsComment: awsComment))
+            if let commentsResult = paginatedOutput?.items as? [Comment] {
+                for item in commentsResult {
+                    comments.append(item)
                 }
             }
             completion(comments, nil)

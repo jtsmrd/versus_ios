@@ -325,11 +325,18 @@ class CurrentUser {
         user: User,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
+        
         follow(
-            userId: user.userId,
+            displayName: user.displayName,
+            followedUserUserId: user.userId,
+            followerDisplayName: CurrentUser.displayName,
+            followerUsername: CurrentUser.username,
+            searchDisplayName: user.displayName.lowercased(),
+            searchUsername: user.username.lowercased(),
             username: user.username,
-            displayName: user.displayName
+            userId: CurrentUser.userId
         ) { (followedUser, customError) in
+            
             if let followedUser = followedUser {
                 self.followedUsers.append(followedUser)
             }
@@ -345,15 +352,21 @@ class CurrentUser {
         follower: Follower,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
+        
         follow(
-            userId: follower.followerUserId,
+            displayName: follower.displayName,
+            followedUserUserId: follower.followerUserId,
+            followerDisplayName: CurrentUser.displayName,
+            followerUsername: CurrentUser.username,
+            searchDisplayName: follower.displayName.lowercased(),
+            searchUsername: follower.username.lowercased(),
             username: follower.username,
-            displayName: follower.displayName
+            userId: CurrentUser.userId
         ) { (followedUser, customError) in
+            
             if let followedUser = followedUser {
                 self.followedUsers.append(followedUser)
             }
-            completion(customError)
         }
     }
     
@@ -362,15 +375,25 @@ class CurrentUser {
      
      */
     private static func follow(
-        userId: String,
-        username: String,
         displayName: String,
+        followedUserUserId: String,
+        followerDisplayName: String,
+        followerUsername: String,
+        searchDisplayName: String,
+        searchUsername: String,
+        username: String,
+        userId: String,
         completion: @escaping (_ followedUser: FollowedUser?, _ customError: CustomError?) -> Void
     ) {
         followedUserService.follow(
-            userId: userId,
-            username: username,
             displayName: displayName,
+            followedUserUserId: followedUserUserId,
+            followerDisplayName: followerDisplayName,
+            followerUsername: followerUsername,
+            searchDisplayName: searchDisplayName,
+            searchUsername: searchUsername,
+            username: username,
+            userId: userId,
             completion: completion
         )
     }

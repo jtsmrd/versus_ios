@@ -37,16 +37,16 @@ class LeaderboardVC: UIViewController {
     
     private func getLeaders() {
         
-        leaderboard.getLeaders { (success, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                }
-                else if success {
-                    self.leadersTableView.reloadData()
-                }
-            }
-        }
+//        leaderboard.getLeaders { (success, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.displayError(error: customError)
+//                }
+//                else if success {
+//                    self.leadersTableView.reloadData()
+//                }
+//            }
+//        }
     }
     
     
@@ -78,7 +78,7 @@ extension LeaderboardVC: UITableViewDataSource {
         if section == 0 {
             return 1
         }
-        return leaderboard.leaders.count
+        return 0 //leaderboard.leaders.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -91,9 +91,9 @@ extension LeaderboardVC: UITableViewDataSource {
         }
         else {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "LeaderCell", for: indexPath) as? LeaderCell {
-                let leader = leaderboard.leaders[indexPath.row]
-                let leaderRank = indexPath.row + 1
-                cell.configureCell(leader: leader, leaderboardType: leaderboard.leaderboardType, leaderRank: leaderRank)
+//                let leader = leaderboard.leaders[indexPath.row]
+//                let leaderRank = indexPath.row + 1
+//                cell.configureCell(leader: leader, leaderboardType: leaderboard.leaderboardType, leaderRank: leaderRank)
                 return cell
             }
             return UITableViewCell()
@@ -112,6 +112,6 @@ extension LeaderboardVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        showLeaderProfile(leader: leaderboard.leaders[indexPath.row])
+//        showLeaderProfile(leader: leaderboard.leaders[indexPath.row])
     }
 }

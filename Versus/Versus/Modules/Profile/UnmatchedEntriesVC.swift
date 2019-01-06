@@ -13,7 +13,7 @@ class UnmatchedEntriesVC: UIViewController {
     
     @IBOutlet weak var unmatchedEntriesTableView: UITableView!
     
-    private var unmatchedEntries: [API_CompetitionEntry]!
+    private var unmatchedEntries: [CompetitionEntry]!
     
     
     override func viewDidLoad() {
@@ -23,7 +23,7 @@ class UnmatchedEntriesVC: UIViewController {
     }
     
     
-    func initData(unmatchedEntries: [API_CompetitionEntry]) {
+    func initData(unmatchedEntries: [CompetitionEntry]) {
         self.unmatchedEntries = unmatchedEntries
     }
     

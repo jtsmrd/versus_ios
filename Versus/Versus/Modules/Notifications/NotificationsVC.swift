@@ -16,7 +16,7 @@ class NotificationsVC: UIViewController {
     @IBOutlet weak var notificationsTableView: UITableView!
     @IBOutlet weak var noNotificationsView: UIView!
     
-    var notifications = [VersusNotification]()
+    var notifications = [Notification]()
     var notificationsRefreshControl: UIRefreshControl!
     
     
@@ -79,7 +79,7 @@ class NotificationsVC: UIViewController {
     /**
      
      */
-    private func showFollowerProfile(_ notification: VersusNotification) {
+    private func showFollowerProfile(_ notification: Notification) {
         
         guard let notificationInfo = notification.notificationInfo as? FollowerNotificationInfo else {
             self.displayMessage(message: "Could not load follower data.")
@@ -142,7 +142,7 @@ extension NotificationsVC: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let notification = notifications[indexPath.row]
-        notification.markViewed(completion: nil)
+//        notification.markViewed(completion: nil)
         tableView.reloadRows(at: [indexPath], with: .automatic)
         
         switch notification.notificationType {
@@ -160,6 +160,8 @@ extension NotificationsVC: UITableViewDelegate {
             return
         case .rankUp:
             return
+        default:
+            return
         }
     }
     
@@ -169,18 +171,18 @@ extension NotificationsVC: UITableViewDelegate {
      */
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let notificationToDelete = notifications[indexPath.row]
-            notificationToDelete.delete { (customError) in
-                DispatchQueue.main.async {
-                    if let customError = customError {
-                        self.displayError(error: customError)
-                        return
-                    }
-                    self.notifications.remove(at: indexPath.row)
-                    self.notificationManager.removeNotification(notification: notificationToDelete)
-                    self.notificationsTableView.deleteRows(at: [indexPath], with: .fade)
-                }
-            }
+//            let notificationToDelete = notifications[indexPath.row]
+//            notificationToDelete.delete { (customError) in
+//                DispatchQueue.main.async {
+//                    if let customError = customError {
+//                        self.displayError(error: customError)
+//                        return
+//                    }
+//                    self.notifications.remove(at: indexPath.row)
+//                    self.notificationManager.removeNotification(notification: notificationToDelete)
+//                    self.notificationsTableView.deleteRows(at: [indexPath], with: .fade)
+//                }
+//            }
         }
     }
 }

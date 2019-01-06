@@ -28,34 +28,34 @@ class VoteService {
         isVoteSwitch: Bool,
         completion: @escaping (_ vote: Vote?, _ customError: CustomError?) -> Void
     ) {
-        let awsVote: AWSVote = AWSVote()
-        awsVote._competitionIdUserId = String(format: "%@%@", competition.competitionId, CurrentUser.userId)
-        awsVote._competitionEntryId = competitionEntryId
-        awsVote._competitionId = competition.competitionId
-        awsVote._competitor = competitorType.rawValue
-        
-        dynamoDB.save(
-            awsVote
-        ) { (error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, message: "Unable to vote on competition."))
-                return
-            }
-            
-            switch competitorType {
-            case .first:
-                competition.firstCompetitor.voteCount += 1
-                if isVoteSwitch {
-                    competition.secondCompetitor.voteCount -= 1
-                }
-            case .second:
-                competition.secondCompetitor.voteCount += 1
-                if isVoteSwitch {
-                    competition.firstCompetitor.voteCount -= 1
-                }
-            }
-            completion(Vote(awsVote: awsVote), nil)
-        }
+//        let awsVote: AWSVote = AWSVote()
+//        awsVote._competitionIdUserId = String(format: "%@%@", competition.competitionId, CurrentUser.userId)
+//        awsVote._competitionEntryId = competitionEntryId
+//        awsVote._competitionId = competition.competitionId
+//        awsVote._competitor = competitorType.rawValue
+//
+//        dynamoDB.save(
+//            awsVote
+//        ) { (error) in
+//            if let error = error {
+//                completion(nil, CustomError(error: error, message: "Unable to vote on competition."))
+//                return
+//            }
+//
+//            switch competitorType {
+//            case .first:
+//                competition.firstCompetitor.voteCount += 1
+//                if isVoteSwitch {
+//                    competition.secondCompetitor.voteCount -= 1
+//                }
+//            case .second:
+//                competition.secondCompetitor.voteCount += 1
+//                if isVoteSwitch {
+//                    competition.firstCompetitor.voteCount -= 1
+//                }
+//            }
+//            completion(Vote(awsVote: awsVote), nil)
+//        }
     }
     
     
@@ -63,33 +63,33 @@ class VoteService {
      
      */
     func updateVote(
-        awsVote: AWSVote,
+        vote: Vote,
         competition: Competition,
         completion: @escaping (_ vote: Vote?, _ customError: CustomError?) -> Void
     ) {
-        dynamoDB.save(
-            awsVote
-        ) { (error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, message: "Unable to change vote"))
-                return
-            }
-            
-            if let competitor = awsVote._competitor,
-                let competitorType = CompetitorType(rawValue: competitor) {
-                
-                switch competitorType {
-                case .first:
-                    competition.firstCompetitor.voteCount += 1
-                    competition.secondCompetitor.voteCount -= 1
-                case .second:
-                    competition.secondCompetitor.voteCount += 1
-                    competition.firstCompetitor.voteCount -= 1
-                }
-            }
-            
-            completion(Vote(awsVote: awsVote), nil)
-        }
+//        dynamoDB.save(
+//            vote
+//        ) { (error) in
+//            if let error = error {
+//                completion(nil, CustomError(error: error, message: "Unable to change vote"))
+//                return
+//            }
+//
+//            if let competitor = awsVote._competitor,
+//                let competitorType = CompetitorType(rawValue: competitor) {
+//
+//                switch competitorType {
+//                case .first:
+//                    competition.firstCompetitor.voteCount += 1
+//                    competition.secondCompetitor.voteCount -= 1
+//                case .second:
+//                    competition.secondCompetitor.voteCount += 1
+//                    competition.firstCompetitor.voteCount -= 1
+//                }
+//            }
+//
+//            completion(Vote(awsVote: awsVote), nil)
+//        }
     }
     
     
@@ -100,22 +100,22 @@ class VoteService {
         competitionId: String,
         completion: @escaping (_ vote: Vote?) -> Void
     ) {
-        let hashKey = String(format: "%@%@", competitionId, CurrentUser.userId)
-        dynamoDB.load(
-            AWSVote.self,
-            hashKey: hashKey,
-            rangeKey: nil
-        ) { (awsVote, error) in
-            if let error = error {
-                debugPrint("Error getting vote for competition: \(error.localizedDescription)")
-                completion(nil)
-                return
-            }
-            guard let awsVote = awsVote as? AWSVote else {
-                completion(nil)
-                return
-            }
-            completion(Vote(awsVote: awsVote))
-        }
+//        let hashKey = String(format: "%@%@", competitionId, CurrentUser.userId)
+//        dynamoDB.load(
+//            AWSVote.self,
+//            hashKey: hashKey,
+//            rangeKey: nil
+//        ) { (awsVote, error) in
+//            if let error = error {
+//                debugPrint("Error getting vote for competition: \(error.localizedDescription)")
+//                completion(nil)
+//                return
+//            }
+//            guard let awsVote = awsVote as? AWSVote else {
+//                completion(nil)
+//                return
+//            }
+//            completion(Vote(awsVote: awsVote))
+//        }
     }
 }

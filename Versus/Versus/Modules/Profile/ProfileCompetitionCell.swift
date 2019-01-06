@@ -34,19 +34,16 @@ class ProfileCompetitionCell: UICollectionViewCell {
             currentUserCompetitorRecord = competition.secondCompetitor
         }
         
+        
+        // TODO: Remove and use operation queue
         DispatchQueue.global(qos: .userInitiated).async {
             
-            currentUserCompetitorRecord.getCompetitionImageSmall(completion: { [weak self] (image, customError) in
+            S3BucketService.instance.downloadImage(mediaId: currentUserCompetitorRecord.mediaId, imageType: .small, completion: { [weak self] (image, customError) in
                 
-                    DispatchQueue.main.async {
-                        
-                        if let customError = customError {
-                            self?.parentViewController?.displayError(error: customError)
-                        }
-                        self?.competitionImageView.image = image
-                    }
+                DispatchQueue.main.async {
+                    self?.competitionImageView.image = image
                 }
-            )
+            })
         }
     }
 }

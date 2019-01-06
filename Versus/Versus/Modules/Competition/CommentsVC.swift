@@ -27,6 +27,8 @@ class CommentsVC: UIViewController {
     
     @IBOutlet weak var enterCommentsViewBottom: NSLayoutConstraint!
     
+    let commentService = CommentService.instance
+    
     var delegate: CompetitionCommentsVCDelegate?
     var competitionEntryId: String!
     var comments = [Comment]()
@@ -72,7 +74,15 @@ class CommentsVC: UIViewController {
     
     
     @IBAction func postCommentButtonAction() {
-        postComment()
+        
+        let commentText: String = commentTextView.text
+        
+        postComment(
+            competitionEntryId: competitionEntryId,
+            commentText: commentText,
+            userId: CurrentUser.userId,
+            username: CurrentUser.username
+        )
     }
     
     
@@ -98,17 +108,27 @@ class CommentsVC: UIViewController {
     }
     
     
-    private func postComment() {
+    private func postComment(
+        competitionEntryId: String,
+        commentText: String,
+        userId: String,
+        username: String
+    ) {
         
-        CommentService.instance.postComment(
+        commentService.postComment(
             competitionEntryId: competitionEntryId,
-            commentText: commentTextView.text
+            commentText: commentText,
+            userId: userId,
+            username: username
         ) { (customError) in
+            
             DispatchQueue.main.async {
+                
                 if let customError = customError {
                     self.displayError(error: customError)
                     return
                 }
+                
                 self.view.endEditing(true)
                 self.commentTextView.text.removeAll()
                 self.commentPlaceholderLabel.isHidden = false

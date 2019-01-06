@@ -34,7 +34,7 @@ class ProfileVC: UIViewController {
     private var userId: String!
     private var user: User?
     private var competitions: [Competition]!
-    private var unmatchedCompetitionEntries: [API_CompetitionEntry]!
+    private var unmatchedCompetitionEntries: [CompetitionEntry]!
     private var profileViewMode: ProfileViewMode = .viewOnly
     
     var delegate: ProfileVCDelegate?
@@ -45,7 +45,7 @@ class ProfileVC: UIViewController {
         super.viewDidLoad()
         
         competitions = [Competition]()
-        unmatchedCompetitionEntries = [API_CompetitionEntry]()
+        unmatchedCompetitionEntries = [CompetitionEntry]()
         
         loadUser(userId: userId)
         
@@ -244,7 +244,7 @@ class ProfileVC: UIViewController {
         else if let followedUserVC = segue.destination as? FollowedUserVC {
             followedUserVC.initData(user: user)
         }
-        else if let unmatchedEntriesVC = segue.destination as? UnmatchedEntriesVC, let unmatchedEntries = sender as? [API_CompetitionEntry] {
+        else if let unmatchedEntriesVC = segue.destination as? UnmatchedEntriesVC, let unmatchedEntries = sender as? [CompetitionEntry] {
             unmatchedEntriesVC.initData(unmatchedEntries: unmatchedEntries)
         }
     }

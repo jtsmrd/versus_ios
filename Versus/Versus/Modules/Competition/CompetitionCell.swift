@@ -69,30 +69,27 @@ class CompetitionCell: UITableViewCell {
         secondEntryUsernameLabel.text = String(format: "@%@", competition.secondCompetitor.username)
         secondEntryVotesLabel.text = String(format: "%d", competition.secondCompetitor.voteCount)
         
+        
+        // TODO: Remove and use operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
-            competition.firstCompetitor.getCompetitionImage(
-                completion: { [weak self] (image, customError) in
-                    DispatchQueue.main.async {
-                        if let customError = customError {
-                            self?.parentViewController?.displayError(error: customError)
-                        }
-                        self?.firstEntryCompetitionImageView.image = image
-                    }
+            
+            S3BucketService.instance.downloadImage(mediaId: competition.firstCompetitor.mediaId, imageType: .regular, completion: { [weak self] (image, customError) in
+                
+                DispatchQueue.main.async {
+                    self?.firstEntryCompetitionImageView.image = image
                 }
-            )
+            })
         }
         
+        // TODO: Remove and use operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
-            competition.secondCompetitor.getCompetitionImage(
-                completion: { [weak self] (image, customError) in
-                    DispatchQueue.main.async {
-                        if let customError = customError {
-                            self?.parentViewController?.displayError(error: customError)
-                        }
-                        self?.secondEntryCompetitionImageView.image = image
-                    }
+            
+            S3BucketService.instance.downloadImage(mediaId: competition.secondCompetitor.mediaId, imageType: .regular, completion: { [weak self] (image, customError) in
+                
+                DispatchQueue.main.async {
+                    self?.secondEntryCompetitionImageView.image = image
                 }
-            )
+            })
         }
     }
 }

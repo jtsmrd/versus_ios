@@ -86,11 +86,12 @@ class FollowedUserCell: UITableViewCell {
         followButton.setButtonState(followStatus: .following)
         usernameLabel.text = followedUser.username
         displayNameLabel.text = followedUser.displayName
-        followedUser.getProfileImage { (image, error) in
+        
+        // TODO: Remove from cell class and move to operation queue.
+        S3BucketService.instance.downloadImage(mediaId: followedUser.followedUserUserId, imageType: .small) { (image, customError) in
+            
             DispatchQueue.main.async {
-                if let image = image {
-                    self.profileImageView.image = image
-                }
+                self.profileImageView.image = image
             }
         }
     }

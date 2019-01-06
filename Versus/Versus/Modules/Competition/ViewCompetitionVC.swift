@@ -146,6 +146,8 @@ class ViewCompetitionVC: UIViewController {
             view.insertSubview(secondCompetitorView, aboveSubview: firstCompetitorView)
             secondCompetitorVC.viewIsSelected = true
             firstCompetitorVC.viewIsSelected = false
+        default:
+            break
         }
     }
     
@@ -196,26 +198,29 @@ class ViewCompetitionVC: UIViewController {
         firstCompetitorUsernameLabel.text = String(format: "@%@", competition.firstCompetitor.username)
         secondCompetitorRankImageView.image = competition.secondCompetitor.rank.image
         secondCompetitorUsernameLabel.text = String(format: "@%@", competition.secondCompetitor.username)
+        
+        // TODO: Remove and load using operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
-            self.competition.firstCompetitor.getProfileImageSmall { [weak self] (image, customError) in
+            
+            S3BucketService.instance.downloadImage(mediaId: self.competition.firstCompetitor.userId, imageType: .small) { [weak self] (image, customError) in
+                
                 DispatchQueue.main.async {
-                    if let customError = customError {
-                        debugPrint(customError.message)
-                    }
                     self?.firstCompetitorSelectorButton._imageView.image = image
                 }
             }
         }
+        
+        // TODO: Remove and load using operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
-            self.competition.secondCompetitor.getProfileImageSmall { [weak self] (image, customError) in
+            
+            S3BucketService.instance.downloadImage(mediaId: self.competition.secondCompetitor.userId, imageType: .small) { [weak self] (image, customError) in
+                
                 DispatchQueue.main.async {
-                    if let customError = customError {
-                        debugPrint(customError.message)
-                    }
                     self?.secondCompetitorSelectorButton._imageView.image = image
                 }
             }
         }
+        
         // Used to dismiss comments VC and options VC
         viewSingleTapGestureRecognizer = UITapGestureRecognizer(
             target: self,

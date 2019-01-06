@@ -200,8 +200,13 @@ class CompetitionDetailsVC: UIViewController {
         
             submitImageCompetition(
                 image: image,
+                caption: caption,
                 categoryType: category.categoryType,
-                caption: caption
+                displayName: CurrentUser.displayName,
+                isFeatured: CurrentUser.isFeatured,
+                rank: CurrentUser.rank,
+                userId: CurrentUser.userId,
+                username: CurrentUser.username
             )
             return
             
@@ -210,10 +215,15 @@ class CompetitionDetailsVC: UIViewController {
             guard let image = Utilities.generateImage(videoAsset: videoAsset, time: previewImageTime) else { break }
             
             submitVideoCompetition(
-                videoAsset: videoAsset,
                 image: image,
+                videoAsset: videoAsset,
+                caption: caption,
                 categoryType: category.categoryType,
-                caption: caption
+                displayName: CurrentUser.displayName,
+                isFeatured: CurrentUser.isFeatured,
+                rank: CurrentUser.rank,
+                userId: CurrentUser.userId,
+                username: CurrentUser.username
             )
             return
             
@@ -254,14 +264,24 @@ class CompetitionDetailsVC: UIViewController {
     ///   - caption: The caption for the competition.
     private func submitImageCompetition(
         image: UIImage,
+        caption: String?,
         categoryType: CategoryType,
-        caption: String?
+        displayName: String,
+        isFeatured: Bool,
+        rank: Rank,
+        userId: String,
+        username: String
     ) {
         
         competitionEntryService.submitImageCompetitionEntry(
-            categoryType: categoryType,
+            image: image,
             caption: caption,
-            image: image
+            categoryType: categoryType,
+            displayName: displayName,
+            isFeatured: isFeatured,
+            rank: rank,
+            userId: userId,
+            username: username
         ) { (customError) in
             
             DispatchQueue.main.async {
@@ -287,17 +307,27 @@ class CompetitionDetailsVC: UIViewController {
     ///   - categoryType: The category type of the competition.
     ///   - caption: The caption for the competition.
     private func submitVideoCompetition(
-        videoAsset: AVURLAsset,
         image: UIImage,
+        videoAsset: AVURLAsset,
+        caption: String?,
         categoryType: CategoryType,
-        caption: String?
+        displayName: String,
+        isFeatured: Bool,
+        rank: Rank,
+        userId: String,
+        username: String
     ) {
         
         competitionEntryService.submitVideoCompetitionEntry(
-            categoryType: categoryType,
-            caption: caption,
             image: image,
-            video: videoAsset
+            video: videoAsset,
+            caption: caption,
+            categoryType: categoryType,
+            displayName: displayName,
+            isFeatured: isFeatured,
+            rank: rank,
+            userId: userId,
+            username: username
         ) { (customError) in
             
             DispatchQueue.main.async {

@@ -45,7 +45,7 @@ class NotificationCell: UITableViewCell {
     /**
  
      */
-    func configureCell(notification: VersusNotification) {
+    func configureCell(notification: Notification) {
         
         // The default notification image, will be overwritten in some cases
         notificationImageView.image = UIImage(named: "versus_icon_white")
@@ -103,16 +103,15 @@ class NotificationCell: UITableViewCell {
                         else {
                             currentUserCompetitorRecord = competition.secondCompetitor
                         }
-                        currentUserCompetitorRecord.getCompetitionImageSmall(
-                            completion: { [weak self] (image, customError) in
-                                DispatchQueue.main.async {
-                                    if let customError = customError {
-                                        self?.parentViewController?.displayError(error: customError)
-                                    }
-                                    self?.competitionImageView.image = image
-                                }
+                        
+                        
+                        // TODO: Remove and use operation queue.
+                        self?.s3BucketService.downloadImage(mediaId: currentUserCompetitorRecord.mediaId, imageType: .small, completion: { [weak self] (image, customError) in
+                            
+                            DispatchQueue.main.async {
+                                self?.competitionImageView.image = image
                             }
-                        )
+                        })
                     }
                 }
             }
@@ -156,6 +155,9 @@ class NotificationCell: UITableViewCell {
             
             notificationTextLabel.text = notificationInfo.notificationText
             rankImageView.image = RankCollection.instance.rankIconFor(rankId: notificationInfo.newRankId)
+            
+        default:
+            break
         }
     }
     
