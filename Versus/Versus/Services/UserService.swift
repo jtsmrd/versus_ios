@@ -176,20 +176,24 @@ class UserService {
         userId: String,
         completion: @escaping (_ awsUser: AWSUser?, _ customError: CustomError?) -> Void
     ) {
-        dynamoDB.load(
-            AWSUser.self,
-            hashKey: userId,
-            rangeKey: nil
-        ) { (awsUser, error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, message: "Unable to load user."))
-                return
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            
+            self.dynamoDB.load(
+                AWSUser.self,
+                hashKey: userId,
+                rangeKey: nil
+            ) { (awsUser, error) in
+                if let error = error {
+                    completion(nil, CustomError(error: error, message: "Unable to load user."))
+                    return
+                }
+                guard let awsUser = awsUser as? AWSUser else {
+                    completion(nil, CustomError(error: error, message: "Unable to load user."))
+                    return
+                }
+                completion(awsUser, nil)
             }
-            guard let awsUser = awsUser as? AWSUser else {
-                completion(nil, CustomError(error: error, message: "Unable to load user."))
-                return
-            }
-            completion(awsUser, nil)
         }
     }
     

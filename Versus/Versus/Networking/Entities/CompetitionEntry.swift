@@ -44,6 +44,22 @@ class CompetitionEntry: Codable {
         _userId = userId
         _username = username
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case _caption = "caption"
+        case _categoryTypeId = "categoryTypeId"
+        case _competitionEntryId = "competitionEntryId"
+        case _competitionTypeId = "competitionTypeId"
+        case _createDateString = "createDateString"
+        case _displayName = "displayName"
+        case _isFeaturedInt = "isFeaturedInt"
+        case _isMatchedInt = "isMatchedInt"
+        case _matchDateString = "matchDateString"
+        case _mediaId = "mediaId"
+        case _rankId = "rankId"
+        case _userId = "userId"
+        case _username = "username"
+    }
 }
 
 extension CompetitionEntry {

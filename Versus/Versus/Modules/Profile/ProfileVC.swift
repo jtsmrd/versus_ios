@@ -117,18 +117,32 @@ class ProfileVC: UIViewController {
     
     private func loadUnmatchedCompetitionEntries(userId: String) {
         
-        competitionEntryService.getUnmatchedCompetitionEntries(
-            userId: CurrentUser.userId
-        ) { [weak self] (unmatchedCompetitionEntries, customError) in
+//        competitionEntryService.getUnmatchedCompetitionEntries(
+//            userId: CurrentUser.userId
+//        ) { [weak self] (unmatchedCompetitionEntries, customError) in
+//
+//            DispatchQueue.main.async {
+//
+//                if let customError = customError {
+//                    self?.displayError(error: customError)
+//                    return
+//                }
+//
+//                self?.unmatchedCompetitionEntries = unmatchedCompetitionEntries
+//                self?.competitionCollectionView.reloadData()
+//            }
+//        }
+        
+        NetworkManager().getUnmatchedCompetitionEntries(userId: CurrentUser.userId) { [weak self] (unmatchedEntries, errorString) in
             
             DispatchQueue.main.async {
                 
-                if let customError = customError {
-                    self?.displayError(error: customError)
+                if let errorString = errorString {
+                    self?.displayMessage(message: errorString)
                     return
                 }
                 
-                self?.unmatchedCompetitionEntries = unmatchedCompetitionEntries
+                self?.unmatchedCompetitionEntries = unmatchedEntries
                 self?.competitionCollectionView.reloadData()
             }
         }

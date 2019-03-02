@@ -72,6 +72,16 @@
 		6B13B93C20AE180F00769AFD /* EditImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B13B93B20AE180F00769AFD /* EditImage.storyboard */; };
 		6B13B93E20AE1BFA00769AFD /* EditImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B13B93D20AE1BFA00769AFD /* EditImageVC.swift */; };
 		6B13B94020AE1DF600769AFD /* CropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B13B93F20AE1DF600769AFD /* CropView.swift */; };
+		6B147DBE21E2A69300D7E30F /* EndpointType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DBD21E2A69300D7E30F /* EndpointType.swift */; };
+		6B147DC021E2A75100D7E30F /* HTTPTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DBF21E2A75100D7E30F /* HTTPTask.swift */; };
+		6B147DC221E2A82000D7E30F /* ParameterEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DC121E2A82000D7E30F /* ParameterEncoding.swift */; };
+		6B147DC421E2A95700D7E30F /* URLParameterEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DC321E2A95700D7E30F /* URLParameterEncoder.swift */; };
+		6B147DC621E2AB3F00D7E30F /* JSONParameterEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DC521E2AB3F00D7E30F /* JSONParameterEncoder.swift */; };
+		6B147DC921E2AC1700D7E30F /* NetworkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DC821E2AC1700D7E30F /* NetworkRouter.swift */; };
+		6B147DCB21E2AD0C00D7E30F /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DCA21E2AD0C00D7E30F /* HTTPMethod.swift */; };
+		6B147DCD21E2ADE800D7E30F /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DCC21E2ADE800D7E30F /* Router.swift */; };
+		6B147DCF21E2B31600D7E30F /* CompetitionEntryEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DCE21E2B31600D7E30F /* CompetitionEntryEndpoint.swift */; };
+		6B147DD121E2B87200D7E30F /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B147DD021E2B87200D7E30F /* NetworkManager.swift */; };
 		6B160C6B209231F2003F2F9D /* Competition.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B160C6A209231F2003F2F9D /* Competition.storyboard */; };
 		6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1ABF1D2072E819005A0DDB /* Main.storyboard */; };
 		6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B29992083CE230070848C /* StringExtensions.swift */; };
@@ -229,6 +239,16 @@
 		6B13B93B20AE180F00769AFD /* EditImage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = EditImage.storyboard; sourceTree = "<group>"; };
 		6B13B93D20AE1BFA00769AFD /* EditImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImageVC.swift; sourceTree = "<group>"; };
 		6B13B93F20AE1DF600769AFD /* CropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
+		6B147DBD21E2A69300D7E30F /* EndpointType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointType.swift; sourceTree = "<group>"; };
+		6B147DBF21E2A75100D7E30F /* HTTPTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPTask.swift; sourceTree = "<group>"; };
+		6B147DC121E2A82000D7E30F /* ParameterEncoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterEncoding.swift; sourceTree = "<group>"; };
+		6B147DC321E2A95700D7E30F /* URLParameterEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLParameterEncoder.swift; sourceTree = "<group>"; };
+		6B147DC521E2AB3F00D7E30F /* JSONParameterEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONParameterEncoder.swift; sourceTree = "<group>"; };
+		6B147DC821E2AC1700D7E30F /* NetworkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRouter.swift; sourceTree = "<group>"; };
+		6B147DCA21E2AD0C00D7E30F /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
+		6B147DCC21E2ADE800D7E30F /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		6B147DCE21E2B31600D7E30F /* CompetitionEntryEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEntryEndpoint.swift; sourceTree = "<group>"; };
+		6B147DD021E2B87200D7E30F /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		6B160C6A209231F2003F2F9D /* Competition.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Competition.storyboard; sourceTree = "<group>"; };
 		6B1ABF1D2072E819005A0DDB /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		6B1B29992083CE230070848C /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
@@ -423,6 +443,44 @@
 			path = "Edit Image";
 			sourceTree = "<group>";
 		};
+		6B147DB921E2A63200D7E30F /* Endpoint */ = {
+			isa = PBXGroup;
+			children = (
+				6B147DCE21E2B31600D7E30F /* CompetitionEntryEndpoint.swift */,
+			);
+			path = Endpoint;
+			sourceTree = "<group>";
+		};
+		6B147DBA21E2A63B00D7E30F /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				6B147DD021E2B87200D7E30F /* NetworkManager.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		6B147DBB21E2A64200D7E30F /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				6B147DBD21E2A69300D7E30F /* EndpointType.swift */,
+				6B147DBF21E2A75100D7E30F /* HTTPTask.swift */,
+				6B147DC821E2AC1700D7E30F /* NetworkRouter.swift */,
+				6B147DCA21E2AD0C00D7E30F /* HTTPMethod.swift */,
+				6B147DCC21E2ADE800D7E30F /* Router.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		6B147DBC21E2A64900D7E30F /* Encoding */ = {
+			isa = PBXGroup;
+			children = (
+				6B147DC121E2A82000D7E30F /* ParameterEncoding.swift */,
+				6B147DC321E2A95700D7E30F /* URLParameterEncoder.swift */,
+				6B147DC521E2AB3F00D7E30F /* JSONParameterEncoder.swift */,
+			);
+			path = Encoding;
+			sourceTree = "<group>";
+		};
 		6B160C69209231DB003F2F9D /* Competition */ = {
 			isa = PBXGroup;
 			children = (
@@ -597,8 +655,12 @@
 		6BB5834821D970EA0057D4AD /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				6B909B7121D99E0500F16E4A /* Entities */,
+				6B147DBC21E2A64900D7E30F /* Encoding */,
+				6B147DB921E2A63200D7E30F /* Endpoint */,
 				6BB5834A21D971410057D4AD /* Endpoints.swift */,
+				6B909B7121D99E0500F16E4A /* Entities */,
+				6B147DBA21E2A63B00D7E30F /* Manager */,
+				6B147DBB21E2A64200D7E30F /* Service */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -906,6 +968,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B147DC221E2A82000D7E30F /* ParameterEncoding.swift in Sources */,
 				320105AB20E921A20099C056 /* LeaderboardHeaderImageCell.swift in Sources */,
 				32A8F025213B4C37000515FA /* ImageOperations.swift in Sources */,
 				3251CA6420E8577100F9434D /* LeaderCell.swift in Sources */,
@@ -921,6 +984,7 @@
 				6BC01AC32092824700FDAC44 /* ViewCompetitionVC.swift in Sources */,
 				320105AD20E92B9A0099C056 /* LeaderboardCollection.swift in Sources */,
 				6BE1DF5F20A4F16D002A4629 /* ProfileInfoCollectionViewHeader.swift in Sources */,
+				6B147DC621E2AB3F00D7E30F /* JSONParameterEncoder.swift in Sources */,
 				6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */,
 				6B36E1D020703D5D00F92375 /* UserService.swift in Sources */,
 				321E57ED2104F30400F94E2E /* CommentService.swift in Sources */,
@@ -939,8 +1003,10 @@
 				6B13B94020AE1DF600769AFD /* CropView.swift in Sources */,
 				6BBBF3CB21D3E533000A0172 /* SelectCompetitionMediaVC.swift in Sources */,
 				6B079FF1208D3F1E003BBB87 /* DateExtensions.swift in Sources */,
+				6B147DCF21E2B31600D7E30F /* CompetitionEntryEndpoint.swift in Sources */,
 				6B8316E2207D791A0067EE0E /* RankCollection.swift in Sources */,
 				329C4E8520E0332900E4E8E9 /* TutorialVC.swift in Sources */,
+				6B147DD121E2B87200D7E30F /* NetworkManager.swift in Sources */,
 				3218AF8020CD9AA5006361CB /* NotificationManager.swift in Sources */,
 				6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */,
 				6B55E33821E03FF30083137A /* UnmatchedEntryCell.swift in Sources */,
@@ -948,6 +1014,7 @@
 				3218DADE210CABCE00915A90 /* CompetitionCommentCell.swift in Sources */,
 				32E085E221233CBE00DF395D /* FollowedUserService.swift in Sources */,
 				6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */,
+				6B147DC421E2A95700D7E30F /* URLParameterEncoder.swift in Sources */,
 				6B8BF02321E19714001889E9 /* Notification.swift in Sources */,
 				6B079FF7208D4315003BBB87 /* CompetitionEntryService.swift in Sources */,
 				6BB6AD772093980000B2C1A1 /* ProgressIndicatorButton.swift in Sources */,
@@ -968,6 +1035,7 @@
 				320105B920E96F3C0099C056 /* Leader.swift in Sources */,
 				326784272139D89A00068428 /* NotificationExtensions.swift in Sources */,
 				6BAC02EF20A8A6D900792E34 /* BrowseCategoryCell.swift in Sources */,
+				6B147DC921E2AC1700D7E30F /* NetworkRouter.swift in Sources */,
 				6B079FF5208D429D003BBB87 /* CompetitionEntry.swift in Sources */,
 				6B04B74520914B8A007BF021 /* CompetitionCell.swift in Sources */,
 				6BC1E13120895D7D005404E1 /* CategoryCollection.swift in Sources */,
@@ -990,13 +1058,16 @@
 				6B3B771420A79F2100E3FFDE /* OptionIconCollection.swift in Sources */,
 				329C4E8720E0348000E4E8E9 /* TutorialPVC.swift in Sources */,
 				6B525F8D2081143B007A7FC7 /* FollowerCell.swift in Sources */,
+				6B147DCB21E2AD0C00D7E30F /* HTTPMethod.swift in Sources */,
 				6B334FD9208187B3005B010F /* FollowerService.swift in Sources */,
 				6BAC02ED20A8A6BB00792E34 /* LeaderboardCell.swift in Sources */,
 				329E1D9D2124CCE800924A7E /* FollowedUserVC.swift in Sources */,
 				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
+				6B147DCD21E2ADE800D7E30F /* Router.swift in Sources */,
 				6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */,
 				6BD5E36120A65A0B00A9C054 /* CompetitionShareCell.swift in Sources */,
 				6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */,
+				6B147DC021E2A75100D7E30F /* HTTPTask.swift in Sources */,
 				6B55E33A21E044950083137A /* UnmatchedEntriesVC.swift in Sources */,
 				6B2E60C120A354AA005C1987 /* ProfileCompetitionCell.swift in Sources */,
 				6B368D8C21CDB44C0084A150 /* UIDeviceExtensions.swift in Sources */,
@@ -1006,6 +1077,7 @@
 				325CA35A2132004700A6C47B /* CompetitorVC.swift in Sources */,
 				6BA9AA9921D564A2006379E1 /* DataExtensions.swift in Sources */,
 				6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */,
+				6B147DBE21E2A69300D7E30F /* EndpointType.swift in Sources */,
 				6B13B93E20AE1BFA00769AFD /* EditImageVC.swift in Sources */,
 				329C4E8920E0355B00E4E8E9 /* TutorialPageVC.swift in Sources */,
 				320105B120E92E310099C056 /* Leaderboard.swift in Sources */,

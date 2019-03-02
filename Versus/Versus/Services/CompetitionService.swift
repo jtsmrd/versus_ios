@@ -132,6 +132,7 @@ class CompetitionService {
 //            }
 //            completion(competitions, nil)
 //        }
+        completion([Competition](), nil)
     }
     
     
