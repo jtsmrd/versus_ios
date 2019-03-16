@@ -1,5 +1,5 @@
 //
-//  CompetitionEntryService.swift
+//  EntryService.swift
 //  Versus
 //
 //  Created by JT Smrdel on 4/22/18.
@@ -14,9 +14,9 @@ enum CompetitionImageSizeType: CGFloat {
     case small = 300
 }
 
-class CompetitionEntryService {
+class EntryService {
     
-    static let instance = CompetitionEntryService()
+    static let instance = EntryService()
     private let dynamoDB = AWSDynamoDBObjectMapper.default()
     private let s3BucketService = S3BucketService.instance
     
@@ -31,7 +31,7 @@ class CompetitionEntryService {
     ///   - caption: (Optional) The caption for the competition.
     ///   - image: The competition image.
     ///   - completion: Returns nil if successful or a CustomError if failed.
-    func submitImageCompetitionEntry(
+    func submitImageEntry(
         image: UIImage,
         caption: String?,
         categoryType: CategoryType,
@@ -69,7 +69,7 @@ class CompetitionEntryService {
                 return
             }
             
-            self.createCompetitionEntry(
+            self.createEntry(
                 caption: caption,
                 categoryTypeId: categoryType.rawValue,
                 competitionTypeId: CompetitionType.image.rawValue,
@@ -93,7 +93,7 @@ class CompetitionEntryService {
     ///   - image: The competition preview image.
     ///   - video: The competition video.
     ///   - completion: Returns nil if successful or a CustomError if failed.
-    func submitVideoCompetitionEntry(
+    func submitVideoEntry(
         image: UIImage,
         video: AVURLAsset,
         caption: String?,
@@ -133,7 +133,7 @@ class CompetitionEntryService {
                 return
             }
             
-            self.createCompetitionEntry(
+            self.createEntry(
                 caption: caption,
                 categoryTypeId: categoryType.rawValue,
                 competitionTypeId: CompetitionType.video.rawValue,
@@ -154,15 +154,15 @@ class CompetitionEntryService {
     ///
     /// - Parameters:
     ///   - userId: The userId for the unmatched competition entries.
-    ///   - completion: A collection of CompetitionEntry objects and a
+    ///   - completion: A collection of Entry objects and a
     ///     CustomError if request fails.
     func getUnmatchedCompetitionEntries(
         userId: String,
-        completion: @escaping ([CompetitionEntry], CustomError?) -> Void
+        completion: @escaping ([Entry], CustomError?) -> Void
     ) {
         
         var responseError: CustomError?
-        var unmatchedCompetitionEntries = [CompetitionEntry]()
+        var unmatchedCompetitionEntries = [Entry]()
         
         let endpoint = Endpoints.getUnmatchedCompetitionEntries(userId: userId)
         
@@ -189,7 +189,7 @@ class CompetitionEntryService {
                 let decoder = JSONDecoder()
                 
                 do {
-                    let results = try decoder.decode([CompetitionEntry].self, from: data)
+                    let results = try decoder.decode([Entry].self, from: data)
                     unmatchedCompetitionEntries = results
                 }
                 catch let decodeError {
@@ -212,7 +212,7 @@ class CompetitionEntryService {
     ///   - caption: (Optional) The caption for the competition.
     ///   - mediaId: The identifier for the competition media.
     ///   - completion: Returns nil if successful or a CustomError if failed.
-    private func createCompetitionEntry(
+    private func createEntry(
         caption: String?,
         categoryTypeId: Int,
         competitionTypeId: Int,
@@ -233,7 +233,7 @@ class CompetitionEntryService {
             return
         }
         
-        let competitionEntry = CompetitionEntry(
+        let competitionEntry = Entry(
             caption: caption,
             categoryTypeId: categoryTypeId,
             competitionTypeId: competitionTypeId,

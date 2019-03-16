@@ -1,46 +1,24 @@
 //
-//  CompetitionEntryEndpoint.swift
+//  EntryEndpoint.swift
 //  Versus
 //
 //  Created by JT Smrdel on 1/6/19.
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
-enum NetworkEnvironment {
-    case dev
-    case qa
-    case stage
-    case prod
-}
-
-enum CompetitionEntryEndpoint {
-    case create(CompetitionEntry)
+enum EntryEndpoint {
+    case create(Entry)
     case delete
     case unmatched(userId: String)
     case update
 }
 
-extension CompetitionEntryEndpoint: EndpointType {
-    
-    
-    var environmentBaseURL: String {
-        
-        switch NetworkManager.environment {
-        case .dev:
-            return "http://192.168.1.7/versus/v1/"
-        case .qa:
-            return ""
-        case .stage:
-            return ""
-        case .prod:
-            return ""
-        }
-    }
+extension EntryEndpoint: EndpointType {
     
     
     var baseURL: URL {
         
-        guard let url = URL(string: environmentBaseURL) else { fatalError("baseURL could not be configured.")}
+        guard let url = URL(string: Config.BASE_URL) else { fatalError("baseURL could not be configured.")}
         return url
     }
     

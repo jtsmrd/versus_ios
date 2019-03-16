@@ -11,7 +11,7 @@ import AVKit
 
 class CompetitionDetailsVC: UIViewController {
 
-    private let competitionEntryService = CompetitionEntryService.instance
+    private let competitionEntryService = EntryService.instance
     private let categoryCollection = CategoryCollection.instance
     private let CATEGORY_CELL_HEIGHT: CGFloat = 50.0
     private let CAPTION_DEFAULT_TEXT = "Write a caption..."
@@ -90,7 +90,7 @@ class CompetitionDetailsVC: UIViewController {
     
     /// Submit the competition entry.
     @IBAction func submitButtonAction() {
-        submitCompetitionEntry()
+        submitEntry()
     }
     
     
@@ -181,7 +181,7 @@ class CompetitionDetailsVC: UIViewController {
     
     /// Validate, set loading state, and submit an image or video competition
     /// based on the type of media object.
-    private func submitCompetitionEntry() {
+    private func submitEntry() {
         
         view.endEditing(true)
         
@@ -273,7 +273,7 @@ class CompetitionDetailsVC: UIViewController {
         username: String
     ) {
         
-        competitionEntryService.submitImageCompetitionEntry(
+        competitionEntryService.submitImageEntry(
             image: image,
             caption: caption,
             categoryType: categoryType,
@@ -318,7 +318,7 @@ class CompetitionDetailsVC: UIViewController {
         username: String
     ) {
         
-        competitionEntryService.submitVideoCompetitionEntry(
+        competitionEntryService.submitVideoEntry(
             image: image,
             video: videoAsset,
             caption: caption,
