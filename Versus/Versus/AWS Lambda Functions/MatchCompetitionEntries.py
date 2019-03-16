@@ -42,7 +42,7 @@ def lambda_handler(event, context):
                 # Competition record created successfully
                 if statusCode == 200:
 
-                    # Update CompetitionEntry record statuses
+                    # Update Entry record statuses
                     statusCode1 = updateCompetitionEntryMatchStatus(competitionEntryRecord)
                     statusCode2 = updateCompetitionEntryMatchStatus(match)
 

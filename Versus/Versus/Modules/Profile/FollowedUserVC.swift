@@ -26,7 +26,8 @@ class FollowedUserVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        canEdit = CurrentUser.userId == user.userId
+        //TODO
+//        canEdit = CurrentUser.userId == user.userId
         keyboardToolbar = KeyboardToolbar(includeNavigation: false)
         getFollowedUsers()
     }
@@ -52,16 +53,17 @@ class FollowedUserVC: UIViewController {
      
      */
     private func getFollowedUsers() {
-        user.getFollowedUsers { (followedUsers, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                    return
-                }
-                self.allFollowedUsers.append(contentsOf: followedUsers)
-                self.followedUserTableView.reloadData()
-            }
-        }
+        //TODO
+//        user.getFollowedUsers { (followedUsers, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.displayError(error: customError)
+//                    return
+//                }
+//                self.allFollowedUsers.append(contentsOf: followedUsers)
+//                self.followedUserTableView.reloadData()
+//            }
+//        }
     }
     
     
@@ -85,7 +87,8 @@ class FollowedUserVC: UIViewController {
      */
     private func showFollowedUserProfile(followedUserUserId: String) {
         if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-            profileVC.initData(userId: followedUserUserId, profileViewMode: .viewOnly)
+            //TODO
+//            profileVC.initData(userId: followedUserUserId)
             profileVC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(profileVC, animated: true)
         }
@@ -126,11 +129,12 @@ extension FollowedUserVC: ProfileVCDelegate {
      
      */
     func unfollowedUser(user: User) {
-        if canEdit {
-            if let index = followedUsers.index(where: { $0.followedUserUserId == user.userId }) {
-                removeRow(at: index)
-            }
-        }
+        //TODO
+//        if canEdit {
+//            if let index = followedUsers.index(where: { $0.followedUserUserId == user.userId }) {
+//                removeRow(at: index)
+//            }
+//        }
     }
 }
 
@@ -199,11 +203,12 @@ extension FollowedUserVC: FollowedUserCellDelegate {
      
      */
     func followedUserCellFollowButtonActionUnfollow(followedUser: FollowedUser) {
-        if canEdit {
-            if let index = followedUsers.index(where: { $0.followedUserUserId == user.userId }) {
-                removeRow(at: index)
-            }
-        }
+        //TODO
+//        if canEdit {
+//            if let index = followedUsers.index(where: { $0.followedUserUserId == user.userId }) {
+//                removeRow(at: index)
+//            }
+//        }
 //        FollowerService.instance.removeFollowerFromFollowedUsers(awsFollower: follower.awsFollower)
     }
 }

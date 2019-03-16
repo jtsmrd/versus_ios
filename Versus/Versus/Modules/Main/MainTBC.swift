@@ -29,16 +29,16 @@ class MainTBC: UITabBarController {
         button.setImage(UIImage(named: "temp_icon_red"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
         button.center = CGPoint(x: circleViewHeight / 2, y: circleViewHeight / 2)
-        button.addTarget(self, action: #selector(newCompetitionEntryButtonAction), for: .touchUpInside)
+        button.addTarget(self, action: #selector(newEntryButtonAction), for: .touchUpInside)
         
         circleView.addSubview(button)
         tabBar.addSubview(circleView)
     }
 
     
-    @objc func newCompetitionEntryButtonAction() {
+    @objc func newEntryButtonAction() {
         
-        let competitionEntryStoryboard = UIStoryboard(name: COMPETITION_ENTRY, bundle: nil)
+        let competitionEntryStoryboard = UIStoryboard(name: ENTRY, bundle: nil)
         let viewController = competitionEntryStoryboard.instantiateViewController(withIdentifier: SELECT_COMPETITION_MEDIA_VC)
         if let selectCompetitionMediaVC = viewController as? SelectCompetitionMediaVC {
             
@@ -76,7 +76,7 @@ extension MainTBC: UITabBarControllerDelegate {
         if let navController = viewController as? UINavigationController, let profileVC = navController.children.first as? ProfileVC {
             
             // Configure the ProfileVC for the current user.
-            profileVC.initData(userId: CurrentUser.userId, profileViewMode: .edit)
+            profileVC.initData(userId: CurrentAccount.user.id)
         }
     }
 }

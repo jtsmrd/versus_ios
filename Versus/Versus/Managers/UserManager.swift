@@ -180,18 +180,19 @@ class DownloadUserProfileImageOperation: Operation {
     
     override func main() {
         if isCancelled { return }
-        user.getProfileImage { (image, customError) in
-            
-            // The image was already downloaded from a previous request
-            if image != nil {
-                self.user.profileImageDownloadState = .downloaded
-                return
-            }
-            if let customError = customError {
-                debugPrint(customError.message)
-            }
-            self.user.profileImageDownloadState = .failed
-        }
+        //TODO
+//        user.getProfileImage { (image, customError) in
+//
+//            // The image was already downloaded from a previous request
+//            if image != nil {
+//                self.user.profileImageDownloadState = .downloaded
+//                return
+//            }
+//            if let customError = customError {
+//                debugPrint(customError.message)
+//            }
+//            self.user.profileImageDownloadState = .failed
+//        }
         if isCancelled { return }
     }
 }

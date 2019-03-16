@@ -15,6 +15,8 @@ class UnmatchedEntryCell: UITableViewCell {
     @IBOutlet weak var categoryTypeLabel: UILabel!
     @IBOutlet weak var competitionImageView: RoundedCornerImageView!
     
+    let s3BucketService = S3BucketService.instance
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -36,11 +38,28 @@ class UnmatchedEntryCell: UITableViewCell {
     }
 
     
-    func configureCell(competitionEntry: CompetitionEntry) {
+    func configureCell(entry: Entry) {
         
-        let timeSince = competitionEntry.createDate.toElapsedTimeString_Minimal
-        submittedTimeLabel.text = String(format: "Submitted %@ ago", timeSince)
+        let timeSince = entry.createDate.toElapsedTimeString_Minimal
+        submittedTimeLabel.text = String(
+            format: "Submitted %@ ago",
+            timeSince
+        )
         
-        categoryTypeLabel.text = String(format: "%@ %@ entry", competitionEntry.category.title, competitionEntry.competitionTypeName)
+        categoryTypeLabel.text = String(
+            format: "%@ %@ entry",
+            entry.category.title,
+            entry.competitionTypeName
+        )
+        
+        s3BucketService.downloadImage(
+            mediaId: entry.mediaId,
+            imageType: .regular
+        ) { [weak self] (image, customError) in
+            
+            DispatchQueue.main.async {
+                self?.competitionImageView.image = image
+            }
+        }
     }
 }

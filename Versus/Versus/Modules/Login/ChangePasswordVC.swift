@@ -61,20 +61,20 @@ class ChangePasswordVC: UIViewController {
             return
         }
         
-        AccountService.instance.confirmPasswordChange(
-            user: user,
-            verificationCode: verificationCode,
-            password: password
-        ) { (success, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                }
-                else {
-                    self.displaySuccessMessage()
-                }
-            }
-        }
+//        AccountService.instance.confirmPasswordChange(
+//            user: user,
+//            verificationCode: verificationCode,
+//            password: password
+//        ) { (success, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.displayError(error: customError)
+//                }
+//                else {
+//                    self.displaySuccessMessage()
+//                }
+//            }
+//        }
     }
     
     

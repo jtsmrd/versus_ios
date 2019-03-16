@@ -13,77 +13,158 @@ import AWSUserPoolsSignIn
 class UserService {
     
     static let instance = UserService()
+    
+    private let networkManager = NetworkManager()
+    private let router = Router<UserEndpoint>()
+    
     private let dynamoDB = AWSDynamoDBObjectMapper.default()
     private let s3BucketService = S3BucketService.instance
     
     private init() { }
     
     
-    /**
-     Checks whether or not the given username is taken or not.
-     */
-    func checkAvailabilityOfUsername(
+    
+    func loadUser(
         username: String,
-        completion: @escaping (_ isAvailable: Bool, _ customError: CustomError?) -> Void
+        completion: @escaping (_ user: User?, _ errorMessage: String?) -> ()
     ) {
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#searchUsername = :username"
-        queryExpression.expressionAttributeNames = [
-            "#searchUsername": "searchUsername"
-        ]
-        queryExpression.expressionAttributeValues = [
-            ":username": username.lowercased()
-        ]
-        queryExpression.indexName = "searchUsername-index"
         
-        dynamoDB.query(
-            AWSUser.self,
-            expression: queryExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(false, CustomError(error: error, message: "Unable to check username availability"))
-                return
+        router.request(
+            .loadWithUsername(
+                username: username
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
             }
-            let isAvailable = paginatedOutput?.items.isEmpty ?? true
-            completion(isAvailable, nil)
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let user = try decoder.decode(User.self, from: responseData)
+                        completion(user, nil)
+                    }
+                    catch {
+                        debugPrint(error)
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
         }
     }
     
     
-    /**
-     
-     */
-    func createUser(
-        username: String,
-        completion: @escaping (_ customError: CustomError?) -> Void
+    
+    func loadUser(
+        userId: Int,
+        completion: @escaping (_ user: User?, _ errorMessage: String?) -> ()
     ) {
-        guard let userPoolId = AWSCognitoIdentityUserPool.default().currentUser()?.username else {
-            debugPrint("AWS user username nil")
-            completion(CustomError(error: nil, message: "Unable to authenticate"))
-            return
-        }
         
-        let awsUser: AWSUser = AWSUser()
-        awsUser._userId = userPoolId
-        awsUser._username = username
-        awsUser._displayName = username
-        awsUser._searchUsername = username.lowercased()
-        awsUser._searchDisplayName = username.lowercased()
-        awsUser._createDate = Date().toISO8601String
-        awsUser._rankId = 1.toNSNumber
-        awsUser._totalWins = 0.toNSNumber
-        awsUser._totalTimesVoted = 0.toNSNumber
-        awsUser._followerCount = 0.toNSNumber
-        awsUser._followedUserCount = 0.toNSNumber
-        awsUser._directMessageConversationIds = ["0": "0"]
-        
-        dynamoDB.save(awsUser) { (error) in
-            if let error = error {
-                completion(CustomError(error: error, message: "Unable to create account"))
-                return
+        router.request(
+            .load(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
             }
-            CurrentUser.setAWSUser(awsUser: awsUser)
-            completion(nil)
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let user = try decoder.decode(User.self, from: responseData)
+                        completion(user, nil)
+                    }
+                    catch {
+                        debugPrint(error)
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    func updateUser(
+        user: User,
+        completion: @escaping (_ user: User?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .update(user)
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let user = try decoder.decode(User.self, from: responseData)
+                        completion(user, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
         }
     }
     
@@ -141,31 +222,31 @@ class UserService {
         _ username: String,
         completion: @escaping (_ user: User?, _ customError: CustomError?) -> Void
     ) {
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#searchUsername = :searchUsername"
-        queryExpression.expressionAttributeNames = [
-            "#searchUsername": "searchUsername"
-        ]
-        queryExpression.expressionAttributeValues = [
-            ":searchUsername": username.lowercased()
-        ]
-        queryExpression.indexName = "searchUsername-index"
-        
-        dynamoDB.query(
-            AWSUser.self,
-            expression: queryExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, message: "Unable to load user"))
-                return
-            }
-            if let result = paginatedOutput,
-                let awsUser = result.items.first as? AWSUser  {
-                completion(User(awsUser: awsUser), nil)
-                return
-            }
-            completion(nil, nil)
-        }
+//        let queryExpression = AWSDynamoDBQueryExpression()
+//        queryExpression.keyConditionExpression = "#searchUsername = :searchUsername"
+//        queryExpression.expressionAttributeNames = [
+//            "#searchUsername": "searchUsername"
+//        ]
+//        queryExpression.expressionAttributeValues = [
+//            ":searchUsername": username.lowercased()
+//        ]
+//        queryExpression.indexName = "searchUsername-index"
+//
+//        dynamoDB.query(
+//            AWSUser.self,
+//            expression: queryExpression
+//        ) { (paginatedOutput, error) in
+//            if let error = error {
+//                completion(nil, CustomError(error: error, message: "Unable to load user"))
+//                return
+//            }
+//            if let result = paginatedOutput,
+//                let awsUser = result.items.first as? AWSUser  {
+//                completion(User(awsUser: awsUser), nil)
+//                return
+//            }
+//            completion(nil, nil)
+//        }
     }
     
     
@@ -177,24 +258,24 @@ class UserService {
         completion: @escaping (_ awsUser: AWSUser?, _ customError: CustomError?) -> Void
     ) {
         
-        DispatchQueue.global(qos: .userInitiated).async {
-            
-            self.dynamoDB.load(
-                AWSUser.self,
-                hashKey: userId,
-                rangeKey: nil
-            ) { (awsUser, error) in
-                if let error = error {
-                    completion(nil, CustomError(error: error, message: "Unable to load user."))
-                    return
-                }
-                guard let awsUser = awsUser as? AWSUser else {
-                    completion(nil, CustomError(error: error, message: "Unable to load user."))
-                    return
-                }
-                completion(awsUser, nil)
-            }
-        }
+//        DispatchQueue.global(qos: .userInitiated).async {
+//
+//            self.dynamoDB.load(
+//                AWSUser.self,
+//                hashKey: userId,
+//                rangeKey: nil
+//            ) { (awsUser, error) in
+//                if let error = error {
+//                    completion(nil, CustomError(error: error, message: "Unable to load user."))
+//                    return
+//                }
+//                guard let awsUser = awsUser as? AWSUser else {
+//                    completion(nil, CustomError(error: error, message: "Unable to load user."))
+//                    return
+//                }
+//                completion(awsUser, nil)
+//            }
+//        }
     }
     
     
@@ -202,48 +283,60 @@ class UserService {
      
      */
     func updateProfile(
-        awsUser: AWSUser,
+        user: User,
         profileImage: UIImage?,
         backgroundImage: UIImage?,
-        completion: @escaping (_ customError: CustomError?) -> Void
+        completion: @escaping (_ user: User?, _ errorMessage: String?) -> ()
     ) {
-        var uploadError: CustomError?
+        var error: String?
         let uploadDG = DispatchGroup()
+
+        let imageId = String(describing: CurrentAccount.user.id)
         
         if let profileImage = profileImage {
-            
+
             uploadDG.enter()
             s3BucketService.uploadImage(
                 image: profileImage,
-                imageType: .small,
-                mediaId: CurrentUser.userId
+                imageType: .regular,
+                mediaId: imageId
             ) { (customError) in
-                uploadError = customError
+                
+                if customError == nil {
+                    user.profileImage = imageId
+                }
+                
+                error = customError?.message
                 uploadDG.leave()
             }
         }
-        
+
         if let backgroundImage = backgroundImage {
-            
+
             uploadDG.enter()
             s3BucketService.uploadImage(
                 image: backgroundImage,
                 imageType: .background,
-                mediaId: CurrentUser.userId
+                mediaId: imageId
             ) { (customError) in
-                uploadError = customError
+                
+                if customError == nil {
+                    user.backgroundImage = imageId
+                }
+                
+                error = customError?.message
                 uploadDG.leave()
             }
         }
         uploadDG.wait()
-        
-        if let uploadError = uploadError {
-            completion(uploadError)
+
+        if let error = error {
+            completion(nil, error)
             return
         }
-        
+
         updateUser(
-            user: awsUser,
+            user: user,
             completion: completion
         )
     }
@@ -252,22 +345,22 @@ class UserService {
     /**
      
      */
-    func updateUser(
-        user: AWSUser,
+    func updateUser2(
+        user: User,
         completion: @escaping (_ customError: CustomError?) -> Void
     ) {
-        let updateMapperConfig = AWSDynamoDBObjectMapperConfiguration()
-        updateMapperConfig.saveBehavior = .updateSkipNullAttributes
-        dynamoDB.save(
-            user,
-            configuration: updateMapperConfig
-        ) { (error) in
-            if let error = error {
-                completion(CustomError(error: error, message: "Unable to update User"))
-                return
-            }
-            completion(nil)
-        }
+//        let updateMapperConfig = AWSDynamoDBObjectMapperConfiguration()
+//        updateMapperConfig.saveBehavior = .updateSkipNullAttributes
+//        dynamoDB.save(
+//            user,
+//            configuration: updateMapperConfig
+//        ) { (error) in
+//            if let error = error {
+//                completion(CustomError(error: error, message: "Unable to update User"))
+//                return
+//            }
+//            completion(nil)
+//        }
     }
     
     
@@ -280,48 +373,48 @@ class UserService {
         fetchLimit: Int,
         completion: @escaping (_ users: [User], _ lastEvaluatedKey: [String: AWSDynamoDBAttributeValue]?, _ custoError: CustomError?) -> Void
     ) {
-        let scanExpression = AWSDynamoDBScanExpression()
-        
-        // Scan for username
-        if String(queryString[queryString.startIndex]) == "@" {
-            scanExpression.filterExpression = "begins_with(#searchUsername, :searchUsername)"
-            scanExpression.expressionAttributeNames = [
-                "#searchUsername": "searchUsername"
-            ]
-            scanExpression.expressionAttributeValues = [
-                ":searchUsername": queryString.lowercased()
-            ]
-        }
-        else { // Scan for display name
-            scanExpression.filterExpression = "begins_with(#searchDisplayName, :searchDisplayName)"
-            scanExpression.expressionAttributeNames = [
-                "#searchDisplayName": "searchDisplayName"
-            ]
-            scanExpression.expressionAttributeValues = [
-                ":searchDisplayName": queryString.lowercased()
-            ]
-        }
-        scanExpression.limit = fetchLimit.toNSNumber
-        scanExpression.exclusiveStartKey = startKey
-        
-        var users = [User]()
-        var lastEvaluatedKey: [String: AWSDynamoDBAttributeValue]?
-        dynamoDB.scan(
-            AWSUser.self,
-            expression: scanExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(users, nil, CustomError(error: error, message: "Unable to load users"))
-                return
-            }
-            if let awsUsers = paginatedOutput?.items as? [AWSUser] {
-                lastEvaluatedKey = paginatedOutput?.lastEvaluatedKey
-                for awsUser in awsUsers {
-                    users.append(User(awsUser: awsUser))
-                }
-            }
-            completion(users, lastEvaluatedKey, nil)
-        }
+//        let scanExpression = AWSDynamoDBScanExpression()
+//
+//        // Scan for username
+//        if String(queryString[queryString.startIndex]) == "@" {
+//            scanExpression.filterExpression = "begins_with(#searchUsername, :searchUsername)"
+//            scanExpression.expressionAttributeNames = [
+//                "#searchUsername": "searchUsername"
+//            ]
+//            scanExpression.expressionAttributeValues = [
+//                ":searchUsername": queryString.lowercased()
+//            ]
+//        }
+//        else { // Scan for display name
+//            scanExpression.filterExpression = "begins_with(#searchDisplayName, :searchDisplayName)"
+//            scanExpression.expressionAttributeNames = [
+//                "#searchDisplayName": "searchDisplayName"
+//            ]
+//            scanExpression.expressionAttributeValues = [
+//                ":searchDisplayName": queryString.lowercased()
+//            ]
+//        }
+//        scanExpression.limit = fetchLimit.toNSNumber
+//        scanExpression.exclusiveStartKey = startKey
+//
+//        var users = [User]()
+//        var lastEvaluatedKey: [String: AWSDynamoDBAttributeValue]?
+//        dynamoDB.scan(
+//            AWSUser.self,
+//            expression: scanExpression
+//        ) { (paginatedOutput, error) in
+//            if let error = error {
+//                completion(users, nil, CustomError(error: error, message: "Unable to load users"))
+//                return
+//            }
+//            if let awsUsers = paginatedOutput?.items as? [AWSUser] {
+//                lastEvaluatedKey = paginatedOutput?.lastEvaluatedKey
+//                for awsUser in awsUsers {
+//                    users.append(User(awsUser: awsUser))
+//                }
+//            }
+//            completion(users, lastEvaluatedKey, nil)
+//        }
     }
     
     
@@ -331,32 +424,32 @@ class UserService {
     func querySuggestedFollowUsers(
         completion: @escaping ([User], _ customError: CustomError?) -> Void
     ) {
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#isFeatured = :isFeatured"
-        queryExpression.expressionAttributeNames = [
-            "#isFeatured": "isFeatured"
-        ]
-        queryExpression.expressionAttributeValues = [
-            ":isFeatured": 1
-        ]
-        queryExpression.indexName = "isFeatured-index"
-        
-        var users = [User]()
-        dynamoDB.query(
-            AWSUser.self,
-            expression: queryExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(users, CustomError(error: error, message: "Unable to load suggested users"))
-                return
-            }
-            if let result = paginatedOutput,
-                let awsUsers = result.items as? [AWSUser] {
-                for awsUser in awsUsers {
-                    users.append(User(awsUser: awsUser))
-                }
-            }
-            completion(users, nil)
-        }
+//        let queryExpression = AWSDynamoDBQueryExpression()
+//        queryExpression.keyConditionExpression = "#isFeatured = :isFeatured"
+//        queryExpression.expressionAttributeNames = [
+//            "#isFeatured": "isFeatured"
+//        ]
+//        queryExpression.expressionAttributeValues = [
+//            ":isFeatured": 1
+//        ]
+//        queryExpression.indexName = "isFeatured-index"
+//
+//        var users = [User]()
+//        dynamoDB.query(
+//            AWSUser.self,
+//            expression: queryExpression
+//        ) { (paginatedOutput, error) in
+//            if let error = error {
+//                completion(users, CustomError(error: error, message: "Unable to load suggested users"))
+//                return
+//            }
+//            if let result = paginatedOutput,
+//                let awsUsers = result.items as? [AWSUser] {
+//                for awsUser in awsUsers {
+//                    users.append(User(awsUser: awsUser))
+//                }
+//            }
+//            completion(users, nil)
+//        }
     }
 }

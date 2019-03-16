@@ -2,25 +2,23 @@
 //  LoginVC.swift
 //  Versus
 //
-// Allows user to log in via username/ email & password, Facebook, or Google.
+// Allows user to log in via mail & password, Facebook, or Google.
 //
 //  Created by JT Smrdel on 3/30/18.
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
-
-import UIKit
-import AWSUserPoolsSignIn
 
 class LoginVC: UIViewController {
 
     
     // MARK: - Outlets
     
-    @IBOutlet weak var usernameOrEmailTextField: UITextField!
+    @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     
+    private let accountService = AccountService.instance
+    private let userService = UserService.instance
     
-    var signInCredentials: SignInCredentials!
     var keyboardToolbar: KeyboardToolbar!
     
     
@@ -31,8 +29,8 @@ class LoginVC: UIViewController {
 
         keyboardToolbar = KeyboardToolbar(includeNavigation: true)
         
-        if let lastSignedInUsername = CurrentUser.lastSignedInUsername {
-            usernameOrEmailTextField.text = lastSignedInUsername
+        if let lastSignedInUsername = CurrentAccount.lastSignedInUsername {
+            usernameTextField.text = lastSignedInUsername
             passwordTextField.becomeFirstResponder()
         }
     }
@@ -50,68 +48,50 @@ class LoginVC: UIViewController {
     // TODO:
     // - Authenticate user via username/ email & password
     @IBAction func loginButtonAction() {
-        signIn()
+        login()
     }
     
     
     // MARK: - Private Funtions
     
-    private func signIn() {
+    private func login() {
         
         guard inputDataIsValid() else { return }
         
-        let username = usernameOrEmailTextField.text!
+        let username = usernameTextField.text!
         let password = passwordTextField.text!
         
-        signInCredentials = SignInCredentials(username: username, password: password)
-        appDelegate.prepareForSignIn(signInCredentials: signInCredentials)
-        
-        let signInProvider: AWSSignInProvider = AWSCognitoUserPoolsSignInProvider.sharedInstance()
-        AWSSignInManager.sharedInstance().login(
-            signInProviderKey: signInProvider.identityProviderName
-        ) { (result, error) in
-            if let error = error {
-                debugPrint("Failed to login: \(error.localizedDescription)")
-                return
-            }
-            else {
-                CurrentUser.lastSignedInUsername = username
-                self.loadCurrentUser()
-            }
-        }
-    }
-    
-    private func loadCurrentUser() {
-        UserService.instance.getUser(
-            userId: CurrentUser.userId
-        ) { (awsUser, error) in
+        accountService.login(
+            username: username,
+            password: password
+        ) { [weak self] (account, errorMessage) in
+            
             DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
                 }
-                else if let awsUser = awsUser {
-                    CurrentUser.setAWSUser(awsUser: awsUser)
-                    self.performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
+                
+                guard let account = account else {
+                    self?.displayMessage(message: "Failed to load account")
+                    return
                 }
-                else {
-                    // User closed app without selecting a usename, which creates a user
-                    self.performSegue(withIdentifier: SHOW_CHOOSE_USERNAME, sender: nil)
-                }
+                
+                CurrentAccount.setAccount(account: account)
+                self?.performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
             }
         }
     }
     
     private func inputDataIsValid() -> Bool {
         
-        guard let username = usernameOrEmailTextField.text, !username.isEmpty else {
-            
-            // Display error
+        guard let username = usernameTextField.text, !username.isEmpty else {
+            displayMessage(message: "Please enter a valid email")
             return false
         }
         
         guard let password = passwordTextField.text, !password.isEmpty else {
-            
-            // Display error
+            displayMessage(message: "Please enter a valid password")
             return false
         }
         

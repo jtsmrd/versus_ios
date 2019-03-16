@@ -19,7 +19,7 @@ class TutorialVC: UIViewController, TutorialPVCPageTransitionDelegate {
     }
     
     @IBAction func launchButtonAction() {
-        CurrentUser.tutorialDisplayed = true
+        CurrentAccount.tutorialDisplayed = true
         appDelegate.showInitialView(nil)
     }
     

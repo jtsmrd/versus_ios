@@ -231,9 +231,10 @@ extension SearchUserVC: UITableViewDelegate {
         
         // Load and display the users' profile
         if let profileVC = profileVC as? ProfileVC {
-            profileVC.initData(
-                userId: userManager.users[indexPath.row].userId, profileViewMode: .viewOnly
-            )
+            // TODO
+//            profileVC.initData(
+//                userId: userManager.users[indexPath.row].userId, profileViewMode: .viewOnly
+//            )
             profileVC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(
                 profileVC,

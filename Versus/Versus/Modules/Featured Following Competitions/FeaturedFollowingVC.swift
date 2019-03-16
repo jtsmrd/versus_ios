@@ -15,7 +15,7 @@ class FeaturedFollowingVC: UIViewController {
         case following
     }
     
-    private let competitionService = CompetitionService.instance
+//    private let competitionService = CompetitionService.instance
     private let notificationCenter = NotificationCenter.default
     
     @IBOutlet weak var featuredCompetitionsContainerView: UIView!
@@ -144,60 +144,60 @@ class FeaturedFollowingVC: UIViewController {
     
     
     @objc func getFeaturedCompetitions() {
-        
-        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                }
-                else {
-                    self.featuredCompetitions = competitions
-                    self.featuredTableView.reloadData()
-                }
-                self.noFeaturedCompetitionsReloadButton.isEnabled = true
-                self.noFeaturedCompetitionsActivityIndicator.stopAnimating()
-                self.featuredTableView.refreshControl?.endRefreshing()
-            }
-        }
+        //TODO
+//        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    debugPrint(customError.message)
+//                }
+//                else {
+//                    self.featuredCompetitions = competitions
+//                    self.featuredTableView.reloadData()
+//                }
+//                self.noFeaturedCompetitionsReloadButton.isEnabled = true
+//                self.noFeaturedCompetitionsActivityIndicator.stopAnimating()
+//                self.featuredTableView.refreshControl?.endRefreshing()
+//            }
+//        }
     }
     
     @objc func getFollowedUserCompetitions() {
         
-        //TODO: Remove getFollowedUsers after handled elsewhere to automatically refresh
-        CurrentUser.getFollowedUsers { (followedUsers, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
-                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
-                }
-                else if !followedUsers.isEmpty {
-                    let followedUserIds = followedUsers.map({ $0.followedUserUserId })
-                    
-                    self.competitionService.getFollowedUserCompetitions(
-                        followedUserIds: followedUserIds
-                    ) { (competitions, customError) in
-                        DispatchQueue.main.async {
-                            if let customError = customError {
-                                debugPrint(customError.message)
-                            }
-                            else {
-                                self.followedUserCompetitions = competitions
-                                self.followedUsersTableView.reloadData()
-                                self.followedUsersTableView.refreshControl?.endRefreshing()
-                            }
-                            self.noFollowedUserCompetitionsReloadButton.isEnabled = true
-                            self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
-                        }
-                    }
-                }
-                else {
-                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
-                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
-                    self.followedUsersTableView.refreshControl?.endRefreshing()
-                }
-            }
-        }
+        //TODO
+//        CurrentUser.getFollowedUsers { (followedUsers, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    debugPrint(customError.message)
+//                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
+//                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
+//                }
+//                else if !followedUsers.isEmpty {
+//                    let followedUserIds = followedUsers.map({ $0.followedUserUserId })
+//
+//                    self.competitionService.getFollowedUserCompetitions(
+//                        followedUserIds: followedUserIds
+//                    ) { (competitions, customError) in
+//                        DispatchQueue.main.async {
+//                            if let customError = customError {
+//                                debugPrint(customError.message)
+//                            }
+//                            else {
+//                                self.followedUserCompetitions = competitions
+//                                self.followedUsersTableView.reloadData()
+//                                self.followedUsersTableView.refreshControl?.endRefreshing()
+//                            }
+//                            self.noFollowedUserCompetitionsReloadButton.isEnabled = true
+//                            self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
+//                        }
+//                    }
+//                }
+//                else {
+//                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
+//                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
+//                    self.followedUsersTableView.refreshControl?.endRefreshing()
+//                }
+//            }
+//        }
     }
 
     

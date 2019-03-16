@@ -11,7 +11,7 @@ import AVKit
 
 class CompetitionDetailsVC: UIViewController {
 
-    private let competitionEntryService = EntryService.instance
+    private let entryService = EntryService.instance
     private let categoryCollection = CategoryCollection.instance
     private let CATEGORY_CELL_HEIGHT: CGFloat = 50.0
     private let CAPTION_DEFAULT_TEXT = "Write a caption..."
@@ -201,12 +201,7 @@ class CompetitionDetailsVC: UIViewController {
             submitImageCompetition(
                 image: image,
                 caption: caption,
-                categoryType: category.categoryType,
-                displayName: CurrentUser.displayName,
-                isFeatured: CurrentUser.isFeatured,
-                rank: CurrentUser.rank,
-                userId: CurrentUser.userId,
-                username: CurrentUser.username
+                categoryType: category.categoryType
             )
             return
             
@@ -218,12 +213,7 @@ class CompetitionDetailsVC: UIViewController {
                 image: image,
                 videoAsset: videoAsset,
                 caption: caption,
-                categoryType: category.categoryType,
-                displayName: CurrentUser.displayName,
-                isFeatured: CurrentUser.isFeatured,
-                rank: CurrentUser.rank,
-                userId: CurrentUser.userId,
-                username: CurrentUser.username
+                categoryType: category.categoryType
             )
             return
             
@@ -265,35 +255,25 @@ class CompetitionDetailsVC: UIViewController {
     private func submitImageCompetition(
         image: UIImage,
         caption: String?,
-        categoryType: CategoryType,
-        displayName: String,
-        isFeatured: Bool,
-        rank: Rank,
-        userId: String,
-        username: String
+        categoryType: CategoryType
     ) {
         
-        competitionEntryService.submitImageEntry(
+        entryService.submitImageEntry(
             image: image,
             caption: caption,
-            categoryType: categoryType,
-            displayName: displayName,
-            isFeatured: isFeatured,
-            rank: rank,
-            userId: userId,
-            username: username
-        ) { (customError) in
+            categoryType: categoryType
+        ) { [weak self] (errorMessage) in
             
             DispatchQueue.main.async {
                 
-                if let customError = customError {
+                if let errorMessage = errorMessage {
                     
-                    self.displayError(error: customError)
-                    self.setLoadingState(isLoading: false)
+                    self?.displayMessage(message: errorMessage)
+                    self?.setLoadingState(isLoading: false)
                     return
                 }
                 
-                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
+                self?.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
             }
         }
     }
@@ -310,36 +290,26 @@ class CompetitionDetailsVC: UIViewController {
         image: UIImage,
         videoAsset: AVURLAsset,
         caption: String?,
-        categoryType: CategoryType,
-        displayName: String,
-        isFeatured: Bool,
-        rank: Rank,
-        userId: String,
-        username: String
+        categoryType: CategoryType
     ) {
         
-        competitionEntryService.submitVideoEntry(
+        entryService.submitVideoEntry(
             image: image,
             video: videoAsset,
             caption: caption,
-            categoryType: categoryType,
-            displayName: displayName,
-            isFeatured: isFeatured,
-            rank: rank,
-            userId: userId,
-            username: username
-        ) { (customError) in
+            categoryType: categoryType
+        ) { [weak self] (errorMessage) in
             
             DispatchQueue.main.async {
                 
-                if let customError = customError {
+                if let errorMessage = errorMessage {
                     
-                    self.displayError(error: customError)
-                    self.setLoadingState(isLoading: false)
+                    self?.displayMessage(message: errorMessage)
+                    self?.setLoadingState(isLoading: false)
                     return
                 }
                 
-                self.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
+                self?.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
             }
         }
     }

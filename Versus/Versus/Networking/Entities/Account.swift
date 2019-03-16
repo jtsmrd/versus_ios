@@ -6,4 +6,26 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
-import Foundation
+class Account: Codable {
+    
+    private var _token: String
+    private var _user: User
+    
+    enum CodingKeys: String, CodingKey {
+        case _token = "token"
+        case _user = "user"
+    }
+}
+
+extension Account {
+    
+    
+    var token: String {
+        return _token
+    }
+    
+    
+    var user: User {
+        return _user
+    }
+}

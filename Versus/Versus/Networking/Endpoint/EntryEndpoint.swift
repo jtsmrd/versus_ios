@@ -7,9 +7,14 @@
 //
 
 enum EntryEndpoint {
-    case create(Entry)
+    case create(
+        caption: String,
+        categoryId: Int,
+        typeId: Int,
+        mediaId: String
+    )
     case delete
-    case unmatched(userId: String)
+    case unmatched(id: Int)
     case update
 }
 
@@ -28,16 +33,16 @@ extension EntryEndpoint: EndpointType {
         switch self {
             
         case .create:
-            return "competitionEntry"
+            return "api/entries"
             
         case .delete:
-            return "competitionEntry"
+            return ""
             
         case .unmatched:
-            return "competitionEntry"
+            return ""
             
         case .update:
-            return "competitionEntry"
+            return ""
         }
     }
     
@@ -65,14 +70,33 @@ extension EntryEndpoint: EndpointType {
         
         switch self {
             
-        case .create:
-            return .request
+        case .create(
+            let caption,
+            let categoryId,
+            let typeId,
+            let mediaId
+        ):
+            return .requestParametersAndHeaders(
+                bodyParameters: [
+                    "caption": caption,
+                    "categoryId": categoryId,
+                    "typeId": typeId,
+                    "mediaId": mediaId
+                ],
+                urlParameters: nil,
+                additionalHeaders: headers
+            )
             
         case .delete:
             return .request
             
-        case .unmatched(let userId):
-            return .requestParameters(bodyParameters: nil, urlParameters: ["id": userId])
+        case .unmatched(let id):
+            return .requestParameters(
+                bodyParameters: nil,
+                urlParameters: [
+                    "id": id
+                ]
+            )
             
         case .update:
             return .request
@@ -81,6 +105,6 @@ extension EntryEndpoint: EndpointType {
     
     
     var headers: HTTPHeaders? {
-        return nil
+        return ["Authorization": "Bearer \(CurrentAccount.token)"]
     }
 }

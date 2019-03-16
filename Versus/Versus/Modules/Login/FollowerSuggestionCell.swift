@@ -42,28 +42,30 @@ class FollowerSuggestionCell: UICollectionViewCell {
         configureFollowerButton()
         
         usernameLabel.text = "@\(user.username)"
-        displayNameLabel.text = user.displayName
+        displayNameLabel.text = user.name
         
-        if user.profileImage == nil {
-            S3BucketService.instance.downloadImage(
-                mediaId: user.userId,
-                imageType: .small
-            ) { (image, customError) in
-                if let customError = customError {
-                    debugPrint(customError)
-                }
-                else if let image = image {
-                    self.user.profileImage = image
-                    DispatchQueue.main.async {
-                        self.profileImageView.image = image
-                    }
-                }
-            }
-        }
+        //TODO
+//        if user.profileImage == nil {
+//            S3BucketService.instance.downloadImage(
+//                mediaId: user.userId,
+//                imageType: .small
+//            ) { (image, customError) in
+//                if let customError = customError {
+//                    debugPrint(customError)
+//                }
+//                else if let image = image {
+//                    self.user.profileImage = image
+//                    DispatchQueue.main.async {
+//                        self.profileImageView.image = image
+//                    }
+//                }
+//            }
+//        }
     }
     
     private func determineUserFollowStatus() {
-        followStatus = CurrentUser.getFollowerStatusFor(userId: user.userId)
+        //TODO
+//        followStatus = CurrentUser.getFollowerStatusFor(userId: user.userId)
     }
     
     // Configure button to display 'follow' for unfollowed users or 'following' for followed users
@@ -72,16 +74,17 @@ class FollowerSuggestionCell: UICollectionViewCell {
     }
     
     private func followUser() {
-        CurrentUser.follow(
-            user: user
-        ) { (customError) in
-            if let customError = customError {
-                self.delegate.followerSuggestionCellFollowButtonActionError(error: customError)
-                return
-            }
-            self.determineUserFollowStatus()
-            self.configureFollowerButton()
-        }
+        //TODO
+//        CurrentUser.follow(
+//            user: user
+//        ) { (customError) in
+//            if let customError = customError {
+//                self.delegate.followerSuggestionCellFollowButtonActionError(error: customError)
+//                return
+//            }
+//            self.determineUserFollowStatus()
+//            self.configureFollowerButton()
+//        }
     }
     
     private func displayConfirmUnfollowUser() {
@@ -98,15 +101,16 @@ class FollowerSuggestionCell: UICollectionViewCell {
     }
     
     private func unfollowUser() {
-        CurrentUser.unfollow(
-            user: user
-        ) { (customError) in
-            if let customError = customError {
-                self.delegate.followerSuggestionCellFollowButtonActionError(error: customError)
-                return
-            }
-            self.determineUserFollowStatus()
-            self.configureFollowerButton()
-        }
+        //TODO
+//        CurrentUser.unfollow(
+//            user: user
+//        ) { (customError) in
+//            if let customError = customError {
+//                self.delegate.followerSuggestionCellFollowButtonActionError(error: customError)
+//                return
+//            }
+//            self.determineUserFollowStatus()
+//            self.configureFollowerButton()
+//        }
     }
 }

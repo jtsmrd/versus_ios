@@ -61,62 +61,62 @@ class SearchBrowseVC: UIViewController {
     private func configureView() {
         
         getFeaturedCompetitions()
-        
-        CurrentUser.getFollowedUsers { (followedUsers, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                }
-            }
-        }
+        //TODO
+//        CurrentUser.getFollowedUsers { (followedUsers, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    debugPrint(customError.message)
+//                }
+//            }
+//        }
     }
     
     
     private func getLeaderboards() {
-        
-        LeaderboardCollection.instance.getLeaderboards { (success, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                }
-                else if success {
-                    self.leaderboardCollectionView.reloadData()
-                }
-            }
-        }
+        //TODO
+//        LeaderboardCollection.instance.getLeaderboards { (success, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    debugPrint(customError.message)
+//                }
+//                else if success {
+//                    self.leaderboardCollectionView.reloadData()
+//                }
+//            }
+//        }
     }
     
     
     private func getFeaturedCompetitions() {
-        
-        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                    return
-                }
-                self.featuredCompetitions = competitions
-                self.browseTableView.reloadData()
-            }
-        }
+        //TODO
+//        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    debugPrint(customError.message)
+//                    return
+//                }
+//                self.featuredCompetitions = competitions
+//                self.browseTableView.reloadData()
+//            }
+//        }
     }
     
     
     private func getFeaturedCompetitionsWith(categoryId: Int) {
-        
-        CompetitionService.instance.getFeaturedCompetitions(
-            categoryId: categoryId
-        ) { (competitions, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                    return
-                }
-                self.featuredCompetitions.removeAll()
-                self.featuredCompetitions.append(contentsOf: competitions)
-                self.browseTableView.reloadData()
-            }
-        }
+        //TODO
+//        CompetitionService.instance.getFeaturedCompetitions(
+//            categoryId: categoryId
+//        ) { (competitions, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    debugPrint(customError.message)
+//                    return
+//                }
+//                self.featuredCompetitions.removeAll()
+//                self.featuredCompetitions.append(contentsOf: competitions)
+//                self.browseTableView.reloadData()
+//            }
+//        }
     }
     
     

@@ -85,35 +85,36 @@ class NotificationCell: UITableViewCell {
             
             // competition image view = competition image for current user
             DispatchQueue.global(qos: .userInitiated).async {
-                self.competitionService.getCompetition(
-                    competitionId: notificationInfo.competitionId
-                ) { [weak self] (competition, customError) in
-                    if let customError = customError {
-                        DispatchQueue.main.async {
-                            self?.parentViewController?.displayError(error: customError)
-                        }
-                    }
-                    else if let competition = competition {
-                        
-                        // Get and display the competition image for the current user
-                        var currentUserCompetitorRecord: Competitor!
-                        if competition.firstCompetitor.userId == CurrentUser.userId {
-                            currentUserCompetitorRecord = competition.firstCompetitor
-                        }
-                        else {
-                            currentUserCompetitorRecord = competition.secondCompetitor
-                        }
-                        
-                        
-                        // TODO: Remove and use operation queue.
-                        self?.s3BucketService.downloadImage(mediaId: currentUserCompetitorRecord.mediaId, imageType: .small, completion: { [weak self] (image, customError) in
-                            
-                            DispatchQueue.main.async {
-                                self?.competitionImageView.image = image
-                            }
-                        })
-                    }
-                }
+                //TODO
+//                self.competitionService.getCompetition(
+//                    competitionId: notificationInfo.competitionId
+//                ) { [weak self] (competition, customError) in
+//                    if let customError = customError {
+//                        DispatchQueue.main.async {
+//                            self?.parentViewController?.displayError(error: customError)
+//                        }
+//                    }
+//                    else if let competition = competition {
+//
+//                        // Get and display the competition image for the current user
+//                        var currentUserCompetitorRecord: Competitor!
+//                        if competition.firstCompetitor.userId == CurrentUser.userId {
+//                            currentUserCompetitorRecord = competition.firstCompetitor
+//                        }
+//                        else {
+//                            currentUserCompetitorRecord = competition.secondCompetitor
+//                        }
+//
+//
+//                        // TODO: Remove and use operation queue.
+//                        self?.s3BucketService.downloadImage(mediaId: currentUserCompetitorRecord.mediaId, imageType: .small, completion: { [weak self] (image, customError) in
+//
+//                            DispatchQueue.main.async {
+//                                self?.competitionImageView.image = image
+//                            }
+//                        })
+//                    }
+//                }
             }
             
         case .follower:
@@ -166,7 +167,8 @@ class NotificationCell: UITableViewCell {
     }
     
     private func determineUserFollowStatus(userId: String) {
-        followStatus = CurrentUser.getFollowedUserStatusFor(userId: userId)
+        //TODO
+//        followStatus = CurrentUser.getFollowedUserStatusFor(userId: userId)
     }
     
     // Configure button to display 'follow' for unfollowed users or 'following' for followed users

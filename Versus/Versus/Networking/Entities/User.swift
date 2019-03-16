@@ -8,13 +8,16 @@
 
 class User: Codable {
     
+    private var _backgroundImage: String?
     private var _bio: String?
     private var _email: String?
+    private var _entries: [Entry]?
     private var _featured: Bool?
     private var _followedUserCount: Int?
     private var _followerCount: Int?
     private var _id: Int?
     private var _name: String?
+    private var _profileImage: String?
     private var _rankId: Int?
     private var _totalTimesVoted: Int?
     private var _totalWins: Int?
@@ -22,17 +25,20 @@ class User: Codable {
     private var _username: String?
     
     enum CodingKeys: String, CodingKey {
+        case _backgroundImage = "backgroundImage"
         case _bio = "bio"
         case _email = "email"
+        case _entries = "entries"
         case _featured = "featured"
         case _followedUserCount = "followedUserCount"
         case _followerCount = "followerCount"
         case _id = "id"
         case _name = "name"
-        case _rankId = "rank_id"
+        case _profileImage = "profileImage"
+        case _rankId = "rankId"
         case _totalTimesVoted = "totalTimesVoted"
         case _totalWins = "totalWins"
-        case _updateDate = "update_date"
+        case _updateDate = "updateDate"
         case _username = "username"
     }
 }
@@ -40,13 +46,43 @@ class User: Codable {
 extension User {
     
     
+    var backgroundImage: String {
+        get {
+            return _backgroundImage ?? ""
+        }
+        set {
+            _backgroundImage = newValue
+        }
+    }
+    
+    
     var bio: String {
-        return _bio ?? ""
+        get {
+            return _bio ?? ""
+        }
+        set {
+            _bio = newValue
+        }
+    }
+    
+    
+    var email: String {
+        return _email ?? ""
+    }
+    
+    
+    var entries: [Entry] {
+        return _entries ?? [Entry]()
     }
     
     
     var name: String {
-        return _name ?? ""
+        get {
+            return _name ?? ""
+        }
+        set {
+            _name = newValue
+        }
     }
     
     
@@ -62,6 +98,16 @@ extension User {
     
     var featured: Bool {
         return _featured ?? false
+    }
+    
+    
+    var profileImage: String {
+        get {
+            return _profileImage ?? ""
+        }
+        set {
+            _profileImage = newValue
+        }
     }
     
     

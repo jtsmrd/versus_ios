@@ -10,6 +10,10 @@ import UIKit
 import AWSUserPoolsSignIn
 import MobileCoreServices
 
+protocol EditProfileVCDelegate {
+    func profileUpdated()
+}
+
 class EditProfileVC: UIViewController {
 
     
@@ -30,6 +34,8 @@ class EditProfileVC: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     
     private let accountService = AccountService.instance
+    private let userService = UserService.instance
+    private let s3BucketService = S3BucketService.instance
     
     private var imagePicker: UIImagePickerController!
     private var editImageType: EditImageType!
@@ -39,6 +45,8 @@ class EditProfileVC: UIViewController {
     private var keyboardWillShowObserver: NSObjectProtocol!
     private var keyboardWillHideObserver: NSObjectProtocol!
     private var visibleRect: CGRect = .zero
+    
+    var delegate: EditProfileVCDelegate?
     
     
     override func viewDidLoad() {
@@ -142,19 +150,46 @@ class EditProfileVC: UIViewController {
     
     private func configureView() {
         
-        usernameTextField.text = CurrentUser.username
-        displayNameTextField.text = CurrentUser.displayName
-        bioTextView.text = CurrentUser.bio
-        if let profileImage = CurrentUser.profileImage {
-            profileImageView.image = profileImage
-        }
-        if let backgroundImage = CurrentUser.profileBackgroundImage {
-            backgroundImageView.image = backgroundImage
+        usernameTextField.text = CurrentAccount.user.username
+        displayNameTextField.text = CurrentAccount.user.name
+        bioTextView.text = CurrentAccount.user.bio
+        emailTextField.text = CurrentAccount.user.email
+        
+        let profileImageId = CurrentAccount.user.profileImage
+        if !profileImageId.isEmpty {
+            
+            s3BucketService.downloadImage(
+                mediaId: profileImageId,
+                imageType: .regular
+            ) { [weak self] (image, customError) in
+                
+                if let customError = customError {
+                    self?.displayError(error: customError)
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self?.profileImageView.image = image
+                }
+            }
         }
         
-        accountService.getEmail { (email) in
-            DispatchQueue.main.async {
-                self.emailTextField.text = email
+        let backgroundImage = CurrentAccount.user.backgroundImage        
+        if !backgroundImage.isEmpty {
+            
+            s3BucketService.downloadImage(
+                mediaId: backgroundImage,
+                imageType: .background
+            ) { [weak self] (image, customError) in
+                
+                if let customError = customError {
+                    self?.displayError(error: customError)
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self?.backgroundImageView.image = image
+                }
             }
         }
     }
@@ -168,28 +203,38 @@ class EditProfileVC: UIViewController {
     
     
     private func updateUser() {
+        
         if let displayName = displayNameTextField.text, !displayName.isEmpty {
-            CurrentUser.displayName = displayName
-            CurrentUser.searchDisplayName = displayName.lowercased()
-        }
-        if let username = usernameTextField.text, !username.isEmpty {
-            CurrentUser.username = username
-            CurrentUser.searchUsername = username.lowercased()
-        }
-        if let bio = bioTextView.text, !bio.isEmpty {
-            CurrentUser.bio = bio
+            CurrentAccount.user.name = displayName
         }
         
-        CurrentUser.updateProfile(
+        if let bio = bioTextView.text, !bio.isEmpty {
+            CurrentAccount.user.bio = bio
+        }
+        
+        
+        userService.updateProfile(
+            user: CurrentAccount.user,
             profileImage: profileImage,
             backgroundImage: backgroundImage
-        ) { (customError) in
+        ) { [weak self] (user, errorMessage) in
+            
             DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
                     return
                 }
-                self.dismiss(
+                
+                guard let user = user else {
+                    self?.displayMessage(message: "Unable to update account")
+                    return
+                }
+                
+                CurrentAccount.setUser(user: user)
+                self?.delegate?.profileUpdated()
+                
+                self?.dismiss(
                     animated: true,
                     completion: nil
                 )
@@ -340,7 +385,7 @@ extension EditProfileVC: UITextViewDelegate {
     func textViewDidChange(
         _ textView: UITextView
     ) {
-        CurrentUser.bio = textView.text
+//        CurrentUser.bio = textView.text
     }
 }
 
@@ -372,8 +417,8 @@ extension EditProfileVC:
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
     ) {
-// Local variable inserted by Swift 4.2 migrator.
-let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        // Local variable inserted by Swift 4.2 migrator.
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
 
         picker.dismiss(
             animated: true,

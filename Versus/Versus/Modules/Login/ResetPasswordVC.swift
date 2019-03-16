@@ -34,24 +34,24 @@ class ResetPasswordVC: UIViewController {
     
     @IBAction func resetPasswordButtonAction() {
         
-        guard let email = emailTextField.text else {
-            displayMessage(message: "Enter a valid email")
-            return
-        }
-        
-        user = cognito.getUser(email)
-        accountService.resetPassword(
-            user: user
-        ) { (successMessage, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                }
-                else if let message = successMessage {
-                    self.displaySuccessMessage(message: message)
-                }
-            }
-        }
+//        guard let email = emailTextField.text else {
+//            displayMessage(message: "Enter a valid email")
+//            return
+//        }
+//
+//        user = cognito.getUser(email)
+//        accountService.resetPassword(
+//            user: user
+//        ) { (successMessage, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.displayError(error: customError)
+//                }
+//                else if let message = successMessage {
+//                    self.displaySuccessMessage(message: message)
+//                }
+//            }
+//        }
     }
     
     private func displaySuccessMessage(message: String) {

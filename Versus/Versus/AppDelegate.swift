@@ -20,12 +20,9 @@ let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    private let SNSPlatformApplicationArn = "arn:aws:sns:us-east-1:853109377079:app/APNS_SANDBOX/VersusSmrdel"
     private let userService = UserService.instance
     
     var window: UIWindow?
-    var passwordAuthenticationCompletion: AWSTaskCompletionSource<AnyObject>?
-    var signInCredentials: SignInCredentials!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -35,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         AWSDDLog.sharedInstance.logLevel = .info
         
         // Create AWSMobileClient to connect with AWS
-        let interceptReturn = AWSMobileClient.sharedInstance().interceptApplication(application, didFinishLaunchingWithOptions: launchOptions)
+//        let interceptReturn = AWSMobileClient.sharedInstance().interceptApplication(application, didFinishLaunchingWithOptions: launchOptions)
         
         // Used for Lambda and SNS
         let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "us-east-1:b80002bd-0582-4a26-80b9-05737c384ef5")
@@ -44,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         showInitialView(launchOptions)
         
-        return interceptReturn
+        return true
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -73,47 +70,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let tokenParts = deviceToken.map { data -> String in
-            return String(format: "%02.2hhx", data)
-        }
-        let token = tokenParts.joined()
-        CurrentUser.remoteNotificationDeviceToken = token
-        
-        let request: AWSSNSCreatePlatformEndpointInput = AWSSNSCreatePlatformEndpointInput()
-        request.token = token
-        request.platformApplicationArn = SNSPlatformApplicationArn
-        
-        AWSSNS.default().createPlatformEndpoint(request).continueWith(executor: AWSExecutor.mainThread()) { (task: AWSTask!) -> Any? in
-            if let error = task.error {
-                debugPrint("Failed to create AWS platform endpoint: \(error.localizedDescription)")
-            }
-            else {
-                let createEndpointResponse = task.result! as AWSSNSCreateEndpointResponse
-                if let endpointArnForSNS = createEndpointResponse.endpointArn {
-                    CurrentUser.userAWSSNSEndpointARN = endpointArnForSNS
-                    debugPrint("Endpoint Arn: \(endpointArnForSNS)")
-                    
-                    // Save endpointArn to AWSUserEndpointArn
-                    self.userService.saveUserSNSEndpointARN(
-                        endpointArn: endpointArnForSNS,
-                        userId: CurrentUser.userId,
-                        completion: { (success, customError) in
-                            if let customError = customError {
-                                debugPrint(customError)
-                            }
-                            else if success {
-                                //TODO: Save value in UserDefaults in order to try again later.
-                                debugPrint("Successfully saved endpoint arn")
-                            }
-                            else {
-                                debugPrint("Error: Something went wrong when saving endpoint arn")
-                            }
-                        }
-                    )
-                }
-            }
-            return nil
-        }
+//        let tokenParts = deviceToken.map { data -> String in
+//            return String(format: "%02.2hhx", data)
+//        }
+//        let token = tokenParts.joined()
+//        CurrentUser.remoteNotificationDeviceToken = token
+//
+//        let request: AWSSNSCreatePlatformEndpointInput = AWSSNSCreatePlatformEndpointInput()
+//        request.token = token
+//        request.platformApplicationArn = Config.SNS_PLATFORM_APP_ARN
+//
+//        AWSSNS.default().createPlatformEndpoint(request).continueWith(executor: AWSExecutor.mainThread()) { (task: AWSTask!) -> Any? in
+//            if let error = task.error {
+//                debugPrint("Failed to create AWS platform endpoint: \(error.localizedDescription)")
+//            }
+//            else {
+//                let createEndpointResponse = task.result! as AWSSNSCreateEndpointResponse
+//                if let endpointArnForSNS = createEndpointResponse.endpointArn {
+//                    CurrentUser.userAWSSNSEndpointARN = endpointArnForSNS
+//                    debugPrint("Endpoint Arn: \(endpointArnForSNS)")
+//
+//                    // Save endpointArn to AWSUserEndpointArn
+//                    self.userService.saveUserSNSEndpointARN(
+//                        endpointArn: endpointArnForSNS,
+//                        userId: CurrentUser.userId,
+//                        completion: { (success, customError) in
+//                            if let customError = customError {
+//                                debugPrint(customError)
+//                            }
+//                            else if success {
+//                                //TODO: Save value in UserDefaults in order to try again later.
+//                                debugPrint("Successfully saved endpoint arn")
+//                            }
+//                            else {
+//                                debugPrint("Error: Something went wrong when saving endpoint arn")
+//                            }
+//                        }
+//                    )
+//                }
+//            }
+//            return nil
+//        }
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -131,48 +128,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     */
     func showInitialView(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         
-        if !CurrentUser.tutorialDisplayed {
+        if !CurrentAccount.tutorialDisplayed {
             showTutorial()
             return
         }
         
         if AWSSignInManager.sharedInstance().isLoggedIn {
             
-            guard AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.lastSignedInUserId else {
-                AWSCognitoIdentityUserPool.default().clearAll()
-                showLogin()
-                return
-            }
-            
-            loadCurrentUser { (success, error) in
-                DispatchQueue.main.async {
-                    if let customError = error, let customErrorError = customError.error {
-                        debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
-                        self.showLogin()
-                    }
-                    else if success {
-                        
-                        // User closed app when choosing username
-                        if CurrentUser.username.isEmpty {
-                            self.showChooseUsername()
-                            return
-                        }
-                        
-                        if let notification = launchOptions?[.remoteNotification] as? [String: AnyObject] {
-                            let aps = notification["aps"] as! [String: AnyObject]
-                            self.handleNotification(aps: aps)
-                            return
-                        }
-                        else {
-                            self.showMain()
-                        }
-                    }
-                    else {
-                        // Failed to load user
-                        self.showLogin()
-                    }
-                }
-            }
+//            guard AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.lastSignedInUserId else {
+//                AWSCognitoIdentityUserPool.default().clearAll()
+//                showLogin()
+//                return
+//            }
+//
+//            loadCurrentUser { (success, error) in
+//                DispatchQueue.main.async {
+//                    if let customError = error, let customErrorError = customError.error {
+//                        debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
+//                        self.showLogin()
+//                    }
+//                    else if success {
+//
+//                        if let notification = launchOptions?[.remoteNotification] as? [String: AnyObject] {
+//                            let aps = notification["aps"] as! [String: AnyObject]
+//                            self.handleNotification(aps: aps)
+//                            return
+//                        }
+//                        else {
+//                            self.showMain()
+//                        }
+//                    }
+//                    else {
+//                        // Failed to load user
+//                        self.showLogin()
+//                    }
+//                }
+//            }
         }
         else {
             // User isn't logged in
@@ -229,75 +220,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
     }
     
-    private func showChooseUsername() {
-        if let chooseUsernameVC = UIStoryboard(name: "Login", bundle: nil)
-            .instantiateViewController(withIdentifier: CHOOSE_USERNAME_VC) as? ChooseUsernameVC {
-            let navController = UINavigationController()
-            navController.isNavigationBarHidden = true
-            navController.addChild(chooseUsernameVC)
-            window?.rootViewController = navController
-            window?.makeKeyAndVisible()
-        }
-    }
-    
-    private func loadCurrentUser(completion: @escaping SuccessErrorCompletion) {
-        
-        UserService.instance.getUser(
-            userId: CurrentUser.lastSignedInUserId
-        ) { (awsUser, error) in
-            if let error = error {
-                completion(false, error)
-            }
-            else if let awsUser = awsUser {
-                CurrentUser.setAWSUser(awsUser: awsUser)
-                completion(true, nil)
-            }
-            else {
-                // User closed app without selecting a usename, which creates a user
-                completion(false, nil)
-            }
-        }
-    }
-    
-    
-    
-    func prepareForSignIn(signInCredentials: SignInCredentials) {
-        self.signInCredentials = signInCredentials
-        AWSCognitoUserPoolsSignInProvider.sharedInstance().setInteractiveAuthDelegate(self)
-    }
-}
-
-extension AppDelegate: AWSCognitoIdentityPasswordAuthentication {
-
-    func getDetails(_ authenticationInput: AWSCognitoIdentityPasswordAuthenticationInput, passwordAuthenticationCompletionSource: AWSTaskCompletionSource<AWSCognitoIdentityPasswordAuthenticationDetails>) {
-        passwordAuthenticationCompletion = passwordAuthenticationCompletionSource as? AWSTaskCompletionSource<AnyObject>
-    }
-
-    func didCompleteStepWithError(_ error: Error?) {
-        if let error = error {
-            debugPrint("Error password auth step: \(error.localizedDescription)")
-        }
-    }
-}
-
-extension AppDelegate: AWSCognitoIdentityInteractiveAuthenticationDelegate {
-
-    func startPasswordAuthentication() -> AWSCognitoIdentityPasswordAuthentication {
-        return self
-    }
-}
-
-extension AppDelegate: AWSCognitoUserPoolsSignInHandler {
-    
-    func handleUserPoolSignInFlowStart() {
-        
-        appDelegate.passwordAuthenticationCompletion?.set(
-            result: AWSCognitoIdentityPasswordAuthenticationDetails(
-                username: signInCredentials.username,
-                password: signInCredentials.password
-            )
-        )
-    }
+//    private func loadCurrentUser(completion: @escaping SuccessErrorCompletion) {
+//
+//        UserService.instance.getUser(
+//            userId: CurrentUser.lastSignedInUserId
+//        ) { (awsUser, error) in
+//            if let error = error {
+//                completion(false, error)
+//            }
+//            else if let awsUser = awsUser {
+//                CurrentUser.setAWSUser(awsUser: awsUser)
+//                completion(true, nil)
+//            }
+//            else {
+//                // User closed app without selecting a usename, which creates a user
+//                completion(false, nil)
+//            }
+//        }
+//    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {

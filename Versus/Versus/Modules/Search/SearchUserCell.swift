@@ -17,7 +17,9 @@ class SearchUserCell: UITableViewCell {
     
     weak var user: User?
     var followStatus: FollowStatus {
-        return CurrentUser.getFollowedUserStatusFor(userId: user!.userId)
+        //TODO
+//        return CurrentUser.getFollowedUserStatusFor(userId: user!.userId)
+        return .following
     }
     
     override func awakeFromNib() {
@@ -61,7 +63,7 @@ class SearchUserCell: UITableViewCell {
         self.user = user
         followButton.setButtonState(followStatus: followStatus)
         usernameLabel.text = user.username
-        displayNameLabel.text = user.displayName
+        displayNameLabel.text = user.name
 //        if let image = user.profileImage {
 //            profileImageView.image = image
 //            // Stop activity indicator
@@ -71,11 +73,12 @@ class SearchUserCell: UITableViewCell {
 //        }
         
 
-        user.getProfileImage { (image, error) in
-            DispatchQueue.main.async {
-                self.profileImageView.image = image
-            }
-        }
+        //TODO
+//        user.getProfileImage { (image, error) in
+//            DispatchQueue.main.async {
+//                self.profileImageView.image = image
+//            }
+//        }
     }
     
     
@@ -83,17 +86,18 @@ class SearchUserCell: UITableViewCell {
  
      */
     private func followUser() {
-        CurrentUser.follow(
-            user: user!
-        ) { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.parentViewController?.displayError(error: customError)
-                    return
-                }
-                self.followButton.setButtonState(followStatus: self.followStatus)
-            }
-        }
+        //TODO
+//        CurrentUser.follow(
+//            user: user!
+//        ) { (customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.parentViewController?.displayError(error: customError)
+//                    return
+//                }
+//                self.followButton.setButtonState(followStatus: self.followStatus)
+//            }
+//        }
     }
     
     
@@ -132,16 +136,17 @@ class SearchUserCell: UITableViewCell {
      
      */
     private func unfollowUser() {
-        CurrentUser.unfollow(
-            user: user!
-        ) { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.parentViewController?.displayError(error: customError)
-                    return
-                }
-                self.followButton.setButtonState(followStatus: self.followStatus)
-            }
-        }
+        //TODO
+//        CurrentUser.unfollow(
+//            user: user!
+//        ) { (customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.parentViewController?.displayError(error: customError)
+//                    return
+//                }
+//                self.followButton.setButtonState(followStatus: self.followStatus)
+//            }
+//        }
     }
 }

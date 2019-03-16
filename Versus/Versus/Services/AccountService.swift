@@ -6,107 +6,202 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSAuthCore
-import AWSUserPoolsSignIn
-
 class AccountService {
     
     static let instance = AccountService()
-    private let cognito = AWSCognitoIdentityUserPool.default()
-    private let signInManager = AWSSignInManager.sharedInstance()
     
-    var signInCredentials: SignInCredentials?
-    var passwordAuthenticationCompletion: AWSTaskCompletionSource<AnyObject>?
+    private let networkManager = NetworkManager()
+    private let router = Router<AccountEndpoint>()
+    
+    private let userService = UserService.instance
     
     private init() { }
     
     
-    /**
-     
-     */
-    func signUp(
+    
+    /// Check if the given username is available.
+    ///
+    /// - Parameters:
+    ///   - username: Username to check
+    ///   - completion: available: Bool, (optional) error message.
+    func checkUsernameAvailability(
         username: String,
-        password: String,
-        completion: @escaping (_ user: AWSCognitoIdentityUser?, _ error: CustomError?) -> Void
+        completion: @escaping (_ available: Bool, _ errorMessage: String?) -> ()
     ) {
-        var responseTask: AWSTask<AWSCognitoIdentityUserPoolSignUpResponse>!
-        let signUpDispatchGroup = DispatchGroup()
         
-        signUpDispatchGroup.enter()
-        cognito.signUp(
-            username,
-            password: password,
-            userAttributes: nil,
-            validationData: nil
-        ).continueWith { (task) -> Any? in
-            responseTask = task
-            signUpDispatchGroup.leave()
-            return nil
-        }
-        
-        signUpDispatchGroup.notify(queue: .main) {
-            var errorMessage = "Unable to sign up, try again"
+        router.request(
+            .usernameAvailable(username: username)
+        ) { (data, response, error) in
             
-            if let error = responseTask.error {
-                debugPrint("Failed to create user: \(error.localizedDescription)")
-                
-                if error.localizedDescription.contains("37") {
-                    errorMessage = "Email already exists"
-                }
-                else if error.localizedDescription.contains("14") {
-                    errorMessage = "Invalid password"
-                }
-                
-                completion(nil, CustomError(error: error, message: errorMessage))
+            if error != nil {
+                completion(false, "Please check your network connection.")
             }
-            else if let user = responseTask.result?.user {
-                debugPrint("Successfully created user")
-                completion(user, nil)
-            }
-            else {
-                debugPrint("Failed to create user")
-                completion(nil, CustomError(error: nil, message: errorMessage))
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(false, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    do {
+                        guard let json = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any],
+                            let available = json["available"] as? Bool else {
+                                completion(false, NetworkResponse.unableToDecode.rawValue)
+                                return
+                        }
+                        completion(available, nil)
+                    }
+                    catch {
+                        completion(false, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(false, networkFailureError)
+                }
             }
         }
     }
+    
+    
+    
+    /// Sign up a new user.
+    ///
+    /// - Parameters:
+    ///   - name: Full name
+    ///   - username: Username
+    ///   - email: Email
+    ///   - password: Password
+    ///   - retypedPassword: Retyped password
+    ///   - completion: (optional) User | (optional) error message
+    func signUp(
+        name: String,
+        username: String,
+        email: String,
+        password: String,
+        retypedPassword: String,
+        completion: @escaping (_ account: Account?, _ errorMessage: String?) -> Void
+    ) {
+        
+        router.request(
+            .create(
+                name: name,
+                email: email,
+                username: username,
+                password: password,
+                retypedPassword: retypedPassword
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let account = try decoder.decode(Account.self, from: responseData)
+                        completion(account, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    
+    /// Login user with username and password.
+    ///
+    /// - Parameters:
+    ///   - username: The users' username.
+    ///   - password: The users' password.
+    ///   - completion: (optional) error message.
+    func login(
+        username: String,
+        password: String,
+        completion: @escaping (_ account: Account?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .login(
+                username: username,
+                password: password
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let account = try decoder.decode(Account.self, from: responseData)
+                        completion(account, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
     
     
     /**
      
      */
     func verify(
-        awsUser: AWSCognitoIdentityUser,
-        confirmationCode: String,
         completion: @escaping SuccessErrorCompletion
     ) {
-        var responseTask: AWSTask<AWSCognitoIdentityUserConfirmSignUpResponse>!
-        let verifyDispatchGroup = DispatchGroup()
-        
-        verifyDispatchGroup.enter()
-        awsUser.confirmSignUp(
-            confirmationCode,
-            forceAliasCreation: true
-        ).continueWith { (task) -> Any? in
-            responseTask = task
-            verifyDispatchGroup.leave()
-            return nil
-        }
-        
-        verifyDispatchGroup.notify(queue: .main) {
-            var errorMessage = "Unable to verify user, try again"
-            
-            if let error = responseTask.error {
-                debugPrint("Failed to verify user: \(error.localizedDescription)")
-                
-                if error.localizedDescription.contains("20") {
-                    errorMessage = "Invalid verification code"
-                }
-                completion(false, CustomError(error: error, message: errorMessage))
-            }
-            else {
-                completion(true, nil)
-            }
-        }
+        //TODO
     }
     
     
@@ -116,37 +211,7 @@ class AccountService {
     func resendCode(
         completion: @escaping SuccessErrorCompletion
     ) {
-        guard let awsUser = cognito.currentUser() else {
-            completion(false, nil)
-            return
-        }
-        
-        var responseTask: AWSTask<AWSCognitoIdentityUserResendConfirmationCodeResponse>!
-        let resendCodeDispatchGroup = DispatchGroup()
-        
-        resendCodeDispatchGroup.enter()
-        awsUser.resendConfirmationCode()
-        .continueWith { (task) -> Any? in
-            responseTask = task
-            resendCodeDispatchGroup.leave()
-            return nil
-        }
-        
-        resendCodeDispatchGroup.notify(queue: .main) {
-            var errorMessage = "Unable to resend code, try again"
-            
-            if let error = responseTask.error {
-                debugPrint("Failed to resend code: \(error.localizedDescription)")
-                
-                if error.localizedDescription.contains("20") {
-                    errorMessage = "Invalid verification code"
-                }
-                completion(false, CustomError(error: error, message: errorMessage))
-            }
-            else {
-                completion(true, nil)
-            }
-        }
+        //TODO
     }
     
     
@@ -154,63 +219,9 @@ class AccountService {
      
      */
     func signIn(
-        signInCredentials: SignInCredentials,
         completion: @escaping SuccessErrorCompletion
     ) {
-        appDelegate.prepareForSignIn(signInCredentials: signInCredentials)
-        let signInProvider: AWSSignInProvider = AWSCognitoUserPoolsSignInProvider.sharedInstance()
-        
-        signInManager.login(
-            signInProviderKey: signInProvider.identityProviderName
-        ) { (result, error) in
-            if let error = error {
-                debugPrint("Failed to login: \(error.localizedDescription)")
-                completion(false, CustomError(error: error, message: "Unable to login user"))
-            }
-            else {
-                CurrentUser.clearSignupCredentials()
-                completion(true, nil)
-            }
-        }
-    }
-    
-    
-    /**
-     
-     */
-    func getEmail(
-        completion: @escaping (String) -> Void
-    ) {
-        let getEmailDispatchGroup = DispatchGroup()
-        let currentUser = cognito.currentUser()
-        var userEmail = ""
-        
-        getEmailDispatchGroup.enter()
-        currentUser?.getDetails().continueWith(
-            executor: AWSExecutor.mainThread(),
-            block: { (response) -> Any? in
-                if let error = response.error {
-                    debugPrint("Error getting user details: \(error.localizedDescription)")
-                    getEmailDispatchGroup.leave()
-                }
-                else if let result = response.result {
-                    if let attributes = result.userAttributes {
-                        for attribute in attributes {
-                            if let attributeName = attribute.name, attributeName == "email" {
-                                if let email = attribute.value {
-                                    userEmail = email
-                                    getEmailDispatchGroup.leave()
-                                }
-                            }
-                        }
-                    }
-                }
-                return nil
-            }
-        )
-        getEmailDispatchGroup.notify(queue: .main) {
-            completion(userEmail)
-        }
+        //TODO
     }
     
     
@@ -218,36 +229,9 @@ class AccountService {
      
      */
     func resetPassword(
-        user: AWSCognitoIdentityUser,
         completion: @escaping (_ successMessage: String?, _ customError: CustomError?) -> Void
     ) {
-        let resetPasswordDispatchGroup = DispatchGroup()
-        var responseTask: AWSTask<AWSCognitoIdentityUserForgotPasswordResponse>!
-        
-        resetPasswordDispatchGroup.enter()
-        user.forgotPassword().continueWith(
-            executor: AWSExecutor.mainThread()
-        ) { (response) -> Any? in
-            responseTask = response
-            resetPasswordDispatchGroup.leave()
-            return nil
-        }
-        
-        resetPasswordDispatchGroup.notify(queue: .main) {
-            if let error = responseTask.error {
-                completion(nil, CustomError(error: error, message: "Unable to reset password"))
-            }
-            else if let result = responseTask.result, let deliveryDetails = result.codeDeliveryDetails {
-                switch deliveryDetails.deliveryMedium {
-                case .email:
-                    completion("A verification code has been sent to your email", nil)
-                case .sms:
-                    completion("A verification code has been sent to your phone", nil)
-                case .unknown:
-                    completion(nil, CustomError(error: nil, message: "Unable to reset password"))
-                }
-            }
-        }
+        //TODO
     }
     
     
@@ -255,34 +239,11 @@ class AccountService {
      
      */
     func confirmPasswordChange(
-        user: AWSCognitoIdentityUser,
         verificationCode: String,
         password: String,
         completion: @escaping SuccessErrorCompletion
     ) {
-        let confirmForgotPasswordDispatchGroup = DispatchGroup()
-        var responseTask: AWSTask<AWSCognitoIdentityUserConfirmForgotPasswordResponse>!
-        
-        confirmForgotPasswordDispatchGroup.enter()
-        user.confirmForgotPassword(
-            verificationCode,
-            password: password
-        ).continueWith(
-            executor: AWSExecutor.mainThread()
-        ) { (response) -> Any? in
-            responseTask = response
-            confirmForgotPasswordDispatchGroup.leave()
-            return nil
-        }
-        
-        confirmForgotPasswordDispatchGroup.notify(queue: .main) {
-            if let error = responseTask.error {
-                completion(false, CustomError(error: error, message: "Unable to change password"))
-            }
-            else {
-                completion(true, nil)
-            }
-        }
+        //TODO
     }
     
     
@@ -290,8 +251,6 @@ class AccountService {
      
      */
     func signOut(completion: @escaping (Bool) -> ()) {
-        cognito.currentUser()?.signOut()
-        cognito.clearAll()
-        completion(true)
+        //TODO
     }
 }

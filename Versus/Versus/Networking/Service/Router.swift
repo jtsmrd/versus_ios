@@ -11,7 +11,10 @@ class Router<Endpoint: EndpointType>: NetworkRouter {
     private var task: URLSessionTask?
     
     
-    func request(_ route: Endpoint, completion: @escaping NetworkRouterCompletion) {
+    func request(
+        _ route: Endpoint,
+        completion: @escaping NetworkRouterCompletion
+    ) {
         
         let session = URLSession.shared
         
@@ -35,7 +38,9 @@ class Router<Endpoint: EndpointType>: NetworkRouter {
     }
     
     
-    private func buildRequest(from route: Endpoint) throws -> URLRequest {
+    private func buildRequest(
+        from route: Endpoint
+    ) throws -> URLRequest {
         
         var request = URLRequest(url: route.baseURL.appendingPathComponent(route.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
         
@@ -67,7 +72,11 @@ class Router<Endpoint: EndpointType>: NetworkRouter {
     }
     
     
-    private func configureParameters(bodyParameters: Parameters?, urlParameters: Parameters?, request: inout URLRequest) throws {
+    private func configureParameters(
+        bodyParameters: Parameters?,
+        urlParameters: Parameters?,
+        request: inout URLRequest
+    ) throws {
         
         do {
             if let bodyParameters = bodyParameters {
@@ -84,7 +93,10 @@ class Router<Endpoint: EndpointType>: NetworkRouter {
     }
     
     
-    private func addAdditionalHeaders(_ additionalHeaders: HTTPHeaders?, request: inout URLRequest) {
+    private func addAdditionalHeaders(
+        _ additionalHeaders: HTTPHeaders?,
+        request: inout URLRequest
+    ) {
         
         guard let headers = additionalHeaders else { return }
         

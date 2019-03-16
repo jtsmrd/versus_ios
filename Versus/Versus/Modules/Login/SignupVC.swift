@@ -2,32 +2,48 @@
 //  SignupVC.swift
 //  Versus
 //
-// Creates a new identity (in User Pool) via email or phone number.
+// Creates a new User.
 //
 //  Created by JT Smrdel on 3/30/18.
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
-
-import UIKit
-import AWSUserPoolsSignIn
 
 class SignupVC: UIViewController {
 
     
     // MARK: - Outlets
     
-    @IBOutlet weak var emailPhoneNumberTextField: UITextField!
-    @IBOutlet weak var passwordTextField: UITextField!
-    @IBOutlet weak var passwordRequirementsLabel: UILabel!
-    @IBOutlet weak var signupButton: RoundButton!
     @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var fullNameTextField: UITextField!
+    @IBOutlet weak var usernameTextField: UITextField!
+    @IBOutlet weak var emailTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var retypedPasswordTextField: UITextField!
+    @IBOutlet weak var validationMessageLabel: UILabel!
+    @IBOutlet weak var signupButton: RoundButton!
+    
+    
+    
+    // MARK: - Constants
+    
+    private let accountService = AccountService.instance
+    
     
     
     // MARK: - Variables
     
-    var signupMethod: SignupMethod = .email
-    var signInCredentials: SignInCredentials!
-    var keyboardToolbar: KeyboardToolbar!
+    private var keyboardToolbar: KeyboardToolbar!
+    private var inputValid: Bool = false {
+        didSet {
+            validationMessageLabel.isHidden = inputValid
+        }
+    }
+    private var usernameAvailable: Bool = false {
+        didSet {
+            validationMessageLabel.isHidden = usernameAvailable
+        }
+    }
+    
     
     
     // MARK: - View Functions
@@ -36,23 +52,8 @@ class SignupVC: UIViewController {
         super.viewDidLoad()
 
         keyboardToolbar = KeyboardToolbar(includeNavigation: true)
-        
-        switch signupMethod {
-        case .email:
-            emailPhoneNumberTextField.placeholder = "Email"
-            emailPhoneNumberTextField.keyboardType = .emailAddress
-        case .phoneNumber:
-            emailPhoneNumberTextField.placeholder = "Phone number"
-            emailPhoneNumberTextField.keyboardType = .phonePad
-        }
     }
 
-    
-    // MARK: - Required Functions
-    
-    func initData(signupMethod: SignupMethod) {
-        self.signupMethod = signupMethod
-    }
     
     
     // MARK: - Actions
@@ -63,81 +64,74 @@ class SignupVC: UIViewController {
     }
     
     
-    // Created a new identity (in User Pool) via email or phone then transitions to VerifyUserVC.
-    // TODO:
-    // - Authenticate using AWS Cognito via email or phone.
+    
+    /// Validate input and create a new User.
     @IBAction func signupButtonAction() {
         
         guard inputDataIsValid() else { return }
         
-        let username = emailPhoneNumberTextField.text!
+        let name = fullNameTextField.text!
+        let username = usernameTextField.text!
+        let email = emailTextField.text!
         let password = passwordTextField.text!
+        let retypedPassword = retypedPasswordTextField.text!
         
-        signInCredentials = SignInCredentials(username: username, password: password)
-        
-        // If the user exits the app before signing in, we need the username and password when signing in
-        CurrentUser.setSignInCredentials(signInCredentials: signInCredentials)
-        
-        AccountService.instance.signUp(
-            username: username,
-            password: password
-        ) { (awsUser, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    self.displayError(error: error)
-                }
-                else if let _ = awsUser {
-                    self.performSegue(withIdentifier: SHOW_VERIFY_USER, sender: nil)
-                }
-            }
+        if CurrentAccount.user.id == -1 {
+            
+            createUserAccount(
+                name: name,
+                username: username,
+                email: email,
+                password: password,
+                retypedPassword: retypedPassword
+            )
+        }
+        else {
+            
+            loginUser(
+                username: username,
+                password: password
+            )
         }
     }
     
-    
-    @IBAction func alreadyHaveCodeButtonAction() {
-        performSegue(withIdentifier: SHOW_VERIFY_USER, sender: nil)
-    }
     
     
     // MARK: - Private Funtions
     
-    // Validate email or phone number and password prior to attempting to create a new user
-    // TODO:
-    // - If signup method is email, validate email.
-    // - If signup method is phone number, validate phone number.
-    // Valid phone numbers are strings prefixed with '+' and the international code. ex: +14128885555
+    
+    /// Validate input for creating a new user.
+    ///
+    /// - Returns: true | false
     private func inputDataIsValid() -> Bool {
         
-        guard let emailPhoneNumber = emailPhoneNumberTextField.text, !emailPhoneNumber.isEmpty else {
-            switch signupMethod {
-            case .email:
-                displayMessage(message: "Provide a valid email")
-            case .phoneNumber:
-                displayMessage(message: "Provide a valid phone number")
-            }
+        guard let name = fullNameTextField.text, !name.isEmpty, name.count > 3 else {
+            displayMessage(message: "Please enter your full name")
             return false
         }
         
-        switch signupMethod {
-        case .email:
-            guard emailPhoneNumber.isValidEmail else {
-                displayMessage(message: "Provide a valid email")
-                return false
-            }
-        case .phoneNumber:
-            guard emailPhoneNumber.isValidPhoneNumber else {
-                displayMessage(message: "Provide a valid phone number")
-                return false
-            }
-        }
-        
-        guard let password = passwordTextField.text, !password.isEmpty else {
-            displayMessage(message: "Provide a valid password")
+        guard let username = usernameTextField.text, !username.isEmpty, username.count >= 5, username.count <= 20 else {
+            displayMessage(message: "Please enter a username")
             return false
         }
         
-        guard password.isValidPassword else {
-            displayMessage(message: "Provide a valid password")
+        guard usernameAvailable else {
+            displayMessage(message: "Please enter a valid username")
+            return false
+        }
+        
+        guard let email = emailTextField.text, !email.isEmpty, email.isValidEmail else {
+            displayMessage(message: "Please enter a valid email")
+            return false
+        }
+        
+        guard let password = passwordTextField.text, !password.isEmpty, password.isValidPassword else {
+            displayMessage(message: "Please enter a valid password")
+            return false
+        }
+        
+        guard let retypedPassword = retypedPasswordTextField.text, retypedPassword == password else {
+            displayMessage(message: "Passwords do not match")
             return false
         }
         
@@ -145,10 +139,90 @@ class SignupVC: UIViewController {
     }
     
     
-    // MARK: - Navigation
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    private func checkUsernameAvailability(username: String) {
         
+        //TODO: Handle search concurrency.
+        accountService.checkUsernameAvailability(
+            username: username
+        ) { [weak self] (available, errorMessage) in
+            
+            DispatchQueue.main.async {
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                if !available {
+                    self?.validationMessageLabel.text = "Username unavailable"
+                }
+                self?.usernameAvailable = available
+            }
+        }
+    }
+    
+    
+    
+    private func createUserAccount(
+        name: String,
+        username: String,
+        email: String,
+        password: String,
+        retypedPassword: String
+    ) {
+        
+        accountService.signUp(
+            name: name,
+            username: username,
+            email: email,
+            password: password,
+            retypedPassword: retypedPassword
+        ) { [weak self] (account, errorMessage) in
+            
+            DispatchQueue.main.async {
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let account = account else {
+                    self?.displayMessage(message: "Unable to load account")
+                    return
+                }
+                
+                CurrentAccount.setAccount(account: account)
+                self?.performSegue(withIdentifier: SHOW_FOLLOW_SUGGESTIONS, sender: nil)
+            }
+        }
+    }
+    
+    
+    
+    private func loginUser(
+        username: String,
+        password: String
+    ) {
+        
+        accountService.login(
+            username: username,
+            password: password
+        ) { [weak self] (account, errorMessage) in
+            
+            DispatchQueue.main.async {
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let account = account else {
+                    self?.displayMessage(message: "Unable to load account")
+                    return
+                }
+                
+                CurrentAccount.setAccount(account: account)
+                self?.performSegue(withIdentifier: SHOW_FOLLOW_SUGGESTIONS, sender: nil)
+            }
+        }
     }
 }
 
@@ -157,5 +231,103 @@ extension SignupVC: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         textField.inputAccessoryView = keyboardToolbar
         return true
+    }
+    
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        if textField == usernameTextField, let existingText = textField.text {
+            
+            // Don't attempt to search unless the existing text
+            // is >= 4 characters.
+            guard existingText.count >= 4 else {
+                return true
+            }
+            
+            // Don't search or allow users to enter more than
+            // 20 characters for a username.
+            guard existingText.count <= 20 else {
+                return false
+            }
+            
+            let newText = string
+            var usernameText = ""
+            
+            // If the newText is empty, the last character will be deleted.
+            if newText.isEmpty {
+                usernameText = String(existingText.prefix(existingText.count - 1))
+            }
+            else { // Append the new character to the usernameText
+                usernameText = existingText + newText
+            }
+            
+            guard usernameText.count >= 5 else {
+                return true
+            }
+            
+            checkUsernameAvailability(username: usernameText)
+        }
+        
+        return true
+    }
+    
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        
+        if textField == fullNameTextField {
+            
+            guard let name = fullNameTextField.text, !name.isEmpty, name.count > 3 else {
+                validationMessageLabel.text = "Please enter a valid name"
+                textField.layer.borderColor = UIColor.red.cgColor
+                inputValid = false
+                return
+            }
+        }
+        else if textField == usernameTextField {
+            
+            guard let username = usernameTextField.text, !username.isEmpty, username.count > 4 else {
+                validationMessageLabel.text = "Please enter a valid username"
+                textField.layer.borderColor = UIColor.red.cgColor
+                inputValid = false
+                return
+            }
+        }
+        else if textField == emailTextField {
+            
+            guard let email = emailTextField.text, !email.isEmpty, email.isValidEmail else {
+                validationMessageLabel.text = "Please enter a valid email"
+                textField.layer.borderColor = UIColor.red.cgColor
+                inputValid = false
+                return
+            }
+        }
+        else if textField == passwordTextField {
+            
+            guard let password = passwordTextField.text, password.isValidPassword else {
+                validationMessageLabel.text = "Please enter a valid password"
+                textField.layer.borderColor = UIColor.red.cgColor
+                inputValid = false
+                return
+            }
+        }
+        else if textField == retypedPasswordTextField {
+            
+            guard let password = passwordTextField.text else {
+                validationMessageLabel.text = "Please enter a valid password"
+                textField.layer.borderColor = UIColor.red.cgColor
+                inputValid = false
+                return
+            }
+            
+            guard let retypedPassword = retypedPasswordTextField.text, retypedPassword == password else {
+                validationMessageLabel.text = "Passwords do not match"
+                textField.layer.borderColor = UIColor.red.cgColor
+                inputValid = false
+                return
+            }
+        }
+        
+        textField.layer.borderColor = UIColor.green.cgColor
+        inputValid = true
     }
 }

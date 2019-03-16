@@ -18,7 +18,7 @@ class FollowSuggestionsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        getFollowerSuggestions()
+//        getFollowerSuggestions()
         
     }
 

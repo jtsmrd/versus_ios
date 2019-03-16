@@ -22,33 +22,34 @@ class NotificationService {
     func getCurrentUserNotifications(
         completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void
     ) {
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#userId = :userId"
-        queryExpression.expressionAttributeNames = [
-            "#userId": "userId"
-        ]
-        queryExpression.expressionAttributeValues = [
-            ":userId": CurrentUser.userId
-        ]
-        queryExpression.scanIndexForward = false
-        
-        var notifications = [Notification]()
-        dynamoDB.query(
-            Notification.self,
-            expression: queryExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(notifications, CustomError(error: error, message: "Unable to load user notifications"))
-                return
-            }
-            if let result = paginatedOutput,
-                let notificationResults = result.items as? [Notification] {
-                for item in notificationResults {
-                    notifications.append(item)
-                }
-            }
-            completion(notifications, nil)
-        }
+        //TODO
+//        let queryExpression = AWSDynamoDBQueryExpression()
+//        queryExpression.keyConditionExpression = "#userId = :userId"
+//        queryExpression.expressionAttributeNames = [
+//            "#userId": "userId"
+//        ]
+//        queryExpression.expressionAttributeValues = [
+//            ":userId": CurrentUser.userId
+//        ]
+//        queryExpression.scanIndexForward = false
+//
+//        var notifications = [Notification]()
+//        dynamoDB.query(
+//            Notification.self,
+//            expression: queryExpression
+//        ) { (paginatedOutput, error) in
+//            if let error = error {
+//                completion(notifications, CustomError(error: error, message: "Unable to load user notifications"))
+//                return
+//            }
+//            if let result = paginatedOutput,
+//                let notificationResults = result.items as? [Notification] {
+//                for item in notificationResults {
+//                    notifications.append(item)
+//                }
+//            }
+//            completion(notifications, nil)
+//        }
     }
     
     

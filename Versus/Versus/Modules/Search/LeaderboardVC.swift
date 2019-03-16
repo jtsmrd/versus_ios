@@ -52,7 +52,8 @@ class LeaderboardVC: UIViewController {
     
     private func showLeaderProfile(leader: Leader) {
         if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-            profileVC.initData(userId: leader.userId, profileViewMode: .viewOnly)
+            //TODO
+//            profileVC.initData(userId: leader.userId)
             profileVC.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(profileVC, animated: true)
         }

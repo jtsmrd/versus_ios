@@ -28,13 +28,13 @@ class ProfileVC: UIViewController {
     
     private let userService = UserService.instance
     private let accountService = AccountService.instance
-    private let competitionEntryService = CompetitionEntryService.instance
-    private let competitionService = CompetitionService.instance
+    private let entryService = EntryService.instance
+//    private let competitionService = CompetitionService.instance
     
-    private var userId: String!
-    private var user: User?
-    private var competitions: [Competition]!
-    private var unmatchedCompetitionEntries: [CompetitionEntry]!
+    private var userId: Int!
+    private var user: User!
+    private var competitions = [Competition]()
+    private var unmatchedEntries = [Entry]()
     private var profileViewMode: ProfileViewMode = .viewOnly
     
     var delegate: ProfileVCDelegate?
@@ -44,21 +44,27 @@ class ProfileVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        competitions = [Competition]()
-        unmatchedCompetitionEntries = [CompetitionEntry]()
-        
-        loadUser(userId: userId)
-        
-        loadCompetitions(userId: userId)
-        
-        loadUnmatchedCompetitionEntries(userId: userId)
+        if CurrentAccount.userIsMe(userId: userId) {
+            profileViewMode = .edit
+            user = CurrentAccount.user
+            unmatchedEntries = user.entries
+            configureView()
+            loadCompetitions()
+//            loadUnmatchedEntries()
+        }
+        else {
+            profileViewMode = .viewOnly
+            loadUser { [weak self] (success) in
+                self?.loadCompetitions()
+                self?.loadUnmatchedEntries()
+            }
+        }
     }
 
     
     
-    func initData(userId: String, profileViewMode: ProfileViewMode) {
+    func initData(userId: Int) {
         self.userId = userId
-        self.profileViewMode = profileViewMode
     }
     
     
@@ -74,52 +80,35 @@ class ProfileVC: UIViewController {
     
     
     
-    private func loadUser(userId: String) {
+    private func loadUser(
+        completion: @escaping (_ success: Bool) -> ()
+    ) {
         
-        userService.getUser(userId: userId) { [weak self] (awsUser, customError) in
+        userService.loadUser(
+            userId: userId
+        ) { [weak self] (user, errorMessage) in
             
             DispatchQueue.main.async {
                 
-                if let customError = customError {
-                    self?.displayError(error: customError)
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
                     return
                 }
                 
-                guard let awsUser = awsUser else {
+                guard let user = user else {
                     self?.displayError(error: CustomError(error: nil, message: "Unable to load user"))
                     return
                 }
-                
-                self?.user = User(awsUser: awsUser)
+                self?.user = user
                 self?.configureView()
             }
         }
     }
     
     
-    private func loadCompetitions(userId: String) {
-        
-        competitionService.getCompetitionsFor(userId: userId) { [weak self] (competitions, customError) in
-            
-            DispatchQueue.main.async {
-                
-                if let customError = customError {
-                    self?.displayError(error: customError)
-                    return
-                }
-                
-                self?.competitions = competitions                
-                self?.competitionCollectionView.reloadData()
-            }
-        }
-    }
-    
-    
-    private func loadUnmatchedCompetitionEntries(userId: String) {
-        
-//        competitionEntryService.getUnmatchedCompetitionEntries(
-//            userId: CurrentUser.userId
-//        ) { [weak self] (unmatchedCompetitionEntries, customError) in
+    private func loadCompetitions() {
+        //TODO
+//        competitionService.getCompetitionsFor(userId: userId) { [weak self] (competitions, customError) in
 //
 //            DispatchQueue.main.async {
 //
@@ -128,21 +117,27 @@ class ProfileVC: UIViewController {
 //                    return
 //                }
 //
-//                self?.unmatchedCompetitionEntries = unmatchedCompetitionEntries
+//                self?.competitions = competitions
 //                self?.competitionCollectionView.reloadData()
 //            }
 //        }
+    }
+    
+    
+    private func loadUnmatchedEntries() {
         
-        NetworkManager().getUnmatchedCompetitionEntries(userId: CurrentUser.userId) { [weak self] (unmatchedEntries, errorString) in
+        entryService.getUnmatchedEntries(
+            userId: user.id
+        ) { [weak self] (entries, errorMessage) in
             
             DispatchQueue.main.async {
                 
-                if let errorString = errorString {
-                    self?.displayMessage(message: errorString)
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
                     return
                 }
                 
-                self?.unmatchedCompetitionEntries = unmatchedEntries
+                self?.unmatchedEntries = entries
                 self?.competitionCollectionView.reloadData()
             }
         }
@@ -200,6 +195,7 @@ class ProfileVC: UIViewController {
         let viewController = mainStoryboard.instantiateViewController(withIdentifier: EDIT_PROFILE_VC)
         
         if let editProfileVC = viewController as? EditProfileVC {
+            editProfileVC.delegate = self
             present(editProfileVC, animated: true, completion: nil)
         }
     }
@@ -239,15 +235,9 @@ class ProfileVC: UIViewController {
 
     
     // MARK: - Navigation
-    
-    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        return user != nil
-    }
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        guard let user = user else { return }
         
         if let rankVC = segue.destination as? RankVC {
             rankVC.initData(user: user)
@@ -258,7 +248,7 @@ class ProfileVC: UIViewController {
         else if let followedUserVC = segue.destination as? FollowedUserVC {
             followedUserVC.initData(user: user)
         }
-        else if let unmatchedEntriesVC = segue.destination as? UnmatchedEntriesVC, let unmatchedEntries = sender as? [CompetitionEntry] {
+        else if let unmatchedEntriesVC = segue.destination as? UnmatchedEntriesVC, let unmatchedEntries = sender as? [Entry] {
             unmatchedEntriesVC.initData(unmatchedEntries: unmatchedEntries)
         }
     }
@@ -292,7 +282,8 @@ extension ProfileVC: UICollectionViewDataSource {
         if let profileCompetitionCell = cell as? ProfileCompetitionCell {
             
             let competition = competitions[indexPath.row]
-            profileCompetitionCell.configureCell(competition: competition, userId: userId)
+            //TODO
+//            profileCompetitionCell.configureCell(competition: competition, userId: userId)
             
             return profileCompetitionCell
         }
@@ -306,7 +297,12 @@ extension ProfileVC: UICollectionViewDataSource {
         
         if let profileInfoCollectionViewHeader = view as? ProfileInfoCollectionViewHeader {
             
-            profileInfoCollectionViewHeader.configureView(user: user, profileViewMode: profileViewMode, unmatchedCompetitionEntries: unmatchedCompetitionEntries, delegate: self)
+            profileInfoCollectionViewHeader.configureView(
+                user: user,
+                profileViewMode: profileViewMode,
+                unmatchedEntries: unmatchedEntries,
+                delegate: self
+            )
             
             return profileInfoCollectionViewHeader
         }
@@ -350,5 +346,14 @@ extension ProfileVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         
         return collectionViewSectionInsets.left
+    }
+}
+
+
+extension ProfileVC: EditProfileVCDelegate {
+    
+    func profileUpdated() {
+        user = CurrentAccount.user
+        competitionCollectionView.reloadData()
     }
 }

@@ -35,8 +35,10 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
     @IBOutlet weak var unmatchedCompetitionEntriesViewHeight: NSLayoutConstraint!
     
+    private let s3BucketService = S3BucketService.instance
+    
     private var user: User!
-    private var unmatchedCompetitionEntries: [CompetitionEntry]!
+    private var unmatchedEntries: [Entry]!
     private var originalUnmatchedCompetitionEntriesViewHeight: CGFloat!
     private var profileViewMode: ProfileViewMode = .viewOnly
     private var followStatus: FollowStatus = .notFollowing
@@ -46,7 +48,7 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        unmatchedCompetitionEntries = [CompetitionEntry]()
+        unmatchedEntries = [Entry]()
         
         originalUnmatchedCompetitionEntriesViewHeight = unmatchedCompetitionEntriesViewHeight.constant
         
@@ -105,24 +107,27 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
     
     @objc func unmatchedCompetitionEntriesViewTapped() {
-        parentViewController?.performSegue(withIdentifier: SHOW_UNMATCHED_ENTRIES, sender: unmatchedCompetitionEntries)
+        parentViewController?.performSegue(withIdentifier: SHOW_UNMATCHED_ENTRIES, sender: unmatchedEntries)
     }
     
     
     
-    func configureView(user: User?, profileViewMode: ProfileViewMode, unmatchedCompetitionEntries: [CompetitionEntry], delegate: ProfileInfoCollectionViewHeaderDelegate) {
-        
-        guard let user = user else { return }
+    func configureView(
+        user: User,
+        profileViewMode: ProfileViewMode,
+        unmatchedEntries: [Entry],
+        delegate: ProfileInfoCollectionViewHeaderDelegate
+    ) {
         
         self.user = user
         self.profileViewMode = profileViewMode
-        self.unmatchedCompetitionEntries = unmatchedCompetitionEntries
+        self.unmatchedEntries = unmatchedEntries
         self.delegate = delegate
         
         //TEMPORARY: Hide direct message button until implemented.
         directMessageButton.isHidden = true
         
-        displayNameLabel.text = user.displayName
+        displayNameLabel.text = user.name
         bioLabel.text = user.bio
         winsLabel.text = String(format: "%d", user.totalWins)
         
@@ -136,26 +141,47 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
         
         rankImageView.image = UIImage(named: user.rank.imageName)
         rankTitleLabel.text = user.rank.title
-        profileImageView.image = user.profileImage
-        backgroundImageView.image = user.profileBackgroundImage
         
         configureFollowerButton()
         
-        configureUnmatchedCompetitionEntriesView()
+        configureUnmatchedEntriesView()
         
-        // Get profile image
-        user.getProfileImage { (image, error) in
+        
+        let profileImageId = CurrentAccount.user.profileImage
+        if !profileImageId.isEmpty {
             
-            DispatchQueue.main.async {
-                self.profileImageView.image = image
+            s3BucketService.downloadImage(
+                mediaId: profileImageId,
+                imageType: .regular
+            ) { [weak self] (image, customError) in
+                
+                if let customError = customError {
+                    self?.parentViewController?.displayError(error: customError)
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self?.profileImageView.image = image
+                }
             }
         }
         
-        // Get background image
-        user.getProfileBackgroundImage { (image, error) in
+        let backgroundImage = CurrentAccount.user.backgroundImage
+        if !backgroundImage.isEmpty {
             
-            DispatchQueue.main.async {
-                self.backgroundImageView.image = image
+            s3BucketService.downloadImage(
+                mediaId: backgroundImage,
+                imageType: .background
+            ) { [weak self] (image, customError) in
+                
+                if let customError = customError {
+                    self?.parentViewController?.displayError(error: customError)
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self?.backgroundImageView.image = image
+                }
             }
         }
     }
@@ -163,28 +189,26 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
     
     private func configureFollowerButton() {
         
-        // Only show and configure the follow button if you're viewing another
-        // users' profile.
-        guard profileViewMode == .viewOnly && !CurrentUser.userIsMe(userId: user.userId) else {
-            
+        guard !CurrentAccount.userIsMe(userId: user.id) else {
             followButton.isHidden = true
             return
         }
         
         // See if you're following them or now.
-        followStatus = CurrentUser.getFollowedUserStatusFor(userId: user.userId)
+        //TODO
+//        followStatus = CurrentUser.getFollowedUserStatusFor(userId: user.userId)
         
         // Set the state of the button based on the followStatus.
         followButton.setButtonState(followStatus: followStatus)
     }
     
     
-    private func configureUnmatchedCompetitionEntriesView() {
-        
-        if CurrentUser.userIsMe(userId: user.userId) && unmatchedCompetitionEntries.count > 0 {
-            
+    private func configureUnmatchedEntriesView() {
+
+        if CurrentAccount.userIsMe(userId: user.id) && unmatchedEntries.count > 0 {
+
             unmatchedCompetitionEntriesViewHeight.constant = originalUnmatchedCompetitionEntriesViewHeight
-            unmatchedCompetitionEntriesLabel.text = String(format: "Unmatched Entries (%d)", unmatchedCompetitionEntries.count)
+            unmatchedCompetitionEntriesLabel.text = String(format: "Unmatched Entries (%d)", unmatchedEntries.count)
         }
         else {
             unmatchedCompetitionEntriesViewHeight.constant = 1.0
@@ -215,20 +239,21 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
      
      */
     private func followUser() {
-        CurrentUser.follow(
-            user: user
-        ) { (customError) in
-            
-            DispatchQueue.main.async {
-                
-                if let customError = customError {
-                    self.parentViewController?.displayError(error: customError)
-                    return
-                }
-                
-                self.configureFollowerButton()
-            }
-        }
+        //TODO
+//        CurrentUser.follow(
+//            user: user
+//        ) { (customError) in
+//
+//            DispatchQueue.main.async {
+//
+//                if let customError = customError {
+//                    self.parentViewController?.displayError(error: customError)
+//                    return
+//                }
+//
+//                self.configureFollowerButton()
+//            }
+//        }
     }
     
     
@@ -236,20 +261,21 @@ class ProfileInfoCollectionViewHeader: UICollectionReusableView {
  
      */
     private func unfollowUser() {
-        CurrentUser.unfollow(
-            user: user
-        ) { (customError) in
-            
-            DispatchQueue.main.async {
-                
-                if let customError = customError {
-                    self.parentViewController?.displayError(error: customError)
-                    return
-                }
-                
-                self.configureFollowerButton()
-                self.delegate.unfollowedUser(user: self.user)
-            }
-        }
+        //TODO
+//        CurrentUser.unfollow(
+//            user: user
+//        ) { (customError) in
+//
+//            DispatchQueue.main.async {
+//
+//                if let customError = customError {
+//                    self.parentViewController?.displayError(error: customError)
+//                    return
+//                }
+//
+//                self.configureFollowerButton()
+//                self.delegate.unfollowedUser(user: self.user)
+//            }
+//        }
     }
 }

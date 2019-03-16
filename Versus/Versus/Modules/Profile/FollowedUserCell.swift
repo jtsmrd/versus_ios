@@ -80,20 +80,22 @@ class FollowedUserCell: UITableViewCell {
      
      */
     func configureCell(followedUser: FollowedUser, delegate: FollowedUserCellDelegate) {
-        self.followedUser = followedUser
-        self.delegate = delegate
-        followButton.isHidden = CurrentUser.userIsMe(userId: followedUser.followedUserUserId)
-        followButton.setButtonState(followStatus: .following)
-        usernameLabel.text = followedUser.username
-        displayNameLabel.text = followedUser.displayName
         
-        // TODO: Remove from cell class and move to operation queue.
-        S3BucketService.instance.downloadImage(mediaId: followedUser.followedUserUserId, imageType: .small) { (image, customError) in
-            
-            DispatchQueue.main.async {
-                self.profileImageView.image = image
-            }
-        }
+        //TODO
+//        self.followedUser = followedUser
+//        self.delegate = delegate
+//        followButton.isHidden = CurrentUser.userIsMe(userId: followedUser.followedUserUserId)
+//        followButton.setButtonState(followStatus: .following)
+//        usernameLabel.text = followedUser.username
+//        displayNameLabel.text = followedUser.displayName
+//
+//        // TODO: Remove from cell class and move to operation queue.
+//        S3BucketService.instance.downloadImage(mediaId: followedUser.followedUserUserId, imageType: .small) { (image, customError) in
+//
+//            DispatchQueue.main.async {
+//                self.profileImageView.image = image
+//            }
+//        }
     }
     
     
@@ -102,16 +104,17 @@ class FollowedUserCell: UITableViewCell {
      */
     private func unfollow() {
         guard let followedUser = followedUser else { return }
-        CurrentUser.unfollow(
-            followedUser: followedUser
-        ) { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.delegate?.followedUserCellFollowButtonActionError(error: customError)
-                    return
-                }
-                self.delegate?.followedUserCellFollowButtonActionUnfollow(followedUser: followedUser)
-            }
-        }
+        
+//        CurrentUser.unfollow(
+//            followedUser: followedUser
+//        ) { (customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.delegate?.followedUserCellFollowButtonActionError(error: customError)
+//                    return
+//                }
+//                self.delegate?.followedUserCellFollowButtonActionUnfollow(followedUser: followedUser)
+//            }
+//        }
     }
 }

@@ -22,9 +22,11 @@ class FollowerCell: UITableViewCell {
     
     weak var follower: Follower?
     var delegate: FollowerCellDelegate?
-    var followStatus: FollowStatus {
-        return CurrentUser.getFollowedUserStatusFor(userId: follower!.followerUserId)
-    }
+    
+    //TODO
+//    var followStatus: FollowStatus {
+//        return CurrentUser.getFollowedUserStatusFor(userId: follower!.followerUserId)
+//    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -52,17 +54,18 @@ class FollowerCell: UITableViewCell {
      
      */
     @IBAction func followButtonAction() {
-        CurrentUser.follow(
-            follower: follower!
-        ) { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.delegate?.followerCellFollowButtonActionError(error: customError)
-                    return
-                }
-                self.followButton.setButtonState(followStatus: self.followStatus)
-            }
-        }
+        //TODO
+//        CurrentUser.follow(
+//            follower: follower!
+//        ) { (customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.delegate?.followerCellFollowButtonActionError(error: customError)
+//                    return
+//                }
+//                self.followButton.setButtonState(followStatus: self.followStatus)
+//            }
+//        }
     }
     
     
@@ -70,19 +73,20 @@ class FollowerCell: UITableViewCell {
      
      */
     func configureCell(follower: Follower, delegate: FollowerCellDelegate) {
-        self.follower = follower
-        self.delegate = delegate
-        followButton.isHidden = CurrentUser.userIsMe(userId: follower.followerUserId)
-        followButton.setButtonState(followStatus: followStatus)
-        usernameLabel.text = follower.username
-        displayNameLabel.text = follower.displayName
-        
-        // TODO: Remove from cell class and use operation queue.
-        S3BucketService.instance.downloadImage(mediaId: follower.followerUserId, imageType: .small) { (image, customError) in
-            
-            DispatchQueue.main.async {
-                self.profileImageView.image = image
-            }
-        }
+        //TODO
+//        self.follower = follower
+//        self.delegate = delegate
+//        followButton.isHidden = CurrentUser.userIsMe(userId: follower.followerUserId)
+//        followButton.setButtonState(followStatus: followStatus)
+//        usernameLabel.text = follower.username
+//        displayNameLabel.text = follower.displayName
+//
+//        // TODO: Remove from cell class and use operation queue.
+//        S3BucketService.instance.downloadImage(mediaId: follower.followerUserId, imageType: .small) { (image, customError) in
+//
+//            DispatchQueue.main.async {
+//                self.profileImageView.image = image
+//            }
+//        }
     }
 }

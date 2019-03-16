@@ -76,13 +76,13 @@ class CommentsVC: UIViewController {
     @IBAction func postCommentButtonAction() {
         
         let commentText: String = commentTextView.text
-        
-        postComment(
-            competitionEntryId: competitionEntryId,
-            commentText: commentText,
-            userId: CurrentUser.userId,
-            username: CurrentUser.username
-        )
+        //TODO
+//        postComment(
+//            competitionEntryId: competitionEntryId,
+//            commentText: commentText,
+//            userId: CurrentUser.userId,
+//            username: CurrentUser.username
+//        )
     }
     
     

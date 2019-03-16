@@ -6,6 +6,13 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+enum NetworkEnvironment {
+    case dev
+    case qa
+    case stage
+    case prod
+}
+
 enum NetworkResponse: String {
     case success
     case authenticationError = "You need to be authenticated first."
@@ -25,48 +32,9 @@ struct NetworkManager {
     
     static let environment: NetworkEnvironment = .dev
     static let versusAPIKey = ""
-    private let router = Router<CompetitionEntryEndpoint>()
     
     
-    func getUnmatchedCompetitionEntries(userId: String, completion: @escaping (_ unmatchedEntries: [CompetitionEntry]?, _ error: String?) -> ()) {
-        
-        router.request(.unmatched(userId: userId)) { (data, response, error) in
-            
-            if error != nil {
-                completion(nil, "Please check your network connection.")
-            }
-            
-            if let response = response as? HTTPURLResponse {
-                
-                let result = self.handleNetworkResponse(response)
-                
-                switch result {
-                    
-                case .success:
-                    
-                    guard let responseData = data else {
-                        completion(nil, NetworkResponse.noData.rawValue)
-                        return
-                    }
-                    
-                    do {
-                        let apiResponse = try JSONDecoder().decode([CompetitionEntry].self, from: responseData)
-                        completion(apiResponse, nil)
-                    }
-                    catch {
-                        completion(nil, NetworkResponse.unableToDecode.rawValue)
-                    }
-                    
-                case .failure(let networkFailureError):
-                    
-                    completion(nil, networkFailureError)
-                }
-            }
-        }
-    }
-    
-    
-    private func handleNetworkResponse(_ response: HTTPURLResponse) -> Result<String> {
+    func handleNetworkResponse(_ response: HTTPURLResponse) -> Result<String> {
         
         switch response.statusCode {
         case 200...299:

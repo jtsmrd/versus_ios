@@ -10,11 +10,6 @@
 
 import UIKit
 
-enum SignupMethod {
-    case email
-    case phoneNumber
-}
-
 class LandingVC: UIViewController {
 
     
@@ -68,11 +63,6 @@ class LandingVC: UIViewController {
         
         signupMethodsAlert = UIAlertController(title: "Sign up with", message: nil, preferredStyle: .actionSheet)
         
-        let phoneNumberAction = UIAlertAction(title: "Phone Number", style: .default) { (action) in
-            self.performSegue(withIdentifier: SHOW_SIGNUP, sender: SignupMethod.phoneNumber)
-        }
-        signupMethodsAlert.addAction(phoneNumberAction)
-        
         
         let facebookAction = UIAlertAction(title: "Facebook", style: .default) { (action) in
             
@@ -87,7 +77,7 @@ class LandingVC: UIViewController {
         
         
         let emailAction = UIAlertAction(title: "Email", style: .default) { (action) in
-            self.performSegue(withIdentifier: SHOW_SIGNUP, sender: SignupMethod.email)
+            self.performSegue(withIdentifier: SHOW_SIGNUP, sender: nil)
         }
         signupMethodsAlert.addAction(emailAction)
         
@@ -96,15 +86,6 @@ class LandingVC: UIViewController {
             
         }
         signupMethodsAlert.addAction(cancelAction)
-    }
-    
-    
-    // MARK: - Navigation
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let emailPhoneSignupVC = segue.destination as? SignupVC, let signupMethod = sender as? SignupMethod {
-            emailPhoneSignupVC.initData(signupMethod: signupMethod)
-        }
     }
 }
 
