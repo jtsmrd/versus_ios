@@ -14,14 +14,20 @@ protocol SearchVCDelegate {
 
 class SearchUserVC: UIViewController {
 
-    private let userManager = UserManager.instance
     
     @IBOutlet weak var searchUserTableView: UITableView!
     
-    var delegate: SearchVCDelegate?
-    var keyboardToolbar: KeyboardToolbar!
+    
+    private let userManager = UserManager.instance
     private let ROW_HEIGHT: CGFloat = 70.0
     private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.85
+    
+    private var users = [User]()
+    
+    var delegate: SearchVCDelegate?
+    var keyboardToolbar: KeyboardToolbar!
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,56 +45,78 @@ class SearchUserVC: UIViewController {
     
     
     private func suspendAllOperations() {
-        userManager.pendingImageOperations.downloadQueue.isSuspended = true
+//        userManager.pendingImageOperations.downloadQueue.isSuspended = true
     }
     
     
     private func resumeAllOperations() {
-        userManager.pendingImageOperations.downloadQueue.isSuspended = false
+//        userManager.pendingImageOperations.downloadQueue.isSuspended = false
     }
     
     
     private func loadImagesForOnscreenCells() {
-        if let pathsArray = searchUserTableView.indexPathsForVisibleRows {
-            
-            var downloadsInProgress =
-                userManager.pendingImageOperations.downloadsInProgress
-            
-            let allPendingOperations = Set(
-                downloadsInProgress.keys
-            )
-            var toBeCancelled = allPendingOperations
-            
-            let visiblePaths = Set(pathsArray)
-            toBeCancelled.subtract(visiblePaths)
-            
-            var toBeStarted = visiblePaths
-            toBeStarted.subtract(allPendingOperations)
-            
-            for indexPath in toBeCancelled {
-                
-                
-                
-                if let pendingDownload = downloadsInProgress[indexPath] {
-                    pendingDownload.cancel()
-                }
-                downloadsInProgress.removeValue(
-                    forKey: indexPath
-                )
-            }
-            
-            for indexPath in toBeStarted {
-                let user = userManager.users[indexPath.row]
-                userManager.startProfileImageDownloadFor(
-                    user: user,
-                    indexPath: indexPath
-                )
-            }
-        }
+//        if let pathsArray = searchUserTableView.indexPathsForVisibleRows {
+//
+//            var downloadsInProgress =
+//                userManager.pendingImageOperations.downloadsInProgress
+//
+//            let allPendingOperations = Set(
+//                downloadsInProgress.keys
+//            )
+//            var toBeCancelled = allPendingOperations
+//
+//            let visiblePaths = Set(pathsArray)
+//            toBeCancelled.subtract(visiblePaths)
+//
+//            var toBeStarted = visiblePaths
+//            toBeStarted.subtract(allPendingOperations)
+//
+//            for indexPath in toBeCancelled {
+//
+//
+//
+//                if let pendingDownload = downloadsInProgress[indexPath] {
+//                    pendingDownload.cancel()
+//                }
+//                downloadsInProgress.removeValue(
+//                    forKey: indexPath
+//                )
+//            }
+//
+//            for indexPath in toBeStarted {
+//                let user = userManager.users[indexPath.row]
+//                userManager.startProfileImageDownloadFor(
+//                    user: user,
+//                    indexPath: indexPath
+//                )
+//            }
+//        }
+    }
+    
+    
+    private func showUserProfile(user: User) {
+        
+        let userVC = UserVC(user: user)
+        navigationController?.pushViewController(userVC, animated: true)
     }
 }
 
 extension SearchUserVC: UserManagerDelegate {
+    
+    
+    func userResultsUpdated(users: [User]) {
+        self.users.append(contentsOf: users)
+        
+        DispatchQueue.main.async {
+            self.searchUserTableView.reloadData()
+        }
+    }
+    
+    
+    func didFailWithError(errorMessage: String) {
+        displayMessage(message: errorMessage)
+    }
+    
     
     /**
      Called after image is downloaded for the user at the specified index.
@@ -114,7 +142,7 @@ extension SearchUserVC: UITableViewDataSource {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        return userManager.users.count
+        return users.count
     }
     
     
@@ -131,12 +159,7 @@ extension SearchUserVC: UITableViewDataSource {
             for: indexPath
         ) as? SearchUserCell {
             
-            // Make sure there's a user available for the current indexPath.
-            guard let user = userManager.getUserFor(
-                indexPath: indexPath
-            ) else {
-                return cell
-            }
+            let user = users[indexPath.row]
             
             // TODO: Fix only downloading images for visible cells.
 //            switch user.profileImageDownloadState {
@@ -189,20 +212,12 @@ extension SearchUserVC: UITableViewDataSourcePrefetching {
             tableView.indexPathsForVisibleRows?.max()?.row else { return }
         
         // Calculate the percentage of total rows that are scolled to
-        let scrollPercentage = CGFloat(maxVisibleRowNumber) / CGFloat(userManager.users.count)
+        let scrollPercentage = CGFloat(maxVisibleRowNumber) / CGFloat(users.count)
         
         // Only prefetch when the scrolled percentage is >= 85%
         guard scrollPercentage >= PREFETCH_SCROLL_PERCENTAGE else { return }
         
-        userManager.fetchMoreResults { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                    return
-                }
-                self.searchUserTableView.reloadData()
-            }
-        }
+        userManager.fetchMoreResults()
     }
 }
 
@@ -220,27 +235,8 @@ extension SearchUserVC: UITableViewDelegate {
             animated: false
         )
         
-        let profileStoryboard = UIStoryboard(
-            name: PROFILE,
-            bundle: nil
-        )
-        
-        let profileVC = profileStoryboard.instantiateViewController(
-            withIdentifier: PROFILE_VC
-        )
-        
-        // Load and display the users' profile
-        if let profileVC = profileVC as? ProfileVC {
-            // TODO
-//            profileVC.initData(
-//                userId: userManager.users[indexPath.row].userId, profileViewMode: .viewOnly
-//            )
-            profileVC.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(
-                profileVC,
-                animated: true
-            )
-        }
+        let user = users[indexPath.row]
+        showUserProfile(user: user)
     }
 }
 
@@ -297,7 +293,7 @@ extension SearchUserVC: UISearchBarDelegate {
     ) {
         searchBar.setShowsCancelButton(false, animated: true)
         
-        if userManager.users.isEmpty {
+        if users.isEmpty {
             delegate?.toggleSearchView(isHidden: true)
             searchBar.text?.removeAll()
         }
@@ -309,7 +305,7 @@ extension SearchUserVC: UISearchBarDelegate {
         view.endEditing(true)
         delegate?.toggleSearchView(isHidden: true)
         searchBar.text?.removeAll()
-        userManager.removeAllUsers()
+        users.removeAll()
         searchUserTableView.reloadData()
         searchBar.setShowsCancelButton(false, animated: true)
     }
@@ -319,21 +315,19 @@ extension SearchUserVC: UISearchBarDelegate {
         textDidChange searchText: String
     ) {
         
-        guard !searchText.isEmpty else {
-            userManager.removeAllUsers()
-            searchUserTableView.reloadData()
+        // Remove results for new searches.
+        users.removeAll()
+        searchUserTableView.reloadData()
+        
+        // User is searching by username, wait for more characters.
+        guard searchText != "@" else {
             return
         }
+        
+        let userSearchProperty: UserSearchProperty = searchText.contains("@") ? .username : .name
         userManager.searchUsers(
-            searchText: searchText
-        ) { (customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
-                    return
-                }
-                self.searchUserTableView.reloadData()
-            }
-        }
+            searchText: searchText,
+            userSearchProperty: userSearchProperty
+        )
     }
 }

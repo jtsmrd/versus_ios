@@ -45,14 +45,6 @@
             </objects>
             <point key="canvasLocation" x="298" y="636"/>
         </scene>
-        <!--EditProfileVC-->
-        <scene sceneID="Cyn-0H-w3s">
-            <objects>
-                <viewControllerPlaceholder storyboardIdentifier="EditProfileVC" storyboardName="Profile" referencedIdentifier="EditProfileVC" id="kzk-z2-jSf" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="7wd-hn-5CF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1628" y="2391"/>
-        </scene>
         <!--Competition Entry Placeholder-->
         <scene sceneID="c72-ry-Wfk">
             <objects>

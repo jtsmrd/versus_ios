@@ -10,130 +10,144 @@ import AWSDynamoDB
 
 protocol UserManagerDelegate {
     func reloadCell(at indexPath: IndexPath)
+    func userResultsUpdated(users: [User])
+    func didFailWithError(errorMessage: String)
+}
+
+enum UserSearchProperty {
+    case name
+    case username
 }
 
 class UserManager {
     
     static let instance = UserManager()
     private let userService = UserService.instance
-    
+    private let pendingImageOperations = ImageOperations()
     private let FETCH_LIMIT = 25
-    private var searchText: String?
-    private var startKey: [String: AWSDynamoDBAttributeValue]?
+    
+    private var searchText: String = ""
+    private var page: Int = 0
+    private var userSearchProperty: UserSearchProperty = .name
     private var fetchingInProgress = false
+    
     private(set) var hasMoreResults = false
-    private(set) var users = [User]()
-    let pendingImageOperations = ImageOperations()
+    
     var delegate: UserManagerDelegate?
 
     
     private init() { }
     
     
-    /**
-     Return a user for the specified indexPath.
-     */
-    func getUserFor(
-        indexPath: IndexPath
-    ) -> User? {
-        
-        guard indexPath.row < users.count else {
-            return nil
-        }
-        return users[indexPath.row]
-    }
     
     
-    /**
-     Clear all users, and set searchText, startKey, and hasMoreResults
-     back to default values.
-     */
-    func removeAllUsers() {
-        users.removeAll()
-        searchText = nil
-        startKey = nil
-        hasMoreResults = false
-    }
-    
-    
-    /**
-     Search for users with the given search text.
-     */
+    /// Search users by name or username.
+    ///
+    /// - Parameters:
+    ///   - searchText: The text to seach with.
+    ///   - userSearchProperty: The property of the user to search on.
     func searchUsers(
         searchText: String,
-        completion: @escaping (_ customError: CustomError?) -> Void
+        userSearchProperty: UserSearchProperty
     ) {
         
-        // If the search text changed, it is a new search. Clear out
-        // the current results.
-        if self.searchText != searchText {
-            users.removeAll()
-        }
-        self.searchText = searchText
-        searchUsers(
-            searchText: searchText,
-            startKey: nil,
-            completion: completion
-        )
-    }
-    
-    
-    /**
-     Used for paginating results.
-     */
-    func fetchMoreResults(
-        completion: @escaping (_ customError: CustomError?) -> Void
-    ) {
+        self.userSearchProperty = userSearchProperty
+        page = 0
         
-        // If startKey or searchText is nil, it's a new search.
-        guard let startKey = startKey, let searchText = searchText else {
-            self.startKey = nil
-            self.searchText = nil
-            completion(nil)
+        guard !searchText.isEmpty else {
             return
         }
-        searchUsers(
-            searchText: searchText,
-            startKey: startKey,
-            completion: completion
-        )
-    }
-    
-    
-    /**
-     Private function that's called by fetchMoreResults when there's a
-     start key.
-     */
-    private func searchUsers(
-        searchText: String,
-        startKey: [String: AWSDynamoDBAttributeValue]?,
-        completion: @escaping (_ customError: CustomError?) -> Void
-    ) {
         
-        // Return if a fetch is already in progress.
-        guard !fetchingInProgress else {
-            completion(nil)
-            return
-        }
-        fetchingInProgress = true
         
-        userService.searchUsers(
-            queryString: searchText,
-            startKey: startKey,
-            fetchLimit: FETCH_LIMIT
-        ) { (users, startKey, customError) in
+        switch userSearchProperty {
+        case .name:
             
-            self.fetchingInProgress = false
-            if let customError = customError {
-                completion(customError)
+            self.searchText = searchText
+            
+            searchByName(
+                name: searchText,
+                page: page
+            )
+            
+        case .username:
+            
+            // Remove @
+            let username = String(searchText.suffix(searchText.count - 1))
+            self.searchText = username
+            
+            searchByUsername(
+                username: username,
+                page: page
+            )
+        }
+    }
+    
+    
+    
+    /// Fetch more users with the existing searchText.
+    func fetchMoreResults() {
+        
+        page += 1
+        
+        switch userSearchProperty {
+        case .name:
+            searchByName(name: searchText, page: page)
+            
+        case .username:
+            searchByUsername(username: searchText, page: page)
+        }
+    }
+    
+    
+    
+    /// Search users by name.
+    ///
+    /// - Parameter name: Name of user
+    private func searchByName(name: String, page: Int) {
+        
+        userService.searchByName(
+            name: name
+        ) { [weak self] (users, errorMessage) in
+            
+            if let errorMessage = errorMessage {
+                self?.delegate?.didFailWithError(errorMessage: errorMessage)
                 return
             }
-            self.users.append(contentsOf: users)
-            self.startKey = startKey
-            self.hasMoreResults = startKey != nil
-            completion(nil)
+            
+            guard let users = users else {
+                self?.delegate?.didFailWithError(errorMessage: "Unable to load users")
+                return
+            }
+            
+            self?.delegate?.userResultsUpdated(users: users)
         }
     }
+    
+    
+    
+    /// Search users by username
+    ///
+    /// - Parameter username: Username of user
+    private func searchByUsername(username: String, page: Int) {
+        
+        userService.searchByUsername(
+            username: username
+        ) { [weak self] (users, errorMessage) in
+            
+            if let errorMessage = errorMessage {
+                self?.delegate?.didFailWithError(errorMessage: errorMessage)
+                return
+            }
+            
+            guard let users = users else {
+                self?.delegate?.didFailWithError(errorMessage: "Unable to load users")
+                return
+            }
+            
+            self?.delegate?.userResultsUpdated(users: users)
+        }
+    }
+    
     
     /**
      Download the profile image for the user at the specified index.

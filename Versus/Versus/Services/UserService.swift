@@ -169,6 +169,98 @@ class UserService {
     }
     
     
+    func searchByName(
+        name: String,
+        completion: @escaping (_ users: [User]?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .searchByName(name: name)
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let users = try decoder.decode([User].self, from: responseData)
+                        completion(users, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    func searchByUsername(
+        username: String,
+        completion: @escaping (_ users: [User]?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .searchByUsername(username: username)
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let users = try decoder.decode([User].self, from: responseData)
+                        completion(users, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
     /**
  
      */
@@ -339,28 +431,6 @@ class UserService {
             user: user,
             completion: completion
         )
-    }
-       
-    
-    /**
-     
-     */
-    func updateUser2(
-        user: User,
-        completion: @escaping (_ customError: CustomError?) -> Void
-    ) {
-//        let updateMapperConfig = AWSDynamoDBObjectMapperConfiguration()
-//        updateMapperConfig.saveBehavior = .updateSkipNullAttributes
-//        dynamoDB.save(
-//            user,
-//            configuration: updateMapperConfig
-//        ) { (error) in
-//            if let error = error {
-//                completion(CustomError(error: error, message: "Unable to update User"))
-//                return
-//            }
-//            completion(nil)
-//        }
     }
     
     

@@ -9,7 +9,8 @@
 enum UserEndpoint {
     case load(userId: Int)
     case loadWithUsername(username: String)
-    case search(searchText: String)
+    case searchByName(name: String)
+    case searchByUsername(username: String)
     case update(User)
 }
 
@@ -33,8 +34,11 @@ extension UserEndpoint: EndpointType {
         case .loadWithUsername(let username):
             return "api/users/username/\(username)"
             
-        case .search:
-            return ""
+        case .searchByName:
+            return "api/users"
+            
+        case .searchByUsername:
+            return "api/users"
             
         case .update(let user):
             return "api/users/\(user.id)"
@@ -52,7 +56,10 @@ extension UserEndpoint: EndpointType {
         case .loadWithUsername:
             return .get
             
-        case .search:
+        case .searchByName:
+            return .get
+            
+        case .searchByUsername:
             return .get
             
         case .update:
@@ -76,8 +83,23 @@ extension UserEndpoint: EndpointType {
         case .loadWithUsername:
             return .request
             
-        case .search(let searchText):
-            return .requestParameters(bodyParameters: nil, urlParameters: ["searchText": searchText])
+        case .searchByName(let name):
+            return .requestParametersAndHeaders(
+                bodyParameters: nil,
+                urlParameters: [
+                    "name": name
+                ],
+                additionalHeaders: headers
+            )
+            
+        case .searchByUsername(let username):
+            return .requestParametersAndHeaders(
+                bodyParameters: nil,
+                urlParameters: [
+                    "username": username
+                ],
+                additionalHeaders: headers
+            )
             
         case .update(let user):
             return .requestParametersAndHeaders(

@@ -29,7 +29,7 @@ class ProfileVC: UIViewController {
     private let userService = UserService.instance
     private let accountService = AccountService.instance
     private let entryService = EntryService.instance
-//    private let competitionService = CompetitionService.instance
+    private let competitionService = CompetitionService.instance
     
     private var userId: Int!
     private var user: User!
@@ -191,13 +191,13 @@ class ProfileVC: UIViewController {
     
     private func displayEditProfile() {
         
-        let mainStoryboard = UIStoryboard(name: MAIN, bundle: nil)
-        let viewController = mainStoryboard.instantiateViewController(withIdentifier: EDIT_PROFILE_VC)
-        
-        if let editProfileVC = viewController as? EditProfileVC {
-            editProfileVC.delegate = self
-            present(editProfileVC, animated: true, completion: nil)
-        }
+//        let mainStoryboard = UIStoryboard(name: MAIN, bundle: nil)
+//        let viewController = mainStoryboard.instantiateViewController(withIdentifier: EDIT_PROFILE_VC)
+//
+//        if let editProfileVC = viewController as? EditProfileVC {
+//            editProfileVC.delegate = self
+//            present(editProfileVC, animated: true, completion: nil)
+//        }
     }
     
     
@@ -346,14 +346,5 @@ extension ProfileVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         
         return collectionViewSectionInsets.left
-    }
-}
-
-
-extension ProfileVC: EditProfileVCDelegate {
-    
-    func profileUpdated() {
-        user = CurrentAccount.user
-        competitionCollectionView.reloadData()
     }
 }

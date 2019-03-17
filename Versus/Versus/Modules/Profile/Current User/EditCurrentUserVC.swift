@@ -1,20 +1,18 @@
 //
-//  EditProfileVC.swift
+//  EditCurrentUserVC.swift
 //  Versus
 //
-//  Created by JT Smrdel on 4/3/18.
-//  Copyright © 2018 VersusTeam. All rights reserved.
+//  Created by JT Smrdel on 3/16/19.
+//  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
-import UIKit
-import AWSUserPoolsSignIn
 import MobileCoreServices
 
-protocol EditProfileVCDelegate {
-    func profileUpdated()
+protocol EditCurrentUserVCDelegate {
+    func userUpdated()
 }
 
-class EditProfileVC: UIViewController {
+class EditCurrentUserVC: UIViewController {
 
     
     enum EditImageType {
@@ -28,7 +26,7 @@ class EditProfileVC: UIViewController {
     @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var profileImageView: CircleImageView!
     @IBOutlet weak var displayNameTextField: UITextField!
-    @IBOutlet weak var bioContainerView: BorderView!
+    @IBOutlet weak var bioView: BorderView!
     @IBOutlet weak var bioTextView: UITextView!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
@@ -36,7 +34,10 @@ class EditProfileVC: UIViewController {
     private let accountService = AccountService.instance
     private let userService = UserService.instance
     private let s3BucketService = S3BucketService.instance
+    private let notificationCenter = NotificationCenter.default
     
+    private var user: User!
+    private var delegate: EditCurrentUserVCDelegate!
     private var imagePicker: UIImagePickerController!
     private var editImageType: EditImageType!
     private var profileImage: UIImage?
@@ -46,7 +47,20 @@ class EditProfileVC: UIViewController {
     private var keyboardWillHideObserver: NSObjectProtocol!
     private var visibleRect: CGRect = .zero
     
-    var delegate: EditProfileVCDelegate?
+    
+    
+    
+    init(user: User, delegate: EditCurrentUserVCDelegate) {
+        super.init(nibName: nil, bundle: nil)
+        self.user = user
+        self.delegate = delegate
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    
     
     
     override func viewDidLoad() {
@@ -63,13 +77,14 @@ class EditProfileVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NotificationCenter.default.addObserver(
+        notificationCenter.addObserver(
             self,
             selector: #selector(keyboardDidShow(notification:)),
             name: UIResponder.keyboardDidShowNotification,
             object: nil
         )
-        NotificationCenter.default.addObserver(
+        
+        notificationCenter.addObserver(
             self,
             selector: #selector(keyboardWillHide(notification:)),
             name: UIResponder.keyboardWillHideNotification,
@@ -81,12 +96,13 @@ class EditProfileVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(
+        notificationCenter.removeObserver(
             self,
             name: UIResponder.keyboardDidShowNotification,
             object: nil
         )
-        NotificationCenter.default.removeObserver(
+        
+        notificationCenter.removeObserver(
             self,
             name: UIResponder.keyboardWillHideNotification,
             object: nil
@@ -94,11 +110,15 @@ class EditProfileVC: UIViewController {
     }
     
     
+    
+    
     @objc func keyboardDidShow(notification: NSNotification) {
         
         let userInfo = notification.userInfo! as NSDictionary
         let keyboardFrame = userInfo.value(
-            forKey: UIResponder.keyboardFrameEndUserInfoKey) as! NSValue
+            forKey: UIResponder.keyboardFrameEndUserInfoKey
+        ) as! NSValue
+        
         let keyboardHeight = keyboardFrame.cgRectValue.height
         
         let contentInsets = UIEdgeInsets.init(
@@ -124,14 +144,14 @@ class EditProfileVC: UIViewController {
         
         visibleRect = view.frame
     }
-    
+
     
     @IBAction func cancelButtonAction() {
         dismiss(animated: true, completion: nil)
     }
     
     
-    @IBAction func doneButtonAction() {
+    @IBAction func saveButtonAction() {
         updateUser()
     }
     
@@ -148,23 +168,33 @@ class EditProfileVC: UIViewController {
     }
     
     
+    
+    
     private func configureView() {
         
-        usernameTextField.text = CurrentAccount.user.username
-        displayNameTextField.text = CurrentAccount.user.name
-        bioTextView.text = CurrentAccount.user.bio
-        emailTextField.text = CurrentAccount.user.email
+        usernameTextField.text = user.username
+        displayNameTextField.text = user.name
+        bioTextView.text = user.bio
+        emailTextField.text = user.email
         
-        let profileImageId = CurrentAccount.user.profileImage
-        if !profileImageId.isEmpty {
+        downloadProfileImage()
+        downloadBackgroundImage()
+    }
+    
+    
+    private func downloadProfileImage() {
+        
+        if !user.profileImage.isEmpty {
             
             s3BucketService.downloadImage(
-                mediaId: profileImageId,
+                mediaId: user.profileImage,
                 imageType: .regular
             ) { [weak self] (image, customError) in
                 
-                if let customError = customError {
-                    self?.displayError(error: customError)
+                if customError != nil {
+                    self?.displayMessage(
+                        message: "Unable to download profile image"
+                    )
                     return
                 }
                 
@@ -173,17 +203,22 @@ class EditProfileVC: UIViewController {
                 }
             }
         }
+    }
+    
+    
+    private func downloadBackgroundImage() {
         
-        let backgroundImage = CurrentAccount.user.backgroundImage        
-        if !backgroundImage.isEmpty {
+        if !user.backgroundImage.isEmpty {
             
             s3BucketService.downloadImage(
-                mediaId: backgroundImage,
+                mediaId: user.backgroundImage,
                 imageType: .background
             ) { [weak self] (image, customError) in
                 
-                if let customError = customError {
-                    self?.displayError(error: customError)
+                if customError != nil {
+                    self?.displayMessage(
+                        message: "Unable to download background image"
+                    )
                     return
                 }
                 
@@ -205,16 +240,16 @@ class EditProfileVC: UIViewController {
     private func updateUser() {
         
         if let displayName = displayNameTextField.text, !displayName.isEmpty {
-            CurrentAccount.user.name = displayName
+            user.name = displayName
         }
         
         if let bio = bioTextView.text, !bio.isEmpty {
-            CurrentAccount.user.bio = bio
+            user.bio = bio
         }
         
         
         userService.updateProfile(
-            user: CurrentAccount.user,
+            user: user,
             profileImage: profileImage,
             backgroundImage: backgroundImage
         ) { [weak self] (user, errorMessage) in
@@ -232,7 +267,7 @@ class EditProfileVC: UIViewController {
                 }
                 
                 CurrentAccount.setUser(user: user)
-                self?.delegate?.profileUpdated()
+                self?.delegate.userUpdated()
                 
                 self?.dismiss(
                     animated: true,
@@ -259,7 +294,7 @@ class EditProfileVC: UIViewController {
                     self.presentImagePicker(
                         sourceType: .camera
                     )
-                }
+            }
             )
         )
         
@@ -271,7 +306,7 @@ class EditProfileVC: UIViewController {
                     self.presentImagePicker(
                         sourceType: .photoLibrary
                     )
-                }
+            }
             )
         )
         
@@ -292,7 +327,7 @@ class EditProfileVC: UIViewController {
     
     private func presentImagePicker(
         sourceType: UIImagePickerController.SourceType
-    ) {
+        ) {
         imagePicker.sourceType = sourceType
         imagePicker.mediaTypes = [String(kUTTypeImage)]
         
@@ -307,7 +342,7 @@ class EditProfileVC: UIViewController {
     private func cropImage(
         image: UIImage,
         cropImageType: CropImageType
-    ) {
+        ) {
         
         let editImageStoryboard = UIStoryboard(
             name: EDIT_IMAGE,
@@ -335,7 +370,7 @@ class EditProfileVC: UIViewController {
     /**
      Used to scroll to the active first responder if it's covered by the
      keyboard.
-    */
+     */
     private func scrollToFirstResponderIfNeeded() {
         
         var activeFirstResponderFrame: CGRect = activeFirstResponder.frame
@@ -344,8 +379,8 @@ class EditProfileVC: UIViewController {
         // the contentView.
         if activeFirstResponder.superview != contentView {
             
-            if activeFirstResponder.superview == bioContainerView {
-                activeFirstResponderFrame = bioContainerView.convert(
+            if activeFirstResponder.superview == bioView {
+                activeFirstResponderFrame = bioView.convert(
                     activeFirstResponder.frame,
                     to: nil
                 )
@@ -363,12 +398,16 @@ class EditProfileVC: UIViewController {
     }
 }
 
-extension EditProfileVC: UITextViewDelegate {
+
+
+
+extension EditCurrentUserVC: UITextViewDelegate {
     
     
     func textViewShouldBeginEditing(
         _ textView: UITextView
     ) -> Bool {
+        
         textView.inputAccessoryView = keyboardToolbar
         return true
     }
@@ -377,19 +416,16 @@ extension EditProfileVC: UITextViewDelegate {
     func textViewDidBeginEditing(
         _ textView: UITextView
     ) {
+        
         activeFirstResponder = textView
         scrollToFirstResponderIfNeeded()
     }
-    
-    
-    func textViewDidChange(
-        _ textView: UITextView
-    ) {
-//        CurrentUser.bio = textView.text
-    }
 }
 
-extension EditProfileVC: UITextFieldDelegate {
+
+
+
+extension EditCurrentUserVC: UITextFieldDelegate {
     
     
     func textFieldShouldBeginEditing(
@@ -408,9 +444,10 @@ extension EditProfileVC: UITextFieldDelegate {
     }
 }
 
-extension EditProfileVC:
-    UIImagePickerControllerDelegate,
-    UINavigationControllerDelegate {
+
+
+
+extension EditCurrentUserVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     
     func imagePickerController(
@@ -419,18 +456,25 @@ extension EditProfileVC:
     ) {
         // Local variable inserted by Swift 4.2 migrator.
         let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
-
+        
         picker.dismiss(
             animated: true,
             completion: nil
         )
-        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
+        if let image = info[
+            convertFromUIImagePickerControllerInfoKey(
+                UIImagePickerController.InfoKey.originalImage
+            )
+        ] as? UIImage {
+            
             switch editImageType! {
+                
             case .profile:
                 cropImage(
                     image: image,
                     cropImageType: .circle
                 )
+                
             case .background:
                 cropImage(
                     image: image,
@@ -452,14 +496,19 @@ extension EditProfileVC:
 }
 
 
-extension EditProfileVC: EditImageVCDelegate {
+
+
+extension EditCurrentUserVC: EditImageVCDelegate {
     
     
     func imageCropped(image: UIImage) {
+        
         switch editImageType! {
+            
         case .profile:
             profileImage = image
             profileImageView.image = image
+            
         case .background:
             backgroundImage = image
             backgroundImageView.image = image
@@ -467,12 +516,24 @@ extension EditProfileVC: EditImageVCDelegate {
     }
 }
 
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
-}
+
+
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
-	return input.rawValue
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(
+    _ input: [UIImagePickerController.InfoKey: Any]
+) -> [String: Any] {
+    
+    return Dictionary(
+        uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)}
+    )
+}
+
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(
+    _ input: UIImagePickerController.InfoKey
+) -> String {
+    
+    return input.rawValue
 }
