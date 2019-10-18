@@ -133,40 +133,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
         
-        if AWSSignInManager.sharedInstance().isLoggedIn {
+        // TODO
+        // Try to get user's account
+        if CurrentAccount.lastSignedInUserId != 0 && !CurrentAccount.lastAccessToken.isEmpty {
             
-//            guard AWSCognitoIdentityUserPool.default().currentUser()?.username == CurrentUser.lastSignedInUserId else {
-//                AWSCognitoIdentityUserPool.default().clearAll()
-//                showLogin()
-//                return
-//            }
-//
-//            loadCurrentUser { (success, error) in
-//                DispatchQueue.main.async {
-//                    if let customError = error, let customErrorError = customError.error {
-//                        debugPrint("Unable to load current user: \(customErrorError.localizedDescription)")
-//                        self.showLogin()
-//                    }
-//                    else if success {
-//
-//                        if let notification = launchOptions?[.remoteNotification] as? [String: AnyObject] {
-//                            let aps = notification["aps"] as! [String: AnyObject]
-//                            self.handleNotification(aps: aps)
-//                            return
-//                        }
-//                        else {
-//                            self.showMain()
-//                        }
-//                    }
-//                    else {
-//                        // Failed to load user
-//                        self.showLogin()
-//                    }
-//                }
-//            }
+            let userId = CurrentAccount.lastSignedInUserId
+            let token = CurrentAccount.lastAccessToken
+            
+            CurrentAccount.setToken(token: token)
+            
+            userService.loadUser(
+                userId: userId
+            ) { [weak self] (user, errorMessage) in
+                
+                guard errorMessage == nil else {
+                    
+                    DispatchQueue.main.async {
+                        self?.showLogin()
+                    }                    
+                    return
+                }
+                
+                guard let user = user else {
+                    return
+                }
+                
+                CurrentAccount.setUser(user: user)
+                
+                DispatchQueue.main.async {
+                    self?.showMain()
+                }
+            }
         }
         else {
-            // User isn't logged in
             showLogin()
         }
     }

@@ -82,9 +82,9 @@ extension Competitor {
     }
     
     
-    var rank: Rank {
-        return RankCollection.instance.rankFor(rankId: _userRankId)
-    }
+//    var rank: Rank {
+//        return RankCollection.instance.rankFor(rankId: _userRankId)
+//    }
     
     
     var userId: String {

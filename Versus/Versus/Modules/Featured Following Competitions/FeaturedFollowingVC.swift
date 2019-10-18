@@ -10,13 +10,12 @@ import UIKit
 
 class FeaturedFollowingVC: UIViewController {
 
+    
     enum CompetitionFeedType {
         case featured
         case following
     }
     
-//    private let competitionService = CompetitionService.instance
-    private let notificationCenter = NotificationCenter.default
     
     @IBOutlet weak var featuredCompetitionsContainerView: UIView!
     @IBOutlet weak var featuredTableView: UITableView!
@@ -29,33 +28,59 @@ class FeaturedFollowingVC: UIViewController {
     @IBOutlet weak var noFollowedUserCompetitionsActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var noFollowedUserCompetitionsReloadButton: UIButton!
     
-    var activeCompetitionFeedType: CompetitionFeedType = .featured
-    var featuredCompetitions = [Competition]()
-    var followedUserCompetitions = [Competition]()
-    var featuredRefreshControl: UIRefreshControl!
-    var followedRefreshControl: UIRefreshControl!
-    var selectedIndexPath: IndexPath?
+    private let competitionService = CompetitionService.instance
+    private let notificationCenter = NotificationCenter.default
+    
+    private var activeCompetitionFeedType: CompetitionFeedType = .featured
+    private var featuredCompetitions = [Competition]()
+    private var followedUserCompetitions = [Competition]()
+    private let pendingImageOperations = ImageOperations()
+    private var featuredRefreshControl: UIRefreshControl!
+    private var followedRefreshControl: UIRefreshControl!
+    private var selectedIndexPath: IndexPath?
+    
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        featuredTableView.register(UINib(nibName: COMPETITION_CELL, bundle: nil), forCellReuseIdentifier: COMPETITION_CELL)
-        followedUsersTableView.register(UINib(nibName: COMPETITION_CELL, bundle: nil), forCellReuseIdentifier: COMPETITION_CELL)
+        featuredTableView.register(
+            UINib(nibName: COMPETITION_CELL, bundle: nil),
+            forCellReuseIdentifier: COMPETITION_CELL
+        )
+        
+        followedUsersTableView.register(
+            UINib(nibName: COMPETITION_CELL, bundle: nil),
+            forCellReuseIdentifier: COMPETITION_CELL
+        )
         
         let attributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
-        let refreshTitle = NSAttributedString(string: "Loading Competitions", attributes: attributes)
+        let refreshTitle = NSAttributedString(
+            string: "Loading Competitions",
+            attributes: attributes
+        )
         
         featuredRefreshControl = UIRefreshControl()
         featuredRefreshControl.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
         featuredRefreshControl.attributedTitle = refreshTitle
-        featuredRefreshControl.addTarget(self, action: #selector(FeaturedFollowingVC.getFeaturedCompetitions), for: .valueChanged)
+        featuredRefreshControl.addTarget(
+            self,
+            action: #selector(FeaturedFollowingVC.getFeaturedCompetitions),
+            for: .valueChanged
+        )
+        
         featuredTableView.refreshControl = featuredRefreshControl
         
         followedRefreshControl = UIRefreshControl()
         followedRefreshControl.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
         followedRefreshControl.attributedTitle = refreshTitle
-        followedRefreshControl.addTarget(self, action: #selector(FeaturedFollowingVC.getFollowedUserCompetitions), for: .valueChanged)
+        followedRefreshControl.addTarget(
+            self,
+            action: #selector(FeaturedFollowingVC.getFollowedUserCompetitions),
+            for: .valueChanged
+        )
+        
         followedUsersTableView.refreshControl = followedRefreshControl
         
         featuredRefreshControl.beginRefreshing()
@@ -72,6 +97,7 @@ class FeaturedFollowingVC: UIViewController {
         )
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -86,6 +112,7 @@ class FeaturedFollowingVC: UIViewController {
         }
     }
     
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -97,6 +124,8 @@ class FeaturedFollowingVC: UIViewController {
     }
     
     
+    
+    
     /**
      
      */
@@ -105,24 +134,10 @@ class FeaturedFollowingVC: UIViewController {
     }
     
     
-    /**
-     
-     */
-    @objc func userVoteUpdated(notification: Notification) {
-        if let selectedIndexPath = selectedIndexPath {
-            DispatchQueue.main.async {
-                switch self.activeCompetitionFeedType {
-                case .featured:
-                    self.featuredTableView.reloadRows(at: [selectedIndexPath], with: .automatic)
-                case .following:
-                    self.followedUsersTableView.reloadRows(at: [selectedIndexPath], with: .automatic)
-                }
-            }
-        }
-    }
     
     
     @IBAction func featuredFollowingSegmentedControlAction(_ sender: UISegmentedControl) {
+        
         activeCompetitionFeedType = sender.selectedSegmentIndex == 0 ? .featured : .following
         
         toggleCompetitionFeedTableView()
@@ -130,6 +145,7 @@ class FeaturedFollowingVC: UIViewController {
     
     
     @IBAction func noFeaturedCompetitionsReloadButtonAction() {
+        
         noFeaturedCompetitionsReloadButton.isEnabled = false
         noFeaturedCompetitionsActivityIndicator.startAnimating()
         getFeaturedCompetitions()
@@ -137,76 +153,113 @@ class FeaturedFollowingVC: UIViewController {
     
     
     @IBAction func noFollowedUserCompetitionsReloadButtonAction() {
+        
         noFollowedUserCompetitionsReloadButton.isEnabled = false
         noFollowedUserCompetitionsActivityIndicator.startAnimating()
         getFollowedUserCompetitions()
     }
     
     
-    @objc func getFeaturedCompetitions() {
-        //TODO
-//        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    debugPrint(customError.message)
-//                }
-//                else {
-//                    self.featuredCompetitions = competitions
-//                    self.featuredTableView.reloadData()
-//                }
-//                self.noFeaturedCompetitionsReloadButton.isEnabled = true
-//                self.noFeaturedCompetitionsActivityIndicator.stopAnimating()
-//                self.featuredTableView.refreshControl?.endRefreshing()
-//            }
-//        }
+    /**
+     
+     */
+    @objc func userVoteUpdated(notification: Notification) {
+        
+        if let selectedIndexPath = selectedIndexPath {
+            
+            DispatchQueue.main.async {
+                
+                switch self.activeCompetitionFeedType {
+                    
+                case .featured:
+                    self.featuredTableView.reloadRows(
+                        at: [selectedIndexPath],
+                        with: .automatic
+                    )
+                    
+                case .following:
+                    self.followedUsersTableView.reloadRows(
+                        at: [selectedIndexPath],
+                        with: .automatic
+                    )
+                }
+            }
+        }
     }
+    
+    
+    @objc func getFeaturedCompetitions() {
+        
+        competitionService.loadFeaturedCompetitions(
+            categoryId: nil
+        ) { [weak self] (competitions, errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                self?.noFeaturedCompetitionsReloadButton.isEnabled = true
+                self?.noFeaturedCompetitionsActivityIndicator.stopAnimating()
+                self?.featuredTableView.refreshControl?.endRefreshing()
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let competitions = competitions else {
+                    self?.displayMessage(message: "Unable to load featured competitions")
+                    return
+                }
+                
+                self?.featuredCompetitions = competitions
+                self?.featuredTableView.reloadData()
+            }
+        }
+    }
+    
     
     @objc func getFollowedUserCompetitions() {
         
-        //TODO
-//        CurrentUser.getFollowedUsers { (followedUsers, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    debugPrint(customError.message)
-//                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
-//                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
-//                }
-//                else if !followedUsers.isEmpty {
-//                    let followedUserIds = followedUsers.map({ $0.followedUserUserId })
-//
-//                    self.competitionService.getFollowedUserCompetitions(
-//                        followedUserIds: followedUserIds
-//                    ) { (competitions, customError) in
-//                        DispatchQueue.main.async {
-//                            if let customError = customError {
-//                                debugPrint(customError.message)
-//                            }
-//                            else {
-//                                self.followedUserCompetitions = competitions
-//                                self.followedUsersTableView.reloadData()
-//                                self.followedUsersTableView.refreshControl?.endRefreshing()
-//                            }
-//                            self.noFollowedUserCompetitionsReloadButton.isEnabled = true
-//                            self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
-//                        }
-//                    }
-//                }
-//                else {
-//                    self.noFollowedUserCompetitionsReloadButton.isEnabled = true
-//                    self.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
-//                    self.followedUsersTableView.refreshControl?.endRefreshing()
-//                }
-//            }
-//        }
+        // TODO
+        let user = CurrentAccount.user
+        
+        competitionService.loadFollowedUserCompetitions(
+            userId: user.id
+        ) { [weak self] (competitions, errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                self?.noFollowedUserCompetitionsReloadButton.isEnabled = true
+                self?.noFollowedUserCompetitionsActivityIndicator.stopAnimating()
+                self?.followedUsersTableView.refreshControl?.endRefreshing()
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let competitions = competitions else {
+                    self?.displayMessage(message: "Unable to load followed user competitions")
+                    return
+                }
+                
+                self?.followedUserCompetitions = competitions
+                self?.followedUsersTableView.reloadData()
+            }
+        }
     }
 
     
+    
+    
     private func toggleCompetitionFeedTableView() {
+        
         switch activeCompetitionFeedType {
+            
         case .featured:
             followedUserCompetitionsContainerView.isHidden = true
             featuredCompetitionsContainerView.isHidden = false
             featuredTableView.reloadData()
+            
         case .following:
             featuredCompetitionsContainerView.isHidden = true
             followedUserCompetitionsContainerView.isHidden = false
@@ -217,70 +270,279 @@ class FeaturedFollowingVC: UIViewController {
     
     private func showCompetition(competition: Competition) {
         
-        if let viewCompetitionVC = UIStoryboard(name: COMPETITION, bundle: nil).instantiateInitialViewController() as? ViewCompetitionVC {
-            viewCompetitionVC.initData(competition: competition)
-            navigationController?.pushViewController(viewCompetitionVC, animated: true)
-        }
-    }
-    
-    
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+        let competitionVC = CompetitionVC(competition: competition)
+        competitionVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(
+            competitionVC,
+            animated: true
+        )
     }
 }
 
+
+
+
+// MARK: - UITableViewDataSource
 extension FeaturedFollowingVC: UITableViewDataSource {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+        
         switch activeCompetitionFeedType {
+            
         case .featured:
-            let featuredCompetitionsCount = featuredCompetitions.count
+            
+            let count = featuredCompetitions.count
+            
             DispatchQueue.main.async {
-                self.noFeaturedCompetitionsView.isHidden = featuredCompetitionsCount > 0 ? true : false
+                
+                self.noFeaturedCompetitionsView.isHidden = count > 0 ? true : false
             }
-            return featuredCompetitionsCount
+            return count
+            
         case .following:
-            let followedUserCompetitionsCount = followedUserCompetitions.count
+            
+            let count = followedUserCompetitions.count
+            
             DispatchQueue.main.async {
-                self.noFollowedUserCompetitionsView.isHidden = followedUserCompetitionsCount > 0 ? true : false
+                
+                self.noFollowedUserCompetitionsView.isHidden = count > 0 ? true : false
             }
-            return followedUserCompetitions.count
+            return count
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: COMPETITION_CELL, for: indexPath) as? CompetitionCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: COMPETITION_CELL,
+            for: indexPath
+        )
+        
+        if let competitionCell = cell as? CompetitionCell {
+            
+            var competition: Competition!
+            
             switch activeCompetitionFeedType {
+                
             case .featured:
-                cell.configureCell(competition: featuredCompetitions[indexPath.row])
+                competition = featuredCompetitions[indexPath.row]
+                
             case .following:
-                cell.configureCell(competition: followedUserCompetitions[indexPath.row])
+                competition = followedUserCompetitions[indexPath.row]
             }
-            return cell
+            // TODO
+            competitionCell.configureCell(
+                competition: competition
+            )
+            
+            if competition.leftEntry.imageDownloadState == .new ||
+                competition.rightEntry.imageDownloadState == .new {
+                
+                startCompetitionImageDownloadFor(
+                    competition: competition,
+                    indexPath: indexPath
+                )
+            }
+            
+            return competitionCell
         }
         return CompetitionCell()
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    
+    func tableView(
+        _ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
+        
         return 188
     }
 }
 
+
+
+
+// MARK: - UITableViewDelegate
 extension FeaturedFollowingVC: UITableViewDelegate {
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        
+        tableView.deselectRow(
+            at: indexPath,
+            animated: false
+        )
         
         selectedIndexPath = indexPath
+        var competition: Competition!
+        
         switch activeCompetitionFeedType {
+            
         case .featured:
-            showCompetition(competition: featuredCompetitions[indexPath.row])
+            competition = featuredCompetitions[indexPath.row]
+            
         case .following:
-            showCompetition(competition: followedUserCompetitions[indexPath.row])
+            competition = followedUserCompetitions[indexPath.row]
         }
-        tableView.deselectRow(at: indexPath, animated: false)
+        
+        showCompetition(
+            competition: competition
+        )
+    }
+}
+
+
+
+
+// MARK: - UIScrollViewDelegate
+extension FeaturedFollowingVC: UIScrollViewDelegate {
+    
+    
+    func scrollViewWillBeginDragging(
+        _ scrollView: UIScrollView
+    ) {
+        
+        suspendAllOperations()
+    }
+    
+    
+    func scrollViewDidEndDragging(
+        _ scrollView: UIScrollView,
+        willDecelerate decelerate: Bool
+    ) {
+        
+        if !decelerate {
+            loadImagesForOnscreenCells()
+            resumeAllOperations()
+        }
+    }
+    
+    
+    func scrollViewDidEndDecelerating(
+        _ scrollView: UIScrollView
+    ) {
+        
+        loadImagesForOnscreenCells()
+        resumeAllOperations()
+    }
+}
+
+
+
+
+// MARK: - Image Operations
+extension FeaturedFollowingVC {
+    
+    
+    private func startCompetitionImageDownloadFor(
+        competition: Competition,
+        indexPath: IndexPath
+    ) {
+        
+        var downloadsInProgress = pendingImageOperations.downloadsInProgress
+        
+        // Make sure there isn't already a download in progress.
+        guard downloadsInProgress[indexPath] == nil else { return }
+        
+        let downloadOperation = DownloadCompetitionImageOperation(
+            competition: competition
+        )
+        
+        downloadOperation.completionBlock = {
+            
+            if downloadOperation.isCancelled { return }
+            
+            DispatchQueue.main.async {
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+                debugPrint("# FF Operation removed")
+                
+                switch self.activeCompetitionFeedType {
+                    
+                case .featured:
+                    self.featuredTableView.reloadRows(
+                        at: [indexPath],
+                        with: .none
+                    )
+                    
+                case .following:
+                    self.followedUsersTableView.reloadRows(
+                        at: [indexPath],
+                        with: .none
+                    )
+                }
+            }
+        }
+        
+        // Add the operation to the collection of downloads in progress.
+        downloadsInProgress[indexPath] = downloadOperation
+        
+        // Add the operation to the queue to start downloading.
+        pendingImageOperations.downloadQueue.addOperation(
+            downloadOperation
+        )
+        debugPrint("# FF Operation added")
+    }
+    
+    
+    private func suspendAllOperations() {
+        pendingImageOperations.downloadQueue.isSuspended = true
+    }
+    
+    
+    private func resumeAllOperations() {
+        pendingImageOperations.downloadQueue.isSuspended = false
+    }
+    
+    
+    private func loadImagesForOnscreenCells() {
+        
+        if let pathsArray = featuredTableView.indexPathsForVisibleRows {
+
+            var downloadsInProgress =
+                pendingImageOperations.downloadsInProgress
+
+            let allPendingOperations = Set(
+                downloadsInProgress.keys
+            )
+            var toBeCancelled = allPendingOperations
+
+            let visiblePaths = Set(pathsArray)
+            toBeCancelled.subtract(visiblePaths)
+
+            var toBeStarted = visiblePaths
+            toBeStarted.subtract(allPendingOperations)
+
+            for indexPath in toBeCancelled {
+
+                if let pendingDownload = downloadsInProgress[indexPath] {
+                    pendingDownload.cancel()
+                }
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+            }
+
+            for indexPath in toBeStarted {
+
+                let competition = featuredCompetitions[indexPath.row]
+
+                startCompetitionImageDownloadFor(
+                    competition: competition,
+                    indexPath: indexPath
+                )
+            }
+        }
     }
 }

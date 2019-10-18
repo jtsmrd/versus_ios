@@ -31,59 +31,69 @@ enum CompetitionType: Int {
 
 class Competition: Codable {
     
-    private var _categoryTypeId: Int = 0
-    private var _competitionId: String = ""
-    private var _competitionTypeId: Int = 0
-    private var _expireDateString: String = ""
-    private var _firstCompetitor: Competitor!
-    private var _isActiveInt: Int = 0
-    private var _isFeaturedInt: Int = 0
-    private var _secondCompetitor: Competitor!
-    private var _startDateString: String = ""
-    private var _isExtendedInt: Int = 0
-    private var _winnerUserId: String = ""
+    private var _id: Int
+    private var _active: Bool
+    private var _categoryId: Int
+    private var _typeId: Int
+    private var _expireDate: Date
+    private var _extended: Bool
+    private var _featured: Bool
+    private var _startDate: Date
+    private var _winnerUserId: Int?
+    private var _leftEntry: Entry
+    private var _rightEntry: Entry
+    
+    enum CodingKeys: String, CodingKey {
+        case _id = "id"
+        case _active = "active"
+        case _categoryId = "categoryId"
+        case _typeId = "typeId"
+        case _expireDate = "expireDate"
+        case _extended = "extended"
+        case _featured = "featured"
+        case _startDate = "startDate"
+        case _winnerUserId = "winnerUserId"
+        case _leftEntry = "leftEntry"
+        case _rightEntry = "rightEntry"
+    }
 }
 
 extension Competition {
     
     
     var category: Category {
-        
-        let categoryType = CategoryType(rawValue: _categoryTypeId) ?? .unknown
+
+        let categoryType = CategoryType(rawValue: _categoryId) ?? .unknown
         return CategoryCollection.instance.getCategory(categoryType: categoryType)
     }
-    
-    
-    var competitionId: String {
-        return _competitionId
+
+
+    var id: Int {
+        return _id
     }
-    
-    
+
+
     var competitionType: CompetitionType {
-        return CompetitionType(rawValue: _competitionTypeId) ?? .unknown
+        return CompetitionType(rawValue: _typeId) ?? .unknown
+    }
+
+
+    var leftEntry: Entry {
+        return _leftEntry
     }
     
     
-    var firstCompetitor: Competitor {
-        return _firstCompetitor
+    var rightEntry: Entry {
+        return _rightEntry
     }
-    
-    
+
+
     var isExpired: Bool {
-        
-        let expireDate = _expireDateString.toISO8601Date
-        return expireDate < Date()
+        return _expireDate < Date()
     }
-    
-    
-    var secondCompetitor: Competitor {
-        return _secondCompetitor
-    }
-    
-    
-    var secondsUntilExpire: Int? {
-        
-        let expireDate = _expireDateString.toISO8601Date
-        return Date().seconds(until: expireDate)
+
+
+    var secondsUntilExpire: Int {
+        return Date().seconds(until: _expireDate)
     }
 }

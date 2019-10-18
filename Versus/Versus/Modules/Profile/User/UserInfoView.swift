@@ -9,14 +9,13 @@
 import UIKit
 
 protocol UserInfoViewDelegate {
-    
-    func unfollowUser(user: User)
+    func follow()
+    func unfollow()
     func viewWins()
     func viewRanks()
     func viewFollowedUsers()
     func viewFollowers()
     func viewEntries()
-    func errorOccurred(errorMessage: String)
 }
 
 class UserInfoView: UICollectionReusableView {
@@ -44,11 +43,9 @@ class UserInfoView: UICollectionReusableView {
     
     private let s3BucketService = S3BucketService.instance
     
-    private var user: User!
-    private var entries: [Entry]!
     private var originalEntriesViewHeight: CGFloat!
     private var followStatus: FollowStatus = .notFollowing
-    private var delegate: UserInfoViewDelegate!
+    private var delegate: UserInfoViewDelegate?
     
     
     
@@ -96,7 +93,7 @@ class UserInfoView: UICollectionReusableView {
     
     
     @IBAction func winsButtonAction() {
-        delegate.viewWins()
+        delegate?.viewWins()
     }
     
     
@@ -105,31 +102,31 @@ class UserInfoView: UICollectionReusableView {
         switch followStatus {
             
         case .following:
-            displayConfirmUnfollowUser()
+            delegate?.unfollow()
             
         case .notFollowing:
-            followUser()
+            delegate?.follow()
         }
     }
     
     
     @objc func rankTapped() {
-        delegate.viewRanks()
+        delegate?.viewRanks()
     }
     
     
     @objc func followedUsersTapped() {
-        delegate.viewFollowedUsers()
+        delegate?.viewFollowedUsers()
     }
     
     
     @objc func followersTapped() {
-        delegate.viewFollowers()
+        delegate?.viewFollowers()
     }
     
     
     @objc func entriesViewTapped() {
-        delegate.viewEntries()
+        delegate?.viewEntries()
     }
     
     
@@ -141,10 +138,15 @@ class UserInfoView: UICollectionReusableView {
         delegate: UserInfoViewDelegate
     ) {
         
-        self.user = user
-        self.entries = entries
         self.delegate = delegate
         
+        if CurrentAccount.userIsMe(userId: user.id) {
+            followButton.isHidden = true
+        }
+        else {
+            followStatus = CurrentAccount.getFollowStatusFor(userId: user.id)
+            followButton.setButtonState(followStatus: followStatus)
+        }
         
         displayNameLabel.text = user.name
         bioLabel.text = user.bio
@@ -158,36 +160,19 @@ class UserInfoView: UICollectionReusableView {
             .bold("\(user.followedUserCount)", self.followingLabel.font.pointSize)
             .normal(" following")
         
-        rankImageView.image = UIImage(named: user.rank.imageName)
+        rankImageView.image = user.rank.image
         rankTitleLabel.text = user.rank.title
         
         
-        configureFollowerButton()
-        configureEntriesView()
-        downloadProfileImage()
-        downloadBackgroundImage()
+        configureEntriesView(entries: entries)
+        downloadProfileImage(user: user)
+        downloadBackgroundImage(user: user)
     }
     
     
     
     
-    private func configureFollowerButton() {
-        
-        guard !CurrentAccount.userIsMe(userId: user.id) else {
-            followButton.isHidden = true
-            return
-        }
-        
-        // See if you're following them or now.
-        //TODO
-//        followStatus = CurrentUser.getFollowedUserStatusFor(userId: user.userId)
-        
-        // Set the state of the button based on the followStatus.
-        followButton.setButtonState(followStatus: followStatus)
-    }
-    
-    
-    private func configureEntriesView() {
+    private func configureEntriesView(entries: [Entry]) {
         
         if entries.isEmpty {
             
@@ -205,7 +190,7 @@ class UserInfoView: UICollectionReusableView {
     }
     
     
-    private func downloadProfileImage() {
+    private func downloadProfileImage(user: User) {
         
         if !user.profileImage.isEmpty {
             
@@ -214,14 +199,15 @@ class UserInfoView: UICollectionReusableView {
                 imageType: .regular
             ) { [weak self] (image, customError) in
                 
-                if customError != nil {
-                    self?.delegate.errorOccurred(
-                        errorMessage: "Unable to download profile image"
-                    )
-                    return
-                }
-                
                 DispatchQueue.main.async {
+                    
+                    if customError != nil {
+                        self?.parentViewController?.displayMessage(
+                            message: "Unable to download profile image"
+                        )
+                        return
+                    }
+                    
                     self?.profileImageView.image = image
                 }
             }
@@ -229,7 +215,7 @@ class UserInfoView: UICollectionReusableView {
     }
     
     
-    private func downloadBackgroundImage() {
+    private func downloadBackgroundImage(user: User) {
         
         if !user.backgroundImage.isEmpty {
             
@@ -238,60 +224,18 @@ class UserInfoView: UICollectionReusableView {
                 imageType: .background
             ) { [weak self] (image, customError) in
                 
-                if customError != nil {
-                    self?.delegate.errorOccurred(
-                        errorMessage: "Unable to download background image"
-                    )
-                    return
-                }
-                
                 DispatchQueue.main.async {
+                    
+                    if customError != nil {
+                        self?.parentViewController?.displayMessage(
+                            message: "Unable to download background image"
+                        )
+                        return
+                    }
+                    
                     self?.backgroundImageView.image = image
                 }
             }
         }
-    }
-    
-    
-    private func displayConfirmUnfollowUser() {
-        
-        let unfollowAlert = UIAlertController(
-            title: "Confirm Unfollow",
-            message: "Are you sure you want to unfollow @\(user.username)",
-            preferredStyle: .actionSheet
-        )
-        
-        let unfollowAction = UIAlertAction(
-            title: "Unfollow",
-            style: .destructive
-        ) { (action) in
-            
-            self.unfollowUser()
-        }
-        
-        let cancelAction = UIAlertAction(
-            title: "Cancel",
-            style: .cancel,
-            handler: nil
-        )
-        
-        unfollowAlert.addAction(unfollowAction)
-        unfollowAlert.addAction(cancelAction)
-        
-        parentViewController?.present(
-            unfollowAlert,
-            animated: true,
-            completion: nil
-        )
-    }
-    
-    
-    private func followUser() {
-        
-    }
-    
-    
-    private func unfollowUser() {
-        
     }
 }

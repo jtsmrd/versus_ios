@@ -1,5 +1,5 @@
 //
-//  UnmatchedEntryCell.swift
+//  EntryCell.swift
 //  Versus
 //
 //  Created by JT Smrdel on 1/4/19.
@@ -8,14 +8,14 @@
 
 import UIKit
 
-class UnmatchedEntryCell: UITableViewCell {
+class EntryCell: UITableViewCell {
 
     
     @IBOutlet weak var submittedTimeLabel: UILabel!
     @IBOutlet weak var categoryTypeLabel: UILabel!
-    @IBOutlet weak var competitionImageView: RoundedCornerImageView!
+    @IBOutlet weak var entryImageView: RoundedCornerImageView!
     
-    let s3BucketService = S3BucketService.instance
+    
     
     
     override func awakeFromNib() {
@@ -23,22 +23,22 @@ class UnmatchedEntryCell: UITableViewCell {
         // Initialization code
     }
 
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         
         submittedTimeLabel.text = nil
         categoryTypeLabel.text = nil
-        competitionImageView.image = nil
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+        entryImageView.image = nil
     }
 
     
-    func configureCell(entry: Entry) {
+    
+    
+    func configureCell(
+        entry: Entry,
+        entryImage: UIImage?
+    ) {
         
         let timeSince = entry.createDate.toElapsedTimeString_Minimal
         submittedTimeLabel.text = String(
@@ -52,14 +52,6 @@ class UnmatchedEntryCell: UITableViewCell {
             entry.competitionTypeName
         )
         
-        s3BucketService.downloadImage(
-            mediaId: entry.mediaId,
-            imageType: .regular
-        ) { [weak self] (image, customError) in
-            
-            DispatchQueue.main.async {
-                self?.competitionImageView.image = image
-            }
-        }
+        entryImageView.image = entryImage
     }
 }

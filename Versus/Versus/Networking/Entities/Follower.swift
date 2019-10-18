@@ -6,77 +6,52 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-
 enum FollowStatus {
     case following
     case notFollowing
 }
 
-@objcMembers
-class Follower: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
+class Follower: Codable {
     
-    private(set) var _createDate: String?
-    private(set) var _displayName: String?
-    private(set) var _followerUserId: String?
-    private(set) var _searchDisplayName: String?
-    private(set) var _searchUsername: String?
-    private(set) var _username: String?
-    private(set) var _userId: String?
+    private var _id: Int
+    private var _createDate: Date
+    private var _inviteAccepted: Bool
+    private var _user: User
     
-    
-    class func dynamoDBTableName() -> String {
-        
-        return "AWS_Follower"
-    }
-    
-    class func hashKeyAttribute() -> String {
-        
-        return "_userId"
-    }
-    
-    class func rangeKeyAttribute() -> String {
-        
-        return "_createDate"
-    }
-    
-    override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
-        return [
-            "_createDate" : "createDate",
-            "_displayName" : "displayName",
-            "_followerUserId" : "followerUserId",
-            "_searchDisplayName" : "searchDisplayName",
-            "_searchUsername" : "searchUsername",
-            "_username" : "username",
-            "_userId" : "userId",
-        ]
+    enum CodingKeys: String, CodingKey {
+        case _id = "id"
+        case _createDate = "createDate"
+        case _inviteAccepted = "inviteAccepted"
+        case _user = "follower"
     }
 }
 
 extension Follower {
     
     
-    var displayName: String {
-        return _displayName ?? ""
+    var createDate: Date {
+        return _createDate
     }
     
     
-    var followerUserId: String {
-        return _followerUserId ?? ""
+    var id: Int {
+        return _id
     }
     
     
-    var searchDisplayName: String {
-        return _searchDisplayName ?? ""
+    var inviteAccepted: Bool {
+        return _inviteAccepted
     }
     
     
-    var searchUsername: String {
-        return _searchUsername ?? ""
+    var user: User {
+        return _user
     }
+}
+
+extension Follower: Equatable {
     
-    
-    var username: String {
-        return _username ?? ""
+    static func == (lhs: Follower, rhs: Follower) -> Bool {
+        return lhs.id == rhs.id
     }
 }

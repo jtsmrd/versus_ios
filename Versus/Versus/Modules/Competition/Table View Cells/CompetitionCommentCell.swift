@@ -48,10 +48,13 @@ class CompetitionCommentCell: UITableViewCell {
         S3BucketService.instance.downloadImage(
             mediaId: comment.userId,
             imageType: .small
-        ) { (image, customError) in
+        ) { (image, errorMessage) in
+            
             DispatchQueue.main.async {
-                if let customError = customError {
-                    debugPrint(customError.message)
+                
+                if let errorMessage = errorMessage {
+                    debugPrint(errorMessage)
+                    return
                 }
                 self.profileImageView.image = image
             }

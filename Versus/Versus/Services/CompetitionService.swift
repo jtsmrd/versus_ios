@@ -6,157 +6,237 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-import AWSCognitoIdentityProvider
-import AVKit
-import AWSLambda
-
 class CompetitionService {
     
+    
     static let instance = CompetitionService()
-    private let dynamoDB = AWSDynamoDBObjectMapper.default()
-    private let lambda = AWSLambdaInvoker.default()
-    private let s3BucketService = S3BucketService.instance
+    
+    private let networkManager = NetworkManager()
+    private let router = Router<CompetitionEndpoint>()
+    
+    
+    
     
     private init() { }
     
     
-    //TODO: Sort results by newest Competition
-    /**
-     
-     */
-    func getFollowedUserCompetitions(
-        followedUserIds: [String],
-        completion: @escaping (_ competitions: [Competition], _ customError: CustomError?) -> Void
+    
+    
+    /// Load new competitions for users that the given user follows.
+    ///
+    /// - Parameters:
+    ///   - userId: User's id.
+    ///   - completion: A collection of competitions or an error message.
+    func loadFollowedUserCompetitions(
+        userId: Int,
+        completion: @escaping (_ competitions: [Competition]?, _ error: String?) -> ()
     ) {
-//        var competitions = [Competition]()
-//        let jsonObject: [String: Any] = ["followedUserIds": followedUserIds]
-//        lambda.invokeFunction("GetFollowedUserCompetitions", jsonObject: jsonObject) { (result, error) in
-//            if let error = error {
-//                completion(competitions, CustomError(error: error, message: "Unable to get followed user Competitions"))
-//                return
-//            }
-//            if let result = result as? NSDictionary,
-//                let competitionsDict = result["Items"] as? NSArray {
-//                for competitionDict in competitionsDict {
-//                    let competition = CompetitionParser().fromDictionary(competitionDictionary: competitionDict as! NSDictionary)
-//                    competitions.append(competition)
-//                }
-//            }
-//            completion(competitions, nil)
-//        }
+        
+        router.request(
+            .loadFollowedUserCompetitions(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let competitions = try decoder.decode([Competition].self, from: responseData)
+                        completion(competitions, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
     }
     
     
-    /**
-     
-     */
-    func getFeaturedCompetitions(
+    
+    
+    /// Loads the latest featured competitions, optionally filtered
+    /// by category.
+    ///
+    /// - Parameters:
+    ///   - categoryId: (optional) The categoryId to filter competitions.
+    ///   - completion: A collection of competitions or an error message.
+    func loadFeaturedCompetitions(
         categoryId: Int?,
-        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void
+        completion: @escaping (_ competitions: [Competition]?, _ error: String?) -> ()
     ) {
-//        let queryExpression = AWSDynamoDBQueryExpression()
-//        if let categoryId = categoryId {
-//            queryExpression.keyConditionExpression = "#isFeaturedCategoryTypeId = :isFeaturedCatType AND startDate < :currentDate"
-//            queryExpression.expressionAttributeNames = [
-//                "#isFeaturedCategoryTypeId": "isFeaturedCategoryTypeId"
-//            ]
-//            queryExpression.expressionAttributeValues = [
-//                ":isFeaturedCatType": String(format: "1|%d", categoryId),
-//                ":currentDate": Date().toISO8601String
-//            ]
-//            queryExpression.indexName = "isFeaturedCategoryTypeId-startDate-index"
-//        }
-//        else {
-//            queryExpression.keyConditionExpression = "#isFeatured = :isFeatured AND startDate < :currentDate"
-//            queryExpression.expressionAttributeNames = [
-//                "#isFeatured": "isFeatured"
-//            ]
-//            queryExpression.expressionAttributeValues = [
-//                ":isFeatured": 1,
-//                ":currentDate": Date().toISO8601String
-//            ]
-//            queryExpression.indexName = "isFeatured-startDate-index"
-//        }
-//        queryExpression.scanIndexForward = false
-//
-//        var competitions = [Competition]()
-//        dynamoDB.query(
-//            AWSCompetition.self,
-//            expression: queryExpression
-//        ) { (paginatedOutput, error) in
-//            if let error = error {
-//                completion(competitions, CustomError(error: error, message: "Unable to get featured competitions"))
-//                return
-//            }
-//            if let result = paginatedOutput {
-//                for competition in result.items {
-//                    competitions.append(Competition(awsCompetition: competition as! AWSCompetition))
-//                }
-//            }
-//            completion(competitions, nil)
-//        }
+       
+        router.request(
+            .loadFeaturedCompetitions(
+                categoryId: categoryId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let competitions = try decoder.decode([Competition].self, from: responseData)
+                        completion(competitions, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
     }
     
     
-    /**
-     
-     */
-    func getCompetitionsFor(
-        userId: String,
-        completion: @escaping (_ competitions: [Competition], _ error: CustomError?) -> Void
+    
+    
+    /// Loads competitions for the given userId.
+    ///
+    /// - Parameters:
+    ///   - userId: The User's id.
+    ///   - completion: A collection of competitions or an error message.
+    func loadUserCompetitions(
+        userId: Int,
+        completion: @escaping (_ competitions: [Competition]?, _ error: String?) -> ()
     ) {
-//        let scanExpression = AWSDynamoDBScanExpression()
-//        scanExpression.filterExpression = "#firstEntryUserId = :userId OR #secondEntryUserId = :userId"
-//        scanExpression.expressionAttributeNames = [
-//            "#firstEntryUserId": "firstEntryUserId",
-//            "#secondEntryUserId": "secondEntryUserId"
-//        ]
-//        scanExpression.expressionAttributeValues = [
-//            ":userId": userId
-//        ]
-//
-//        var competitions = [Competition]()
-//        dynamoDB.scan(
-//            AWSCompetition.self,
-//            expression: scanExpression
-//        ) { (paginatedOutput, error) in
-//            if let error = error {
-//                completion(competitions, CustomError(error: error, message: "Unable to get competitions for user"))
-//                return
-//            }
-//            if let result = paginatedOutput {
-//                for competition in result.items {
-//                    competitions.append(Competition(awsCompetition: competition as! AWSCompetition))
-//                }
-//            }
-//            completion(competitions, nil)
-//        }
-        completion([Competition](), nil)
+        
+        router.request(
+            .loadUserCompetitions(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let competitions = try decoder.decode([Competition].self, from: responseData)
+                        completion(competitions, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
     }
     
     
-    /**
-     
-     */
+    
+    
+    /// Gets a specific competition.
+    ///
+    /// - Parameters:
+    ///   - userId: The User's id.
+    ///   - completion: A collection of competitions or an error message.
     func getCompetition(
-        competitionId: String,
-        completion: @escaping (_ competition: Competition?, _ error: CustomError?) -> Void
+        competitionId: Int,
+        completion: @escaping (_ competition: Competition?, _ error: String?) -> ()
     ) {
-//        dynamoDB.load(
-//            AWSCompetition.self,
-//            hashKey: competitionId,
-//            rangeKey: nil
-//        ) { (awsCompetition, error) in
-//            if let error = error {
-//                completion(nil, CustomError(error: error, message: "Unable to get competition"))
-//            }
-//            else if let awsCompetition = awsCompetition as? AWSCompetition {
-//                completion(Competition(awsCompetition: awsCompetition), nil)
-//            }
-//            else {
-//                completion(nil, nil)
-//            }
-//        }
+        
+        router.request(
+            .getCompetition(
+                competitionId: competitionId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let competition = try decoder.decode(Competition.self, from: responseData)
+                        completion(competition, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
     }
 }

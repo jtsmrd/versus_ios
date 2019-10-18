@@ -22,10 +22,10 @@
                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="XxM-yJ-o4r" userLabel="Competitors Stack View">
                         <rect key="frame" x="8" y="8" width="359" height="179.5"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jqL-cp-Q3A">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="jqL-cp-Q3A">
                                 <rect key="frame" x="0.0" y="0.0" width="179.5" height="179.5"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tlQ-Kb-xxf">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="tlQ-Kb-xxf">
                                 <rect key="frame" x="179.5" y="0.0" width="179.5" height="179.5"/>
                             </imageView>
                         </subviews>
@@ -169,15 +169,15 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="categoryBarView" destination="q3r-v9-4ej" id="eNR-Ym-j08"/>
-                <outlet property="competitionCategoryImageView" destination="bRp-sG-JK2" id="wER-3q-H6x"/>
-                <outlet property="firstEntryCompetitionImageView" destination="jqL-cp-Q3A" id="g8W-JM-BS7"/>
-                <outlet property="firstEntryUserRankImageView" destination="N18-id-ZkH" id="Guc-zj-faO"/>
-                <outlet property="firstEntryUsernameLabel" destination="4Bt-C1-qI4" id="gtN-lO-SgU"/>
-                <outlet property="firstEntryVotesLabel" destination="88t-bU-Wpn" id="xKO-Lt-XGP"/>
-                <outlet property="secondEntryCompetitionImageView" destination="tlQ-Kb-xxf" id="WQ8-Nq-VOx"/>
-                <outlet property="secondEntryUserRankImageView" destination="csD-eX-df1" id="n3z-Fh-RIf"/>
-                <outlet property="secondEntryUsernameLabel" destination="8lQ-0b-LTd" id="1Fp-Fa-48u"/>
-                <outlet property="secondEntryVotesLabel" destination="Tgv-TS-F7A" id="oqm-18-VCX"/>
+                <outlet property="categoryImageView" destination="bRp-sG-JK2" id="wER-3q-H6x"/>
+                <outlet property="leftEntryImageView" destination="jqL-cp-Q3A" id="g8W-JM-BS7"/>
+                <outlet property="leftEntryRankImageView" destination="N18-id-ZkH" id="Guc-zj-faO"/>
+                <outlet property="leftEntryUsernameLabel" destination="4Bt-C1-qI4" id="gtN-lO-SgU"/>
+                <outlet property="leftEntryVotesLabel" destination="88t-bU-Wpn" id="xKO-Lt-XGP"/>
+                <outlet property="rightEntryImageView" destination="tlQ-Kb-xxf" id="WQ8-Nq-VOx"/>
+                <outlet property="rightEntryRankImageView" destination="csD-eX-df1" id="n3z-Fh-RIf"/>
+                <outlet property="rightEntryUsernameLabel" destination="8lQ-0b-LTd" id="1Fp-Fa-48u"/>
+                <outlet property="rightEntryVotesLabel" destination="Tgv-TS-F7A" id="oqm-18-VCX"/>
                 <outlet property="versusCircleView" destination="eIh-G4-y1y" id="JGC-ez-kPo"/>
             </connections>
             <point key="canvasLocation" x="34" y="165.5"/>
@@ -186,5 +186,6 @@
     <resources>
         <image name="Mic" width="800" height="800"/>
         <image name="Star" width="496.55172729492188" height="499"/>
+        <image name="default-profile" width="376" height="376"/>
     </resources>
 </document>

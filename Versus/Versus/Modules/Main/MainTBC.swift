@@ -73,10 +73,10 @@ extension MainTBC: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         
         // The profile tab was selected.
-        if let navController = viewController as? UINavigationController, let profileVC = navController.children.first as? ProfileVC {
-            
-            // Configure the ProfileVC for the current user.
-            profileVC.initData(userId: CurrentAccount.user.id)
-        }
+//        if let navController = viewController as? UINavigationController, let profileVC = navController.children.first as? ProfileVC {
+//
+//            // Configure the ProfileVC for the current user.
+//            profileVC.initData(userId: CurrentAccount.user.id)
+//        }
     }
 }

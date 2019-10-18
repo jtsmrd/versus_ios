@@ -10,6 +10,7 @@ import UIKit
 
 class SearchBrowseVC: UIViewController {
     
+    
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var browseTableView: UITableView!
@@ -20,13 +21,25 @@ class SearchBrowseVC: UIViewController {
     
     @IBOutlet weak var leaderboardCategoryContainerViewTop: NSLayoutConstraint!
     @IBOutlet weak var searchViewTop: NSLayoutConstraint!
-    @IBOutlet weak var searchViewHeight: NSLayoutConstraint!
+    
+    private let leaderboardCollectionViewSectionInsets = UIEdgeInsets(
+        top: 2,
+        left: 2,
+        bottom: 2,
+        right: 2
+    )
+    private let browseCategoryCollectionViewSectionInsets = UIEdgeInsets(
+        top: 2,
+        left: 2,
+        bottom: 2,
+        right: 2
+    )
+    private let competitionService = CompetitionService.instance
+    private let pendingImageOperations = ImageOperations()
     
     private var searchVC: SearchUserVC!
-    var featuredCompetitions = [Competition]()
-    var selectedCategoryIndexPath: IndexPath?
-    let leaderboardCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
-    let browseCategoryCollectionViewSectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    private var featuredCompetitions = [Competition]()
+    private var selectedCategoryIndexPath: IndexPath?
     
     
     // Used to handle expanding and collapsing leaderboardCategoryContainerView
@@ -50,8 +63,10 @@ class SearchBrowseVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        browseTableView.register(UINib(nibName: COMPETITION_CELL, bundle: nil), forCellReuseIdentifier: COMPETITION_CELL)
-        searchViewHeight.constant = contentContainerView.frame.height
+        browseTableView.register(
+            UINib(nibName: COMPETITION_CELL, bundle: nil),
+            forCellReuseIdentifier: COMPETITION_CELL
+        )
         
         getLeaderboards()
         configureView()
@@ -60,7 +75,7 @@ class SearchBrowseVC: UIViewController {
     
     private func configureView() {
         
-        getFeaturedCompetitions()
+        getFeaturedCompetitions(categoryId: nil)
         //TODO
 //        CurrentUser.getFollowedUsers { (followedUsers, customError) in
 //            DispatchQueue.main.async {
@@ -87,45 +102,39 @@ class SearchBrowseVC: UIViewController {
     }
     
     
-    private func getFeaturedCompetitions() {
-        //TODO
-//        CompetitionManager.instance.getFeaturedCompetitions { (competitions, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    debugPrint(customError.message)
-//                    return
-//                }
-//                self.featuredCompetitions = competitions
-//                self.browseTableView.reloadData()
-//            }
-//        }
-    }
-    
-    
-    private func getFeaturedCompetitionsWith(categoryId: Int) {
-        //TODO
-//        CompetitionService.instance.getFeaturedCompetitions(
-//            categoryId: categoryId
-//        ) { (competitions, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    debugPrint(customError.message)
-//                    return
-//                }
-//                self.featuredCompetitions.removeAll()
-//                self.featuredCompetitions.append(contentsOf: competitions)
-//                self.browseTableView.reloadData()
-//            }
-//        }
+    private func getFeaturedCompetitions(categoryId: Int?) {
+        
+        competitionService.loadFeaturedCompetitions(
+            categoryId: categoryId
+        ) { [weak self] (competitions, errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let competitions = competitions else {
+                    self?.displayMessage(message: "Unable to load featured competitions")
+                    return
+                }
+                
+                self?.featuredCompetitions = competitions
+                self?.browseTableView.reloadData()
+            }
+        }
     }
     
     
     private func showCompetition(competition: Competition) {
         
-        if let viewCompetitionVC = UIStoryboard(name: COMPETITION, bundle: nil).instantiateInitialViewController() as? ViewCompetitionVC {
-            viewCompetitionVC.initData(competition: competition)
-            navigationController?.pushViewController(viewCompetitionVC, animated: true)
-        }
+        let competitionVC = CompetitionVC(competition: competition)
+        competitionVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(
+            competitionVC,
+            animated: true
+        )
     }
     
     
@@ -192,28 +201,39 @@ class SearchBrowseVC: UIViewController {
     }
 }
 
+
+
+
+// MARK: - SearchVCDelegate
 extension SearchBrowseVC: SearchVCDelegate {
     
     /**
  
      */
     func toggleSearchView(isHidden hidden: Bool) {
-        var newConstant: CGFloat = 0
+        
         if hidden {
-            newConstant = -(searchView.frame.height)
+            
             view.endEditing(true)
         }
         searchView.isHidden = hidden
-        searchViewTop.constant = newConstant
     }
 }
 
+
+
+
+// MARK: - UITableViewDataSource
 extension SearchBrowseVC: UITableViewDataSource {
     
     /**
      
      */
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+        
         return featuredCompetitions.count
     }
     
@@ -221,10 +241,34 @@ extension SearchBrowseVC: UITableViewDataSource {
     /**
      
      */
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: COMPETITION_CELL, for: indexPath) as? CompetitionCell {
-            cell.configureCell(competition: featuredCompetitions[indexPath.row])
-            return cell
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: COMPETITION_CELL,
+            for: indexPath
+        )
+        
+        if let competitionCell = cell as? CompetitionCell {
+            
+            let competition = featuredCompetitions[indexPath.row]
+            
+            competitionCell.configureCell(
+                competition: competition
+            )
+            
+            if competition.leftEntry.imageDownloadState == .new ||
+                competition.rightEntry.imageDownloadState == .new {
+                
+                startCompetitionImageDownloadFor(
+                    competition: competition,
+                    indexPath: indexPath
+                )
+            }
+            
+            return competitionCell
         }
         return CompetitionCell()
     }
@@ -238,27 +282,47 @@ extension SearchBrowseVC: UITableViewDataSource {
     }
 }
 
+
+
+
+// MARK: - UITableViewDelegate
 extension SearchBrowseVC: UITableViewDelegate {
     
     /**
      
      */
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-        showCompetition(competition: featuredCompetitions[indexPath.row])
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        
+        tableView.deselectRow(
+            at: indexPath,
+            animated: false
+        )
+        
+        showCompetition(
+            competition: featuredCompetitions[indexPath.row]
+        )
     }
     
     /**
      
      */
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    func scrollViewDidScroll(
+        _ scrollView: UIScrollView
+    ) {
+        
         handleBrowseTableViewScroll(scrollView: scrollView)
     }
     
     /**
      
      */
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    func scrollViewDidEndDragging(
+        _ scrollView: UIScrollView,
+        willDecelerate decelerate: Bool
+    ) {
         
         // If the scroll view will decelerate then scrollViewDidEndDecelerating will be called instead.
         // We don't want to expand twice
@@ -270,11 +334,18 @@ extension SearchBrowseVC: UITableViewDelegate {
     /**
      
      */
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(
+        _ scrollView: UIScrollView
+    ) {
+        
         expandLeaderboardCategoriesViewIfNeeded()
     }
 }
 
+
+
+
+// MARK: - UICollectionViewDataSource
 extension SearchBrowseVC: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -313,6 +384,9 @@ extension SearchBrowseVC: UICollectionViewDataSource {
 }
 
 
+
+
+// MARK: - UICollectionViewDelegate
 extension SearchBrowseVC: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -327,17 +401,21 @@ extension SearchBrowseVC: UICollectionViewDelegate {
             
             if cell.categorySelected {
                 selectedCategoryIndexPath = indexPath
-                getFeaturedCompetitionsWith(categoryId: cell.category.categoryType.rawValue)
+                getFeaturedCompetitions(categoryId: cell.category.categoryType.rawValue)
             }
             else {
                 selectedCategoryIndexPath = nil
-                getFeaturedCompetitions()
+                getFeaturedCompetitions(categoryId: nil)
             }
             collectionView.reloadData()
         }
     }
 }
 
+
+
+
+// MARK: - UICollectionViewDelegateFlowLayout
 extension SearchBrowseVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(
@@ -394,5 +472,105 @@ extension SearchBrowseVC: UICollectionViewDelegateFlowLayout {
             return browseCategoryCollectionViewSectionInsets.left
         }
         return 0.0
+    }
+}
+
+
+
+
+// MARK: - Image Operations
+extension SearchBrowseVC {
+    
+    
+    private func startCompetitionImageDownloadFor(
+        competition: Competition,
+        indexPath: IndexPath
+    ) {
+        
+        var downloadsInProgress = pendingImageOperations.downloadsInProgress
+        
+        // Make sure there isn't already a download in progress.
+        guard downloadsInProgress[indexPath] == nil else { return }
+        
+        let downloadOperation = DownloadCompetitionImageOperation(
+            competition: competition
+        )
+        
+        downloadOperation.completionBlock = {
+            
+            if downloadOperation.isCancelled { return }
+            
+            DispatchQueue.main.async {
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+                debugPrint("# SB Operation removed")
+                
+                self.browseTableView.reloadRows(
+                    at: [indexPath],
+                    with: .none
+                )
+            }
+        }
+        
+        // Add the operation to the collection of downloads in progress.
+        downloadsInProgress[indexPath] = downloadOperation
+        
+        // Add the operation to the queue to start downloading.
+        pendingImageOperations.downloadQueue.addOperation(
+            downloadOperation
+        )        
+        debugPrint("# SB Operation added")
+    }
+    
+    
+    private func suspendAllOperations() {
+        pendingImageOperations.downloadQueue.isSuspended = true
+    }
+    
+    
+    private func resumeAllOperations() {
+        pendingImageOperations.downloadQueue.isSuspended = false
+    }
+    
+    
+    private func loadImagesForOnscreenCells() {
+        
+        if let pathsArray = browseTableView.indexPathsForVisibleRows {
+            
+            var downloadsInProgress =
+                pendingImageOperations.downloadsInProgress
+            
+            let allPendingOperations = Set(
+                downloadsInProgress.keys
+            )
+            var toBeCancelled = allPendingOperations
+            
+            let visiblePaths = Set(pathsArray)
+            toBeCancelled.subtract(visiblePaths)
+            
+            var toBeStarted = visiblePaths
+            toBeStarted.subtract(allPendingOperations)
+            
+            for indexPath in toBeCancelled {
+                
+                if let pendingDownload = downloadsInProgress[indexPath] {
+                    pendingDownload.cancel()
+                }
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+            }
+            
+            for indexPath in toBeStarted {
+                
+                let competition = featuredCompetitions[indexPath.row]
+                
+                startCompetitionImageDownloadFor(
+                    competition: competition,
+                    indexPath: indexPath
+                )
+            }
+        }
     }
 }

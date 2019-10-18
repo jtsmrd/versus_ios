@@ -86,15 +86,16 @@ class NotificationsVC: UIViewController {
             return
         }
         
-        if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-            //TODO
+        //TODO
+//        if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
+//
 //            profileVC.initData(userId: notificationInfo.userId)
-            profileVC.hidesBottomBarWhenPushed = true
-            
-            DispatchQueue.main.async {
-                self.navigationController?.pushViewController(profileVC, animated: true)
-            }
-        }
+//            profileVC.hidesBottomBarWhenPushed = true
+//
+//            DispatchQueue.main.async {
+//                self.navigationController?.pushViewController(profileVC, animated: true)
+//            }
+//        }
     }
 }
 

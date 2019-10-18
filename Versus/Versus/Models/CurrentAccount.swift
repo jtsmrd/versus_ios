@@ -13,11 +13,19 @@ class CurrentAccount {
     
     static private var _user: User?
     static private var _token: String?
+    static private var _followedUserIds = [Int]()
     
     private init() { }
 }
 
 extension CurrentAccount {
+    
+    
+    static var followedUserIds: [Int] {
+        get {
+            return _followedUserIds
+        }
+    }
     
     
     static var user: User {
@@ -38,11 +46,41 @@ extension CurrentAccount {
         _user = account.user
         _token = account.token
         lastSignedInUsername = account.user.username
+        lastSignedInUserId = account.user.id
+        lastAccessToken = account.token
     }
     
     
     static func setUser(user: User) {
         _user = user
+    }
+    
+    
+    static func setToken(token: String) {
+        _token = token
+    }
+    
+    
+    static func setFollowedUserIds(ids: [Int]) {
+        _followedUserIds = ids
+    }
+    
+    
+    static func addFollowedUserId(id: Int) {
+        _followedUserIds.append(id)
+    }
+    
+    
+    static func removeFollowedUserId(id: Int) {
+        if let index = followedUserIds.firstIndex(of: id) {
+            _followedUserIds.remove(at: index)
+        }
+    }
+    
+    
+    static func getFollowStatusFor(userId: Int) -> FollowStatus {
+        
+        return followedUserIds.contains(userId) ? .following : .notFollowing
     }
     
     
@@ -57,12 +95,22 @@ extension CurrentAccount {
     
     /// Stores the userPoolUserId of the active user after signing up or signing in.
     /// Used for instance where a user deletes the app, but doesn't sign out.
-    static var lastSignedInUserId: String {
+    static var lastSignedInUserId: Int {
         get {
-            return userDefaults.string(forKey: "lastSignedInUserId") ?? ""
+            return userDefaults.integer(forKey: "lastSignedInUserId")
         }
         set {
             userDefaults.set(newValue, forKey: "lastSignedInUserId")
+        }
+    }
+    
+    
+    static var lastAccessToken: String {
+        get {
+            return userDefaults.string(forKey: "lastAccessToken") ?? ""
+        }
+        set {
+            userDefaults.set(newValue, forKey: "lastAccessToken")
         }
     }
     

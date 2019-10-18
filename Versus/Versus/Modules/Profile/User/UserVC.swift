@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol UserVCDelegate {
+    func userUpdated()
+}
+
 class UserVC: UIViewController {
 
     
@@ -18,6 +22,7 @@ class UserVC: UIViewController {
     
     private let entryService = EntryService.instance
     private let competitionService = CompetitionService.instance
+    private let followerService = FollowerService.instance
     
     private let collectionViewSectionInsets = UIEdgeInsets(
         top: 2.0,
@@ -26,6 +31,7 @@ class UserVC: UIViewController {
         right: 2.0
     )
     
+    private var delegate: UserVCDelegate?
     private var user: User!
     private var competitions = [Competition]()
     private var entries = [Entry]()
@@ -33,10 +39,12 @@ class UserVC: UIViewController {
     
     
     
-    init(user: User) {
+    init(user: User, delegate: UserVCDelegate? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.user = user
+        self.delegate = delegate
     }
+    
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -77,7 +85,7 @@ class UserVC: UIViewController {
     
     private func loadEntries() {
         
-        entryService.getUnmatchedEntries(
+        entryService.loadEntries(
             userId: user.id
         ) { [weak self] (entries, errorMessage) in
             
@@ -85,6 +93,11 @@ class UserVC: UIViewController {
                 
                 if let errorMessage = errorMessage {
                     self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let entries = entries else {
+                    self?.displayMessage(message: "Unable to load entries")
                     return
                 }
                 
@@ -118,24 +131,103 @@ class UserVC: UIViewController {
     }
     
     
-    
-    
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    private func followUser() {
         
-        if let rankVC = segue.destination as? RankVC {
-            rankVC.initData(user: user)
+        let userId = user.id
+        
+        followerService.followUser(
+            userId: userId
+        ) { [weak self] (errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                CurrentAccount.addFollowedUserId(id: userId)
+                self?.delegate?.userUpdated()
+                self?.profileCollectionView.reloadData()
+            }
         }
-        else if let followerVC = segue.destination as? FollowerVC {
-            followerVC.initData(user: user)
+    }
+    
+    
+    private func unfollowUser() {
+        
+        let unfollowAlert = UIAlertController(
+            title: "Confirm Unfollow",
+            message: "Are you sure you want to unfollow @\(user.username)",
+            preferredStyle: .actionSheet
+        )
+        
+        let unfollowAction = UIAlertAction(
+            title: "Unfollow",
+            style: .destructive
+        ) { (action) in
+            
+            self.loadAndUnfollowUser()
         }
-        else if let followedUserVC = segue.destination as? FollowedUserVC {
-            followedUserVC.initData(user: user)
-        }
-        else if let unmatchedEntriesVC = segue.destination as? UnmatchedEntriesVC, let unmatchedEntries = sender as? [Entry] {
-            unmatchedEntriesVC.initData(unmatchedEntries: unmatchedEntries)
+        
+        let cancelAction = UIAlertAction(
+            title: "Cancel",
+            style: .cancel,
+            handler: nil
+        )
+        
+        unfollowAlert.addAction(unfollowAction)
+        unfollowAlert.addAction(cancelAction)
+        
+        present(
+            unfollowAlert,
+            animated: true,
+            completion: nil
+        )
+    }
+    
+    
+    private func loadAndUnfollowUser() {
+        
+        let userId = CurrentAccount.user.id
+        let userFollowedId = user.id
+        
+        followerService.getFollowedUser(
+            userId: userId,
+            followedUserId: user.id
+        ) { [weak self] (followedUser, errorMessage) in
+            
+            if let errorMessage = errorMessage {
+                DispatchQueue.main.async {
+                    self?.displayMessage(message: errorMessage)
+                }
+                return
+            }
+            
+            guard let followedUser = followedUser else {
+                DispatchQueue.main.async {
+                    self?.displayMessage(message: "Unable to unfollow user")
+                }
+                return
+            }
+            
+            self?.followerService.unfollow(
+                followerId: followedUser.id,
+                completion: { [weak self] (errorMessage) in
+                    
+                    DispatchQueue.main.async {
+                        
+                        if let errorMessage = errorMessage {
+                            self?.displayMessage(message: errorMessage)
+                            return
+                        }
+                        
+                        CurrentAccount.removeFollowedUserId(id: userFollowedId)
+                        self?.delegate?.userUpdated()
+                        self?.profileCollectionView.reloadData()
+                    }
+                }
+            )
         }
     }
 }
@@ -146,8 +238,13 @@ class UserVC: UIViewController {
 extension UserVC: UserInfoViewDelegate {
     
     
-    func unfollowUser(user: User) {
-        
+    func follow() {
+        followUser()
+    }
+    
+    
+    func unfollow() {
+        unfollowUser()
     }
     
     
@@ -158,26 +255,41 @@ extension UserVC: UserInfoViewDelegate {
     
     func viewRanks() {
         
+        let rankVC = RankVC(user: user)
+        navigationController?.pushViewController(
+            rankVC,
+            animated: true
+        )
     }
     
     
     func viewFollowedUsers() {
         
+        let followedUserVC = FollowedUserVC(user: user)
+        navigationController?.pushViewController(
+            followedUserVC,
+            animated: true
+        )
     }
     
     
     func viewFollowers() {
         
+        let followerVC = FollowerVC(user: user)
+        navigationController?.pushViewController(
+            followerVC,
+            animated: true
+        )
     }
     
     
     func viewEntries() {
         
-    }
-    
-    
-    func errorOccurred(errorMessage: String) {
-        displayMessage(message: errorMessage)
+        let entriesVC = EntriesVC(entries: entries)
+        navigationController?.pushViewController(
+            entriesVC,
+            animated: true
+        )
     }
 }
 

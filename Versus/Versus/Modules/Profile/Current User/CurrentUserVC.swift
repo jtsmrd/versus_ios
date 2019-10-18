@@ -18,6 +18,7 @@ class CurrentUserVC: UIViewController {
     private let accountService = AccountService.instance
     private let entryService = EntryService.instance
     private let competitionService = CompetitionService.instance
+    private let pendingImageOperations = ImageOperations()
     
     private let collectionViewSectionInsets = UIEdgeInsets(
         top: 2.0,
@@ -55,10 +56,18 @@ class CurrentUserVC: UIViewController {
             withReuseIdentifier: "CurrentUserInfoView"
         )
         
-        usernameLabel.text = String(format: "@%@", user.username)
+        profileCollectionView.register(
+            UINib(nibName: "ProfileCompetitionCell", bundle: nil),
+            forCellWithReuseIdentifier: "ProfileCompetitionCell"
+        )
+        
+        usernameLabel.text = user.username.withAtSignPrefix
+        
+        loadCompetitions()
     }
 
 
+    
     
     @IBAction func optionsButtonAction() {
         displayOptions()
@@ -66,9 +75,10 @@ class CurrentUserVC: UIViewController {
     
     
     
+    
     private func loadEntries() {
         
-        entryService.getUnmatchedEntries(
+        entryService.loadEntries(
             userId: user.id
         ) { [weak self] (entries, errorMessage) in
             
@@ -79,6 +89,11 @@ class CurrentUserVC: UIViewController {
                     return
                 }
                 
+                guard let entries = entries else {
+                    self?.displayMessage(message: "Unable to load entries")
+                    return
+                }
+                
                 self?.entries = entries
                 self?.profileCollectionView.reloadData()
             }
@@ -86,12 +101,29 @@ class CurrentUserVC: UIViewController {
     }
     
     
-    
     private func loadCompetitions() {
         
-        
+        competitionService.loadUserCompetitions(
+            userId: user.id
+        ) { [weak self] (competitions, errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let competitions = competitions else {
+                    self?.displayMessage(message: "Unable to load competitions")
+                    return
+                }
+                
+                self?.competitions = competitions
+                self?.profileCollectionView.reloadData()
+            }
+        }
     }
-    
     
     
     private func displayOptions() {
@@ -106,6 +138,7 @@ class CurrentUserVC: UIViewController {
             title: "Edit Profile",
             style: .default
         ) { (action) in
+            
             self.displayEditProfile()
         }
         
@@ -120,6 +153,7 @@ class CurrentUserVC: UIViewController {
             title: "Sign Out",
             style: .default
         ) { (action) in
+            
             self.signOut()
         }
         
@@ -134,9 +168,12 @@ class CurrentUserVC: UIViewController {
         optionsAlert.addAction(signOutAction)
         optionsAlert.addAction(cancelAction)
         
-        present(optionsAlert, animated: true, completion: nil)
+        present(
+            optionsAlert,
+            animated: true,
+            completion: nil
+        )
     }
-    
     
     
     private func signOut() {
@@ -157,7 +194,6 @@ class CurrentUserVC: UIViewController {
     }
     
     
-    
     private func displayEditProfile() {
         
         let editCurrentUserVC = EditCurrentUserVC(
@@ -173,44 +209,21 @@ class CurrentUserVC: UIViewController {
     }
     
     
-    
     private func showCompetition(competition: Competition) {
         
-//        let competitionStoryboard = UIStoryboard(name: COMPETITION, bundle: nil)
-//        let viewController = competitionStoryboard.instantiateInitialViewController()
-//
-//        if let viewCompetitionVC = viewController as? ViewCompetitionVC {
-//
-//            viewCompetitionVC.initData(competition: competition)
-//            navigationController?.pushViewController(viewCompetitionVC, animated: true)
-//        }
-    }
-    
-    
-    
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if let rankVC = segue.destination as? RankVC {
-            rankVC.initData(user: user)
-        }
-        else if let followerVC = segue.destination as? FollowerVC {
-            followerVC.initData(user: user)
-        }
-        else if let followedUserVC = segue.destination as? FollowedUserVC {
-            followedUserVC.initData(user: user)
-        }
-        else if let unmatchedEntriesVC = segue.destination as? UnmatchedEntriesVC, let unmatchedEntries = sender as? [Entry] {
-            unmatchedEntriesVC.initData(unmatchedEntries: unmatchedEntries)
-        }
+        let competitionVC = CompetitionVC(competition: competition)
+        competitionVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(
+            competitionVC,
+            animated: true
+        )
     }
 }
 
 
 
 
+// MARK: - UICollectionViewDataSource
 extension CurrentUserVC: UICollectionViewDataSource {
     
     
@@ -244,8 +257,26 @@ extension CurrentUserVC: UICollectionViewDataSource {
         if let profileCompetitionCell = cell as? ProfileCompetitionCell {
             
             let competition = competitions[indexPath.row]
-            //TODO
-            //            profileCompetitionCell.configureCell(competition: competition, userId: userId)
+            var userEntry: Entry!
+            
+            if CurrentAccount.userIsMe(userId: competition.leftEntry.user.id) {
+                userEntry = competition.leftEntry
+            }
+            else {
+                userEntry = competition.rightEntry
+            }
+            
+            profileCompetitionCell.configureCell(
+                entry: userEntry
+            )
+            
+            if userEntry.imageDownloadState == .new {
+                
+                startEntryImageDownloadFor(
+                    entry: userEntry,
+                    indexPath: indexPath
+                )
+            }
             
             return profileCompetitionCell
         }
@@ -277,6 +308,7 @@ extension CurrentUserVC: UICollectionViewDataSource {
 
 
 
+// MARK: - CurrentUserInfoViewDelegate
 extension CurrentUserVC: CurrentUserInfoViewDelegate {
     
     
@@ -287,32 +319,52 @@ extension CurrentUserVC: CurrentUserInfoViewDelegate {
     
     func viewRanks() {
         
+        let rankVC = RankVC(user: user)
+        rankVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(
+            rankVC,
+            animated: true
+        )
     }
     
     
     func viewFollowedUsers() {
         
+        let followedUserVC = FollowedUserVC(user: user)
+        followedUserVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(
+            followedUserVC,
+            animated: true
+        )
     }
     
     
     func viewFollowers() {
         
+        let followerVC = FollowerVC(user: user)
+        followerVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(
+            followerVC,
+            animated: true
+        )
     }
     
     
     func viewEntries() {
         
-    }
-    
-    
-    func errorOccurred(errorMessage: String) {
-        displayMessage(message: errorMessage)
+        let entriesVC = EntriesVC(entries: entries)
+        entriesVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(
+            entriesVC,
+            animated: true
+        )
     }
 }
 
 
 
 
+// MARK: - UICollectionViewDelegate
 extension CurrentUserVC: UICollectionViewDelegate {
     
     
@@ -327,6 +379,7 @@ extension CurrentUserVC: UICollectionViewDelegate {
         )
         
         let competition = competitions[indexPath.row]
+        
         showCompetition(competition: competition)
     }
 }
@@ -334,6 +387,7 @@ extension CurrentUserVC: UICollectionViewDelegate {
 
 
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension CurrentUserVC: UICollectionViewDelegateFlowLayout {
     
     
@@ -379,6 +433,7 @@ extension CurrentUserVC: UICollectionViewDelegateFlowLayout {
 
 
 
+// MARK: - EditCurrentUserVCDelegate
 extension CurrentUserVC: EditCurrentUserVCDelegate {
     
     
@@ -386,5 +441,102 @@ extension CurrentUserVC: EditCurrentUserVCDelegate {
         
         user = CurrentAccount.user
         profileCollectionView.reloadData()
+    }
+}
+
+
+
+
+// MARK: - Image Operations
+extension CurrentUserVC {
+    
+    
+    private func startEntryImageDownloadFor(
+        entry: Entry,
+        indexPath: IndexPath
+    ) {
+        
+        var downloadsInProgress = pendingImageOperations.downloadsInProgress
+        
+        // Make sure there isn't already a download in progress.
+        guard downloadsInProgress[indexPath] == nil else { return }
+        
+        let downloadOperation = DownloadEntryImageOperation(
+            entry: entry
+        )
+        
+        downloadOperation.completionBlock = {
+            
+            if downloadOperation.isCancelled { return }
+            
+            DispatchQueue.main.async {
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+                
+                self.profileCollectionView.reloadItems(
+                    at: [indexPath]
+                )
+            }
+        }
+        
+        // Add the operation to the collection of downloads in progress.
+        downloadsInProgress[indexPath] = downloadOperation
+        
+        // Add the operation to the queue to start downloading.
+        pendingImageOperations.downloadQueue.addOperation(
+            downloadOperation
+        )
+    }
+    
+    
+    private func suspendAllOperations() {
+        pendingImageOperations.downloadQueue.isSuspended = true
+    }
+    
+    
+    private func resumeAllOperations() {
+        pendingImageOperations.downloadQueue.isSuspended = false
+    }
+    
+    
+    private func loadImagesForOnscreenCells() {
+        
+//        if let pathsArray = browseTableView.indexPathsForVisibleRows {
+//
+//            var downloadsInProgress =
+//                pendingImageOperations.downloadsInProgress
+//
+//            let allPendingOperations = Set(
+//                downloadsInProgress.keys
+//            )
+//            var toBeCancelled = allPendingOperations
+//
+//            let visiblePaths = Set(pathsArray)
+//            toBeCancelled.subtract(visiblePaths)
+//
+//            var toBeStarted = visiblePaths
+//            toBeStarted.subtract(allPendingOperations)
+//
+//            for indexPath in toBeCancelled {
+//
+//                if let pendingDownload = downloadsInProgress[indexPath] {
+//                    pendingDownload.cancel()
+//                }
+//                downloadsInProgress.removeValue(
+//                    forKey: indexPath
+//                )
+//            }
+//
+//            for indexPath in toBeStarted {
+//
+//                let competition = featuredCompetitions[indexPath.row]
+//
+//                startCompetitionImageDownloadFor(
+//                    competition: competition,
+//                    indexPath: indexPath
+//                )
+//            }
+//        }
     }
 }

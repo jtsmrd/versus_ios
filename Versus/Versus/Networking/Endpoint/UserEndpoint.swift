@@ -8,6 +8,7 @@
 
 enum UserEndpoint {
     case load(userId: Int)
+    case loadFollowedUserIds(userId: Int)
     case loadWithUsername(username: String)
     case searchByName(name: String)
     case searchByUsername(username: String)
@@ -19,7 +20,9 @@ extension UserEndpoint: EndpointType {
     
     var baseURL: URL {
         
-        guard let url = URL(string: Config.BASE_URL) else { fatalError("baseURL could not be configured.")}
+        guard let url = URL(string: Config.BASE_URL) else {
+            fatalError("baseURL could not be configured.")
+        }
         return url
     }
     
@@ -28,8 +31,11 @@ extension UserEndpoint: EndpointType {
         
         switch self {
             
-        case .load:
-            return ""
+        case .load(let userId):
+            return "api/users/\(userId)"
+            
+        case .loadFollowedUserIds(let userId):
+            return "api/users/\(userId)/followed_user_ids"
             
         case .loadWithUsername(let username):
             return "api/users/username/\(username)"
@@ -53,6 +59,9 @@ extension UserEndpoint: EndpointType {
         case .load:
             return .get
             
+        case .loadFollowedUserIds:
+            return .get
+            
         case .loadWithUsername:
             return .get
             
@@ -72,16 +81,14 @@ extension UserEndpoint: EndpointType {
         
         switch self {
             
-        case .load(let userId):
-            return .requestParameters(
-                bodyParameters: nil,
-                urlParameters: [
-                    "userId": userId
-                ]
-            )
+        case .load:
+            return .request(additionalHeaders: headers)
+            
+        case .loadFollowedUserIds:
+            return .request(additionalHeaders: headers)
             
         case .loadWithUsername:
-            return .request
+            return .request(additionalHeaders: headers)
             
         case .searchByName(let name):
             return .requestParametersAndHeaders(
@@ -117,6 +124,9 @@ extension UserEndpoint: EndpointType {
     
     
     var headers: HTTPHeaders? {
-        return ["Authorization": "Bearer \(CurrentAccount.token)"]
+        return [
+            "Authorization": "Bearer \(CurrentAccount.token)",
+            "Accept": "application/json"
+        ]
     }
 }

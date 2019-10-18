@@ -70,13 +70,20 @@ class NotificationCell: UITableViewCell {
             
             // Set the notification image view image to the commenting users' profile image
             if notification.notificationType == .competitionComment {
+                
                 DispatchQueue.global(qos: .userInitiated).async {
+                    
                     self.s3BucketService.downloadImage(
                         mediaId: notification.userId,
                         imageType: .small
-                    ) { [weak self] (image, customError) in
-                        if let customError = customError {
-                            self?.parentViewController?.displayError(error: customError)
+                    ) { [weak self] (image, errorMessage) in
+                        
+                        if let errorMessage = errorMessage {
+                            
+                            self?.parentViewController?.displayMessage(
+                                message: errorMessage
+                            )
+                            return
                         }
                         self?.notificationImageView.image = image
                     }
@@ -131,17 +138,21 @@ class NotificationCell: UITableViewCell {
             
             // Set the notification image view image to the following users' profile image
             DispatchQueue.global(qos: .userInitiated).async {
+                
                 self.s3BucketService.downloadImage(
                     mediaId: notification.userId,
                     imageType: .small
-                ) { [weak self] (image, customError) in
+                ) { [weak self] (image, errorMessage) in
+                    
                     DispatchQueue.main.async {
-                        if let customError = customError {
-                            self?.parentViewController?.displayError(error: customError)
+                        
+                        if let errorMessage = errorMessage {
+                            self?.parentViewController?.displayMessage(
+                                message: errorMessage
+                            )
+                            return
                         }
-                        if let image = image {
-                            self?.notificationImageView.image = image
-                        }
+                        self?.notificationImageView.image = image
                     }
                 }
             }
@@ -155,7 +166,8 @@ class NotificationCell: UITableViewCell {
             let notificationInfo = notification.notificationInfo as! RankUpNotificationInfo
             
             notificationTextLabel.text = notificationInfo.notificationText
-            rankImageView.image = RankCollection.instance.rankIconFor(rankId: notificationInfo.newRankId)
+            let newRank = Rank(rankId: notificationInfo.newRankId)
+            rankImageView.image = newRank.image
             
         default:
             break

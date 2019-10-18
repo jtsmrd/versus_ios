@@ -62,4 +62,13 @@ extension String {
         
         return convertedDate ?? defaultDate
     }
+    
+    
+    /// Used to format usernames
+    var withAtSignPrefix: String {
+        
+        var newString = self
+        newString.insert("@", at: self.startIndex)
+        return newString
+    }
 }

@@ -10,35 +10,54 @@ import UIKit
 
 class FollowerVC: UIViewController {
 
+    
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var followerTableView: UITableView!
     
-    var user: User!
-    var canEdit = false
-    var allFollowers = [Follower]()
-    var filteredFollowers: [Follower]?
-    var followers: [Follower] {
-        return filteredFollowers ?? allFollowers
+    private let followerService = FollowerService.instance
+    
+    private var user: User!
+    private var canEdit = false
+    private var followers = [Follower]()
+    private var keyboardToolbar: KeyboardToolbar!
+    private var indexPathOfLastSelection: IndexPath?
+    
+    
+    
+    
+    init(user: User) {
+        super.init(nibName: nil, bundle: nil)
+        self.user = user
     }
-    var keyboardToolbar: KeyboardToolbar!
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        //TODO
-//        canEdit = CurrentUser.userId == user.userId
+        followerTableView.register(
+            UINib(nibName: FOLLOWER_CELL, bundle: nil),
+            forCellReuseIdentifier: FOLLOWER_CELL
+        )
+        
+        canEdit = CurrentAccount.userIsMe(userId: user.id)
         keyboardToolbar = KeyboardToolbar(includeNavigation: false)
-        getFollowers()
+        loadFollowers(userId: user.id)
     }
-
     
-    /**
-     
-     */
-    func initData(user: User) {
-        self.user = user
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        indexPathOfLastSelection = nil
     }
+    
+    
     
     
     /**
@@ -49,21 +68,33 @@ class FollowerVC: UIViewController {
     }
     
     
+    
+    
     /**
      
      */
-    private func getFollowers() {
-        //TODO
-//        user.getFollowers { (followers, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    self.displayError(error: customError)
-//                    return
-//                }
-//                self.allFollowers.append(contentsOf: followers)
-//                self.followerTableView.reloadData()
-//            }
-//        }
+    private func loadFollowers(userId: Int) {
+        
+        followerService.loadFollowers(
+            userId: userId
+        ) { [weak self] (followers, errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                guard let followers = followers else {
+                    self?.displayMessage(message: "Unable to load followers")
+                    return
+                }
+                
+                self?.followers = followers
+                self?.followerTableView.reloadData()
+            }
+        }
     }
     
     
@@ -72,71 +103,165 @@ class FollowerVC: UIViewController {
      */
     private func filterFollowers(filter: String) {
         
-        guard !filter.isEmpty else {
-            filteredFollowers = nil
-            followerTableView.reloadData()
-            return
-        }
-        filteredFollowers = allFollowers.filter({ $0.searchUsername.contains(filter.lowercased()) || $0.searchDisplayName.contains(filter.lowercased()) })
-        followerTableView.reloadData()
+//        guard !filter.isEmpty else {
+//            filteredFollowers = nil
+//            followerTableView.reloadData()
+//            return
+//        }
+//        filteredFollowers = allFollowers.filter({ $0.searchUsername.contains(filter.lowercased()) || $0.searchDisplayName.contains(filter.lowercased()) })
+//        followerTableView.reloadData()
     }
     
     
     /**
      
      */
-    private func showFollowerProfile(followerUserId: String) {
-        if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-            //TODO
-//            profileVC.initData(userId: followerUserId)
-            profileVC.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(profileVC, animated: true)
+    private func showFollowerProfileAt(indexPath: IndexPath) {
+        
+        let user = followers[indexPath.row].user
+        let delegate = canEdit ? self : nil
+        
+        let userVC = UserVC(
+            user: user,
+            delegate: delegate
+        )
+        navigationController?.pushViewController(
+            userVC,
+            animated: true
+        )
+    }
+    
+    
+    private func followUser(indexPath: IndexPath) {
+        
+        let user = followers[indexPath.row].user
+        
+        followerService.followUser(
+            userId: user.id
+        ) { [weak self] (errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                if let errorMessage = errorMessage {
+                    self?.displayMessage(message: errorMessage)
+                    return
+                }
+                
+                CurrentAccount.addFollowedUserId(id: user.id)
+                
+                self?.followerTableView.reloadRows(
+                    at: [indexPath],
+                    with: .automatic
+                )
+            }
         }
     }
     
     
-    /**
-     
-     */
-    private func removeRow(at index: Int) {
-        allFollowers.remove(at: index)
+    private func unfollowUser(indexPath: IndexPath) {
         
-        // If the followers are filtered, remove from the filtered collection as well
-        if filteredFollowers != nil {
-            filteredFollowers!.remove(at: index)
+        let user = followers[indexPath.row].user
+        
+        let unfollowAlert = UIAlertController(
+            title: "Confirm Unfollow",
+            message: "Are you sure you want to unfollow @\(user.username)",
+            preferredStyle: .actionSheet
+        )
+        
+        let unfollowAction = UIAlertAction(
+            title: "Unfollow",
+            style: .destructive
+        ) { (action) in
+            
+            self.loadAndUnfollowUser(indexPath: indexPath)
         }
         
-        DispatchQueue.main.async {
-            self.followerTableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .top)
-        }
+        let cancelAction = UIAlertAction(
+            title: "Cancel",
+            style: .cancel,
+            handler: nil
+        )
+        
+        unfollowAlert.addAction(unfollowAction)
+        unfollowAlert.addAction(cancelAction)
+        
+        present(
+            unfollowAlert,
+            animated: true,
+            completion: nil
+        )
     }
     
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
+    private func loadAndUnfollowUser(indexPath: IndexPath) {
+        
+        let userId = CurrentAccount.user.id
+        let userFollowed = followers[indexPath.row].user
+        
+        followerService.getFollowedUser(
+            userId: userId,
+            followedUserId: userFollowed.id
+        ) { [weak self] (followedUser, errorMessage) in
+            
+            if let errorMessage = errorMessage {
+                DispatchQueue.main.async {
+                    self?.displayMessage(message: errorMessage)
+                }
+                return
+            }
+            
+            guard let followedUser = followedUser else {
+                DispatchQueue.main.async {
+                    self?.displayMessage(message: "Unable to unfollow user")
+                }
+                return
+            }
+            
+            self?.followerService.unfollow(
+                followerId: followedUser.id,
+                completion: { [weak self] (errorMessage) in
+                    
+                    DispatchQueue.main.async {
+                        
+                        if let errorMessage = errorMessage {
+                            self?.displayMessage(message: errorMessage)
+                            return
+                        }
+                        
+                        CurrentAccount.removeFollowedUserId(id: userFollowed.id)
+                        
+                        self?.followerTableView.reloadRows(
+                            at: [indexPath],
+                            with: .automatic
+                        )
+                    }
+                }
+            )
+        }
+    }
 }
 
-extension FollowerVC: ProfileVCDelegate {
+
+
+
+extension FollowerVC: UserVCDelegate {
     
-    /**
-     
-     */
-    func unfollowedUser(user: User) {
-        //TODO
-//        if canEdit {
-//            if let index = followers.index(where: { $0.followerUserId == user.userId }) {
-//                removeRow(at: index)
-//            }
-//        }
+    
+    func userUpdated() {
+        
+        guard let indexPath = indexPathOfLastSelection else {
+            return
+        }
+        
+        followerTableView.reloadRows(
+            at: [indexPath],
+            with: .none
+        )
     }
 }
+
+
+
 
 extension FollowerVC: UISearchBarDelegate {
     
@@ -161,11 +286,11 @@ extension FollowerVC: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
         
-        if followers.isEmpty {
-            searchBar.text?.removeAll()
-            filteredFollowers = nil
-            followerTableView.reloadData()
-        }
+//        if followers.isEmpty {
+//            searchBar.text?.removeAll()
+//            filteredFollowers = nil
+//            followerTableView.reloadData()
+//        }
     }
     
     /**
@@ -176,8 +301,8 @@ extension FollowerVC: UISearchBarDelegate {
         searchBar.setShowsCancelButton(false, animated: true)
         view.endEditing(true)
         
-        filteredFollowers = nil
-        followerTableView.reloadData()
+//        filteredFollowers = nil
+//        followerTableView.reloadData()
     }
     
     /**
@@ -188,64 +313,106 @@ extension FollowerVC: UISearchBarDelegate {
     }
 }
 
+
+
+
 extension FollowerVC: FollowerCellDelegate {
     
-    /**
-     
-     */
-    func followerCellFollowButtonActionError(error: CustomError) {
-        displayError(error: error)
+    
+    func followUserAt(cell: UITableViewCell) {
+        
+        if let indexPath = followerTableView.indexPath(for: cell) {
+            followUser(indexPath: indexPath)
+        }
     }
     
-    /**
-     
-     */
-    func followerCellFollowButtonActionUnfollow(follower: Follower) {
-        //TODO
-//        if canEdit {
-//            if let index = followers.index(where: { $0.followerUserId == user.userId }) {
-//                removeRow(at: index)
-//            }
-//        }
-//        FollowerService.instance.removeFollowerFromFollowedUsers(awsFollower: follower.awsFollower)
+    
+    func unfollowUserAt(cell: UITableViewCell) {
+        
+        if let indexPath = followerTableView.indexPath(for: cell) {
+            unfollowUser(indexPath: indexPath)
+        }
     }
 }
 
+
+
+
 extension FollowerVC: UITableViewDataSource {
+    
     
     /**
      
      */
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+        
         return followers.count
     }
     
+    
     /**
      
      */
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: FOLLOWER_CELL, for: indexPath) as? FollowerCell {
-            cell.configureCell(follower: followers[indexPath.row], delegate: self)
-            return cell
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: FOLLOWER_CELL,
+            for: indexPath
+        )
+        
+        if let followerCell = cell as? FollowerCell {
+            
+            let follower = followers[indexPath.row]
+            //TODO
+            followerCell.configureCell(
+                follower: follower,
+                delegate: self,
+                profileImage: nil
+            )
+            return followerCell
         }
         return FollowerCell()
     }
     
+    
     /**
      
      */
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(
+        _ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
+        
         return 70
     }
 }
+
+
+
 
 extension FollowerVC: UITableViewDelegate {
     
     /**
      
      */
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        showFollowerProfile(followerUserId: followers[indexPath.row].followerUserId)
-        tableView.deselectRow(at: indexPath, animated: false)
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        
+        indexPathOfLastSelection = indexPath
+        
+        tableView.deselectRow(
+            at: indexPath,
+            animated: false
+        )
+        
+        showFollowerProfileAt(indexPath: indexPath)
     }
 }

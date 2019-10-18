@@ -6,35 +6,53 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+enum EntryType: String {
+    case left
+    case right
+}
+
 class Entry: Codable {
     
-    private var _caption: String?
-    private var _categoryId: Int
-    private var _createDate: Date
-    private var _featured: Bool
     private var _id: Int
+    private var _caption: String?
+    private var _categoryId: Int?
+    private var _typeId: Int?
+    private var _createDate: Date?
+    private var _featured: Bool?
     private var _matchDate: Date?
     private var _mediaId: String
-    private var _rankId: Int
-    private var _typeId: Int
+    private var _rankId: Int?
     private var _updateDate: Date?
+    private var _user: User?
+    
+    var imageDownloadState: ImageDownloadState = .new
+    var image: UIImage?
     
     enum CodingKeys: String, CodingKey {
+        case _id = "id"
         case _caption = "caption"
         case _categoryId = "categoryId"
+        case _typeId = "typeId"
         case _createDate = "createDate"
         case _featured = "featured"
-        case _id = "id"
         case _matchDate = "matchDate"
         case _mediaId = "mediaId"
         case _rankId = "rankId"
-        case _typeId = "typeId"
         case _updateDate = "updateDate"
+        case _user = "user"
     }
 }
 
 extension Entry {
     
+    
+    var id: Int {
+        return _id
+    }
+    
+    var categoryId: Int {
+        return _categoryId ?? 0
+    }
     
     var category: Category {
         return CategoryCollection.instance.getCategory(categoryType: categoryType)
@@ -42,7 +60,7 @@ extension Entry {
     
     
     var categoryType: CategoryType {
-        return CategoryType(rawValue: typeId) ?? .unknown
+        return CategoryType(rawValue: categoryId) ?? .unknown
     }
     
     
@@ -51,13 +69,18 @@ extension Entry {
     }
     
     
+    var competitionType: CompetitionType {
+        return CompetitionType(rawValue: typeId) ?? .unknown
+    }
+    
+    
     var createDate: Date {
-        return _createDate
+        return _createDate ?? Date()
     }
     
     
     var featured: Bool {
-        return _featured
+        return _featured ?? false
     }
     
     
@@ -77,11 +100,27 @@ extension Entry {
     
     
     var rank: Rank {
-        return RankCollection.instance.rankFor(rankId: _rankId)
+        return Rank(rankId: _rankId)
     }
     
     
     var typeId: Int {
-        return _typeId
+        return _typeId ?? 0
+    }
+    
+    
+    var user: User {
+        return _user ?? User()
+    }
+}
+
+
+
+
+extension Entry: Equatable {
+    
+    
+    static func == (lhs: Entry, rhs: Entry) -> Bool {
+        return lhs.id == rhs.id
     }
 }

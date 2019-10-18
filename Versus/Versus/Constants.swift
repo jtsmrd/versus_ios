@@ -62,7 +62,7 @@ let CATEGORY_CELL = "CategoryCell"
 let COMPETITION_CELL = "CompetitionCell"
 let NOTIFICATION_CELL = "NotificationCell"
 let COMPETITION_COMMENT_CELL = "CompetitionCommentCell"
-let UNMATCHED_ENTRY_CELL = "UnmatchedEntryCell"
+let ENTRY_CELL = "EntryCell"
 
 
 // CollectionViewCell Identifiers

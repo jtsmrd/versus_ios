@@ -123,6 +123,55 @@ class UserService {
     }
     
     
+    func loadFollowedUserIds(
+        userId: Int,
+        completion: @escaping (_ followedUserIds: [Int]?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .loadFollowedUserIds(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    do {
+                        guard let json = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any],
+                            let followedUserIds = json["followedUserIds"] as? [Int] else {
+                                completion(nil, NetworkResponse.unableToDecode.rawValue)
+                                return
+                        }
+                        completion(followedUserIds, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
     func updateUser(
         user: User,
         completion: @escaping (_ user: User?, _ errorMessage: String?) -> ()

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="EntryCell" rowHeight="80" id="zBR-3X-Rdc" userLabel="EntryCell" customClass="EntryCell" customModule="Versus" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="80"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="zBR-3X-Rdc" id="1Qu-Y0-TT0">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="79.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Submitted 5 hours ago" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jx4-EQ-VBD">
+                        <rect key="frame" x="16" y="19" width="230.5" height="14"/>
+                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="10"/>
+                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Comedy video entry" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SYT-1Y-IxR">
+                        <rect key="frame" x="16" y="41" width="230.5" height="14"/>
+                        <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="10"/>
+                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qvl-08-FPF" userLabel="Container View">
+                        <rect key="frame" x="262.5" y="0.0" width="112.5" height="79.5"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="9jV-aD-FUw" customClass="RoundedCornerImageView" customModule="Versus" customModuleProvider="target">
+                                <rect key="frame" x="32.5" y="16" width="47.5" height="47.5"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="9jV-aD-FUw" secondAttribute="height" multiplier="1:1" id="ZbZ-pY-8y5"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="9jV-aD-FUw" secondAttribute="bottom" constant="16" id="1wU-zO-By7"/>
+                            <constraint firstItem="9jV-aD-FUw" firstAttribute="top" secondItem="Qvl-08-FPF" secondAttribute="top" constant="16" id="EAN-Uc-JqU"/>
+                            <constraint firstItem="9jV-aD-FUw" firstAttribute="centerX" secondItem="Qvl-08-FPF" secondAttribute="centerX" id="P02-N5-HSO"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Qvl-08-FPF" firstAttribute="width" secondItem="1Qu-Y0-TT0" secondAttribute="width" multiplier="0.3" id="7uB-T7-pIF"/>
+                    <constraint firstItem="Jx4-EQ-VBD" firstAttribute="leading" secondItem="1Qu-Y0-TT0" secondAttribute="leadingMargin" id="EY6-JT-slN"/>
+                    <constraint firstItem="Qvl-08-FPF" firstAttribute="leading" secondItem="SYT-1Y-IxR" secondAttribute="trailing" constant="16" id="Ei4-dF-GiF"/>
+                    <constraint firstItem="Jx4-EQ-VBD" firstAttribute="top" secondItem="1Qu-Y0-TT0" secondAttribute="topMargin" constant="8" id="J9b-mB-pkS"/>
+                    <constraint firstItem="SYT-1Y-IxR" firstAttribute="top" secondItem="Jx4-EQ-VBD" secondAttribute="bottom" constant="8" id="Lu4-er-Faz"/>
+                    <constraint firstItem="Qvl-08-FPF" firstAttribute="leading" secondItem="Jx4-EQ-VBD" secondAttribute="trailing" constant="16" id="fDr-K1-Knc"/>
+                    <constraint firstAttribute="trailing" secondItem="Qvl-08-FPF" secondAttribute="trailing" id="gzW-VZ-mdk"/>
+                    <constraint firstItem="SYT-1Y-IxR" firstAttribute="leading" secondItem="1Qu-Y0-TT0" secondAttribute="leadingMargin" id="mC7-4A-LbS"/>
+                    <constraint firstItem="Qvl-08-FPF" firstAttribute="top" secondItem="1Qu-Y0-TT0" secondAttribute="top" id="pfU-Nw-XZh"/>
+                    <constraint firstAttribute="bottom" secondItem="Qvl-08-FPF" secondAttribute="bottom" id="qhO-0H-3wx"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="categoryTypeLabel" destination="SYT-1Y-IxR" id="yZd-Zt-EA6"/>
+                <outlet property="entryImageView" destination="9jV-aD-FUw" id="9n4-aX-WtI"/>
+                <outlet property="submittedTimeLabel" destination="Jx4-EQ-VBD" id="gnT-3O-J1c"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="default-profile" width="376" height="376"/>
+    </resources>
+</document>

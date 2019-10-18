@@ -26,24 +26,27 @@
                         <segue destination="mOV-RU-mZB" kind="relationship" relationship="viewControllers" id="cCu-j7-Wd4"/>
                         <segue destination="KWr-tb-YD6" kind="relationship" relationship="viewControllers" id="kJs-RN-0Vw"/>
                         <segue destination="9Cr-4N-TRV" kind="relationship" relationship="viewControllers" id="kne-x6-fZp"/>
-                        <segue destination="buI-27-1NA" kind="relationship" relationship="viewControllers" id="QIX-Cs-F2V"/>
+                        <segue destination="qCs-uP-vUA" kind="relationship" relationship="viewControllers" id="cQ9-oj-d5L"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eN4-fT-aKG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-262" y="178"/>
         </scene>
-        <!--UINavigationController-slW-7A-c38-->
-        <scene sceneID="32e-Xr-R58">
+        <!--Current UserNC-->
+        <scene sceneID="KNi-xZ-iza">
             <objects>
-                <viewControllerPlaceholder storyboardName="Profile" referencedIdentifier="UINavigationController-slW-7A-c38" id="buI-27-1NA" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="Profile" id="yPe-zR-gLE">
+                <navigationController navigationBarHidden="YES" id="qCs-uP-vUA" customClass="CurrentUserNC" customModule="Versus" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="" image="Profile" id="ARZ-TX-ek9">
                         <inset key="imageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-8"/>
                     </tabBarItem>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="RQu-ol-vrN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="c0B-Vx-ine">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MJk-gf-vyT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="298" y="636"/>
+            <point key="canvasLocation" x="724" y="178"/>
         </scene>
         <!--Competition Entry Placeholder-->
         <scene sceneID="c72-ry-Wfk">

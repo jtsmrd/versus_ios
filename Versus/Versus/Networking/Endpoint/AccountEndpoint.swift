@@ -26,9 +26,12 @@ extension AccountEndpoint: EndpointType {
     
     var baseURL: URL {
         
-        guard let url = URL(string: Config.BASE_URL) else { fatalError("baseURL could not be configured.")}
+        guard let url = URL(string: Config.BASE_URL) else {
+            fatalError("baseURL could not be configured.")
+        }
         return url
     }
+    
     
     var path: String {
         
@@ -45,6 +48,7 @@ extension AccountEndpoint: EndpointType {
         }
     }
     
+    
     var httpMethod: HTTPMethod {
         
         switch self {
@@ -60,6 +64,7 @@ extension AccountEndpoint: EndpointType {
         }
     }
     
+    
     var task: HTTPTask {
         
         switch self {
@@ -70,7 +75,7 @@ extension AccountEndpoint: EndpointType {
             let username,
             let password,
             let retypedPassword
-            ):
+        ):
             return .requestParameters(
                 bodyParameters: [
                     "name": name,
@@ -85,7 +90,7 @@ extension AccountEndpoint: EndpointType {
         case .login(
             let username,
             let password
-            ):
+        ):
             return .requestParameters(
                 bodyParameters: [
                     "username": username,
@@ -95,11 +100,14 @@ extension AccountEndpoint: EndpointType {
             )
             
         case .usernameAvailable:
-            return .request
+            return .request(additionalHeaders: headers)
         }
     }
     
     var headers: HTTPHeaders? {
-        return ["Authorization": "Bearer \(CurrentAccount.token)"]
+        return [
+            "Authorization": "Bearer \(CurrentAccount.token)",
+            "Accept": "application/json"
+        ]
     }
 }

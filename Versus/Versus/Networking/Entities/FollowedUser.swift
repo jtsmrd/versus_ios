@@ -6,100 +6,40 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-
-@objcMembers
-class FollowedUser: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
-        
-    private(set) var _createDate: String?
-    private(set) var _displayName: String?
-    private(set) var _followedUserUserId: String?
-    private(set) var _followerDisplayName: String?
-    private(set) var _followerUsername: String?
-    private(set) var _searchDisplayName: String?
-    private(set) var _searchUsername: String?
-    private(set) var _username: String?
-    private(set) var _userId: String?
+class FollowedUser: Codable {
     
+    private var _id: Int
+    private var _createDate: Date
+    private var _inviteAccepted: Bool
+    private var _user: User
     
-    convenience init(
-        displayName: String,
-        followedUserUserId: String,
-        followerDisplayName: String,
-        followerUsername: String,
-        searchDisplayName: String,
-        searchUsername: String,
-        username: String,
-        userId: String
-    ) {
-        self.init()
-        
-        _createDate = Date().toISO8601String
-        _displayName = displayName
-        _followedUserUserId = followedUserUserId
-        _followerDisplayName = followerDisplayName
-        _followerUsername = followerUsername
-        _searchDisplayName = searchDisplayName
-        _searchUsername = searchUsername
-        _username = username
-        _userId = userId
-    }
-    
-    
-    class func dynamoDBTableName() -> String {
-        
-        return "AWS_FollowedUser"
-    }
-    
-    class func hashKeyAttribute() -> String {
-        
-        return "_userId"
-    }
-    
-    class func rangeKeyAttribute() -> String {
-        
-        return "_createDate"
-    }
-    
-    override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
-        return [
-            "_createDate" : "createDate",
-            "_displayName" : "displayName",
-            "_followedUserUserId" : "followedUserUserId",
-            "_followerDisplayName" : "followerDisplayName",
-            "_followerUsername" : "followerUsername",
-            "_searchDisplayName" : "searchDisplayName",
-            "_searchUsername" : "searchUsername",
-            "_username" : "username",
-            "_userId" : "userId",
-        ]
+    enum CodingKeys: String, CodingKey {
+        case _id = "id"
+        case _createDate = "createDate"
+        case _inviteAccepted = "inviteAccepted"
+        case _user = "followedUser"
     }
 }
 
 extension FollowedUser {
     
     
-    var username: String {
-        return _username ?? ""
+    var createDate: Date {
+        return _createDate
     }
     
     
-    var followedUserUserId: String {
-        return _followedUserUserId ?? ""
+    var id: Int {
+        return _id
     }
     
     
-    var displayName: String {
-        return _displayName ?? ""
+    var inviteAccepted: Bool {
+        return _inviteAccepted
     }
     
     
-    var searchUsername: String {
-        return _searchUsername ?? ""
-    }
-    
-    
-    var searchDisplayName: String {
-        return _searchDisplayName ?? ""
+    var user: User {
+        return _user
     }
 }

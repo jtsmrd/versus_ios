@@ -14,7 +14,7 @@ enum EntryEndpoint {
         mediaId: String
     )
     case delete
-    case unmatched(id: Int)
+    case loadEntries(userId: Int)
     case update
 }
 
@@ -23,7 +23,9 @@ extension EntryEndpoint: EndpointType {
     
     var baseURL: URL {
         
-        guard let url = URL(string: Config.BASE_URL) else { fatalError("baseURL could not be configured.")}
+        guard let url = URL(string: Config.BASE_URL) else {
+            fatalError("baseURL could not be configured.")
+        }
         return url
     }
     
@@ -38,8 +40,8 @@ extension EntryEndpoint: EndpointType {
         case .delete:
             return ""
             
-        case .unmatched:
-            return ""
+        case .loadEntries(let userId):
+            return "api/users/\(userId)/entries"
             
         case .update:
             return ""
@@ -57,7 +59,7 @@ extension EntryEndpoint: EndpointType {
         case .delete:
             return .delete
             
-        case .unmatched:
+        case .loadEntries:
             return .get
             
         case .update:
@@ -88,23 +90,27 @@ extension EntryEndpoint: EndpointType {
             )
             
         case .delete:
-            return .request
+            return .request(additionalHeaders: headers)
             
-        case .unmatched(let id):
-            return .requestParameters(
+        case .loadEntries:
+            return .requestParametersAndHeaders(
                 bodyParameters: nil,
                 urlParameters: [
-                    "id": id
-                ]
+                    "matched": "false"
+                ],
+                additionalHeaders: headers
             )
             
         case .update:
-            return .request
+            return .request(additionalHeaders: headers)
         }
     }
     
     
     var headers: HTTPHeaders? {
-        return ["Authorization": "Bearer \(CurrentAccount.token)"]
+        return [
+            "Authorization": "Bearer \(CurrentAccount.token)",
+            "Accept": "application/json"
+        ]
     }
 }

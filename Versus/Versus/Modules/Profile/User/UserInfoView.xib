@@ -52,6 +52,9 @@
                                                         <constraint firstAttribute="width" secondItem="rFc-7e-nzd" secondAttribute="height" multiplier="1:1" id="gnO-Oi-1q7"/>
                                                     </constraints>
                                                     <state key="normal" image="Direct-Message"/>
+                                                    <connections>
+                                                        <action selector="directMessageButtonAction" destination="S6C-1C-nHU" eventType="touchUpInside" id="Bdl-hK-655"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wps-gz-Ncd">
                                                     <rect key="frame" x="64" y="0.0" width="40" height="40"/>
@@ -60,6 +63,9 @@
                                                         <constraint firstAttribute="height" constant="40" id="xLZ-My-izd"/>
                                                     </constraints>
                                                     <state key="normal" image="Wins-Trophy"/>
+                                                    <connections>
+                                                        <action selector="winsButtonAction" destination="S6C-1C-nHU" eventType="touchUpInside" id="JIx-tV-VS6"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                         </stackView>
@@ -86,6 +92,9 @@
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="boolean" keyPath="_hasBorder" value="NO"/>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="followButtonAction" destination="S6C-1C-nHU" eventType="touchUpInside" id="Yjf-DA-Abq"/>
+                                    </connections>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Display Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CWx-0D-bbr">
                                     <rect key="frame" x="58" y="60.5" width="89.5" height="19.5"/>

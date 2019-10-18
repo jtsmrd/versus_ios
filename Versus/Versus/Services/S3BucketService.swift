@@ -80,12 +80,17 @@ class S3BucketService {
         }
     }
     
+    
     func downloadImage(
         mediaId: String,
         imageType: ImageType,
-        completion: @escaping (_ image: UIImage?, _ customError: CustomError?) -> Void
+        completion: @escaping (_ image: UIImage?, _ errorMessage: String?) -> ()
     ) {
-        let mediaKey = generateImageMediaKey(mediaId: mediaId, imageType: imageType)
+        
+        let mediaKey = generateImageMediaKey(
+            mediaId: mediaId,
+            imageType: imageType
+        )
         
         let expression = AWSS3TransferUtilityDownloadExpression()
         expression.progressBlock = {(task, progress) in
@@ -96,16 +101,13 @@ class S3BucketService {
         
         let completionHandler: AWSS3TransferUtilityDownloadCompletionHandlerBlock = {
             (task, url, data, error) -> Void in
-                if let error = error {
-                    completion(nil, CustomError(error: error, message: "Unable to download image"))
-                    return
-                }
-                if let imageData = data {
-                    completion(UIImage(data: imageData), nil)
-                    return
-                }
-                completion(nil, CustomError(error: nil, message: "Unable to download image - non-error"))
             
+            guard let data = data else {
+                completion(nil, "Unable to download image")
+                return
+            }
+            
+            completion(UIImage(data: data), nil)
         }
         
         transferUtility.downloadData(

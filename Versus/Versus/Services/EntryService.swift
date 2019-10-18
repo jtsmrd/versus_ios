@@ -80,19 +80,19 @@ class EntryService {
     /// - Parameters:
     ///   - id: User.id
     ///   - completion: [Entry] | error message
-    func getUnmatchedEntries(
-        userId id: Int,
-        completion: @escaping (_ unmatchedEntries: [Entry], _ error: String?) -> ()
+    func loadEntries(
+        userId: Int,
+        completion: @escaping (_ entries: [Entry]?, _ error: String?) -> ()
     ) {
         
         router.request(
-            .unmatched(id: id)
+            .loadEntries(
+                userId: userId
+            )
         ) { (data, response, error) in
             
-            let emptyResult = [Entry]()
-            
             if error != nil {
-                completion(emptyResult, "Please check your network connection.")
+                completion(nil, "Please check your network connection.")
             }
             
             if let response = response as? HTTPURLResponse {
@@ -104,21 +104,24 @@ class EntryService {
                 case .success:
                     
                     guard let responseData = data else {
-                        completion(emptyResult, NetworkResponse.noData.rawValue)
+                        completion(nil, NetworkResponse.noData.rawValue)
                         return
                     }
                     
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
                     do {
-                        let apiResponse = try JSONDecoder().decode([Entry].self, from: responseData)
-                        completion(apiResponse, nil)
+                        let entries = try decoder.decode([Entry].self, from: responseData)
+                        completion(entries, nil)
                     }
                     catch {
-                        completion(emptyResult, NetworkResponse.unableToDecode.rawValue)
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
                     }
                     
                 case .failure(let networkFailureError):
                     
-                    completion(emptyResult, networkFailureError)
+                    completion(nil, networkFailureError)
                 }
             }
         }

@@ -9,13 +9,11 @@
 import UIKit
 
 protocol CurrentUserInfoViewDelegate {
-    
     func viewWins()
     func viewRanks()
     func viewFollowedUsers()
     func viewFollowers()
     func viewEntries()
-    func errorOccurred(errorMessage: String)
 }
 
 class CurrentUserInfoView: UICollectionReusableView {
@@ -85,6 +83,7 @@ class CurrentUserInfoView: UICollectionReusableView {
     
     
     
+    
     @IBAction func winsButtonAction() {
         delegate.viewWins()
     }
@@ -111,6 +110,7 @@ class CurrentUserInfoView: UICollectionReusableView {
     
     
     
+    
     func configureView(
         user: User,
         entries: [Entry],
@@ -134,7 +134,7 @@ class CurrentUserInfoView: UICollectionReusableView {
             .bold("\(user.followedUserCount)", self.followingLabel.font.pointSize)
             .normal(" following")
         
-        rankImageView.image = UIImage(named: user.rank.imageName)
+        rankImageView.image = user.rank.image
         rankTitleLabel.text = user.rank.title
         
         
@@ -142,6 +142,8 @@ class CurrentUserInfoView: UICollectionReusableView {
         downloadProfileImage()
         downloadBackgroundImage()
     }
+    
+    
     
     
     private func configureEntriesView() {
@@ -162,7 +164,6 @@ class CurrentUserInfoView: UICollectionReusableView {
     }
     
     
-    
     private func downloadProfileImage() {
         
         if !user.profileImage.isEmpty {
@@ -172,20 +173,20 @@ class CurrentUserInfoView: UICollectionReusableView {
                 imageType: .regular
             ) { [weak self] (image, customError) in
                 
-                if customError != nil {
-                    self?.delegate.errorOccurred(
-                        errorMessage: "Unable to download profile image"
-                    )
-                    return
-                }
-                
                 DispatchQueue.main.async {
+                    
+                    if customError != nil {
+                        self?.parentViewController?.displayMessage(
+                            message: "Unable to download profile image"
+                        )
+                        return
+                    }
+                    
                     self?.profileImageView.image = image
                 }
             }
         }
     }
-    
     
     
     private func downloadBackgroundImage() {
@@ -197,14 +198,15 @@ class CurrentUserInfoView: UICollectionReusableView {
                 imageType: .background
             ) { [weak self] (image, customError) in
                 
-                if customError != nil {
-                    self?.delegate.errorOccurred(
-                        errorMessage: "Unable to download background image"
-                    )
-                    return
-                }
-                
                 DispatchQueue.main.async {
+                    
+                    if customError != nil {
+                        self?.parentViewController?.displayMessage(
+                            message: "Unable to download background image"
+                        )
+                        return
+                    }
+                    
                     self?.backgroundImageView.image = image
                 }
             }

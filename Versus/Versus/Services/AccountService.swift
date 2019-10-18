@@ -182,6 +182,7 @@ class AccountService {
                         completion(account, nil)
                     }
                     catch {
+                        debugPrint(error)
                         completion(nil, NetworkResponse.unableToDecode.rawValue)
                     }
                     
@@ -251,6 +252,8 @@ class AccountService {
      
      */
     func signOut(completion: @escaping (Bool) -> ()) {
-        //TODO
+        
+        CurrentAccount.setToken(token: "")
+        completion(true)
     }
 }

@@ -8,38 +8,43 @@
 
 class User: Codable {
     
-    private var _backgroundImage: String?
-    private var _bio: String?
-    private var _email: String?
-    private var _entries: [Entry]?
-    private var _featured: Bool?
-    private var _followedUserCount: Int?
-    private var _followerCount: Int?
     private var _id: Int?
+    private var _bio: String?
     private var _name: String?
-    private var _profileImage: String?
+    private var _email: String?
+    private var _enabled: Bool?
+    private var _featured: Bool?
     private var _rankId: Int?
-    private var _totalTimesVoted: Int?
-    private var _totalWins: Int?
     private var _updateDate: Date?
     private var _username: String?
+    private var _entries: [Entry]?
+    private var _profileImage: String?
+    private var _backgroundImage: String?
+    private var _followedUserCount: Int?
+    private var _followerCount: Int?
+    private var _totalTimesVoted: Int?
+    private var _totalWins: Int?
+    
+    var profileImageDownloadState: ImageDownloadState = .new
+    var profileImageImage: UIImage?
     
     enum CodingKeys: String, CodingKey {
-        case _backgroundImage = "backgroundImage"
-        case _bio = "bio"
-        case _email = "email"
-        case _entries = "entries"
-        case _featured = "featured"
-        case _followedUserCount = "followedUserCount"
-        case _followerCount = "followerCount"
         case _id = "id"
+        case _bio = "bio"
         case _name = "name"
-        case _profileImage = "profileImage"
+        case _email = "email"
+        case _enabled = "enabled"
+        case _featured = "featured"
         case _rankId = "rankId"
-        case _totalTimesVoted = "totalTimesVoted"
-        case _totalWins = "totalWins"
         case _updateDate = "updateDate"
         case _username = "username"
+        case _entries = "entries"
+        case _profileImage = "profileImage"
+        case _backgroundImage = "backgroundImage"
+        case _followedUserCount = "followedUserCount"
+        case _followerCount = "followerCount"
+        case _totalTimesVoted = "totalTimesVoted"
+        case _totalWins = "totalWins"
     }
 }
 
@@ -112,12 +117,7 @@ extension User {
     
     
     var rank: Rank {
-        return RankCollection.instance.rankFor(rankId: rankId)
-    }
-    
-    
-    var rankId: Int {
-        return _rankId ?? 1
+        return Rank(rankId: _rankId)
     }
     
     
@@ -132,7 +132,7 @@ extension User {
     
     
     var id: Int {
-        return _id ?? -1
+        return _id ?? 0
     }
     
     

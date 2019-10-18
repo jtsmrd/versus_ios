@@ -294,7 +294,7 @@ class EditCurrentUserVC: UIViewController {
                     self.presentImagePicker(
                         sourceType: .camera
                     )
-            }
+                }
             )
         )
         
@@ -306,7 +306,7 @@ class EditCurrentUserVC: UIViewController {
                     self.presentImagePicker(
                         sourceType: .photoLibrary
                     )
-            }
+                }
             )
         )
         
@@ -327,7 +327,7 @@ class EditCurrentUserVC: UIViewController {
     
     private func presentImagePicker(
         sourceType: UIImagePickerController.SourceType
-        ) {
+    ) {
         imagePicker.sourceType = sourceType
         imagePicker.mediaTypes = [String(kUTTypeImage)]
         
@@ -342,7 +342,7 @@ class EditCurrentUserVC: UIViewController {
     private func cropImage(
         image: UIImage,
         cropImageType: CropImageType
-        ) {
+    ) {
         
         let editImageStoryboard = UIStoryboard(
             name: EDIT_IMAGE,

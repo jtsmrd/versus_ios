@@ -6,10 +6,7 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-
 protocol UserManagerDelegate {
-    func reloadCell(at indexPath: IndexPath)
     func userResultsUpdated(users: [User])
     func didFailWithError(errorMessage: String)
 }
@@ -23,7 +20,6 @@ class UserManager {
     
     static let instance = UserManager()
     private let userService = UserService.instance
-    private let pendingImageOperations = ImageOperations()
     private let FETCH_LIMIT = 25
     
     private var searchText: String = ""
@@ -146,67 +142,5 @@ class UserManager {
             
             self?.delegate?.userResultsUpdated(users: users)
         }
-    }
-    
-    
-    /**
-     Download the profile image for the user at the specified index.
-    */
-    func startProfileImageDownloadFor(
-        user: User,
-        indexPath: IndexPath
-    ) {
-        var downloadsInProgress = pendingImageOperations.downloadsInProgress
-        
-        // Make sure there isn't already a download in progress.
-        guard downloadsInProgress[indexPath] == nil else { return }
-        
-        let downloadOperation = DownloadUserProfileImageOperation(
-            user: user
-        )
-        downloadOperation.completionBlock = {
-            if downloadOperation.isCancelled { return }
-            DispatchQueue.main.async {
-                downloadsInProgress.removeValue(
-                    forKey: indexPath
-                )
-                self.delegate?.reloadCell(at: indexPath)
-            }
-        }
-        
-        // Add the operation to the collection of downloads in progress.
-        downloadsInProgress[indexPath] = downloadOperation
-        
-        // Add the operation to the queue to start downloading.
-        pendingImageOperations.downloadQueue.addOperation(
-            downloadOperation
-        )
-    }
-}
-
-class DownloadUserProfileImageOperation: Operation {
-    
-    let user: User
-    
-    init(user: User) {
-        self.user = user
-    }
-    
-    override func main() {
-        if isCancelled { return }
-        //TODO
-//        user.getProfileImage { (image, customError) in
-//
-//            // The image was already downloaded from a previous request
-//            if image != nil {
-//                self.user.profileImageDownloadState = .downloaded
-//                return
-//            }
-//            if let customError = customError {
-//                debugPrint(customError.message)
-//            }
-//            self.user.profileImageDownloadState = .failed
-//        }
-        if isCancelled { return }
     }
 }

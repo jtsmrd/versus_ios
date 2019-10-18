@@ -38,14 +38,16 @@ class LeaderCell: UITableViewCell {
         S3BucketService.instance.downloadImage(
             mediaId: leader.userId,
             imageType: .small
-        ) { (image, customError) in
-            if let customError = customError {
-                debugPrint(customError.message)
-            }
-            else if let image = image {
-                DispatchQueue.main.async {
-                    self.leaderImageView.image = image
+        ) { (image, errorMessage) in
+            
+            DispatchQueue.main.async {
+                
+                if let errorMessage = errorMessage {
+                    debugPrint(errorMessage)
+                    return
                 }
+                
+                self.leaderImageView.image = image
             }
         }
     }

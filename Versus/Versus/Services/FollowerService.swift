@@ -6,44 +6,237 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-
 class FollowerService {
     
     static let instance = FollowerService()
-    private let dynamoDB = AWSDynamoDBObjectMapper.default()
+    
+    private let networkManager = NetworkManager()
+    private let router = Router<FollowerEndpoint>()
+    
     
     private init() { }
     
-    func getFollowers(
-        userId: String,
-        completion: @escaping (_ followers: [Follower], _ error: CustomError?) -> Void
+    
+    
+    func followUser(
+        userId: Int,
+        completion: @escaping (_ error: String?) -> ()
     ) {
-        let queryExpression = AWSDynamoDBQueryExpression()
-        queryExpression.keyConditionExpression = "#userId = :userId"
-        queryExpression.expressionAttributeNames = [
-            "#userId": "userId"
-        ]
-        queryExpression.expressionAttributeValues = [
-            ":userId": userId
-        ]
         
-        var followers = [Follower]()
-        dynamoDB.query(
-            Follower.self,
-            expression: queryExpression
-        ) { (paginatedOutput, error) in
-            if let error = error {
-                completion(followers, CustomError(error: error, message: "Unable to get followers"))
-                return
+        router.request(
+            .followUser(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion("Please check your network connection.")
             }
-            if let result = paginatedOutput,
-                let followerResults = result.items as? [Follower] {
-                for item in followerResults {
-                    followers.append(item)
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    completion(nil)
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(networkFailureError)
                 }
             }
-            completion(followers, nil)
+        }
+    }
+    
+    
+    
+    func getFollowedUser(
+        userId: Int,
+        followedUserId: Int,
+        completion: @escaping (_ followedUser: FollowedUser?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .getFollowedUser(
+                userId: userId,
+                followedUserId: followedUserId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let followedUsers = try decoder.decode([FollowedUser].self, from: responseData)
+                        
+                        guard let followedUser = followedUsers.first else {
+                            completion(nil, NetworkResponse.noData.rawValue)
+                            return
+                        }
+                        completion(followedUser, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    
+    func loadFollowedUsers(
+        userId: Int,
+        completion: @escaping (_ followedUsers: [FollowedUser]?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .loadFollowedUsers(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let followedUsers = try decoder.decode([FollowedUser].self, from: responseData)
+                        completion(followedUsers, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    
+    func loadFollowers(
+        userId: Int,
+        completion: @escaping (_ followers: [Follower]?, _ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .loadFollowers(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let followers = try decoder.decode([Follower].self, from: responseData)
+                        completion(followers, nil)
+                    }
+                    catch {
+                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    
+    func unfollow(
+        followerId: Int,
+        completion: @escaping (_ errorMessage: String?) -> ()
+    ) {
+        
+        router.request(
+            .unfollow(
+                followerId: followerId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion("Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    completion(nil)
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(networkFailureError)
+                }
+            }
         }
     }
 }

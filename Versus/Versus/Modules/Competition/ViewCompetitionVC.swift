@@ -11,9 +11,6 @@ import AVKit
 
 class ViewCompetitionVC: UIViewController {
     
-    private let voteService = VoteService.instance
-    private let competitionService = CompetitionService.instance
-    private let notificationCenter = NotificationCenter.default
     
     @IBOutlet weak var timeRemainingLabel: UILabel!
     @IBOutlet weak var optionsButton: UIButton!
@@ -31,8 +28,13 @@ class ViewCompetitionVC: UIViewController {
     @IBOutlet var secondCompetitorSelectorButtonHeight: NSLayoutConstraint!
     @IBOutlet weak var optionsViewBottom: NSLayoutConstraint!
     
+    private let voteService = VoteService.instance
+    private let competitionService = CompetitionService.instance
+    private let s3BucketService = S3BucketService.instance
+    private let notificationCenter = NotificationCenter.default
+    
     private var competition: Competition!
-    private var selectedCompetitor: Competitor!
+    private var selectedEntry: Entry!
     private var firstCompetitorVC: CompetitorVC!
     private var secondCompetitorVC: CompetitorVC!
     private var viewCompetitionOptionsVC: ViewCompetitionOptionsVC!
@@ -66,7 +68,7 @@ class ViewCompetitionVC: UIViewController {
      */
     func initData(competition: Competition) {
         self.competition = competition
-        selectedCompetitor = competition.firstCompetitor
+        selectedEntry = competition.leftEntry
     }
     
     
@@ -109,8 +111,9 @@ class ViewCompetitionVC: UIViewController {
      
      */
     @IBAction func user1SelectorButtonAction() {
-        guard selectedCompetitor != competition.firstCompetitor else { return }
-        selectedCompetitor = competition.firstCompetitor
+        
+        guard selectedEntry != competition.leftEntry else { return }
+        selectedEntry = competition.leftEntry
         toggleCompetitorView(.first)
         firstCompetitorSelectorButtonHeight.constant = 80
         secondCompetitorSelectorButtonHeight.constant = 60
@@ -122,8 +125,8 @@ class ViewCompetitionVC: UIViewController {
      
      */
     @IBAction func secondCompetitorSelectorButtonAction() {
-        guard selectedCompetitor != competition.secondCompetitor else { return }
-        selectedCompetitor = competition.secondCompetitor
+        guard selectedEntry != competition.rightEntry else { return }
+        selectedEntry = competition.rightEntry
         toggleCompetitorView(.second)
         secondCompetitorSelectorButtonHeight.constant = 80
         firstCompetitorSelectorButtonHeight.constant = 60
@@ -169,13 +172,14 @@ class ViewCompetitionVC: UIViewController {
      
      */
     private func getVote() {
-        voteService.getVoteForCompetition(
-            competitionId: competition.competitionId
-        ) { [weak self] (vote) in
-            if let vote = vote {
-                self?.existingVote = vote
-            }
-        }
+        // TODO
+//        voteService.getVoteForCompetition(
+//            competitionId: competition.competitionId
+//        ) { [weak self] (vote) in
+//            if let vote = vote {
+//                self?.existingVote = vote
+//            }
+//        }
     }
     
     
@@ -194,15 +198,16 @@ class ViewCompetitionVC: UIViewController {
      
      */
     private func configureView() {
-        firstCompetitorRankImageView.image = competition.firstCompetitor.rank.image
-        firstCompetitorUsernameLabel.text = String(format: "@%@", competition.firstCompetitor.username)
-        secondCompetitorRankImageView.image = competition.secondCompetitor.rank.image
-        secondCompetitorUsernameLabel.text = String(format: "@%@", competition.secondCompetitor.username)
+        // TODO
+        firstCompetitorRankImageView.image = nil
+        firstCompetitorUsernameLabel.text = String(format: "@%@", competition.leftEntry.user.username)
+        secondCompetitorRankImageView.image = nil
+        secondCompetitorUsernameLabel.text = String(format: "@%@", competition.rightEntry.user.username)
         
         // TODO: Remove and load using operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
             
-            S3BucketService.instance.downloadImage(mediaId: self.competition.firstCompetitor.userId, imageType: .small) { [weak self] (image, customError) in
+            S3BucketService.instance.downloadImage(mediaId: self.competition.leftEntry.user.profileImage, imageType: .small) { [weak self] (image, customError) in
                 
                 DispatchQueue.main.async {
                     self?.firstCompetitorSelectorButton._imageView.image = image
@@ -213,7 +218,7 @@ class ViewCompetitionVC: UIViewController {
         // TODO: Remove and load using operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
             
-            S3BucketService.instance.downloadImage(mediaId: self.competition.secondCompetitor.userId, imageType: .small) { [weak self] (image, customError) in
+            S3BucketService.instance.downloadImage(mediaId: self.competition.rightEntry.user.profileImage, imageType: .small) { [weak self] (image, customError) in
                 
                 DispatchQueue.main.async {
                     self?.secondCompetitorSelectorButton._imageView.image = image
@@ -235,16 +240,20 @@ class ViewCompetitionVC: UIViewController {
      
      */
     private func configureExpireCountdown() {
+        
         guard !competition.isExpired else {
             timeRemainingLabel.text = String(format: "%02i:%02i:%02i:%02i", 0, 0, 0, 0)
             return
         }
-        guard let secondsUntilExpire = competition.secondsUntilExpire else {
-            debugPrint("Could not get competition seconds until expire")
-            return
-        }
-        updateExpireCountdown(timeRemaining: secondsUntilExpire)
-        let countdownTimer = CountdownTimer(countdownSeconds: secondsUntilExpire, delegate: self)
+        
+        let timeRemaining = competition.secondsUntilExpire
+        
+        updateExpireCountdown(timeRemaining: timeRemaining)
+        
+        let countdownTimer = CountdownTimer(
+            countdownSeconds: timeRemaining,
+            delegate: self
+        )
         countdownTimer.start()
     }
     
@@ -266,26 +275,27 @@ class ViewCompetitionVC: UIViewController {
  
      */
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == FIRST_COMPETITOR {
-            firstCompetitorVC = segue.destination as! CompetitorVC
-            firstCompetitorVC.initData(
-                competitor: competition.firstCompetitor,
-                isExpired: competition.isExpired,
-                delegate: self
-            )
-        }
-        else if segue.identifier == SECOND_COMPETITOR {
-            secondCompetitorVC = segue.destination as! CompetitorVC
-            secondCompetitorVC.initData(
-                competitor: competition.secondCompetitor,
-                isExpired: competition.isExpired,
-                delegate: self
-            )
-        }
-        else if let viewCompetitionOptionsVC = segue.destination as? ViewCompetitionOptionsVC {
-            viewCompetitionOptionsVC.initData(delegate: self)
-            self.viewCompetitionOptionsVC = viewCompetitionOptionsVC
-        }
+        
+//        if segue.identifier == FIRST_COMPETITOR {
+//            firstCompetitorVC = segue.destination as! CompetitorVC
+//            firstCompetitorVC.initData(
+//                competitor: competition.firstCompetitor,
+//                isExpired: competition.isExpired,
+//                delegate: self
+//            )
+//        }
+//        else if segue.identifier == SECOND_COMPETITOR {
+//            secondCompetitorVC = segue.destination as! CompetitorVC
+//            secondCompetitorVC.initData(
+//                competitor: competition.secondCompetitor,
+//                isExpired: competition.isExpired,
+//                delegate: self
+//            )
+//        }
+//        else if let viewCompetitionOptionsVC = segue.destination as? ViewCompetitionOptionsVC {
+//            viewCompetitionOptionsVC.initData(delegate: self)
+//            self.viewCompetitionOptionsVC = viewCompetitionOptionsVC
+//        }
     }
 }
 

@@ -78,6 +78,8 @@ class LoginVC: UIViewController {
                 }
                 
                 CurrentAccount.setAccount(account: account)
+                self?.loadFollowedUserIds()
+                
                 self?.performSegue(withIdentifier: SHOW_MAIN_STORYBOARD, sender: nil)
             }
         }
@@ -96,6 +98,21 @@ class LoginVC: UIViewController {
         }
         
         return true
+    }
+    
+    
+    private func loadFollowedUserIds() {
+        
+        userService.loadFollowedUserIds(
+            userId: CurrentAccount.user.id
+        ) { (followedUserIds, errorMessage) in
+            
+            guard let followedUserIds = followedUserIds else {
+                return
+            }
+            
+            CurrentAccount.setFollowedUserIds(ids: followedUserIds)
+        }
     }
 }
 
