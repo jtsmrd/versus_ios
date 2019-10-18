@@ -42,7 +42,7 @@ class CategoryCollection {
     }
     
     func getCategory(categoryType: CategoryType) -> Category {
-        guard let index = categories.index(where: { $0.categoryType == categoryType }) else {
+        guard let index = categories.firstIndex(where: { $0.categoryType == categoryType }) else {
             return categories[0]
         }
         return categories[index]

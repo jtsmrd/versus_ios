@@ -56,7 +56,7 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource, UIPageV
     
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let pageIndex = tutorialViewControllers.index(of: viewController) else { return nil }
+        guard let pageIndex = tutorialViewControllers.firstIndex(of: viewController) else { return nil }
         if pageIndex > 0 {
             return tutorialViewControllers[pageIndex - 1]
         }
@@ -64,7 +64,7 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource, UIPageV
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let pageIndex = tutorialViewControllers.index(of: viewController) else { return nil }
+        guard let pageIndex = tutorialViewControllers.firstIndex(of: viewController) else { return nil }
         if pageIndex < tutorialViewControllers.count - 1 {
             return tutorialViewControllers[pageIndex + 1]
         }
@@ -73,7 +73,7 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource, UIPageV
     
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         if let viewController = pendingViewControllers.first {
-            if let index = tutorialViewControllers.index(of: viewController) {
+            if let index = tutorialViewControllers.firstIndex(of: viewController) {
                 pageTransitionDelegate.tutorialTransitionedTo(index: index)
             }
         }

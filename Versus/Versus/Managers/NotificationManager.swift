@@ -43,7 +43,7 @@ class NotificationManager {
      Removes the given Notification record from the stored collection. Used after deleting notificaiton from the database.
     */
     func removeNotification(notification: Notification) {
-        if let index = notifications.index(where: { $0 === notification }) {
+        if let index = notifications.firstIndex(where: { $0 === notification }) {
             notifications.remove(at: index)
         }
     }
