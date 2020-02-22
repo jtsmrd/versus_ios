@@ -96,4 +96,15 @@ extension Competition {
     var secondsUntilExpire: Int {
         return Date().seconds(until: _expireDate)
     }
+    
+    
+    func getEntry(entryId: Int) -> Entry {
+        
+        if rightEntry.id == entryId {
+            return rightEntry
+        }
+        else {
+            return leftEntry
+        }
+    }
 }

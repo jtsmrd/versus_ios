@@ -12,21 +12,23 @@ class LeaderboardCollection {
     
     static let instance = LeaderboardCollection()
     
+    private let leaderboardService = LeaderboardService.instance
+    
     var leaderboards = [Leaderboard]()
     
     private init() { }
     
-    func getLeaderboards(completion: @escaping SuccessErrorCompletion) {
+    func getLeaderboards(
+        completion: @escaping (_ leaderboards: [Leaderboard], _ error: String?) -> ()
+    ) {
         
-        LeaderboardService.instance.getLeaderboards { (leaderboards, customError) in
-            if let customError = customError, let error = customError.error {
-                debugPrint("Failed to load leaderboards: \(error.localizedDescription)")
-                completion(false, customError)
-            }
-            else {
-                self.leaderboards = leaderboards.sorted(by: { $0.leaderboardType.rawValue < $1.leaderboardType.rawValue })
-                completion(true, nil)
-            }
+        leaderboardService.getLeaderboards { (leaderboards, error) in
+            
+            self.leaderboards = leaderboards.sorted(
+                by: { $0.type.id < $1.type.id }
+            )
+            
+            completion(self.leaderboards, error)
         }
     }
 }

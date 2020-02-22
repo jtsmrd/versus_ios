@@ -6,14 +6,11 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-import AWSLambda
-
 class VoteService {
     
     static let instance = VoteService()
-    private let dynamoDB = AWSDynamoDBObjectMapper.default()
-    private let lambda = AWSLambdaInvoker.default()
+    private let networkManager = NetworkManager()
+    private let router = Router<VoteEndpoint>()
     
     private init() { }
     
@@ -21,41 +18,148 @@ class VoteService {
     /**
      
      */
-    func voteForCompetition(
-        competition: Competition,
-        competitionEntryId: String,
-        competitorType: CompetitorType,
-        isVoteSwitch: Bool,
-        completion: @escaping (_ vote: Vote?, _ customError: CustomError?) -> Void
+    func voteForEntry(
+        entryId: Int,
+        competitionId: Int,
+        completion: @escaping (_ vote: Vote?, _ error: String?) -> ()
     ) {
-//        let awsVote: AWSVote = AWSVote()
-//        awsVote._competitionIdUserId = String(format: "%@%@", competition.competitionId, CurrentUser.userId)
-//        awsVote._competitionEntryId = competitionEntryId
-//        awsVote._competitionId = competition.competitionId
-//        awsVote._competitor = competitorType.rawValue
-//
-//        dynamoDB.save(
-//            awsVote
-//        ) { (error) in
-//            if let error = error {
-//                completion(nil, CustomError(error: error, message: "Unable to vote on competition."))
-//                return
-//            }
-//
-//            switch competitorType {
-//            case .first:
-//                competition.firstCompetitor.voteCount += 1
-//                if isVoteSwitch {
-//                    competition.secondCompetitor.voteCount -= 1
-//                }
-//            case .second:
-//                competition.secondCompetitor.voteCount += 1
-//                if isVoteSwitch {
-//                    competition.firstCompetitor.voteCount -= 1
-//                }
-//            }
-//            completion(Vote(awsVote: awsVote), nil)
-//        }
+        
+        router.request(
+            .create(
+                entryId: entryId,
+                competitionId: competitionId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let vote = try decoder.decode(
+                            Vote.self,
+                            from: responseData
+                        )
+                        completion(vote, nil)
+                    }
+                    catch {
+                        completion(
+                            nil,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    func deleteVote(
+        voteId: Int,
+        completion: @escaping (_ error: String?) -> Void
+    ) {
+        
+        router.request(
+            .delete(voteId: voteId)
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion("Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    completion(nil)
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
+    func getVoteForCompetition(
+        competitionId: Int,
+        completion: @escaping (_ vote: Vote?, _ error: String?) -> Void
+    ) {
+        
+        router.request(
+            .get(competitionId: competitionId)
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    let vote = try? decoder.decode(
+                        Vote.self,
+                        from: responseData
+                    )
+                    completion(vote, nil)
+//                    do {
+//                        let vote = try decoder.decode(
+//                            Vote.self,
+//                            from: responseData
+//                        )
+//                        completion(vote, nil)
+//                    }
+//                    catch {
+//                        completion(
+//                            nil,
+//                            NetworkResponse.unableToDecode.rawValue
+//                        )
+//                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
     }
     
     
@@ -63,59 +167,57 @@ class VoteService {
      
      */
     func updateVote(
-        vote: Vote,
-        competition: Competition,
-        completion: @escaping (_ vote: Vote?, _ customError: CustomError?) -> Void
+        voteId: Int,
+        entryId: Int,
+        completion: @escaping (_ vote: Vote?, _ error: String?) -> Void
     ) {
-//        dynamoDB.save(
-//            vote
-//        ) { (error) in
-//            if let error = error {
-//                completion(nil, CustomError(error: error, message: "Unable to change vote"))
-//                return
-//            }
-//
-//            if let competitor = awsVote._competitor,
-//                let competitorType = CompetitorType(rawValue: competitor) {
-//
-//                switch competitorType {
-//                case .first:
-//                    competition.firstCompetitor.voteCount += 1
-//                    competition.secondCompetitor.voteCount -= 1
-//                case .second:
-//                    competition.secondCompetitor.voteCount += 1
-//                    competition.firstCompetitor.voteCount -= 1
-//                }
-//            }
-//
-//            completion(Vote(awsVote: awsVote), nil)
-//        }
-    }
-    
-    
-    /**
-     
-     */
-    func getVoteForCompetition(
-        competitionId: String,
-        completion: @escaping (_ vote: Vote?) -> Void
-    ) {
-//        let hashKey = String(format: "%@%@", competitionId, CurrentUser.userId)
-//        dynamoDB.load(
-//            AWSVote.self,
-//            hashKey: hashKey,
-//            rangeKey: nil
-//        ) { (awsVote, error) in
-//            if let error = error {
-//                debugPrint("Error getting vote for competition: \(error.localizedDescription)")
-//                completion(nil)
-//                return
-//            }
-//            guard let awsVote = awsVote as? AWSVote else {
-//                completion(nil)
-//                return
-//            }
-//            completion(Vote(awsVote: awsVote))
-//        }
+        
+        router.request(
+            .update(
+                voteId: voteId,
+                entryId: entryId
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(nil, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(nil, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let vote = try decoder.decode(
+                            Vote.self,
+                            from: responseData
+                        )
+                        completion(vote, nil)
+                    }
+                    catch {
+                        completion(
+                            nil,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
     }
 }

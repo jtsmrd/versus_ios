@@ -8,34 +8,44 @@
 
 class Vote: Codable {
     
-    private var _competitionEntryId: String = ""
-    private var _competitionId: String = ""
-    private var _userId: String = ""
-    private var _competitorTypeString: String = ""
+    private var _id: Int
+    private var _competition: String
+    private var _entry: String
+    private var _user: String
+    private var _createDate: Date
     
-    
-    init(
-        competitionEntryId: String,
-        competitionId: String,
-        userId: String,
-        competitorTypeString: String
-    ) {
-        _competitionEntryId = competitionEntryId
-        _competitionId = competitionId
-        _userId = userId
-        _competitorTypeString = competitorTypeString
+    enum CodingKeys: String, CodingKey {
+        case _id = "id"
+        case _competition = "competition"
+        case _entry = "entry"
+        case _user = "user"
+        case _createDate = "createDate"
     }
 }
 
 extension Vote {
-    
-    
-    var competitionEntryId: String {
-        return _competitionEntryId
+        
+    var id: Int {
+        return _id
     }
     
+    var competitionId: Int {
+        return Int(_competition.components(separatedBy: "/").last ?? "-1") ?? -1
+    }
     
-    var competitorType: CompetitorType {
-        return CompetitorType(rawValue: _competitorTypeString) ?? .unknown
+    var entryId: Int {
+        return Int(
+            _entry.components(separatedBy: "/").last ?? "-1"
+        ) ?? -1
+    }
+    
+    var userId: Int {
+        return Int(
+            _user.components(separatedBy: "/").last ?? "-1"
+        ) ?? -1
+    }
+    
+    var createDate: Date {
+        return _createDate
     }
 }

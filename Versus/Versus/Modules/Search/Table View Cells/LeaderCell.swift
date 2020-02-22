@@ -28,25 +28,34 @@ class LeaderCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func configureCell(leader: Leader, leaderboardType: LeaderboardType, leaderRank: Int) {
+    func configureCell(leader: Leader, rowNumber: Int) {
         
-        leaderRankLabel.text = String(format: "%d", leaderRank)
-        leaderUsernameLabel.text = leader.username
-        leaderWinsLabel.text = String(format: "    %d wins", leader.wins)
-        leaderVotesLabel.text = String(format: "    %d votes", leader.votes)
+        leaderRankLabel.text = String(
+            format: "%d",
+            rowNumber
+        )
+        leaderUsernameLabel.text = leader.user.username
+        leaderWinsLabel.text = String(
+            format: "    %d wins",
+            leader.winCount
+        )
+        leaderVotesLabel.text = String(
+            format: "    %d votes",
+            leader.voteCount
+        )
         
         S3BucketService.instance.downloadImage(
-            mediaId: leader.userId,
-            imageType: .small
+            mediaId: leader.user.profileImage,
+            imageType: .regular
         ) { (image, errorMessage) in
-            
+
             DispatchQueue.main.async {
-                
+
                 if let errorMessage = errorMessage {
                     debugPrint(errorMessage)
                     return
                 }
-                
+
                 self.leaderImageView.image = image
             }
         }

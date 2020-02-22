@@ -6,35 +6,48 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-enum LeaderboardType: Int {
-    case unknown = 0
-    case weekly = 1
-    case monthly = 2
-    case allTime = 3
-}
-
 class Leaderboard: Codable {
     
-    private var _isActiveInt: Int = 0
-    private var _leaderboardTypeId: Int = 0
-    private var _name: String = ""
-    private var _numberOfResults: Int = 0
+    private var _id: Int
+    private var _featureImage: String?
+    private var _backgroundImage: String?
+    private var _type: LeaderboardType
+    private var _isActive: Bool
+    private var _resultLimit: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case _id = "id"
+        case _featureImage = "featureImage"
+        case _backgroundImage = "backgroundImage"
+        case _type = "type"
+        case _isActive = "isActive"
+        case _resultLimit = "resultLimit"
+    }
 }
 
 extension Leaderboard {
     
+    var id: Int {
+        return _id
+    }
+    
+    var featureImage: String? {
+        return _featureImage
+    }
+    
+    var backgroundImage: String? {
+        return _backgroundImage
+    }
+    
+    var type: LeaderboardType {
+        return _type
+    }
     
     var isActive: Bool {
-        return Bool(truncating: _isActiveInt as NSNumber)
+        return _isActive
     }
     
-    
-    var leaderboardType: LeaderboardType {
-        return LeaderboardType(rawValue: _leaderboardTypeId) ?? .unknown
-    }
-    
-    
-    var name: String {
-        return _name
+    var resultLimit: Int {
+        return _resultLimit
     }
 }

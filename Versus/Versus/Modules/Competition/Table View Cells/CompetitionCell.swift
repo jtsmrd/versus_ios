@@ -68,11 +68,23 @@ class CompetitionCell: UITableViewCell {
         leftEntryRankImageView.image = competition.leftEntry.rank.image
         rightEntryRankImageView.image = competition.rightEntry.rank.image
         
-        leftEntryUsernameLabel.text = String(format: "@%@", competition.leftEntry.user.username)
-        rightEntryUsernameLabel.text = String(format: "@%@", competition.rightEntry.user.username)
+        leftEntryUsernameLabel.text = String(
+            format: "@%@",
+            competition.leftEntry.user.username
+        )
+        rightEntryUsernameLabel.text = String(
+            format: "@%@",
+            competition.rightEntry.user.username
+        )
         
-        leftEntryVotesLabel.text = String(format: "%d", 0)
-        rightEntryVotesLabel.text = String(format: "%d", 0)
+        leftEntryVotesLabel.text = String(
+            format: "%d",
+            competition.leftEntry.voteCount
+        )
+        rightEntryVotesLabel.text = String(
+            format: "%d",
+            competition.rightEntry.voteCount
+        )
         
         leftEntryImageView.image = competition.leftEntry.image
         rightEntryImageView.image = competition.rightEntry.image

@@ -1,0 +1,6 @@
+Todo:
+
+Votes:
+- Figure out a way to determine if a user has already voted for a competition. Maybe load the entry with an array of all users that voted for it? Create a property on the Entry that gets the current user's id and checks the votes array of Entry to see if it contains the user id.
+- Handle (on api side) if a user attempts to vote for a competition entry more than once.
+- Create generic collection class for paginated responses from the api.

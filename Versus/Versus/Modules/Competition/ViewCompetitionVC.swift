@@ -45,7 +45,7 @@ class ViewCompetitionVC: UIViewController {
     private var existingVote: Vote? {
         didSet {
             if let vote = existingVote {
-                postUserVoteUpdated(vote: vote)
+//                postUserVoteUpdated(vote: vote)
             }
         }
     }
@@ -142,13 +142,13 @@ class ViewCompetitionVC: UIViewController {
         case .first:
             view.insertSubview(firstCompetitorSelectorButton, aboveSubview: secondCompetitorSelectorButton)
             view.insertSubview(firstCompetitorView, aboveSubview: secondCompetitorView)
-            firstCompetitorVC.viewIsSelected = true
-            secondCompetitorVC.viewIsSelected = false
+//            firstCompetitorVC.viewIsSelected = true
+//            secondCompetitorVC.viewIsSelected = false
         case .second:
             view.insertSubview(secondCompetitorSelectorButton, aboveSubview: firstCompetitorSelectorButton)
             view.insertSubview(secondCompetitorView, aboveSubview: firstCompetitorView)
-            secondCompetitorVC.viewIsSelected = true
-            firstCompetitorVC.viewIsSelected = false
+//            secondCompetitorVC.viewIsSelected = true
+//            firstCompetitorVC.viewIsSelected = false
         default:
             break
         }
@@ -180,17 +180,6 @@ class ViewCompetitionVC: UIViewController {
 //                self?.existingVote = vote
 //            }
 //        }
-    }
-    
-    
-    /**
-     
-     */
-    private func postUserVoteUpdated(vote: Vote) {
-        notificationCenter.post(
-            name: NSNotification.Name.OnUserVoteUpdated,
-            object: vote
-        )
     }
     
     
@@ -302,21 +291,20 @@ class ViewCompetitionVC: UIViewController {
 extension ViewCompetitionVC: CompetitorVCDelegate {
     
     func voteForCompetitor(
-        competitionEntryId: String,
-        competitorType: CompetitorType,
-        isVoteSwitched: Bool
+        entryId: Int,
+        competitionId: Int
     ) {
-        voteService.voteForCompetition(
-            competition: competition,
-            competitionEntryId: competitionEntryId,
-            competitorType: competitorType,
-            isVoteSwitch: isVoteSwitched
-        ) { [weak self] (vote, customError) in
-            if let customError = customError {
-                self?.displayError(error: customError)
+        voteService.voteForEntry(
+            entryId: entryId,
+            competitionId: competitionId
+        ) { [weak self] (vote, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.displayMessage(message: error)
                 return
             }
-            self?.existingVote = vote
+            self.existingVote = vote
         }
     }
 }

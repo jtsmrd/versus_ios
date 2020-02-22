@@ -63,7 +63,18 @@ class CurrentUserVC: UIViewController {
         
         usernameLabel.text = user.username.withAtSignPrefix
         
+        LeaderService.instance.getAllTimeLeaders { (leaders, error) in
+            debugPrint(leaders)
+        }
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         loadCompetitions()
+        
+        loadEntries()
     }
 
 

@@ -91,8 +91,8 @@ class FeaturedFollowingVC: UIViewController {
         
         notificationCenter.addObserver(
             self,
-            selector: #selector(FeaturedFollowingVC.userVoteUpdated(notification:)),
-            name: NSNotification.Name.OnUserVoteUpdated,
+            selector: #selector(FeaturedFollowingVC.competitionUpdated(notification:)),
+            name: NSNotification.Name.OnCompetitionUpdated,
             object: nil
         )
     }
@@ -160,25 +160,40 @@ class FeaturedFollowingVC: UIViewController {
     }
     
     
-    /**
-     
-     */
-    @objc func userVoteUpdated(notification: Notification) {
+    @objc func competitionUpdated(notification: Foundation.Notification) {
         
-        if let selectedIndexPath = selectedIndexPath {
+        if let competition = notification.object as? Competition {
             
-            DispatchQueue.main.async {
+            if let selectedIndexPath = selectedIndexPath {
                 
-                switch self.activeCompetitionFeedType {
+                switch activeCompetitionFeedType {
                     
                 case .featured:
-                    self.featuredTableView.reloadRows(
+                    
+                    let index = featuredCompetitions.firstIndex { (existingCompetition) -> Bool in
+                        existingCompetition.id == competition.id
+                    }
+                    
+                    if let index = index {
+                        featuredCompetitions[index] = competition
+                    }
+                    
+                    featuredTableView.reloadRows(
                         at: [selectedIndexPath],
                         with: .automatic
                     )
                     
                 case .following:
-                    self.followedUsersTableView.reloadRows(
+                    
+                    let index = followedUserCompetitions.firstIndex { (existingCompetition) -> Bool in
+                        existingCompetition.id == competition.id
+                    }
+                    
+                    if let index = index {
+                        followedUserCompetitions[index] = competition
+                    }
+                    
+                    followedUsersTableView.reloadRows(
                         at: [selectedIndexPath],
                         with: .automatic
                     )
@@ -412,7 +427,7 @@ extension FeaturedFollowingVC: UIScrollViewDelegate {
         _ scrollView: UIScrollView
     ) {
         
-        suspendAllOperations()
+//        suspendAllOperations()
     }
     
     
@@ -422,8 +437,8 @@ extension FeaturedFollowingVC: UIScrollViewDelegate {
     ) {
         
         if !decelerate {
-            loadImagesForOnscreenCells()
-            resumeAllOperations()
+//            loadImagesForOnscreenCells()
+//            resumeAllOperations()
         }
     }
     
@@ -432,8 +447,8 @@ extension FeaturedFollowingVC: UIScrollViewDelegate {
         _ scrollView: UIScrollView
     ) {
         
-        loadImagesForOnscreenCells()
-        resumeAllOperations()
+//        loadImagesForOnscreenCells()
+//        resumeAllOperations()
     }
 }
 

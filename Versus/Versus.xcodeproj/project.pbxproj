@@ -109,6 +109,9 @@
 		6B55E33A21E044950083137A /* EntriesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55E33921E044950083137A /* EntriesVC.swift */; };
 		6B5D0A11207AE46600091DA1 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A10207AE46600091DA1 /* GameKit.framework */; };
 		6B5D0A13207AE46C00091DA1 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5D0A12207AE46C00091DA1 /* StoreKit.framework */; };
+		6B60E1E323F88B63001C60F4 /* LeaderEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B60E1E223F88B63001C60F4 /* LeaderEndpoint.swift */; };
+		6B61CD9D2400D5AF00396F47 /* LeaderboardType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61CD9C2400D5AF00396F47 /* LeaderboardType.swift */; };
+		6B61CD9F2400D78900396F47 /* LeaderboardEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61CD9E2400D78900396F47 /* LeaderboardEndpoint.swift */; };
 		6B6DE28E20A264AC005368C4 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28D20A264AC005368C4 /* Vote.swift */; };
 		6B6DE29020A26510005368C4 /* VoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28F20A26510005368C4 /* VoteService.swift */; };
 		6B781CF9222ADB6A0061E622 /* UserEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B781CF8222ADB6A0061E622 /* UserEndpoint.swift */; };
@@ -136,7 +139,10 @@
 		6B8E7D242241A0FF008E0E85 /* EntryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B8E7D232241A0FF008E0E85 /* EntryCell.xib */; };
 		6B8E7D262241A129008E0E85 /* EntriesVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B8E7D252241A129008E0E85 /* EntriesVC.xib */; };
 		6B8E7D282241A19F008E0E85 /* ProfileCompetitionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B8E7D272241A19F008E0E85 /* ProfileCompetitionCell.xib */; };
+		6B93D4BC23B583AD0038AFC3 /* VoteEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B93D4BB23B583AD0038AFC3 /* VoteEndpoint.swift */; };
+		6B93D4BE23B588C10038AFC3 /* ToDo in Resources */ = {isa = PBXBuildFile; fileRef = 6B93D4BD23B588C10038AFC3 /* ToDo */; };
 		6B9877662247DF940091B5BB /* CompetitionEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9877652247DF940091B5BB /* CompetitionEndpoint.swift */; };
+		6B989F3D23CBB67B00FF8490 /* VersusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B989F3C23CBB67B00FF8490 /* VersusTests.swift */; };
 		6B9E746B223DB288001EF5CD /* CurrentUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9E7469223DB288001EF5CD /* CurrentUserVC.swift */; };
 		6B9E746C223DB288001EF5CD /* CurrentUserVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9E746A223DB288001EF5CD /* CurrentUserVC.xib */; };
 		6B9E746F223DBA3F001EF5CD /* CurrentUserInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9E746D223DBA3F001EF5CD /* CurrentUserInfoView.swift */; };
@@ -151,6 +157,8 @@
 		6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C120742F4900BC23A0 /* CircleButton.swift */; };
 		6BA4B0C4207430E900BC23A0 /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */; };
 		6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA4B0C5207431B800BC23A0 /* BorderView.swift */; };
+		6BA797542401652400191113 /* FeaturedCompetitionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA797522401652400191113 /* FeaturedCompetitionsVC.swift */; };
+		6BA797552401652400191113 /* FeaturedCompetitionsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BA797532401652400191113 /* FeaturedCompetitionsVC.xib */; };
 		6BA9AA9921D564A2006379E1 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA9AA9821D564A2006379E1 /* DataExtensions.swift */; };
 		6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EA206F1D8D0032F7F9 /* SignupVC.swift */; };
 		6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAA03EE206F1E420032F7F9 /* LoginVC.swift */; };
@@ -191,6 +199,16 @@
 		6BF687F320ACD2C900F69B68 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF687F220ACD2C900F69B68 /* NotificationCell.swift */; };
 		6BF687F520ACDE9100F69B68 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF687F420ACDE9100F69B68 /* NotificationService.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6B989F3723CBB66000FF8490 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6BEACB4B206EB3DC00C221A0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6BEACB52206EB3DC00C221A0;
+			remoteInfo = Versus;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		320105AA20E921A20099C056 /* LeaderboardHeaderImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardHeaderImageCell.swift; sourceTree = "<group>"; };
@@ -300,6 +318,9 @@
 		6B5D0A10207AE46600091DA1 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		6B5D0A12207AE46C00091DA1 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		6B5D0A14207AE48000091DA1 /* Versus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Versus.entitlements; sourceTree = "<group>"; };
+		6B60E1E223F88B63001C60F4 /* LeaderEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderEndpoint.swift; sourceTree = "<group>"; };
+		6B61CD9C2400D5AF00396F47 /* LeaderboardType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardType.swift; sourceTree = "<group>"; };
+		6B61CD9E2400D78900396F47 /* LeaderboardEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardEndpoint.swift; sourceTree = "<group>"; };
 		6B6DE28D20A264AC005368C4 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
 		6B6DE28F20A26510005368C4 /* VoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteService.swift; sourceTree = "<group>"; };
 		6B781CF8222ADB6A0061E622 /* UserEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEndpoint.swift; sourceTree = "<group>"; };
@@ -327,7 +348,12 @@
 		6B8E7D232241A0FF008E0E85 /* EntryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EntryCell.xib; sourceTree = "<group>"; };
 		6B8E7D252241A129008E0E85 /* EntriesVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EntriesVC.xib; sourceTree = "<group>"; };
 		6B8E7D272241A19F008E0E85 /* ProfileCompetitionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCompetitionCell.xib; sourceTree = "<group>"; };
+		6B93D4BB23B583AD0038AFC3 /* VoteEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteEndpoint.swift; sourceTree = "<group>"; };
+		6B93D4BD23B588C10038AFC3 /* ToDo */ = {isa = PBXFileReference; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
 		6B9877652247DF940091B5BB /* CompetitionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEndpoint.swift; sourceTree = "<group>"; };
+		6B989F3223CBB66000FF8490 /* VersusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VersusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B989F3623CBB66000FF8490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6B989F3C23CBB67B00FF8490 /* VersusTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersusTests.swift; sourceTree = "<group>"; };
 		6B9E7469223DB288001EF5CD /* CurrentUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserVC.swift; sourceTree = "<group>"; };
 		6B9E746A223DB288001EF5CD /* CurrentUserVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CurrentUserVC.xib; sourceTree = "<group>"; };
 		6B9E746D223DBA3F001EF5CD /* CurrentUserInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserInfoView.swift; sourceTree = "<group>"; };
@@ -342,6 +368,8 @@
 		6BA4B0C120742F4900BC23A0 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
 		6BA4B0C3207430E900BC23A0 /* CircleImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
 		6BA4B0C5207431B800BC23A0 /* BorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
+		6BA797522401652400191113 /* FeaturedCompetitionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedCompetitionsVC.swift; sourceTree = "<group>"; };
+		6BA797532401652400191113 /* FeaturedCompetitionsVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeaturedCompetitionsVC.xib; sourceTree = "<group>"; };
 		6BA9AA9821D564A2006379E1 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		6BAA03EA206F1D8D0032F7F9 /* SignupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupVC.swift; sourceTree = "<group>"; };
 		6BAA03EE206F1E420032F7F9 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
@@ -388,6 +416,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6B989F2F23CBB66000FF8490 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6BEACB50206EB3DC00C221A0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -466,6 +501,8 @@
 			children = (
 				32D9C98020CB205C00F174B2 /* FeaturedFollowingCompetitions.storyboard */,
 				6B04B74220914ADF007BF021 /* FeaturedFollowingVC.swift */,
+				6BA797522401652400191113 /* FeaturedCompetitionsVC.swift */,
+				6BA797532401652400191113 /* FeaturedCompetitionsVC.xib */,
 			);
 			path = "Featured Following Competitions";
 			sourceTree = "<group>";
@@ -497,7 +534,10 @@
 				6B9877652247DF940091B5BB /* CompetitionEndpoint.swift */,
 				6B147DCE21E2B31600D7E30F /* EntryEndpoint.swift */,
 				6BE829AF22443A6500ED4244 /* FollowerEndpoint.swift */,
+				6B60E1E223F88B63001C60F4 /* LeaderEndpoint.swift */,
 				6B781CF8222ADB6A0061E622 /* UserEndpoint.swift */,
+				6B93D4BB23B583AD0038AFC3 /* VoteEndpoint.swift */,
+				6B61CD9E2400D78900396F47 /* LeaderboardEndpoint.swift */,
 			);
 			path = Endpoint;
 			sourceTree = "<group>";
@@ -613,7 +653,6 @@
 				6BC1E13020895D7D005404E1 /* CategoryCollection.swift */,
 				6B781CFD222B54DB0061E622 /* CurrentAccount.swift */,
 				6B8316E5207D977A0067EE0E /* CurrentUser.swift */,
-				320105B820E96F3C0099C056 /* Leader.swift */,
 				320105AC20E92B9A0099C056 /* LeaderboardCollection.swift */,
 				6B3B771320A79F2100E3FFDE /* OptionIconCollection.swift */,
 				6B8316E1207D791A0067EE0E /* Rank.swift */,
@@ -657,7 +696,9 @@
 				6B079FF4208D429D003BBB87 /* Entry.swift */,
 				32E085E321233CFA00DF395D /* FollowedUser.swift */,
 				6B334FD620818738005B010F /* Follower.swift */,
+				320105B820E96F3C0099C056 /* Leader.swift */,
 				320105B020E92E310099C056 /* Leaderboard.swift */,
+				6B61CD9C2400D5AF00396F47 /* LeaderboardType.swift */,
 				6B8BF01E21E1923A001889E9 /* MonthlyLeader.swift */,
 				6B8BF02221E19714001889E9 /* Notification.swift */,
 				6B85343D208020C100985BDD /* User.swift */,
@@ -665,6 +706,15 @@
 				6B8BF02021E193A2001889E9 /* WeeklyLeader.swift */,
 			);
 			path = Entities;
+			sourceTree = "<group>";
+		};
+		6B989F3323CBB66000FF8490 /* VersusTests */ = {
+			isa = PBXGroup;
+			children = (
+				6B989F3C23CBB67B00FF8490 /* VersusTests.swift */,
+				6B989F3623CBB66000FF8490 /* Info.plist */,
+			);
+			path = VersusTests;
 			sourceTree = "<group>";
 		};
 		6B9E7468223DB258001EF5CD /* Current User */ = {
@@ -855,6 +905,7 @@
 			isa = PBXGroup;
 			children = (
 				6BEACB55206EB3DC00C221A0 /* Versus */,
+				6B989F3323CBB66000FF8490 /* VersusTests */,
 				6BEACB54206EB3DC00C221A0 /* Products */,
 				CF5012DCD4FD8BE0F9E8FC32 /* Pods */,
 				40CEAA774B2D3C01CC7D5D85 /* Frameworks */,
@@ -866,6 +917,7 @@
 			isa = PBXGroup;
 			children = (
 				6BEACB53206EB3DC00C221A0 /* Versus.app */,
+				6B989F3223CBB66000FF8490 /* VersusTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -894,6 +946,7 @@
 				6B36E1CE20703D3A00F92375 /* Services */,
 				6B334FCF20816006005B010F /* Utilities */,
 				6B5D0A14207AE48000091DA1 /* Versus.entitlements */,
+				6B93D4BD23B588C10038AFC3 /* ToDo */,
 			);
 			path = Versus;
 			sourceTree = "<group>";
@@ -922,6 +975,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		6B989F3123CBB66000FF8490 /* VersusTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6B989F3923CBB66000FF8490 /* Build configuration list for PBXNativeTarget "VersusTests" */;
+			buildPhases = (
+				6B989F2E23CBB66000FF8490 /* Sources */,
+				6B989F2F23CBB66000FF8490 /* Frameworks */,
+				6B989F3023CBB66000FF8490 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6B989F3823CBB66000FF8490 /* PBXTargetDependency */,
+			);
+			name = VersusTests;
+			productName = VersusTests;
+			productReference = 6B989F3223CBB66000FF8490 /* VersusTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		6BEACB52206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6BEACB65206EB3DE00C221A0 /* Build configuration list for PBXNativeTarget "Versus" */;
@@ -947,10 +1018,14 @@
 		6BEACB4B206EB3DC00C221A0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0930;
+				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = VersusTeam;
 				TargetAttributes = {
+					6B989F3123CBB66000FF8490 = {
+						CreatedOnToolsVersion = 11.3;
+						TestTargetID = 6BEACB52206EB3DC00C221A0;
+					};
 					6BEACB52206EB3DC00C221A0 = {
 						CreatedOnToolsVersion = 9.3;
 						LastSwiftMigration = 1110;
@@ -985,11 +1060,19 @@
 			projectRoot = "";
 			targets = (
 				6BEACB52206EB3DC00C221A0 /* Versus */,
+				6B989F3123CBB66000FF8490 /* VersusTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		6B989F3023CBB66000FF8490 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6BEACB51206EB3DC00C221A0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1009,6 +1092,7 @@
 				329C4E7C20E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py in Resources */,
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
 				6B8E7D262241A129008E0E85 /* EntriesVC.xib in Resources */,
+				6BA797552401652400191113 /* FeaturedCompetitionsVC.xib in Resources */,
 				6B9E747F223DDE5D001EF5CD /* UserInfoView.xib in Resources */,
 				329C4E7D20E00EAE00E4E8E9 /* MatchCompetitionEntries.py in Resources */,
 				329C4E8320E02ED000E4E8E9 /* Tutorial.storyboard in Resources */,
@@ -1020,6 +1104,7 @@
 				6B8E7D1222419474008E0E85 /* FollowerVC.xib in Resources */,
 				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
 				6BAC02EB20A899E000792E34 /* Search.storyboard in Resources */,
+				6B93D4BE23B588C10038AFC3 /* ToDo in Resources */,
 				6B8E7D1E2241A014008E0E85 /* FollowerCell.xib in Resources */,
 				325CA3582131FA3D00A6C47B /* Competitor.storyboard in Resources */,
 				329C4E7E20E00EAE00E4E8E9 /* AWS_Competition_Trigger.py in Resources */,
@@ -1104,6 +1189,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6B989F2E23CBB66000FF8490 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6B989F3D23CBB67B00FF8490 /* VersusTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6BEACB4F206EB3DC00C221A0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1156,6 +1249,7 @@
 				6B334FD720818738005B010F /* Follower.swift in Sources */,
 				3218DADE210CABCE00915A90 /* CompetitionCommentCell.swift in Sources */,
 				6B370DBD2248040F0036DA3E /* EntryVC.swift in Sources */,
+				6BA797542401652400191113 /* FeaturedCompetitionsVC.swift in Sources */,
 				6BA4B0C220742F4900BC23A0 /* CircleButton.swift in Sources */,
 				6B147DC421E2A95700D7E30F /* URLParameterEncoder.swift in Sources */,
 				6B8BF02321E19714001889E9 /* Notification.swift in Sources */,
@@ -1163,6 +1257,7 @@
 				6BB6AD772093980000B2C1A1 /* ProgressIndicatorButton.swift in Sources */,
 				6B3DAEC82082DBE700946EB1 /* FollowButton.swift in Sources */,
 				6B368D8A21CDB2BE0084A150 /* DeviceSizeType.swift in Sources */,
+				6B61CD9F2400D78900396F47 /* LeaderboardEndpoint.swift in Sources */,
 				6BB9A384207ED1FB006881BE /* SearchBrowseVC.swift in Sources */,
 				6BAA03EB206F1D8D0032F7F9 /* SignupVC.swift in Sources */,
 				6BB8178C207A718400503620 /* AccountService.swift in Sources */,
@@ -1170,6 +1265,7 @@
 				6BF687F520ACDE9100F69B68 /* NotificationService.swift in Sources */,
 				6B8BF01F21E1923A001889E9 /* MonthlyLeader.swift in Sources */,
 				32A8F022213B3A22000515FA /* SearchUserVC.swift in Sources */,
+				6B93D4BC23B583AD0038AFC3 /* VoteEndpoint.swift in Sources */,
 				6B13B93920AE00BD00769AFD /* RoundedCornerImageView.swift in Sources */,
 				32E085E421233CFA00DF395D /* FollowedUser.swift in Sources */,
 				6B85343C2080021F00985BDD /* AWSUser.swift in Sources */,
@@ -1194,11 +1290,13 @@
 				6BD67D0120AA34F6001F2751 /* NotificationsVC.swift in Sources */,
 				323A7B3820CC9E950011AF95 /* AWSUserSNSEndpointARN.swift in Sources */,
 				6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */,
+				6B61CD9D2400D5AF00396F47 /* LeaderboardType.swift in Sources */,
 				6B8BF01D21E15E2A001889E9 /* AllTimeLeader.swift in Sources */,
 				6BD5E36320A65A1E00A9C054 /* CompetitionOptionCell.swift in Sources */,
 				327E604920C4AD26000980CD /* KeyboardToolbar.swift in Sources */,
 				326784292139F85F00068428 /* ViewCompetitionOptionsVC.swift in Sources */,
 				6B3B771420A79F2100E3FFDE /* OptionIconCollection.swift in Sources */,
+				6B60E1E323F88B63001C60F4 /* LeaderEndpoint.swift in Sources */,
 				329C4E8720E0348000E4E8E9 /* TutorialPVC.swift in Sources */,
 				6B525F8D2081143B007A7FC7 /* FollowerCell.swift in Sources */,
 				6B147DCB21E2AD0C00D7E30F /* HTTPMethod.swift in Sources */,
@@ -1254,6 +1352,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		6B989F3823CBB66000FF8490 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6BEACB52206EB3DC00C221A0 /* Versus */;
+			targetProxy = 6B989F3723CBB66000FF8490 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		6BEACB5A206EB3DD00C221A0 /* Login.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -1274,6 +1380,51 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		6B989F3A23CBB66000FF8490 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7QJKRU58DK;
+				INFOPLIST_FILE = VersusTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = smrdel.jt.VersusTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Versus.app/Versus";
+			};
+			name = Debug;
+		};
+		6B989F3B23CBB66000FF8490 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7QJKRU58DK;
+				INFOPLIST_FILE = VersusTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = smrdel.jt.VersusTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Versus.app/Versus";
+			};
+			name = Release;
+		};
 		6BEACB63206EB3DE00C221A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1328,6 +1479,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = Versus;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1381,6 +1533,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = Versus;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -1438,6 +1591,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6B989F3923CBB66000FF8490 /* Build configuration list for PBXNativeTarget "VersusTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6B989F3A23CBB66000FF8490 /* Debug */,
+				6B989F3B23CBB66000FF8490 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6BEACB4E206EB3DC00C221A0 /* Build configuration list for PBXProject "Versus" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

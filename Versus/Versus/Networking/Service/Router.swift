@@ -17,6 +17,7 @@ class Router<Endpoint: EndpointType>: NetworkRouter {
     ) {
         
         let session = URLSession.shared
+        debugPrint("Request \(route.path)")
         
         do {
             let request = try buildRequest(from: route)

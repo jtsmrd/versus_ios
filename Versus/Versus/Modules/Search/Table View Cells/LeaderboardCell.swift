@@ -22,21 +22,12 @@ class LeaderboardCell: UICollectionViewCell {
     
     
     func configureCell(leaderboard: Leaderboard) {
-        leaderboardTitleLabel.text = leaderboard.name.replacingOccurrences(of: " ", with: "\n")
         
-//        leaderboard.getLeaders { (success, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    debugPrint(customError.message)
-//                }
-//                else if success {
-//                    leaderboard.getFeaturedLeaderImage(completion: { (image) in
-//                        DispatchQueue.main.async {
-//                            self.leaderboardImageView.image = image ?? UIImage(named: "default-profile")
-//                        }
-//                    })
-//                }
-//            }
-//        }
+        leaderboardTitleLabel.text = String(
+            format: "%@ Leaders",
+            leaderboard.type.name
+        )
+        
+        // todo: Set feature image
     }
 }

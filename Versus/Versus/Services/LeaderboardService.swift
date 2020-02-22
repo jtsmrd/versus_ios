@@ -6,12 +6,11 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-
 class LeaderboardService {
     
     static let instance = LeaderboardService()
-    private let dynamoDB = AWSDynamoDBObjectMapper.default()
+    private let networkManager = NetworkManager()
+    private let router = Router<LeaderboardEndpoint>()
     
     private init() { }
     
@@ -20,31 +19,51 @@ class LeaderboardService {
  
      */
     func getLeaderboards(
-        completion: @escaping (_ leaderboards: [Leaderboard], _ customError: CustomError?) -> Void
+        completion: @escaping (_ leaderboards: [Leaderboard], _ error: String?) -> ()
     ) {
-//        let scanExpression = AWSDynamoDBScanExpression()
-//        scanExpression.filterExpression = "#isActive = :val"
-//        scanExpression.expressionAttributeNames = [
-//            "#isActive": "isActive"
-//        ]
-//        scanExpression.expressionAttributeValues = [
-//            ":val": 1
-//        ]
-//        var leaderboards = [Leaderboard]()
-//        dynamoDB.scan(
-//            AWSLeaderboard.self,
-//            expression: scanExpression
-//        ) { (paginatedOutput, error) in
-//            if let error = error {
-//                completion(leaderboards, CustomError(error: error, message: "Unable to load leaderboards"))
-//                return
-//            }
-//            if let awsLeaderboards = paginatedOutput?.items as? [AWSLeaderboard] {
-//                for awsLeaderboard in awsLeaderboards {
-//                    leaderboards.append(Leaderboard(awsLeaderboard: awsLeaderboard))
-//                }
-//            }
-//            completion(leaderboards, nil)
-//        }
+        router.request(.getLeaderboards) { (data, response, error) in
+            
+            var leaderboards = [Leaderboard]()
+            
+            if error != nil {
+                completion(leaderboards, "Please check your network connection.")
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(leaderboards, NetworkResponse.noData.rawValue)
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        leaderboards = try decoder.decode(
+                            [Leaderboard].self,
+                            from: responseData
+                        )
+                        completion(leaderboards, nil)
+                    }
+                    catch {
+                        completion(
+                            leaderboards,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
+                    }
+                    
+                case .failure(let networkFailureError):
+                    
+                    completion(leaderboards, networkFailureError)
+                }
+            }
+        }
     }
 }

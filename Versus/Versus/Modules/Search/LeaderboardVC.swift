@@ -14,12 +14,20 @@ class LeaderboardVC: UIViewController {
     @IBOutlet weak var leaderboardLabel: UILabel!
     @IBOutlet weak var leadersTableView: UITableView!
     
+    private let leaderService = LeaderService.instance
     
     var leaderboard: Leaderboard!
+    
+    private var leaders = [Leader]()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        leaderboardLabel.text = String(
+            format: "%@ Leaders",
+            leaderboard.type.name
+        )
         
         getLeaders()
     }
@@ -37,16 +45,61 @@ class LeaderboardVC: UIViewController {
     
     private func getLeaders() {
         
-//        leaderboard.getLeaders { (success, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    self.displayError(error: customError)
-//                }
-//                else if success {
-//                    self.leadersTableView.reloadData()
-//                }
-//            }
-//        }
+        switch leaderboard.type.name {
+        case "Weekly":
+            getWeeklyLeaders()
+            
+        case "Monthly":
+            getMonthlyLeaders()
+            
+        case "All Time":
+            getAllTimeLeaders()
+            
+        default:
+            return
+        }
+    }
+    
+    private func getWeeklyLeaders() {
+        
+        leaderService.getWeeklyLeaders { (leaders, error) in
+            
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.view.makeToast(error)
+                }
+                self.leaders = leaders
+                self.leadersTableView.reloadData()
+            }
+        }
+    }
+    
+    private func getMonthlyLeaders() {
+        
+        leaderService.getMonthlyLeaders { (leaders, error) in
+            
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.view.makeToast(error)
+                }
+                self.leaders = leaders
+                self.leadersTableView.reloadData()
+            }
+        }
+    }
+    
+    private func getAllTimeLeaders() {
+        
+        leaderService.getAllTimeLeaders { (leaders, error) in
+            
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.view.makeToast(error)
+                }
+                self.leaders = leaders
+                self.leadersTableView.reloadData()
+            }
+        }
     }
     
     
@@ -57,6 +110,15 @@ class LeaderboardVC: UIViewController {
 //            profileVC.hidesBottomBarWhenPushed = true
 //            self.navigationController?.pushViewController(profileVC, animated: true)
 //        }
+        
+        let userVC = UserVC(
+            user: leader.user,
+            delegate: nil
+        )
+        navigationController?.pushViewController(
+            userVC,
+            animated: true
+        )
     }
     
 
@@ -79,7 +141,7 @@ extension LeaderboardVC: UITableViewDataSource {
         if section == 0 {
             return 1
         }
-        return 0 //leaderboard.leaders.count
+        return leaders.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -92,9 +154,12 @@ extension LeaderboardVC: UITableViewDataSource {
         }
         else {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "LeaderCell", for: indexPath) as? LeaderCell {
-//                let leader = leaderboard.leaders[indexPath.row]
-//                let leaderRank = indexPath.row + 1
-//                cell.configureCell(leader: leader, leaderboardType: leaderboard.leaderboardType, leaderRank: leaderRank)
+                let leader = leaders[indexPath.row]
+                let leaderRowNumber = indexPath.row + 1
+                cell.configureCell(
+                    leader: leader,
+                    rowNumber: leaderRowNumber
+                )
                 return cell
             }
             return UITableViewCell()
@@ -113,6 +178,9 @@ extension LeaderboardVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-//        showLeaderProfile(leader: leaderboard.leaders[indexPath.row])
+        
+        let leader = leaders[indexPath.row]
+        
+        showLeaderProfile(leader: leader)
     }
 }

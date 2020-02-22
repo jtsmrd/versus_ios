@@ -24,6 +24,7 @@ class Entry: Codable {
     private var _rankId: Int?
     private var _updateDate: Date?
     private var _user: User?
+    private var _voteCount: Int?
     
     var imageDownloadState: ImageDownloadState = .new
     var image: UIImage?
@@ -40,6 +41,7 @@ class Entry: Codable {
         case _rankId = "rankId"
         case _updateDate = "updateDate"
         case _user = "user"
+        case _voteCount = "voteCount"
     }
 }
 
@@ -111,6 +113,10 @@ extension Entry {
     
     var user: User {
         return _user ?? User()
+    }
+    
+    var voteCount: Int {
+        return _voteCount ?? 0
     }
 }
 

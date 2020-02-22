@@ -35,6 +35,7 @@ class SearchBrowseVC: UIViewController {
         right: 2
     )
     private let competitionService = CompetitionService.instance
+    private let leaderboardCollection = LeaderboardCollection.instance
     private let pendingImageOperations = ImageOperations()
     
     private var searchVC: SearchUserVC!
@@ -88,17 +89,18 @@ class SearchBrowseVC: UIViewController {
     
     
     private func getLeaderboards() {
-        //TODO
-//        LeaderboardCollection.instance.getLeaderboards { (success, customError) in
-//            DispatchQueue.main.async {
-//                if let customError = customError {
-//                    debugPrint(customError.message)
-//                }
-//                else if success {
-//                    self.leaderboardCollectionView.reloadData()
-//                }
-//            }
-//        }
+        
+        leaderboardCollection.getLeaderboards { (leaderboards, error) in
+            
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.view.makeToast(error)
+                }
+                else {
+                    self.leaderboardCollectionView.reloadData()
+                }
+            }
+        }
     }
     
     
