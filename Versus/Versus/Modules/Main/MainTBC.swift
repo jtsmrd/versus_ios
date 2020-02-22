@@ -10,10 +10,62 @@ import UIKit
 
 class MainTBC: UITabBarController {
     
+    private var competitionFeedNC: CompetitionFeedNC!
+    private var discoverNC: DiscoverNC!
+    private var entryPlaceholderVC: UIViewController!
+    private var notificationsNC: NotificationsNC!
+    private var currentUserNC: CurrentUserNC!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         delegate = self
+        
+        configureTabs()
+        
+        addEntryButton()
+    }
+
+    
+    @objc func newEntryButtonAction() {
+        
+        let entryNC = EntryNC()
+        entryNC.loadViewIfNeeded()
+        
+        present(entryNC, animated: true, completion: nil)
+    }
+    
+    
+    private func configureTabs() {
+        
+        competitionFeedNC = CompetitionFeedNC()
+        competitionFeedNC.loadViewIfNeeded()
+        
+        discoverNC = DiscoverNC()
+        discoverNC.loadViewIfNeeded()
+        
+        entryPlaceholderVC = UIViewController()
+        
+        notificationsNC = NotificationsNC()
+        notificationsNC.loadViewIfNeeded()
+        
+        currentUserNC = CurrentUserNC()
+        currentUserNC.loadViewIfNeeded()
+        
+        setViewControllers(
+            [
+                competitionFeedNC,
+                discoverNC,
+                entryPlaceholderVC,
+                notificationsNC,
+                currentUserNC
+            ],
+            animated: false
+        )
+    }
+    
+    
+    private func addEntryButton() {
         
         let tabBarHeight = tabBar.frame.size.height
         
@@ -34,37 +86,6 @@ class MainTBC: UITabBarController {
         circleView.addSubview(button)
         tabBar.addSubview(circleView)
     }
-
-    
-    @objc func newEntryButtonAction() {
-        
-        let competitionEntryStoryboard = UIStoryboard(name: ENTRY, bundle: nil)
-        let viewController = competitionEntryStoryboard.instantiateViewController(withIdentifier: SELECT_COMPETITION_MEDIA_VC)
-        if let selectCompetitionMediaVC = viewController as? SelectCompetitionMediaVC {
-            
-            // Use full screen for capturing media.
-            selectCompetitionMediaVC.videoGravity = .resizeAspectFill
-            
-            // Set max video duration to 60 seconds.
-            selectCompetitionMediaVC.maximumVideoDuration = 60.0
-            
-            let navController = UINavigationController(rootViewController: selectCompetitionMediaVC)
-            navController.isNavigationBarHidden = true
-            present(navController, animated: true, completion: nil)
-        }
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 extension MainTBC: UITabBarControllerDelegate {

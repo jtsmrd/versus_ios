@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="zHn-1H-M5W">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="zHn-1H-M5W">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -21,13 +19,6 @@
                         <color key="barTintColor" red="0.0" green="0.76712721589999999" blue="0.70759445430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="selectedImageTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
-                    <connections>
-                        <segue destination="Iq6-Ci-SkC" kind="relationship" relationship="viewControllers" id="EjQ-eS-6Xl"/>
-                        <segue destination="mOV-RU-mZB" kind="relationship" relationship="viewControllers" id="cCu-j7-Wd4"/>
-                        <segue destination="KWr-tb-YD6" kind="relationship" relationship="viewControllers" id="kJs-RN-0Vw"/>
-                        <segue destination="9Cr-4N-TRV" kind="relationship" relationship="viewControllers" id="kne-x6-fZp"/>
-                        <segue destination="qCs-uP-vUA" kind="relationship" relationship="viewControllers" id="cQ9-oj-d5L"/>
-                    </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eN4-fT-aKG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -53,7 +44,7 @@
             <objects>
                 <viewController title="Competition Entry Placeholder" id="KWr-tb-YD6" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gSS-Xe-FPr">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="EvC-Sr-v1Y"/>
@@ -64,38 +55,8 @@
             </objects>
             <point key="canvasLocation" x="-263" y="1039"/>
         </scene>
-        <!--Search-->
-        <scene sceneID="Gd6-Ga-gyO">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Search" id="mOV-RU-mZB" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="a38-uh-TXn"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="jid-UC-FPF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-503" y="636"/>
-        </scene>
-        <!--Notifications-->
-        <scene sceneID="nft-30-PFL">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Notifications" id="9Cr-4N-TRV" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="bV3-hb-UTP"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="2cM-uF-ZmX" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-51" y="636"/>
-        </scene>
-        <!--FeaturedFollowingCompetitions-->
-        <scene sceneID="xWv-fF-Uwe">
-            <objects>
-                <viewControllerPlaceholder storyboardName="FeaturedFollowingCompetitions" id="Iq6-Ci-SkC" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="vcu-qZ-3zC"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gzM-Cc-pFj" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-807" y="636"/>
-        </scene>
     </scenes>
     <resources>
-        <image name="Profile" width="27.200000762939453" height="27.200000762939453"/>
+        <image name="Profile" width="34" height="34"/>
     </resources>
 </document>

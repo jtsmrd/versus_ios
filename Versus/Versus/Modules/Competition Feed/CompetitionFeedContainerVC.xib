@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CompetitionFeedContainerVC" customModule="Versus" customModuleProvider="target">
+            <connections>
+                <outlet property="competitionFeedTypeSegmentedControl" destination="lNt-TQ-bXO" id="9Md-Jz-ae2"/>
+                <outlet property="feedContainerView" destination="t0e-Wn-orS" id="U46-E7-lgK"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="lNt-TQ-bXO">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="32"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <segments>
+                        <segment title="Featured"/>
+                        <segment title="Following"/>
+                    </segments>
+                    <color key="tintColor" red="0.0" green="0.76712721589999999" blue="0.70759445430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <connections>
+                        <action selector="competitionFeedTypeChanged" destination="-1" eventType="valueChanged" id="6LB-rH-avt"/>
+                    </connections>
+                </segmentedControl>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="t0e-Wn-orS">
+                    <rect key="frame" x="0.0" y="31" width="320" height="537"/>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="lNt-TQ-bXO" secondAttribute="trailing" id="BiN-hi-Zny"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="t0e-Wn-orS" secondAttribute="bottom" id="Skk-YP-HFL"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="t0e-Wn-orS" secondAttribute="trailing" id="Wp1-0U-odG"/>
+                <constraint firstItem="t0e-Wn-orS" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="XYY-jg-irI"/>
+                <constraint firstItem="lNt-TQ-bXO" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="r8v-xW-XFO"/>
+                <constraint firstItem="t0e-Wn-orS" firstAttribute="top" secondItem="lNt-TQ-bXO" secondAttribute="bottom" id="tLw-8M-F4v"/>
+                <constraint firstItem="lNt-TQ-bXO" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="xOh-xc-4ag"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="139" y="153"/>
+        </view>
+    </objects>
+</document>
