@@ -12,7 +12,38 @@ class LeaderService {
     private let networkManager = NetworkManager()
     private let router = Router<LeaderEndpoint>()
     
+//    typealias LeadersResponse = (
+//        _ leaders: [Leader],
+//        _ error: String?
+//    ) -> ()
+    
     private init() { }
+    
+    
+//    func getLeaders(
+//        leaderboardType: LeaderboardType,
+//        completion: @escaping LeadersResponse
+//    ) {
+//
+//        switch leaderboardType.typeEnum {
+//
+//        case .weekly:
+//            router.request(.getWeekly, completion: <#T##NetworkRouterCompletion##NetworkRouterCompletion##(Data?, URLResponse?, Error?) -> ()#>)
+//            return
+//
+//        case .monthly:
+//            return
+//
+//        case .allTime:
+//            return
+//        }
+//    }
+//
+//
+//    private func handleGetLeadersResponse(_: (data: Data?, response: URLResponse?, error: Error?), leadersResponse: LeadersResponse
+//    ) {
+//
+//    }
     
     
     func getWeeklyLeaders(

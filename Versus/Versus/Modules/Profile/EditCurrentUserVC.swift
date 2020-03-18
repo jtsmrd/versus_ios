@@ -353,6 +353,8 @@ class EditCurrentUserVC: UIViewController {
         
         if let editImageVC = editImageVC as? EditImageVC {
             
+            editImageVC.modalPresentationStyle = .overFullScreen
+            
             editImageVC.initData(
                 imageToCrop: image,
                 cropImageType: cropImageType,
@@ -515,7 +517,6 @@ extension EditCurrentUserVC: EditImageVCDelegate {
         }
     }
 }
-
 
 
 

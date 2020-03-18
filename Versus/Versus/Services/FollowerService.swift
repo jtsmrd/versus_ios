@@ -56,7 +56,7 @@ class FollowerService {
     func getFollowedUser(
         userId: Int,
         followedUserId: Int,
-        completion: @escaping (_ followedUser: FollowedUser?, _ errorMessage: String?) -> ()
+        completion: @escaping (_ followedUser: Follower?, _ errorMessage: String?) -> ()
     ) {
         
         router.request(
@@ -87,7 +87,7 @@ class FollowerService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let followedUsers = try decoder.decode([FollowedUser].self, from: responseData)
+                        let followedUsers = try decoder.decode([Follower].self, from: responseData)
                         
                         guard let followedUser = followedUsers.first else {
                             completion(nil, NetworkResponse.noData.rawValue)
@@ -111,7 +111,7 @@ class FollowerService {
     
     func loadFollowedUsers(
         userId: Int,
-        completion: @escaping (_ followedUsers: [FollowedUser]?, _ errorMessage: String?) -> ()
+        completion: @escaping (_ followedUsers: [Follower]?, _ errorMessage: String?) -> ()
     ) {
         
         router.request(
@@ -141,10 +141,11 @@ class FollowerService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let followedUsers = try decoder.decode([FollowedUser].self, from: responseData)
-                        completion(followedUsers, nil)
+                        let followers = try decoder.decode([Follower].self, from: responseData)
+                        completion(followers, nil)
                     }
                     catch {
+                        debugPrint(error)
                         completion(nil, NetworkResponse.unableToDecode.rawValue)
                     }
                     

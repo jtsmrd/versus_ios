@@ -62,7 +62,7 @@ extension Entry {
     
     
     var categoryType: CategoryType {
-        return CategoryType(rawValue: categoryId) ?? .unknown
+        return CategoryType(rawValue: categoryId)!
     }
     
     

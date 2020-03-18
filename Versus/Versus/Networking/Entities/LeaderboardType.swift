@@ -8,6 +8,12 @@
 
 import Foundation
 
+enum LeaderboardTypeEnum: String {
+    case weekly = "Weekly"
+    case monthly = "Monthly"
+    case allTime = "All Time"
+}
+
 class LeaderboardType: Codable {
     
     private var _id: Int
@@ -27,5 +33,9 @@ extension LeaderboardType {
     
     var name: String {
         return _name
+    }
+    
+    var typeEnum: LeaderboardTypeEnum {
+        return LeaderboardTypeEnum(rawValue: name)!
     }
 }

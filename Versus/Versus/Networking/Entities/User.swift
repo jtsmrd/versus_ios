@@ -24,6 +24,7 @@ class User: Codable {
     private var _followerCount: Int?
     private var _totalTimesVoted: Int?
     private var _totalWins: Int?
+    private var _apnsToken: String?
     
     var profileImageDownloadState: ImageDownloadState = .new
     var profileImageImage: UIImage?
@@ -45,6 +46,7 @@ class User: Codable {
         case _followerCount = "followerCount"
         case _totalTimesVoted = "totalTimesVoted"
         case _totalWins = "totalWins"
+        case _apnsToken = "apnsToken"
     }
 }
 
@@ -138,5 +140,14 @@ extension User {
     
     var username: String {
         return _username ?? ""
+    }
+    
+    var apnsToken: String? {
+        get {
+            return _apnsToken
+        }
+        set {
+            _apnsToken = newValue
+        }
     }
 }

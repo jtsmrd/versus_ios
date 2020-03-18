@@ -14,28 +14,37 @@ class LeaderboardVC: UIViewController {
     @IBOutlet weak var leaderboardLabel: UILabel!
     @IBOutlet weak var leadersTableView: UITableView!
     
+    
     private let leaderService = LeaderService.instance
+    private let LEADERBOARD_HEADER_IMAGE_CELL_HEIGHT: CGFloat = 100
+    private let LEADER_CELL_HEIGHT: CGFloat = 70
     
-    var leaderboard: Leaderboard!
     
+    private var leaderboard: Leaderboard!
     private var leaders = [Leader]()
+    
+    
+    
+    init(leaderboard: Leaderboard) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.leaderboard = leaderboard
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+    }
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        leaderboardLabel.text = String(
-            format: "%@ Leaders",
-            leaderboard.type.name
-        )
-        
+        configureView()
         getLeaders()
     }
-
     
-    func initData(leaderboard: Leaderboard) {
-        self.leaderboard = leaderboard
-    }
     
     
     @IBAction func backButtonAction() {
@@ -43,20 +52,36 @@ class LeaderboardVC: UIViewController {
     }
     
     
+    private func configureView() {
+        
+        leaderboardLabel.text = String(
+            format: "%@ Leaders",
+            leaderboard.type.name
+        )
+        
+        leadersTableView.register(
+            UINib(nibName: LEADERBOARD_HEADER_IMAGE_CELL, bundle: nil),
+            forCellReuseIdentifier: LEADERBOARD_HEADER_IMAGE_CELL
+        )
+        
+        leadersTableView.register(
+            UINib(nibName: LEADER_CELL, bundle: nil),
+            forCellReuseIdentifier: LEADER_CELL
+        )
+    }
+    
+    
     private func getLeaders() {
         
-        switch leaderboard.type.name {
-        case "Weekly":
+        switch leaderboard.type.typeEnum {
+        case .weekly:
             getWeeklyLeaders()
             
-        case "Monthly":
+        case .monthly:
             getMonthlyLeaders()
             
-        case "All Time":
+        case .allTime:
             getAllTimeLeaders()
-            
-        default:
-            return
         }
     }
     
@@ -76,12 +101,14 @@ class LeaderboardVC: UIViewController {
     
     private func getMonthlyLeaders() {
         
-        leaderService.getMonthlyLeaders { (leaders, error) in
+        leaderService.getMonthlyLeaders { [weak self] (leaders, error) in
+            guard let self = self else { return }
             
             DispatchQueue.main.async {
                 if let error = error {
-                    self.view.makeToast(error)
+                    self.displayMessage(message: error)
                 }
+                
                 self.leaders = leaders
                 self.leadersTableView.reloadData()
             }
@@ -90,12 +117,14 @@ class LeaderboardVC: UIViewController {
     
     private func getAllTimeLeaders() {
         
-        leaderService.getAllTimeLeaders { (leaders, error) in
+        leaderService.getAllTimeLeaders { [weak self] (leaders, error) in
+            guard let self = self else { return }
             
             DispatchQueue.main.async {
                 if let error = error {
-                    self.view.makeToast(error)
+                    self.displayMessage(message: error)
                 }
+                
                 self.leaders = leaders
                 self.leadersTableView.reloadData()
             }
@@ -120,15 +149,6 @@ class LeaderboardVC: UIViewController {
             animated: true
         )
     }
-    
-
-    
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-    }
 }
 
 extension LeaderboardVC: UITableViewDataSource {
@@ -138,49 +158,61 @@ extension LeaderboardVC: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         if section == 0 {
             return 1
         }
-        return leaders.count
+        else {
+            return leaders.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         if indexPath.section == 0 {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "LeaderboardHeaderImageCell", for: indexPath) as? LeaderboardHeaderImageCell {
-                
-                return cell
-            }
-            return UITableViewCell()
+            
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: LEADERBOARD_HEADER_IMAGE_CELL,
+                for: indexPath
+            ) as! LeaderboardHeaderImageCell
+            
+            return cell
         }
         else {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "LeaderCell", for: indexPath) as? LeaderCell {
-                let leader = leaders[indexPath.row]
-                let leaderRowNumber = indexPath.row + 1
-                cell.configureCell(
-                    leader: leader,
-                    rowNumber: leaderRowNumber
-                )
-                return cell
-            }
-            return UITableViewCell()
+            
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: LEADER_CELL,
+                for: indexPath
+            ) as! LeaderCell
+            
+            let leader = leaders[indexPath.row]
+            let leaderRowNumber = indexPath.row + 1
+            cell.configureCell(
+                leader: leader,
+                rowNumber: leaderRowNumber
+            )
+            return cell
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
         if indexPath.section == 0 {
-            return 100
+            return LEADERBOARD_HEADER_IMAGE_CELL_HEIGHT
         }
-        return 70
+        else {
+            return LEADER_CELL_HEIGHT
+        }
     }
 }
 
 extension LeaderboardVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         tableView.deselectRow(at: indexPath, animated: false)
         
         let leader = leaders[indexPath.row]
-        
         showLeaderProfile(leader: leader)
     }
 }

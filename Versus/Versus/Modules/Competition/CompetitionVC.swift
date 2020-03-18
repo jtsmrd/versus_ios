@@ -110,7 +110,6 @@ class CompetitionVC: UIViewController {
     }
     
     
-    
     // MARK: - Actions
     
     @IBAction func backButtonAction() {
@@ -181,6 +180,7 @@ class CompetitionVC: UIViewController {
         
         leftEntryVC = EntryVC(
             entry: competition.leftEntry,
+            isExpired: competition.isExpired,
             delegate: self
         )
         addChild(leftEntryVC)
@@ -190,6 +190,7 @@ class CompetitionVC: UIViewController {
         
         rightEntryVC = EntryVC(
             entry: competition.rightEntry,
+            isExpired: competition.isExpired,
             delegate: self
         )
         addChild(rightEntryVC)
@@ -287,14 +288,17 @@ class CompetitionVC: UIViewController {
             )
         }
         
-        // Disable the vote button if the competition is expired
-        // or if the user voted for this competitor.
-        // if self.isExpired || self.userVotedForCompetitor {
+        // Disable the vote button if the user voted for
+        // this competitor. Disabling button shows dull color
         if userVotedForCompetitor {
             voteButton.isUserInteractionEnabled = false
         }
         else {
             voteButton.isUserInteractionEnabled = true
+        }
+        
+        if competition.isExpired {
+            voteButton.isEnabled = false
         }
     }
     
@@ -352,7 +356,7 @@ class CompetitionVC: UIViewController {
         
         let timeRemaining = competition.secondsUntilExpire
         
-//        updateExpireCountdown(timeRemaining: timeRemaining)
+        updateExpireCountdown(timeRemaining: timeRemaining)
         
         let countdownTimer = CountdownTimer(
             countdownSeconds: timeRemaining,
@@ -433,6 +437,15 @@ class CompetitionVC: UIViewController {
             displayChangeVoteAlert(vote: vote)
         }
         else {
+            
+            // Immediately show that the user voted, revert if
+            // there's an error
+            voteButton.setImage(
+                UIImage(named: "Voting-Star"),
+                for: .normal
+            )
+            voteButton.isUserInteractionEnabled = false
+            
             createVoteForEntry(entryId: selectedEntry.id)
         }
     }
@@ -504,6 +517,14 @@ class CompetitionVC: UIViewController {
                 title: "Yes",
                 style: .default,
                 handler: { (action) in
+                    
+                    // Immediately show that the user voted, revert if
+                    // there's an error
+                    self.voteButton.setImage(
+                        UIImage(named: "Voting-Star"),
+                        for: .normal
+                    )
+                    self.voteButton.isUserInteractionEnabled = false
                     
                     self.updateVoteForEntry(
                         vote: vote,
@@ -585,7 +606,7 @@ extension CompetitionVC: CountdownTimerDelegate {
     
     
     func timerTick(timeRemaining: Int) {
-//        updateExpireCountdown(timeRemaining: timeRemaining)
+        updateExpireCountdown(timeRemaining: timeRemaining)
     }
     
     

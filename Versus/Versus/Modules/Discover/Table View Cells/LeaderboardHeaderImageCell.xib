@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LeaderboardHeaderImageCell" rowHeight="100" id="ZsN-AM-npN" customClass="LeaderboardHeaderImageCell" customModule="Versus" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ZsN-AM-npN" id="O1W-rm-fML">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="leaderboard_background" translatesAutoresizingMaskIntoConstraints="NO" id="gOc-tS-JIZ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                    </imageView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="gOc-tS-JIZ" secondAttribute="bottom" id="ASf-nq-joV"/>
+                    <constraint firstItem="gOc-tS-JIZ" firstAttribute="top" secondItem="O1W-rm-fML" secondAttribute="top" id="fNV-sw-Jpu"/>
+                    <constraint firstItem="gOc-tS-JIZ" firstAttribute="leading" secondItem="O1W-rm-fML" secondAttribute="leading" id="uHI-p2-Ng3"/>
+                    <constraint firstAttribute="trailing" secondItem="gOc-tS-JIZ" secondAttribute="trailing" id="wxB-wM-eyI"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="leaderboardHeaderImageView" destination="gOc-tS-JIZ" id="Y4o-Lg-McE"/>
+            </connections>
+            <point key="canvasLocation" x="808" y="153"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="leaderboard_background" width="1241" height="327"/>
+    </resources>
+</document>

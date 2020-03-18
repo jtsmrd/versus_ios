@@ -23,7 +23,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="1" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="QQv-Eh-AKN">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" bouncesZoom="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="1" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="QQv-Eh-AKN">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <connections>
@@ -73,7 +73,7 @@
             <constraints>
                 <constraint firstItem="QQv-Eh-AKN" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="42t-qe-Jsc"/>
                 <constraint firstItem="ZBu-Zk-WeF" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="BJP-5l-Uke"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="QQv-Eh-AKN" secondAttribute="bottom" id="NyR-xq-fLw"/>
+                <constraint firstAttribute="bottom" secondItem="QQv-Eh-AKN" secondAttribute="bottom" id="NyR-xq-fLw"/>
                 <constraint firstItem="ZBu-Zk-WeF" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="a0c-gI-807"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="QQv-Eh-AKN" secondAttribute="trailing" id="kbn-Jc-gE3"/>
                 <constraint firstItem="ZBu-Zk-WeF" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="mMN-lX-ATK"/>

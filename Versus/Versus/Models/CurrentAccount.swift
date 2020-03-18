@@ -15,6 +15,8 @@ class CurrentAccount {
     static private var _token: String?
     static private var _followedUserIds = [Int]()
     
+    private static let notificationCenter = NotificationCenter.default
+    
     private init() { }
 }
 
@@ -58,6 +60,7 @@ extension CurrentAccount {
     
     static func setToken(token: String) {
         _token = token
+        lastAccessToken = token
     }
     
     
@@ -68,12 +71,14 @@ extension CurrentAccount {
     
     static func addFollowedUserId(id: Int) {
         _followedUserIds.append(id)
+        postFollowersUpdated()
     }
     
     
     static func removeFollowedUserId(id: Int) {
         if let index = followedUserIds.firstIndex(of: id) {
             _followedUserIds.remove(at: index)
+            postFollowersUpdated()
         }
     }
     
@@ -157,5 +162,13 @@ extension CurrentAccount {
         set(value) {
             userDefaults.set(value, forKey: "userGrantedAccessForNotifications")
         }
+    }
+    
+    
+    private static func postFollowersUpdated() {
+        notificationCenter.post(
+            name: NSNotification.Name.OnFollowersUpdated,
+            object: nil
+        )
     }
 }

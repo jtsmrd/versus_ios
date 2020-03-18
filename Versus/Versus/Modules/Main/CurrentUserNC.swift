@@ -19,8 +19,9 @@ class CurrentUserNC: UINavigationController {
             tag: 4
         )
         
-        let vc = CurrentUserVC(
-            user: CurrentAccount.user
+        let vc = UserVC(
+            user: CurrentAccount.user,
+            viewMode: .edit
         )
         vc.loadViewIfNeeded()
         addChild(vc)

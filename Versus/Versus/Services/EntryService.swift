@@ -82,7 +82,7 @@ class EntryService {
     ///   - completion: [Entry] | error message
     func loadEntries(
         userId: Int,
-        completion: @escaping (_ entries: [Entry]?, _ error: String?) -> ()
+        completion: @escaping (_ entries: [Entry], _ error: String?) -> ()
     ) {
         
         router.request(
@@ -91,8 +91,13 @@ class EntryService {
             )
         ) { (data, response, error) in
             
+            var entries = [Entry]()
+            
             if error != nil {
-                completion(nil, "Please check your network connection.")
+                completion(
+                    entries,
+                    "Please check your network connection."
+                )
             }
             
             if let response = response as? HTTPURLResponse {
@@ -104,7 +109,10 @@ class EntryService {
                 case .success:
                     
                     guard let responseData = data else {
-                        completion(nil, NetworkResponse.noData.rawValue)
+                        completion(
+                            entries,
+                            NetworkResponse.noData.rawValue
+                        )
                         return
                     }
                     
@@ -112,16 +120,19 @@ class EntryService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let entries = try decoder.decode([Entry].self, from: responseData)
+                        entries = try decoder.decode([Entry].self, from: responseData)
                         completion(entries, nil)
                     }
                     catch {
-                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                        completion(
+                            entries,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
                     }
-                    
+                    // apiplatform event listener serializelistener
                 case .failure(let networkFailureError):
                     
-                    completion(nil, networkFailureError)
+                    completion(entries, networkFailureError)
                 }
             }
         }

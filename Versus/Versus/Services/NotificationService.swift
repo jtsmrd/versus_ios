@@ -6,89 +6,161 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-
 class NotificationService {
     
     static let instance = NotificationService()
-    private let dynamoDB = AWSDynamoDBObjectMapper.default()
+    
+    private let networkManager = NetworkManager()
+    private let router = Router<NotificationEndpoint>()
     
     private init() { }
     
     
-    /**
- 
-     */
-    func getCurrentUserNotifications(
-        completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void
+    func getUserNotifications(
+        userId: Int,
+        completion: @escaping (_ notifications: [Notification], _ error: String?) -> ()
     ) {
-        //TODO
-//        let queryExpression = AWSDynamoDBQueryExpression()
-//        queryExpression.keyConditionExpression = "#userId = :userId"
-//        queryExpression.expressionAttributeNames = [
-//            "#userId": "userId"
-//        ]
-//        queryExpression.expressionAttributeValues = [
-//            ":userId": CurrentUser.userId
-//        ]
-//        queryExpression.scanIndexForward = false
-//
-//        var notifications = [Notification]()
-//        dynamoDB.query(
-//            Notification.self,
-//            expression: queryExpression
-//        ) { (paginatedOutput, error) in
-//            if let error = error {
-//                completion(notifications, CustomError(error: error, message: "Unable to load user notifications"))
-//                return
-//            }
-//            if let result = paginatedOutput,
-//                let notificationResults = result.items as? [Notification] {
-//                for item in notificationResults {
-//                    notifications.append(item)
-//                }
-//            }
-//            completion(notifications, nil)
-//        }
-    }
-    
-    
-    /**
-        Mark notification as viewed.
-     */
-    func markNotificationViewed(
-        notification: Notification,
-        completion: ((_ customError: CustomError?) -> Void)?
-    ) {
-        notification._wasViewed = 1.toNSNumber
-        dynamoDB.save(
-            notification
-        ) { (error) in
-            if let error = error {
-                notification._wasViewed = 0.toNSNumber
-                completion?(CustomError(error: error, message: "Unable to update notification"))
-                return
+        router.request(
+            .loadNotifications(
+                userId: userId
+            )
+        ) { (data, response, error) in
+            
+            var notifications = [Notification]()
+            
+            if error != nil {
+                completion(
+                    notifications,
+                    "Please check your network connection."
+                )
             }
-            completion?(nil)
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(
+                            notifications,
+                            NetworkResponse.noData.rawValue
+                        )
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        notifications = try decoder.decode(
+                            [Notification].self,
+                            from: responseData
+                        )
+                        completion(notifications, nil)
+                    }
+                    catch {
+                        completion(
+                            notifications,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
+                    }
+                    
+                case .failure(let networkFailureError):
+                    completion(notifications, networkFailureError)
+                }
+            }
         }
     }
     
     
-    /**
-        Deletes the Notification record from DynamoDB.
-     */
+    func setNotificationViewed(
+        notification: Notification,
+        completion: @escaping (_ notification: Notification?, _ error: String?) -> ()
+    ) {
+        router.request(
+            .setNotificationViewed(notification)
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(
+                    nil,
+                    "Please check your network connection."
+                )
+            }
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    
+                    guard let responseData = data else {
+                        completion(
+                            nil,
+                            NetworkResponse.noData.rawValue
+                        )
+                        return
+                    }
+                    
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    do {
+                        let notification = try decoder.decode(
+                            Notification.self,
+                            from: responseData
+                        )
+                        completion(notification, nil)
+                    }
+                    catch {
+                        completion(
+                            nil,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
+                    }
+                    
+                case .failure(let networkFailureError):
+                    completion(nil, networkFailureError)
+                }
+            }
+        }
+    }
+    
+    
     func deleteNotification(
         notification: Notification,
-        completion: @escaping (_ customError: CustomError?) -> Void
+        completion: @escaping (_ error: String?) -> ()
     ) {
-        dynamoDB.remove(
-            notification
-        ) { (error) in
-            if let error = error {
-                completion(CustomError(error: error, message: "Unable to delete notification"))
-                return
+        router.request(
+            .deleteNotification(
+                id: notification.id
+            )
+        ) { (data, response, error) in
+            
+            if error != nil {
+                completion(
+                    "Please check your network connection."
+                )
             }
-            completion(nil)
+            
+            if let response = response as? HTTPURLResponse {
+                
+                let result = self.networkManager.handleNetworkResponse(response)
+                
+                switch result {
+                    
+                case .success:
+                    completion(nil)
+                    
+                case .failure(let networkFailureError):
+                    completion(networkFailureError)
+                }
+            }
         }
     }
 }

@@ -11,4 +11,5 @@ import Foundation
 extension Foundation.Notification.Name {
     
     static let OnCompetitionUpdated = Foundation.Notification.Name("on_competition_updated")
+    static let OnFollowersUpdated = Foundation.Notification.Name("on_followers_updated")
 }

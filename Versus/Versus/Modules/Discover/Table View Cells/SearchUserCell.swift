@@ -1,14 +1,14 @@
 //
-//  FollowerCell.swift
+//  SearchUserCell.swift
 //  Versus
 //
-//  Created by JT Smrdel on 4/13/18.
+//  Created by JT Smrdel on 4/11/18.
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
 import UIKit
 
-class FollowerCell: UITableViewCell {
+class SearchUserCell: UITableViewCell {
     
     
     @IBOutlet weak var profileImageView: CircleImageView!
@@ -18,10 +18,9 @@ class FollowerCell: UITableViewCell {
     
     
     private let followerService = FollowerService.instance
-    private let s3BucketService = S3BucketService.instance
     
     
-    private var userDisplayed: User!
+    private var user: User!
     private var followStatus: FollowStatus = .notFollowing
     
     
@@ -44,6 +43,9 @@ class FollowerCell: UITableViewCell {
     
     
     
+    /**
+     
+     */
     @IBAction func followButtonAction() {
         
         switch followStatus {
@@ -64,7 +66,6 @@ class FollowerCell: UITableViewCell {
     }
     
     
-    
     private func configureFollowButton() {
         
         followButton.setButtonState(
@@ -76,7 +77,7 @@ class FollowerCell: UITableViewCell {
     private func followUser() {
                 
         followerService.followUser(
-            userId: userDisplayed.id
+            userId: user.id
         ) { [weak self] (error) in
             guard let self = self else { return }
             
@@ -93,7 +94,7 @@ class FollowerCell: UITableViewCell {
                 }
                 else {
                     CurrentAccount.addFollowedUserId(
-                        id: self.userDisplayed.id
+                        id: self.user.id
                     )
                 }
             }
@@ -105,7 +106,7 @@ class FollowerCell: UITableViewCell {
         
         let unfollowAlert = UIAlertController(
             title: "Confirm Unfollow",
-            message: "Are you sure you want to unfollow @\(userDisplayed.username)",
+            message: "Are you sure you want to unfollow @\(user.username)",
             preferredStyle: .actionSheet
         )
         
@@ -114,9 +115,7 @@ class FollowerCell: UITableViewCell {
             style: .destructive
         ) { (action) in
                         
-            self.loadFollowerRecord(
-                userId: self.userDisplayed.id
-            )
+            self.loadAndUnfollowUser()
             
             // Manually set follow status to update UI immediately.
             // Revert if there's a failure
@@ -142,32 +141,46 @@ class FollowerCell: UITableViewCell {
     }
     
     
-    private func loadFollowerRecord(userId: Int) {
+    private func loadAndUnfollowUser() {
+        
+        let userId = CurrentAccount.user.id
         
         followerService.getFollowedUser(
-            userId: CurrentAccount.user.id,
-            followedUserId: userId
+            userId: userId,
+            followedUserId: user.id
         ) { [weak self] (follower, error) in
             guard let self = self else { return }
             
-            DispatchQueue.main.async {
-                if let error = error {
+            if let error = error {
+                
+                DispatchQueue.main.async {
+                    
                     self.parentViewController?.displayMessage(
                         message: error
                     )
                 }
-                else if let follower = follower {
-                    self.unfollowUser(followerId: follower.id)
+            }
+            else if let follower = follower {
+                
+                self.unfollowUser(follower: follower)
+            }
+            else {
+                
+                DispatchQueue.main.async {
+                    
+                    self.parentViewController?.displayMessage(
+                        message: "Unable to unfollow user"
+                    )
                 }
             }
         }
     }
     
     
-    private func unfollowUser(followerId: Int) {
+    private func unfollowUser(follower: Follower) {
         
         followerService.unfollow(
-            followerId: followerId,
+            followerId: follower.id,
             completion: { [weak self] (error) in
                 guard let self = self else { return }
                 
@@ -187,7 +200,7 @@ class FollowerCell: UITableViewCell {
                     else {
                         
                         CurrentAccount.removeFollowedUserId(
-                            id: self.userDisplayed.id
+                            id: follower.user.id
                         )
                     }
                 }
@@ -196,46 +209,27 @@ class FollowerCell: UITableViewCell {
     }
     
     
-    
-    
     /**
      
      */
     func configureCell(
-        follower: Follower,
-        followerType: FollowerType
+        user: User,
+        profileImage: UIImage?
     ) {
+        self.user = user
         
-        switch followerType {
-        case .follower:
-            userDisplayed = follower.user
-            
-        case .followedUser:
-            userDisplayed = follower.followedUser
-        }
-        
-        if CurrentAccount.userIsMe(userId: userDisplayed.id) {
+        if CurrentAccount.userIsMe(userId: user.id) {
             followButton.isHidden = true
         }
         else {
             followStatus = CurrentAccount.getFollowStatusFor(
-                userId: userDisplayed.id
+                userId: user.id
             )
             configureFollowButton()
         }
         
-        usernameLabel.text = userDisplayed.username
-        displayNameLabel.text = userDisplayed.name
-        
-        s3BucketService.downloadImage(
-            mediaId: userDisplayed.profileImage,
-            imageType: .regular
-        ) { [weak self] (image, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.profileImageView.image = image
-            }
-        }
+        usernameLabel.text = user.username
+        displayNameLabel.text = user.name
+        profileImageView.image = profileImage
     }
 }

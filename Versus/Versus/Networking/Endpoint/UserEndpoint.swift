@@ -109,13 +109,20 @@ extension UserEndpoint: EndpointType {
             )
             
         case .update(let user):
+            
+            var params = [
+                "bio": user.bio,
+                "name": user.name,
+                "profileImage": user.profileImage,
+                "backgroundImage": user.backgroundImage
+            ]
+            
+            if let token = user.apnsToken {
+                params["apnsToken"] = token
+            }
+            
             return .requestParametersAndHeaders(
-                bodyParameters: [
-                    "bio": user.bio,
-                    "name": user.name,
-                    "profileImage": user.profileImage,
-                    "backgroundImage": user.backgroundImage
-                ],
+                bodyParameters: params,
                 urlParameters: nil,
                 additionalHeaders: headers
             )

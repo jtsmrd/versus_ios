@@ -29,6 +29,7 @@ class EntryVC: UIViewController {
     private var viewDoubleTapGestureRecognizer: UITapGestureRecognizer!
     
     private var entry: Entry!
+    private var isExpired: Bool!
     
     /**
     Set from ViewCompetitionVC when the user switches between competitors
@@ -40,10 +41,15 @@ class EntryVC: UIViewController {
     }
     
     
-    init(entry: Entry, delegate: EntryVCDelegate?) {
+    init(
+        entry: Entry,
+        isExpired: Bool,
+        delegate: EntryVCDelegate?
+    ) {
         super.init(nibName: nil, bundle: nil)
         
         self.entry = entry
+        self.isExpired = isExpired
         self.delegate = delegate
     }
     
@@ -69,7 +75,18 @@ class EntryVC: UIViewController {
             object: nil
         )
         
-        addObserver(self, forKeyPath: "view.frame", options: [.new], context: nil)
+        addObserver(
+            self,
+            forKeyPath: "view.frame",
+            options: [.new],
+            context: nil
+        )
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        player.replaceCurrentItem(with: nil)
     }
     
     
@@ -86,7 +103,12 @@ class EntryVC: UIViewController {
      Vote for the selected competitor when view is double tapped
      */
     @objc func viewDoubleTapAction(_ sender: UITapGestureRecognizer) {
-        delegate?.viewDoubleTapped()
+        
+        // Check isExpired again, since the competition could expire
+        // after the view was configured.
+        if !isExpired {
+            delegate?.viewDoubleTapped()
+        }
     }
     
     
@@ -144,14 +166,15 @@ class EntryVC: UIViewController {
             view.addGestureRecognizer(viewSingleTapGestureRecognizer)
         }
         
-        // Add and configure the vote gesture recognizer
-        viewDoubleTapGestureRecognizer = UITapGestureRecognizer(
-            target: self,
-            action: #selector(EntryVC.viewDoubleTapAction(_:))
-        )
-        viewDoubleTapGestureRecognizer.numberOfTapsRequired = 2
-        view.addGestureRecognizer(viewDoubleTapGestureRecognizer)
-        configureVoteGestureRecognizer()
+        // Add vote gesture recognizer if competition isn't expired
+        if !isExpired {
+            viewDoubleTapGestureRecognizer = UITapGestureRecognizer(
+                target: self,
+                action: #selector(EntryVC.viewDoubleTapAction(_:))
+            )
+            viewDoubleTapGestureRecognizer.numberOfTapsRequired = 2
+            view.addGestureRecognizer(viewDoubleTapGestureRecognizer)
+        }
         
         // Configure the view based on competition type
         switch entry.competitionType {
@@ -189,24 +212,11 @@ class EntryVC: UIViewController {
             queue: nil
         ) { (notification) in
             
-            self.player.seek(to: CMTime.zero)
-            self.player.play()
+            if self.viewIsSelected {
+                self.player.seek(to: CMTime.zero)
+                self.player.play()
+            }
         }
-    }
-    
-    
-    /**
-     Enable or disable vote gesture recognizer based on the current vote or if
-     the competition is expired.
-    */
-    private func configureVoteGestureRecognizer() {
-        
-//        if isExpired || userVotedForCompetitor {
-//            viewDoubleTapGestureRecognizer.isEnabled = false
-//        }
-//        else {
-//            viewDoubleTapGestureRecognizer.isEnabled = true
-//        }
     }
     
     

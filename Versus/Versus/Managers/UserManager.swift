@@ -7,7 +7,7 @@
 //
 
 protocol UserManagerDelegate {
-    func userResultsUpdated(users: [User])
+    func userResultsUpdated(users: [User], isNewSearch: Bool)
     func didFailWithError(errorMessage: String)
 }
 
@@ -25,11 +25,12 @@ class UserManager {
     private var searchText: String = ""
     private var page: Int = 0
     private var userSearchProperty: UserSearchProperty = .name
-    private var fetchingInProgress = false
-    
-    private(set) var hasMoreResults = false
+    private var isNewSearch: Bool {
+        return page == 0
+    }
     
     var delegate: UserManagerDelegate?
+    private(set) var hasMoreResults = false
 
     
     private init() { }
@@ -104,18 +105,24 @@ class UserManager {
         userService.searchByName(
             name: name
         ) { [weak self] (users, errorMessage) in
+            guard let self = self else { return }
             
             if let errorMessage = errorMessage {
-                self?.delegate?.didFailWithError(errorMessage: errorMessage)
-                return
+                self.delegate?.didFailWithError(
+                    errorMessage: errorMessage
+                )
             }
-            
-            guard let users = users else {
-                self?.delegate?.didFailWithError(errorMessage: "Unable to load users")
-                return
+            else if let users = users {
+                self.delegate?.userResultsUpdated(
+                    users: users,
+                    isNewSearch: self.isNewSearch
+                )
             }
-            
-            self?.delegate?.userResultsUpdated(users: users)
+            else {
+                self.delegate?.didFailWithError(
+                    errorMessage: "Unable to load users"
+                )
+            }
         }
     }
     
@@ -129,18 +136,24 @@ class UserManager {
         userService.searchByUsername(
             username: username
         ) { [weak self] (users, errorMessage) in
+            guard let self = self else { return }
             
             if let errorMessage = errorMessage {
-                self?.delegate?.didFailWithError(errorMessage: errorMessage)
-                return
+                self.delegate?.didFailWithError(
+                    errorMessage: errorMessage
+                )
             }
-            
-            guard let users = users else {
-                self?.delegate?.didFailWithError(errorMessage: "Unable to load users")
-                return
+            else if let users = users {
+                self.delegate?.userResultsUpdated(
+                    users: users,
+                    isNewSearch: self.isNewSearch
+                )
             }
-            
-            self?.delegate?.userResultsUpdated(users: users)
+            else {
+                self.delegate?.didFailWithError(
+                    errorMessage: "Unable to load users"
+                )
+            }
         }
     }
 }

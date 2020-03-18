@@ -250,7 +250,7 @@ class CompetitionFeedVC: UIViewController {
         competition: Competition,
         indexPath: IndexPath
     ) {
-        
+        debugPrint("Started image download for row \(indexPath.row)")
         var downloadsInProgress = pendingImageOperations.downloadsInProgress
         
         // Make sure there isn't already a download in progress.
@@ -274,6 +274,8 @@ class CompetitionFeedVC: UIViewController {
                     at: [indexPath],
                     with: .none
                 )
+                
+                debugPrint("Ended image download for row \(indexPath.row)")
             }
         }
         
@@ -369,14 +371,14 @@ extension CompetitionFeedVC: UITableViewDataSource {
             competition: competition
         )
         
-        if competition.leftEntry.imageDownloadState == .new ||
-            competition.rightEntry.imageDownloadState == .new {
-            
-            startCompetitionImageDownloadFor(
-                competition: competition,
-                indexPath: indexPath
-            )
-        }
+//        if competition.leftEntry.imageDownloadState == .new ||
+//            competition.rightEntry.imageDownloadState == .new {
+//
+//            startCompetitionImageDownloadFor(
+//                competition: competition,
+//                indexPath: indexPath
+//            )
+//        }
         
         return competitionCell
     }

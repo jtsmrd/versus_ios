@@ -1,5 +1,5 @@
 //
-//  BrowseCategoryCell.swift
+//  DiscoverCategoryCell.swift
 //  Versus
 //
 //  Created by JT Smrdel on 5/13/18.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BrowseCategoryCell: UICollectionViewCell {
+class DiscoverCategoryCell: UICollectionViewCell {
     
     @IBOutlet weak var categorySelectedView: CircleView!
     @IBOutlet weak var categoryImageView: CircleImageView!

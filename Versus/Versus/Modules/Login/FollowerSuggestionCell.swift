@@ -25,11 +25,15 @@ class FollowerSuggestionCell: UICollectionViewCell {
     
     
     @IBAction func followButtonAction() {
+        
         switch followStatus {
+            
         case .following:
             displayConfirmUnfollowUser()
+            
         case .notFollowing:
             followUser()
+            
         }
     }
     

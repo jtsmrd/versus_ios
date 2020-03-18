@@ -110,8 +110,8 @@ class CompetitionFeedContainerVC: UIViewController {
         return CGRect(
             x: view.frame.origin.x + deltaX,
             y: view.frame.origin.y,
-            width: view.frame.width,
-            height: view.frame.height
+            width: feedContainerView.frame.width,
+            height: feedContainerView.frame.height
         )
     }
     

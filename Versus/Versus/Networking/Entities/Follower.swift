@@ -17,35 +17,37 @@ class Follower: Codable {
     private var _createDate: Date
     private var _inviteAccepted: Bool
     private var _user: User
+    private var _followedUser: User
     
     enum CodingKeys: String, CodingKey {
         case _id = "id"
         case _createDate = "createDate"
         case _inviteAccepted = "inviteAccepted"
         case _user = "follower"
+        case _followedUser = "followedUser"
     }
 }
 
 extension Follower {
     
-    
     var createDate: Date {
         return _createDate
     }
-    
     
     var id: Int {
         return _id
     }
     
-    
     var inviteAccepted: Bool {
         return _inviteAccepted
     }
     
-    
     var user: User {
         return _user
+    }
+    
+    var followedUser: User {
+        return _followedUser
     }
 }
 

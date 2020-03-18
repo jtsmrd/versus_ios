@@ -19,11 +19,7 @@ class NotificationsNC: UINavigationController {
             tag: 3
         )
         
-        let notificationsStoryboard = UIStoryboard(
-            name: "Notifications",
-            bundle: nil
-        )
-        let vc = notificationsStoryboard.instantiateViewController(withIdentifier: "NotificationsVC") as! NotificationsVC
+        let vc = NotificationsVC()
         vc.loadViewIfNeeded()
         addChild(vc)
         

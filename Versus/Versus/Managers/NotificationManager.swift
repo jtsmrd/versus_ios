@@ -19,24 +19,24 @@ class NotificationManager {
     /*
      Gets Notification records for the current user. Also stores results locally in NotificationManager instance.
      */
-    func getCurrentUserNotifications(completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void) {
-        
-        NotificationService.instance.getCurrentUserNotifications { (notifications, customError) in
-            if let customError = customError {
-                completion(self.notifications, customError)
-            }
-            else {
-                
-                // Don't add Notifications that already exist
-                for notification in notifications {
-                    if !self.notifications.contains(where: { $0 == notification }) {
-                        self.notifications.append(notification)
-                    }
-                }
-                completion(self.notifications, nil)
-            }
-        }
-    }
+//    func getCurrentUserNotifications(completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void) {
+//
+//        NotificationService.instance.getCurrentUserNotifications { (notifications, customError) in
+//            if let customError = customError {
+//                completion(self.notifications, customError)
+//            }
+//            else {
+//
+//                // Don't add Notifications that already exist
+//                for notification in notifications {
+//                    if !self.notifications.contains(where: { $0 == notification }) {
+//                        self.notifications.append(notification)
+//                    }
+//                }
+//                completion(self.notifications, nil)
+//            }
+//        }
+//    }
     
     
     /*

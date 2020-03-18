@@ -28,6 +28,24 @@ class LeaderboardCell: UICollectionViewCell {
             leaderboard.type.name
         )
         
-        // todo: Set feature image
+        if let featureImage = leaderboard.featureImage {
+            
+            S3BucketService.instance.downloadImage(
+                mediaId: featureImage,
+                imageType: .regular
+            ) { [weak self] (image, error) in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    
+                    if let error = error {
+                        debugPrint(error)
+                        return
+                    }
+                    
+                    self.leaderboardImageView.image = image
+                }
+            }
+        }
     }
 }

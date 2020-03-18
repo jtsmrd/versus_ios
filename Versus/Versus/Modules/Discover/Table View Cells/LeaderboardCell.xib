@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="LeaderboardCell" id="ZcB-nJ-B66" customClass="LeaderboardCell" customModule="Versus" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="125" height="150"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                <rect key="frame" x="0.0" y="0.0" width="125" height="150"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0BL-K2-9Ju">
+                        <rect key="frame" x="0.0" y="0.0" width="125" height="150"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="1Ir-Ff-yQb" customClass="CircleImageView" customModule="Versus" customModuleProvider="target">
+                                <rect key="frame" x="12.5" y="8" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="1Ir-Ff-yQb" secondAttribute="height" multiplier="1:1" id="lSH-Kr-47V"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="_backgroundColor">
+                                        <color key="value" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Weekly Leaders" textAlignment="center" lineBreakMode="clip" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1SB-vP-HiX">
+                                <rect key="frame" x="0.0" y="108" width="125" height="42"/>
+                                <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="12"/>
+                                <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="1SB-vP-HiX" secondAttribute="bottom" id="9HD-Jj-8cC"/>
+                            <constraint firstAttribute="trailing" secondItem="1SB-vP-HiX" secondAttribute="trailing" id="g1i-zk-l9W"/>
+                            <constraint firstItem="1SB-vP-HiX" firstAttribute="top" secondItem="1Ir-Ff-yQb" secondAttribute="bottom" id="g3J-01-0bu"/>
+                            <constraint firstItem="1SB-vP-HiX" firstAttribute="leading" secondItem="0BL-K2-9Ju" secondAttribute="leading" id="gtm-ZY-aKJ"/>
+                            <constraint firstItem="1Ir-Ff-yQb" firstAttribute="top" secondItem="0BL-K2-9Ju" secondAttribute="top" constant="8" id="k4y-vZ-7Xt"/>
+                            <constraint firstItem="1Ir-Ff-yQb" firstAttribute="centerX" secondItem="0BL-K2-9Ju" secondAttribute="centerX" id="ooT-d4-ZpA"/>
+                            <constraint firstItem="1Ir-Ff-yQb" firstAttribute="width" secondItem="0BL-K2-9Ju" secondAttribute="width" multiplier="0.8" id="pcl-Fd-7JJ"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="0BL-K2-9Ju" firstAttribute="leading" secondItem="ZcB-nJ-B66" secondAttribute="leading" id="3N0-Ke-Li0"/>
+                <constraint firstItem="0BL-K2-9Ju" firstAttribute="top" secondItem="ZcB-nJ-B66" secondAttribute="top" id="BcT-AH-8uZ"/>
+                <constraint firstAttribute="trailing" secondItem="0BL-K2-9Ju" secondAttribute="trailing" id="Ff4-UE-22P"/>
+                <constraint firstAttribute="bottom" secondItem="0BL-K2-9Ju" secondAttribute="bottom" id="VhZ-AG-ESJ"/>
+            </constraints>
+            <size key="customSize" width="125" height="150"/>
+            <connections>
+                <outlet property="leaderboardImageView" destination="1Ir-Ff-yQb" id="eaO-8j-3jO"/>
+                <outlet property="leaderboardTitleLabel" destination="1SB-vP-HiX" id="Qw5-c1-xUf"/>
+            </connections>
+            <point key="canvasLocation" x="627" y="153"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="default-profile" width="376" height="376"/>
+    </resources>
+</document>

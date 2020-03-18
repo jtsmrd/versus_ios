@@ -9,24 +9,37 @@
 import UIKit
 
 class NotificationsVC: UIViewController {
-
-    private let notificationService = NotificationService.instance
-    private let notificationManager = NotificationManager.instance
     
     @IBOutlet weak var notificationsTableView: UITableView!
     @IBOutlet weak var noNotificationsView: UIView!
     
-    var notifications = [Notification]()
-    var notificationsRefreshControl: UIRefreshControl!
+    private let notificationService = NotificationService.instance
+    private let userService = UserService.instance
+    
+    private var notifications = [Notification]()
+    private var notificationsRefreshControl: UIRefreshControl!
     
     
-    /**
- 
-     */
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+    }
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        notifications = notificationManager.notifications
+        notificationsTableView.register(
+            UINib(nibName: NOTIFICATION_CELL, bundle: nil),
+            forCellReuseIdentifier: NOTIFICATION_CELL
+        )
         
         let attributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
         let refreshTitle = NSAttributedString(string: "Loading Notifications", attributes: attributes)
@@ -60,42 +73,55 @@ class NotificationsVC: UIViewController {
      
      */
     @objc func getNotifications() {
-        NotificationManager.instance.getCurrentUserNotifications { (notifications, customError) in
+        
+        notificationService.getUserNotifications(
+            userId: CurrentAccount.user.id
+        ) { [weak self] (notifications, error) in
+            guard let self = self else { return }
+            
             DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
+                if let error = error {
+                    self.displayMessage(message: error)
                 }
-                else {
-                    self.notifications = notifications
-                    self.notificationsTableView.reloadData()
-                    self.notificationsTableView.refreshControl?.endRefreshing()
-                }
+                
+                self.notifications = notifications
+                self.notificationsTableView.reloadData()
+                self.notificationsTableView.refreshControl?.endRefreshing()
             }
         }
-        notificationsTableView.reloadData()
     }
     
     
-    /**
-     
-     */
-    private func showFollowerProfile(_ notification: Notification) {
+    
+    private func showFollowerProfile(notification: Notification) {
         
-        guard let notificationInfo = notification.notificationInfo as? FollowerNotificationInfo else {
-            self.displayMessage(message: "Could not load follower data.")
-            return
+        let followerNotificationInfo = notification.notificationPayload as! FollowerNotificationInfo
+        
+        userService.loadUser(
+            userId: followerNotificationInfo.followerUserId
+        ) { [weak self] (user, error) in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.displayMessage(message: error)
+                }
+                else if let user = user {
+                    
+                    let userVC = UserVC(user: user)
+                    userVC.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(
+                        userVC,
+                        animated: true
+                    )
+                }
+                else {
+                    self.displayMessage(
+                        message: "Unable to load follower"
+                    )
+                }
+            }
         }
-        
-        //TODO
-//        if let profileVC = UIStoryboard(name: PROFILE, bundle: nil).instantiateViewController(withIdentifier: PROFILE_VC) as? ProfileVC {
-//
-//            profileVC.initData(userId: notificationInfo.userId)
-//            profileVC.hidesBottomBarWhenPushed = true
-//
-//            DispatchQueue.main.async {
-//                self.navigationController?.pushViewController(profileVC, animated: true)
-//            }
-//        }
     }
 }
 
@@ -118,51 +144,72 @@ extension NotificationsVC: UITableViewDataSource {
      */
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: NOTIFICATION_CELL, for: indexPath) as? NotificationCell {
-            cell.configureCell(notification: notifications[indexPath.row])
-            return cell
-        }
-        return NotificationCell()
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: NOTIFICATION_CELL,
+            for: indexPath
+        ) as! NotificationCell
+        
+        let notification = notifications[indexPath.row]
+        cell.configureCell(notification: notification)
+        return cell
     }
 }
 
 extension NotificationsVC: UITableViewDelegate {
     
-    
-    /**
-     
-     */
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(
+        _ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath
+    ) -> CGFloat {
         return 80
     }
     
-    
-    /**
-     
-     */
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let notification = notifications[indexPath.row]
-//        notification.markViewed(completion: nil)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
         
-        switch notification.notificationType {
-        case .follower:
-            showFollowerProfile(notification)
-        case .competitionComment:
+        notificationService.setNotificationViewed(
+            notification: notification
+        ) { [weak self] (notification, error) in
+            guard let self = self else { return }
+            
+            if let notification = notification {
+                self.notifications[indexPath.row] = notification
+                
+                DispatchQueue.main.async {
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
+                }
+            }
+        }
+        
+        switch notification.type.typeEnum {
+            
+        case .newFollower:
+            showFollowerProfile(notification: notification)
+            
+        case .competitionMatched:
             return
-        case .competitionLost:
-            return
-        case .competitionRemoved:
-            return
-        case .competitionStarted:
+        case .newVote:
             return
         case .competitionWon:
             return
+        case .competitionLost:
+            return
         case .rankUp:
             return
-        default:
+        case .leaderboard:
+            return
+        case .topLeader:
+            return
+        case .newFollowedUserCompetition:
+            return
+        case .newComment:
+            return
+        case .newDirectMessage:
             return
         }
     }

@@ -10,7 +10,6 @@ import UIKit
 
 class CompetitionCell: UITableViewCell {
 
-    
     @IBOutlet weak var versusCircleView: CircleView!
     @IBOutlet weak var categoryBarView: UIView!
     @IBOutlet weak var leftEntryImageView: UIImageView!
@@ -23,8 +22,7 @@ class CompetitionCell: UITableViewCell {
     @IBOutlet weak var rightEntryUsernameLabel: UILabel!
     @IBOutlet weak var rightEntryVotesLabel: UILabel!
     
-    
-    
+    private let s3BucketService = S3BucketService.instance
     
     /**
  
@@ -86,7 +84,26 @@ class CompetitionCell: UITableViewCell {
             competition.rightEntry.voteCount
         )
         
-        leftEntryImageView.image = competition.leftEntry.image
-        rightEntryImageView.image = competition.rightEntry.image
+        s3BucketService.downloadImage(
+            mediaId: competition.leftEntry.mediaId,
+            imageType: .regular
+        ) { [weak self] (image, error) in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                self.leftEntryImageView.image = image
+            }
+        }
+        
+        s3BucketService.downloadImage(
+            mediaId: competition.rightEntry.mediaId,
+            imageType: .regular
+        ) { [weak self] (image, error) in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                self.rightEntryImageView.image = image
+            }
+        }
     }
 }

@@ -14,8 +14,6 @@ class ProfileCompetitionCell: UICollectionViewCell {
     @IBOutlet weak var competitionImageView: UIImageView!
     
     
-    
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -27,8 +25,6 @@ class ProfileCompetitionCell: UICollectionViewCell {
         
         competitionImageView.image = nil
     }
-    
-    
     
     
     func configureCell(entry: Entry) {

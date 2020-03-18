@@ -63,8 +63,10 @@ extension Competition {
     
     var category: Category {
 
-        let categoryType = CategoryType(rawValue: _categoryId) ?? .unknown
-        return CategoryCollection.instance.getCategory(categoryType: categoryType)
+        let categoryType = CategoryType(rawValue: _categoryId)!
+        return CategoryCollection.instance.getCategory(
+            categoryType: categoryType
+        )
     }
 
 
@@ -90,6 +92,10 @@ extension Competition {
 
     var isExpired: Bool {
         return _expireDate < Date()
+    }
+    
+    var isActive: Bool {
+        return _active
     }
 
 

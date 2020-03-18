@@ -17,27 +17,45 @@ protocol SearchVCDelegate {
 class SearchUserVC: UIViewController {
 
     
-    @IBOutlet weak var searchUserTableView: UITableView!
+    @IBOutlet weak var userTableView: UITableView!
     
     
     private let userManager = UserManager.instance
     private let followerService = FollowerService.instance
+    private let pendingImageOperations = ImageOperations()
     private let ROW_HEIGHT: CGFloat = 70.0
     private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.85
     
+    
     private var users = [User]()
-    private let pendingImageOperations = ImageOperations()
+    private var delegate: SearchVCDelegate?
+    private var keyboardToolbar: KeyboardToolbar!
+    private var indexPathOfLastSelection: IndexPath?
     
-    var delegate: SearchVCDelegate?
-    var keyboardToolbar: KeyboardToolbar!
     
+    
+    init(delegate: SearchVCDelegate?) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.delegate = delegate
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+    }
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        searchUserTableView.tableFooterView = UIView()
+        userTableView.register(
+            UINib(nibName: SEARCH_USER_CELL, bundle: nil),
+            forCellReuseIdentifier: SEARCH_USER_CELL
+        )
+        
+        userTableView.tableFooterView = UIView()
         userManager.delegate = self
         keyboardToolbar = KeyboardToolbar(includeNavigation: false)
     }
@@ -46,7 +64,7 @@ class SearchUserVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        searchUserTableView.reloadData()
+        indexPathOfLastSelection = nil
     }
     
     
@@ -56,143 +74,15 @@ class SearchUserVC: UIViewController {
         
         let user = users[indexPath.row]
         
-        let userVC = UserVC(user: user)
+        let userVC = UserVC(
+            user: user,
+            delegate: self
+        )
+        userVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(
             userVC,
             animated: true
         )
-    }
-    
-    
-    private func followUser(indexPath: IndexPath) {
-        
-        let user = users[indexPath.row]
-        
-        followerService.followUser(
-            userId: user.id
-        ) { [weak self] (errorMessage) in
-            
-            DispatchQueue.main.async {
-                
-                if let errorMessage = errorMessage {
-                    self?.displayMessage(message: errorMessage)
-                    return
-                }
-                
-                CurrentAccount.addFollowedUserId(id: user.id)
-                
-                self?.searchUserTableView.reloadRows(
-                    at: [indexPath],
-                    with: .automatic
-                )
-            }
-        }
-    }
-    
-    
-    private func unfollowUser(indexPath: IndexPath) {
-        
-        let user = users[indexPath.row]
-        
-        let unfollowAlert = UIAlertController(
-            title: "Confirm Unfollow",
-            message: "Are you sure you want to unfollow @\(user.username)",
-            preferredStyle: .actionSheet
-        )
-        
-        let unfollowAction = UIAlertAction(
-            title: "Unfollow",
-            style: .destructive
-        ) { (action) in
-            
-            self.loadAndUnfollowUser(indexPath: indexPath)
-        }
-        
-        let cancelAction = UIAlertAction(
-            title: "Cancel",
-            style: .cancel,
-            handler: nil
-        )
-        
-        unfollowAlert.addAction(unfollowAction)
-        unfollowAlert.addAction(cancelAction)
-        
-        present(
-            unfollowAlert,
-            animated: true,
-            completion: nil
-        )
-    }
-    
-    
-    private func loadAndUnfollowUser(indexPath: IndexPath) {
-        
-        let userId = CurrentAccount.user.id
-        let userFollowed = users[indexPath.row]
-        
-        followerService.getFollowedUser(
-            userId: userId,
-            followedUserId: userFollowed.id
-        ) { [weak self] (followedUser, errorMessage) in
-            
-            if let errorMessage = errorMessage {
-                DispatchQueue.main.async {
-                    self?.displayMessage(message: errorMessage)
-                }
-                return
-            }
-            
-            guard let followedUser = followedUser else {
-                DispatchQueue.main.async {
-                    self?.displayMessage(message: "Unable to unfollow user")
-                }
-                return
-            }
-            
-            self?.followerService.unfollow(
-                followerId: followedUser.id,
-                completion: { [weak self] (errorMessage) in
-                    
-                    DispatchQueue.main.async {
-                        
-                        if let errorMessage = errorMessage {
-                            self?.displayMessage(message: errorMessage)
-                            return
-                        }
-                        
-                        CurrentAccount.removeFollowedUserId(id: userFollowed.id)
-                        
-                        self?.searchUserTableView.reloadRows(
-                            at: [indexPath],
-                            with: .automatic
-                        )
-                    }
-                }
-            )
-        }
-    }
-}
-
-
-
-
-// MARK: - SearchUserCellDelegate
-extension SearchUserVC: SearchUserCellDelegate {
-    
-    
-    func followUserAt(cell: UITableViewCell) {
-        
-        if let indexPath = searchUserTableView.indexPath(for: cell) {
-            followUser(indexPath: indexPath)
-        }
-    }
-    
-    
-    func unfollowUserAt(cell: UITableViewCell) {
-        
-        if let indexPath = searchUserTableView.indexPath(for: cell) {
-            unfollowUser(indexPath: indexPath)
-        }
     }
 }
 
@@ -203,11 +93,17 @@ extension SearchUserVC: SearchUserCellDelegate {
 extension SearchUserVC: UserManagerDelegate {
     
     
-    func userResultsUpdated(users: [User]) {
-        self.users.append(contentsOf: users)
+    func userResultsUpdated(users: [User], isNewSearch: Bool) {
+        
+        if isNewSearch {
+            self.users = users
+        }
+        else {
+            self.users.append(contentsOf: users)
+        }
         
         DispatchQueue.main.async {
-            self.searchUserTableView.reloadData()
+            self.userTableView.reloadData()
         }
     }
     
@@ -257,14 +153,13 @@ extension SearchUserVC: UITableViewDataSource {
             //TODO
             searchUserCell.configureCell(
                 user: user,
-                delegate: self,
                 profileImage: user.profileImageImage
             )
             
             if user.profileImageDownloadState == .new {
-                
+
                 if !tableView.isDragging && !tableView.isDecelerating {
-                    
+
                     startProfileImageDownloadFor(
                         user: user,
                         indexPath: indexPath
@@ -345,6 +240,9 @@ extension SearchUserVC: UITableViewDelegate {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
+        
+        indexPathOfLastSelection = indexPath
+        
         tableView.deselectRow(
             at: indexPath,
             animated: false
@@ -442,7 +340,7 @@ extension SearchUserVC: UISearchBarDelegate {
         delegate?.toggleSearchView(isHidden: true)
         searchBar.text?.removeAll()
         users.removeAll()
-        searchUserTableView.reloadData()
+        userTableView.reloadData()
         searchBar.setShowsCancelButton(false, animated: true)
     }
     
@@ -452,9 +350,11 @@ extension SearchUserVC: UISearchBarDelegate {
         textDidChange searchText: String
     ) {
         
+//        cancelAllPendingImageDownloads()
+        
         // Remove results for new searches.
-        users.removeAll()
-        searchUserTableView.reloadData()
+//        users.removeAll()
+//        userTableView.reloadData()
         
         // User is searching by username, wait for more characters.
         guard searchText != "@" else {
@@ -498,7 +398,7 @@ extension SearchUserVC {
 //                downloadsInProgress.removeValue(
 //                    forKey: indexPath
 //                )
-//                self.searchUserTableView.reloadRows(
+//                self.userTableView.reloadRows(
 //                    at: [indexPath],
 //                    with: .none
 //                )
@@ -534,7 +434,7 @@ extension SearchUserVC {
                 downloadsInProgress.removeValue(
                     forKey: indexPath
                 )
-                self.searchUserTableView.reloadRows(
+                self.userTableView.reloadRows(
                     at: [indexPath],
                     with: .none
                 )
@@ -563,7 +463,7 @@ extension SearchUserVC {
     
     private func loadImagesForOnscreenCells() {
         
-        if let pathsArray = searchUserTableView.indexPathsForVisibleRows {
+        if let pathsArray = userTableView.indexPathsForVisibleRows {
             
             var downloadsInProgress =
                 pendingImageOperations.downloadsInProgress
@@ -599,5 +499,46 @@ extension SearchUserVC {
                 )
             }
         }
+    }
+    
+    private func cancelAllPendingImageDownloads() {
+        
+        DispatchQueue.main.async {
+            var downloadsInProgress =
+                self.pendingImageOperations.downloadsInProgress
+            
+            let allPendingOperations = Set(
+                downloadsInProgress.keys
+            )
+            
+            for indexPath in allPendingOperations {
+                
+                if let pendingDownload = downloadsInProgress[indexPath] {
+                    pendingDownload.cancel()
+                }
+//                downloadsInProgress.removeValue(
+//                    forKey: indexPath
+//                )
+            }
+        }
+        
+        
+    }
+}
+
+
+
+extension SearchUserVC: UserVCDelegate {
+    
+    func userUpdated() {
+        
+        guard let indexPath = indexPathOfLastSelection else {
+            return
+        }
+        
+        userTableView.reloadRows(
+            at: [indexPath],
+            with: .none
+        )
     }
 }

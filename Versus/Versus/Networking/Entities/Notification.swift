@@ -6,127 +6,116 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
-
-enum NotificationType: Int {
-    case unknown = 0
-    case follower = 1
-    case rankUp = 2
-    case competitionStarted = 3
-    case competitionWon = 4
-    case competitionLost = 5
-    case competitionComment = 6
-    case competitionRemoved = 7
-}
-
-@objcMembers
-class Notification: AWSDynamoDBObjectModel, AWSDynamoDBModeling {
+class Notification: Codable {
     
-    private(set) var _userId: String?
-    private(set) var _createDate: String?
-    private(set) var _notificationId: String?
-    private(set) var _notificationInfo: [String: String]?
-    private(set) var _notificationTypeId: NSNumber?
-    var _wasViewed: NSNumber?
+    private var _id: Int
+    private var _type: NotificationType
+    private var _createDate: Date
+    private var _message: String
+    private var _payload: String
+    private var _wasViewed: Bool
     
-    
-    class func dynamoDBTableName() -> String {
-        
-        return "AWS_Notification"
-    }
-    
-    class func hashKeyAttribute() -> String {
-        
-        return "_userId"
-    }
-    
-    class func rangeKeyAttribute() -> String {
-        
-        return "_createDate"
-    }
-    
-    override class func jsonKeyPathsByPropertyKey() -> [AnyHashable: Any] {
-        return [
-            "_userId" : "userId",
-            "_createDate" : "createDate",
-            "_notificationId" : "notificationId",
-            "_notificationInfo" : "notificationInfo",
-            "_notificationTypeId" : "notificationTypeId",
-            "_wasViewed" : "wasViewed",
-        ]
+    enum CodingKeys: String, CodingKey {
+        case _id = "id"
+        case _type = "type"
+        case _createDate = "createDate"
+        case _message = "message"
+        case _payload = "payload"
+        case _wasViewed = "wasViewed"
     }
 }
 
 extension Notification {
     
-    
-    var userId: String {
-        return _userId ?? ""
+    var id: Int {
+        return _id
     }
     
+    var type: NotificationType {
+        return _type
+    }
     
     var createDate: Date {
-        let createDateString = _createDate ?? ""
-        return createDateString.toISO8601Date
+        return _createDate
     }
     
-    
-    var notificationId: String {
-        return _notificationId ?? ""
+    var message: String {
+        return _message
     }
-    
     
     var wasViewed: Bool {
-        return _wasViewed?.boolValue ?? false
+        return _wasViewed
     }
     
     
-    var notificationInfo: Any {
-        get {
-            let info = _notificationInfo ?? [:]
-            return parseNotificationInfo(info: info)
-        }
-    }
-    
-    
-    var notificationTypeId: Int {
-        return _notificationTypeId?.intValue ?? 0
-    }
-    
-    
-    var notificationType: NotificationType {
-        return NotificationType(rawValue: notificationTypeId) ?? .unknown
+    var notificationPayload: Any {
+        return parseNotificationPayload(payload: _payload)
     }
     
     
     
-    private func parseNotificationInfo(info: [String: String]) -> Any {
-        
-        switch notificationType {
+    private func parseNotificationPayload(payload: String) -> Any {
+
+        switch type.typeEnum {
             
-        case .follower:
-            return FollowerNotificationInfo(info: info)
+        case .newFollower:
+            return FollowerNotificationInfo(jsonString: payload)
+            
+        case .competitionMatched:
+            return 0
+            
+        case .newVote:
+            return 0
+            
+        case .competitionWon:
+            return 0
+            
+        case .competitionLost:
+            return 0
             
         case .rankUp:
-            return RankUpNotificationInfo(info: info)
-    case .competitionStarted, .competitionWon, .competitionLost, .competitionComment, .competitionRemoved:
-            return CompetitionNotificationInfo(info: info)
-        default:
+            return 0
+            
+        case .leaderboard:
+            return 0
+            
+        case .topLeader:
+            return 0
+            
+        case .newFollowedUserCompetition:
+            return 0
+            
+        case .newComment:
+            return 0
+            
+        case .newDirectMessage:
             return 0
         }
     }
 }
 
-struct FollowerNotificationInfo {
+class FollowerNotificationInfo: NSObject {
     
-    var userId: String
-    var username: String
-    var notificationText: String
+    var followerUserId: Int = 0
+    var followerUsername: String = ""
+    var followerProfileImage: String = ""
     
-    init(info: [String: String]) {
-        userId = info["userId"] ?? ""
-        username = info["username"] ?? ""
-        notificationText = info["notificationText"] ?? ""
+    init(jsonString: String) {
+        super.init()
+        
+        let jsonData = jsonString.data(
+            using: .utf8,
+            allowLossyConversion: false
+        )
+        
+        let jsonDictionary: [String: Any] = try! JSONSerialization.jsonObject(
+                with: jsonData!,
+                options: .init()
+            ) as! [String: Any]
+        
+        followerUserId = jsonDictionary["followerUserId"] as! Int
+        followerUsername = jsonDictionary["followerUsername"] as! String
+        followerProfileImage = jsonDictionary["followerProfileImage"] as! String
     }
 }
 
@@ -143,15 +132,15 @@ struct RankUpNotificationInfo {
 
 struct CompetitionNotificationInfo {
     
-    var userId: String
+    var userId: Int
     var username: String
-    var competitionId: String
+    var competitionId: Int
     var notificationText: String
     
-    init(info: [String: String]) {
-        userId = info["userId"] ?? ""
-        username = info["username"] ?? ""
-        competitionId = info["competitionId"] ?? ""
-        notificationText = info["notificationText"] ?? ""
+    init(info: [String: Any]) {
+        userId = info["userId"] as! Int
+        username = info["username"] as! String
+        competitionId = info["competitionId"] as! Int
+        notificationText = info["notificationText"] as! String
     }
 }

@@ -19,13 +19,14 @@ class DiscoverNC: UINavigationController {
             tag: 1
         )
         
-        let searchStoryboard = UIStoryboard(
-            name: "Search",
-            bundle: nil
-        )
-        let vc = searchStoryboard.instantiateViewController(
-            withIdentifier: "SearchBrowseVC"
-            ) as! SearchBrowseVC
+//        let searchStoryboard = UIStoryboard(
+//            name: "Search",
+//            bundle: nil
+//        )
+//        let vc = searchStoryboard.instantiateViewController(
+//            withIdentifier: "SearchBrowseVC"
+//            ) as! SearchBrowseVC
+        let vc = DiscoverVC()
         vc.loadViewIfNeeded()
         addChild(vc)
         

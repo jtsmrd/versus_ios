@@ -63,6 +63,8 @@ let COMPETITION_CELL = "CompetitionCell"
 let NOTIFICATION_CELL = "NotificationCell"
 let COMPETITION_COMMENT_CELL = "CompetitionCommentCell"
 let ENTRY_CELL = "EntryCell"
+let LEADERBOARD_HEADER_IMAGE_CELL = "LeaderboardHeaderImageCell"
+let LEADER_CELL = "LeaderCell"
 
 
 // CollectionViewCell Identifiers
@@ -73,7 +75,7 @@ let PROFILE_COMPETITION_CELL = "ProfileCompetitionCell"
 let COMPETITION_SHARE_CELL = "CompetitionShareCell"
 let COMPETITION_OPTION_CELL = "CompetitionOptionCell"
 let LEADERBOARD_CELL = "LeaderboardCell"
-let BROWSE_CATEGORY_CELL = "BrowseCategoryCell"
+let DISCOVER_CATEGORY_CELL = "DiscoverCategoryCell"
 
 
 // CollectionViewHeader Identifiers

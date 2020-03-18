@@ -39,6 +39,8 @@ class RankVC: UIViewController {
         )
         
         rankTableView.tableFooterView = UIView()
+        
+        displayUserRankIndicator()
     }
     
     
@@ -46,6 +48,23 @@ class RankVC: UIViewController {
     
     @IBAction func backButtonAction() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    
+    private func displayUserRankIndicator() {
+        
+        var cellRect: CGRect!
+        
+        for cell in rankTableView.visibleCells {
+            if cell.tag == user.rank.id {
+                cellRect = cell.frame
+            }
+        }
+        
+        let indicatorView = UIView()
+        indicatorView.backgroundColor = UIColor.blue
+        indicatorView.frame = CGRect(x: 20, y: cellRect.midY, width: 100, height: 40)
+        view.addSubview(indicatorView)
     }
 }
 
@@ -76,8 +95,8 @@ extension RankVC: UITableViewDataSource {
         
         if let rankCell = cell as? RankCell {
             
-            let rank = Rank(rankId: (indexPath.row + 1))
-            
+            let rank = Rank(rankId: (Rank.allCases.count - indexPath.row))
+            rankCell.tag = rank.id
             rankCell.configureCell(
                 user: user,
                 rank: rank

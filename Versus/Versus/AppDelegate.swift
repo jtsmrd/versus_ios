@@ -70,47 +70,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-//        let tokenParts = deviceToken.map { data -> String in
-//            return String(format: "%02.2hhx", data)
-//        }
-//        let token = tokenParts.joined()
-//        CurrentUser.remoteNotificationDeviceToken = token
-//
-//        let request: AWSSNSCreatePlatformEndpointInput = AWSSNSCreatePlatformEndpointInput()
-//        request.token = token
-//        request.platformApplicationArn = Config.SNS_PLATFORM_APP_ARN
-//
-//        AWSSNS.default().createPlatformEndpoint(request).continueWith(executor: AWSExecutor.mainThread()) { (task: AWSTask!) -> Any? in
-//            if let error = task.error {
-//                debugPrint("Failed to create AWS platform endpoint: \(error.localizedDescription)")
-//            }
-//            else {
-//                let createEndpointResponse = task.result! as AWSSNSCreateEndpointResponse
-//                if let endpointArnForSNS = createEndpointResponse.endpointArn {
-//                    CurrentUser.userAWSSNSEndpointARN = endpointArnForSNS
-//                    debugPrint("Endpoint Arn: \(endpointArnForSNS)")
-//
-//                    // Save endpointArn to AWSUserEndpointArn
-//                    self.userService.saveUserSNSEndpointARN(
-//                        endpointArn: endpointArnForSNS,
-//                        userId: CurrentUser.userId,
-//                        completion: { (success, customError) in
-//                            if let customError = customError {
-//                                debugPrint(customError)
-//                            }
-//                            else if success {
-//                                //TODO: Save value in UserDefaults in order to try again later.
-//                                debugPrint("Successfully saved endpoint arn")
-//                            }
-//                            else {
-//                                debugPrint("Error: Something went wrong when saving endpoint arn")
-//                            }
-//                        }
-//                    )
-//                }
-//            }
-//            return nil
-//        }
+        
+        
+        let tokenParts = deviceToken.map { data -> String in
+            return String(format: "%02.2hhx", data)
+        }
+        let token = tokenParts.joined()
+        let user = CurrentAccount.user
+        user.apnsToken = token
+        
+        userService.updateUser(user: user) { (user, error) in
+            // todo: Log error if exists
+        }
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

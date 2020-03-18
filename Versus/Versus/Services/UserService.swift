@@ -6,10 +6,6 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSAuthCore
-import AWSDynamoDB
-import AWSUserPoolsSignIn
-
 class UserService {
     
     static let instance = UserService()
@@ -17,7 +13,6 @@ class UserService {
     private let networkManager = NetworkManager()
     private let router = Router<UserEndpoint>()
     
-    private let dynamoDB = AWSDynamoDBObjectMapper.default()
     private let s3BucketService = S3BucketService.instance
     
     private init() { }
@@ -318,20 +313,20 @@ class UserService {
         userId: String,
         completion: @escaping SuccessErrorCompletion
     ) {
-        let userSnsEndpointArn: AWSUserSNSEndpointARN = AWSUserSNSEndpointARN()
-        userSnsEndpointArn._userId = userId
-        userSnsEndpointArn._endpointArn = endpointArn
-        userSnsEndpointArn._isEnabled = 1.toNSNumber
-        
-        dynamoDB.save(
-            userSnsEndpointArn
-        ) { (error) in
-            if let error = error {
-                completion(false, CustomError(error: error, message: "Unable to save notifiation token"))
-                return
-            }
-            completion(true, nil)
-        }
+//        let userSnsEndpointArn: AWSUserSNSEndpointARN = AWSUserSNSEndpointARN()
+//        userSnsEndpointArn._userId = userId
+//        userSnsEndpointArn._endpointArn = endpointArn
+//        userSnsEndpointArn._isEnabled = 1.toNSNumber
+//
+//        dynamoDB.save(
+//            userSnsEndpointArn
+//        ) { (error) in
+//            if let error = error {
+//                completion(false, CustomError(error: error, message: "Unable to save notifiation token"))
+//                return
+//            }
+//            completion(true, nil)
+//        }
     }
     
     
@@ -342,80 +337,16 @@ class UserService {
         userId: String,
         completion: @escaping (_ awsEndpointArnRecord: AWSUserSNSEndpointARN?, _ customError: CustomError?) -> Void
     ) {
-        dynamoDB.load(
-            AWSUserSNSEndpointARN.self,
-            hashKey: userId,
-            rangeKey: nil
-        ) { (record, error) in
-            if let error = error {
-                completion(nil, CustomError(error: error, message: "Could not load User SNS Endpoint ARN"))
-                return
-            }
-            completion(record as? AWSUserSNSEndpointARN, nil)
-        }
-    }
-    
-    
-    /**
-        Loads an AWSUser with the given username.
-    */
-    func loadUserWithUsername(
-        _ username: String,
-        completion: @escaping (_ user: User?, _ customError: CustomError?) -> Void
-    ) {
-//        let queryExpression = AWSDynamoDBQueryExpression()
-//        queryExpression.keyConditionExpression = "#searchUsername = :searchUsername"
-//        queryExpression.expressionAttributeNames = [
-//            "#searchUsername": "searchUsername"
-//        ]
-//        queryExpression.expressionAttributeValues = [
-//            ":searchUsername": username.lowercased()
-//        ]
-//        queryExpression.indexName = "searchUsername-index"
-//
-//        dynamoDB.query(
-//            AWSUser.self,
-//            expression: queryExpression
-//        ) { (paginatedOutput, error) in
+//        dynamoDB.load(
+//            AWSUserSNSEndpointARN.self,
+//            hashKey: userId,
+//            rangeKey: nil
+//        ) { (record, error) in
 //            if let error = error {
-//                completion(nil, CustomError(error: error, message: "Unable to load user"))
+//                completion(nil, CustomError(error: error, message: "Could not load User SNS Endpoint ARN"))
 //                return
 //            }
-//            if let result = paginatedOutput,
-//                let awsUser = result.items.first as? AWSUser  {
-//                completion(User(awsUser: awsUser), nil)
-//                return
-//            }
-//            completion(nil, nil)
-//        }
-    }
-    
-    
-    /**
-     Loads an AWSUser with the given userPoolUserId.
-     */
-    func getUser(
-        userId: String,
-        completion: @escaping (_ awsUser: AWSUser?, _ customError: CustomError?) -> Void
-    ) {
-        
-//        DispatchQueue.global(qos: .userInitiated).async {
-//
-//            self.dynamoDB.load(
-//                AWSUser.self,
-//                hashKey: userId,
-//                rangeKey: nil
-//            ) { (awsUser, error) in
-//                if let error = error {
-//                    completion(nil, CustomError(error: error, message: "Unable to load user."))
-//                    return
-//                }
-//                guard let awsUser = awsUser as? AWSUser else {
-//                    completion(nil, CustomError(error: error, message: "Unable to load user."))
-//                    return
-//                }
-//                completion(awsUser, nil)
-//            }
+//            completion(record as? AWSUserSNSEndpointARN, nil)
 //        }
     }
     
@@ -486,12 +417,12 @@ class UserService {
     /**
      
      */
-    func searchUsers(
-        queryString: String,
-        startKey: [String: AWSDynamoDBAttributeValue]?,
-        fetchLimit: Int,
-        completion: @escaping (_ users: [User], _ lastEvaluatedKey: [String: AWSDynamoDBAttributeValue]?, _ custoError: CustomError?) -> Void
-    ) {
+//    func searchUsers(
+//        queryString: String,
+//        startKey: [String: AWSDynamoDBAttributeValue]?,
+//        fetchLimit: Int,
+//        completion: @escaping (_ users: [User], _ lastEvaluatedKey: [String: AWSDynamoDBAttributeValue]?, _ custoError: CustomError?) -> Void
+//    ) {
 //        let scanExpression = AWSDynamoDBScanExpression()
 //
 //        // Scan for username
@@ -534,7 +465,7 @@ class UserService {
 //            }
 //            completion(users, lastEvaluatedKey, nil)
 //        }
-    }
+//    }
     
     
     /**
