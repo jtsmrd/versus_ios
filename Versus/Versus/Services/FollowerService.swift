@@ -113,17 +113,24 @@ class FollowerService {
     
     func loadFollowedUsers(
         userId: Int,
-        completion: @escaping (_ followedUsers: [Follower]?, _ errorMessage: String?) -> ()
+        page: Int,
+        completion: @escaping (_ followedUsers: [Follower], _ errorMessage: String?) -> ()
     ) {
         
         router.request(
             .loadFollowedUsers(
-                userId: userId
+                userId: userId,
+                page: page
             )
         ) { (data, response, error) in
             
+            var followedUsers = [Follower]()
+            
             if error != nil {
-                completion(nil, "Please check your network connection.")
+                completion(
+                    followedUsers,
+                    "Please check your network connection."
+                )
             }
             
             if let response = response as? HTTPURLResponse {
@@ -135,7 +142,10 @@ class FollowerService {
                 case .success:
                     
                     guard let responseData = data else {
-                        completion(nil, NetworkResponse.noData.rawValue)
+                        completion(
+                            followedUsers,
+                            NetworkResponse.noData.rawValue
+                        )
                         return
                     }
                     
@@ -143,17 +153,22 @@ class FollowerService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let followers = try decoder.decode([Follower].self, from: responseData)
-                        completion(followers, nil)
+                        followedUsers = try decoder.decode(
+                            [Follower].self,
+                            from: responseData
+                        )
+                        completion(followedUsers, nil)
                     }
                     catch {
-                        debugPrint(error)
-                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                        completion(
+                            followedUsers,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
                     }
                     
                 case .failure(let networkFailureError):
                     
-                    completion(nil, networkFailureError)
+                    completion(followedUsers, networkFailureError)
                 }
             }
         }
@@ -163,17 +178,24 @@ class FollowerService {
     
     func loadFollowers(
         userId: Int,
-        completion: @escaping (_ followers: [Follower]?, _ errorMessage: String?) -> ()
+        page: Int,
+        completion: @escaping (_ followers: [Follower], _ errorMessage: String?) -> ()
     ) {
         
         router.request(
             .loadFollowers(
-                userId: userId
+                userId: userId,
+                page: page
             )
         ) { (data, response, error) in
             
+            var followers = [Follower]()
+            
             if error != nil {
-                completion(nil, "Please check your network connection.")
+                completion(
+                    followers,
+                    "Please check your network connection."
+                )
             }
             
             if let response = response as? HTTPURLResponse {
@@ -185,7 +207,10 @@ class FollowerService {
                 case .success:
                     
                     guard let responseData = data else {
-                        completion(nil, NetworkResponse.noData.rawValue)
+                        completion(
+                            followers,
+                            NetworkResponse.noData.rawValue
+                        )
                         return
                     }
                     
@@ -193,16 +218,22 @@ class FollowerService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let followers = try decoder.decode([Follower].self, from: responseData)
+                        followers = try decoder.decode(
+                            [Follower].self,
+                            from: responseData
+                        )
                         completion(followers, nil)
                     }
                     catch {
-                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                        completion(
+                            followers,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
                     }
                     
                 case .failure(let networkFailureError):
                     
-                    completion(nil, networkFailureError)
+                    completion(followers, networkFailureError)
                 }
             }
         }

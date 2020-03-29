@@ -443,8 +443,9 @@ class ProfileInfoVC: UIViewController {
     private func viewFollowedUsers() {
         
         let followerVC = FollowerVC(
-            userId: user.id,
-            followerType: .followedUser
+            followerType: .followedUser(
+                userId: user.id
+            )
         )
         navigationController?.pushViewController(
             followerVC,
@@ -456,8 +457,9 @@ class ProfileInfoVC: UIViewController {
     private func viewFollowers() {
         
         let followerVC = FollowerVC(
-            userId: user.id,
-            followerType: .follower
+            followerType: .follower(
+                userId: user.id
+            )
         )
         navigationController?.pushViewController(
             followerVC,

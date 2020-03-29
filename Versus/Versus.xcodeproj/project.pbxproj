@@ -214,6 +214,7 @@
 		6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = 6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */; };
 		6BF687F320ACD2C900F69B68 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF687F220ACD2C900F69B68 /* NotificationCell.swift */; };
 		6BF687F520ACDE9100F69B68 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF687F420ACDE9100F69B68 /* NotificationService.swift */; };
+		6BFE1BDD2430EC9E00987596 /* FollowerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE1BDC2430EC9E00987596 /* FollowerManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -440,6 +441,7 @@
 		6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = awsconfiguration.json; sourceTree = "<group>"; };
 		6BF687F220ACD2C900F69B68 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		6BF687F420ACDE9100F69B68 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		6BFE1BDC2430EC9E00987596 /* FollowerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerManager.swift; sourceTree = "<group>"; };
 		8959046AF2DA8574CCDCF753 /* Pods-Versus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Versus.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Versus/Pods-Versus.debug.xcconfig"; sourceTree = "<group>"; };
 		A999CFBAD01983D013158ED9 /* Pods_Versus.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Versus.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -469,6 +471,7 @@
 			isa = PBXGroup;
 			children = (
 				327E604420C49F64000980CD /* CompetitionManager.swift */,
+				6BFE1BDC2430EC9E00987596 /* FollowerManager.swift */,
 				3218AF7F20CD9AA5006361CB /* NotificationManager.swift */,
 				327C1EC4213AAE96001E2C8B /* UserManager.swift */,
 			);
@@ -1252,6 +1255,7 @@
 				6B4897BF2414240000C3FBDD /* NotificationType.swift in Sources */,
 				6B8BF01F21E1923A001889E9 /* MonthlyLeader.swift in Sources */,
 				6B12E83F242EBC27001E6FA5 /* CategorySelectorVC.swift in Sources */,
+				6BFE1BDD2430EC9E00987596 /* FollowerManager.swift in Sources */,
 				32A8F022213B3A22000515FA /* SearchUserVC.swift in Sources */,
 				6B93D4BC23B583AD0038AFC3 /* VoteEndpoint.swift in Sources */,
 				6BA7975B240184B700191113 /* CompetitionFeedNC.swift in Sources */,

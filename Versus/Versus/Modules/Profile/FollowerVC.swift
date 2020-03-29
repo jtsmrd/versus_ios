@@ -9,8 +9,8 @@
 import UIKit
 
 enum FollowerType {
-    case follower
-    case followedUser
+    case follower(userId: Int)
+    case followedUser(userId: Int)
 }
 
 class FollowerVC: UIViewController {
@@ -22,20 +22,22 @@ class FollowerVC: UIViewController {
     
     
     private let followerService = FollowerService.instance
+    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.50
     
     
-    private var userId: Int!
+    private var followerManager: FollowerManager!
     private var followerType: FollowerType!
     private var followers = [Follower]()
+    private var pendingImageOperations = ImageOperations()
     private var keyboardToolbar: KeyboardToolbar!
     private var indexPathOfLastSelection: IndexPath?
+    private var refreshControl: UIRefreshControl!
     
     
     
-    init(userId: Int, followerType: FollowerType) {
+    init(followerType: FollowerType) {
         super.init(nibName: nil, bundle: nil)
         
-        self.userId = userId
         self.followerType = followerType
     }
     
@@ -48,6 +50,8 @@ class FollowerVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        followerManager = FollowerManager(delegate: self)
+        
         followerTableView.register(
             UINib(nibName: FOLLOWER_CELL, bundle: nil),
             forCellReuseIdentifier: FOLLOWER_CELL
@@ -57,6 +61,8 @@ class FollowerVC: UIViewController {
             UINib(nibName: "NoFollowersCell", bundle: nil),
             forCellReuseIdentifier: "NoFollowersCell"
         )
+        
+        configureRefreshControl()
         
         switch followerType {
         case .follower:
@@ -71,7 +77,7 @@ class FollowerVC: UIViewController {
         
         keyboardToolbar = KeyboardToolbar(includeNavigation: false)
         
-        loadUsers(userId: userId)
+        getFollowers()
     }
     
     
@@ -88,68 +94,32 @@ class FollowerVC: UIViewController {
     }
     
     
-    private func loadUsers(userId: Int) {
+    @objc func getFollowers() {
         
-        switch followerType {
-        case .follower:
-            loadFollowers(userId: userId)
-            
-        case .followedUser:
-            loadFollowedUsers(userId: userId)
-            
-        default:
-            return
-        }
+        followerManager.getFollowers(
+            followerType: followerType
+        )
     }
     
     
-    private func loadFollowers(userId: Int) {
+    private func configureRefreshControl() {
         
-        followerService.loadFollowers(
-            userId: userId
-        ) { [weak self] (followers, errorMessage) in
-            
-            DispatchQueue.main.async {
-                
-                if let errorMessage = errorMessage {
-                    self?.displayMessage(message: errorMessage)
-                    return
-                }
-                
-                guard let followers = followers else {
-                    self?.displayMessage(message: "Unable to load followers")
-                    return
-                }
-                
-                self?.followers = followers
-                self?.followerTableView.reloadData()
-            }
-        }
-    }
-    
-    
-    private func loadFollowedUsers(userId: Int) {
+        let attributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
+        let refreshTitle = NSAttributedString(
+            string: "Updating",
+            attributes: attributes
+        )
         
-        followerService.loadFollowedUsers(
-            userId: userId
-        ) { [weak self] (followers, errorMessage) in
-            
-            DispatchQueue.main.async {
-                
-                if let errorMessage = errorMessage {
-                    self?.displayMessage(message: errorMessage)
-                    return
-                }
-                
-                guard let followers = followers else {
-                    self?.displayMessage(message: "Unable to load followed users")
-                    return
-                }
-                
-                self?.followers = followers
-                self?.followerTableView.reloadData()
-            }
-        }
+        refreshControl = UIRefreshControl()
+        refreshControl.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
+        refreshControl.attributedTitle = refreshTitle
+        refreshControl.addTarget(
+            self,
+            action: #selector(FollowerVC.getFollowers),
+            for: .valueChanged
+        )
+        
+        followerTableView.refreshControl = refreshControl
     }
     
     
@@ -189,6 +159,122 @@ class FollowerVC: UIViewController {
             userVC,
             animated: true
         )
+    }
+    
+    
+    // MARK: - Image Operations
+    
+    private func startUserProfileImageDownloadFor(
+        user: User,
+        indexPath: IndexPath
+    ) {
+        var downloadsInProgress = pendingImageOperations.asyncDownloadsInProgress
+
+        // Make sure there isn't already a download in progress.
+        guard downloadsInProgress[indexPath] == nil else { return }
+
+        let downloadOperation = DownloadUserProfileImageOperation(
+            user: user
+        )
+
+        downloadOperation.completionBlock = {
+
+            if downloadOperation.isCancelled { return }
+
+            DispatchQueue.main.async {
+
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+
+                if let followerCell = self.followerTableView.cellForRow(at: indexPath) as? FollowerCell {
+                    followerCell.updateImage()
+                }
+            }
+        }
+
+        // Add the operation to the collection of downloads in progress.
+        downloadsInProgress[indexPath] = downloadOperation
+
+        // Add the operation to the queue to start downloading.
+        pendingImageOperations.asyncDownloadQueue.addOperation(
+            downloadOperation
+        )
+    }
+}
+
+
+private extension FollowerVC {
+
+    private func calculateIndexPathsToReload(
+        from newFollowers: [Follower]
+    ) -> [IndexPath] {
+        
+        let startIndex = followers.count - newFollowers.count
+        let endIndex = startIndex + newFollowers.count
+        let indexPaths = (startIndex..<endIndex).map {
+            IndexPath(row: $0, section: 0)
+        }
+        
+        return indexPaths
+    }
+    
+    func visibleIndexPathsToReload(
+        intersecting indexPaths: [IndexPath]
+    ) -> [IndexPath] {
+        
+        let indexPathsForVisibleRows = followerTableView.indexPathsForVisibleRows ?? []
+        
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        
+        return Array(indexPathsIntersection)
+    }
+}
+
+
+// MARK: - FollowerManagerDelegate
+
+extension FollowerVC: FollowerManagerDelegate {
+    
+    func followerResultsUpdated(
+        followers: [Follower],
+        isNewSearch: Bool
+    ) {
+        if isNewSearch {
+            self.followers = followers
+        }
+        else {
+            self.followers.append(contentsOf: followers)
+        }
+        
+        DispatchQueue.main.async {
+            
+            var newIndexPathsToReload: [IndexPath]?
+            if !isNewSearch {
+                newIndexPathsToReload = self.calculateIndexPathsToReload(
+                    from: followers
+                )
+            }
+                   
+            guard let newIndexPaths = newIndexPathsToReload else {
+                self.followerTableView.refreshControl?.endRefreshing()
+                self.followerTableView.reloadData()
+                return
+            }
+            
+            self.followerTableView.beginUpdates()
+            self.followerTableView.insertRows(
+                at: newIndexPaths,
+                with: .none
+            )
+            self.followerTableView.endUpdates()
+        }
+    }
+    
+    func didFailWithError(error: String) {
+        DispatchQueue.main.async {
+            self.displayMessage(message: error)
+        }
     }
 }
 
@@ -279,11 +365,27 @@ extension FollowerVC: UITableViewDataSource {
             ) as! FollowerCell
             
             let follower = followers[indexPath.row]
-            //TODO
+            
+            var user: User!
+            switch followerType! {
+            case .follower:
+                user = follower.user
+                
+            case .followedUser:
+                user = follower.followedUser
+            }
+            
             cell.configureCell(
                 follower: follower,
-                followerType: followerType
+                user: user
             )
+            
+            if user.profileImageDownloadState == .new {
+                startUserProfileImageDownloadFor(
+                    user: user,
+                    indexPath: indexPath
+                )
+            }
             return cell
         }
         else {
@@ -310,6 +412,28 @@ extension FollowerVC: UITableViewDataSource {
 }
 
 
+extension FollowerVC: UITableViewDataSourcePrefetching {
+    
+    func tableView(
+        _ tableView: UITableView,
+        prefetchRowsAt indexPaths: [IndexPath]
+    ) {
+        // No need to fetch if there are no more results
+        guard followerManager.hasMoreResults else { return }
+        
+        // Get the row number of the last visible row
+        guard let maxVisibleRowNumber =
+            tableView.indexPathsForVisibleRows?.max()?.row else { return }
+        
+        // Calculate the percentage of total rows that are scolled to
+        let scrollPercentage = CGFloat(maxVisibleRowNumber) / CGFloat(followers.count)
+        
+        // Only prefetch when the scrolled percentage is >= 85%
+        guard scrollPercentage >= PREFETCH_SCROLL_PERCENTAGE else { return }
+        
+        followerManager.fetchMoreResults()
+    }
+}
 
 
 extension FollowerVC: UITableViewDelegate {

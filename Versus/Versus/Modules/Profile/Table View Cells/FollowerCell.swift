@@ -21,7 +21,8 @@ class FollowerCell: UITableViewCell {
     private let s3BucketService = S3BucketService.instance
     
     
-    private var userDisplayed: User!
+    private var user: User?
+    private var follower: Follower?
     private var followStatus: FollowStatus = .notFollowing
     
     
@@ -36,24 +37,27 @@ class FollowerCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        profileImageView.image = nil
+        profileImageView.image = UIImage(named: "default-profile")
         usernameLabel.text = nil
         displayNameLabel.text = nil
+        user = nil
+        follower = nil
     }
     
     
     
     
     @IBAction func followButtonAction() {
+        guard let user = user else { return }
         
         switch followStatus {
             
         case .following:
-            displayUnfollowAlert()
+            displayUnfollowAlert(user: user)
             
         case .notFollowing:
             
-            followUser()
+            followUser(user: user)
             
             // Manually set follow status to update UI immediately.
             // Revert if there's a failure
@@ -73,10 +77,10 @@ class FollowerCell: UITableViewCell {
     }
     
     
-    private func followUser() {
+    private func followUser(user: User) {
                 
         followerService.followUser(
-            userId: userDisplayed.id
+            userId: user.id
         ) { [weak self] (error) in
             guard let self = self else { return }
             
@@ -93,7 +97,7 @@ class FollowerCell: UITableViewCell {
                 }
                 else {
                     CurrentAccount.addFollowedUserId(
-                        id: self.userDisplayed.id
+                        id: user.id
                     )
                 }
             }
@@ -101,11 +105,11 @@ class FollowerCell: UITableViewCell {
     }
     
     
-    private func displayUnfollowAlert() {
+    private func displayUnfollowAlert(user: User) {
         
         let unfollowAlert = UIAlertController(
             title: "Confirm Unfollow",
-            message: "Are you sure you want to unfollow @\(userDisplayed.username)",
+            message: "Are you sure you want to unfollow @\(user.username)",
             preferredStyle: .actionSheet
         )
         
@@ -115,7 +119,7 @@ class FollowerCell: UITableViewCell {
         ) { (action) in
                         
             self.loadFollowerRecord(
-                userId: self.userDisplayed.id
+                user: user
             )
             
             // Manually set follow status to update UI immediately.
@@ -142,11 +146,11 @@ class FollowerCell: UITableViewCell {
     }
     
     
-    private func loadFollowerRecord(userId: Int) {
+    private func loadFollowerRecord(user: User) {
         
         followerService.getFollowedUser(
             userId: CurrentAccount.user.id,
-            followedUserId: userId
+            followedUserId: user.id
         ) { [weak self] (follower, error) in
             guard let self = self else { return }
             
@@ -157,14 +161,17 @@ class FollowerCell: UITableViewCell {
                     )
                 }
                 else if let follower = follower {
-                    self.unfollowUser(followerId: follower.id)
+                    self.unfollowUser(
+                        user: user,
+                        followerId: follower.id
+                    )
                 }
             }
         }
     }
     
     
-    private func unfollowUser(followerId: Int) {
+    private func unfollowUser(user: User, followerId: Int) {
         
         followerService.unfollow(
             followerId: followerId,
@@ -187,7 +194,7 @@ class FollowerCell: UITableViewCell {
                     else {
                         
                         CurrentAccount.removeFollowedUserId(
-                            id: self.userDisplayed.id
+                            id: user.id
                         )
                     }
                 }
@@ -196,6 +203,12 @@ class FollowerCell: UITableViewCell {
     }
     
     
+    func updateImage() {
+        
+        if let image = user?.profileImage {
+            profileImageView?.image = image
+        }
+    }
     
     
     /**
@@ -203,39 +216,26 @@ class FollowerCell: UITableViewCell {
      */
     func configureCell(
         follower: Follower,
-        followerType: FollowerType
+        user: User
     ) {
+        self.follower = follower
+        self.user = user
         
-        switch followerType {
-        case .follower:
-            userDisplayed = follower.user
-            
-        case .followedUser:
-            userDisplayed = follower.followedUser
-        }
-        
-        if CurrentAccount.userIsMe(userId: userDisplayed.id) {
+        if CurrentAccount.userIsMe(userId: user.id) {
             followButton.isHidden = true
         }
         else {
             followStatus = CurrentAccount.getFollowStatusFor(
-                userId: userDisplayed.id
+                userId: user.id
             )
             configureFollowButton()
         }
         
-        usernameLabel.text = userDisplayed.username
-        displayNameLabel.text = userDisplayed.name
+        usernameLabel.text = user.username
+        displayNameLabel.text = user.name
         
-//        s3BucketService.downloadImage(
-//            mediaId: userDisplayed.profileImageId,
-//            imageType: .regular
-//        ) { [weak self] (image, error) in
-//            guard let self = self else { return }
-//
-//            DispatchQueue.main.async {
-//                self.profileImageView.image = image
-//            }
-//        }
+        if let image = user.profileImage {
+            profileImageView?.image = image
+        }
     }
 }

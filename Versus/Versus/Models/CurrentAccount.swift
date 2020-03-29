@@ -13,7 +13,6 @@ class CurrentAccount {
     
     static private var _user: User?
     static private var _token: String?
-    static private var _followedUserIds = [Int]()
     
     private static let notificationCenter = NotificationCenter.default
     
@@ -25,10 +24,10 @@ extension CurrentAccount {
     
     static var followedUserIds: [Int] {
         get {
-            if _followedUserIds.isEmpty {
-                _followedUserIds = userDefaults.value(forKey: "followedUserIds") as! [Int]
-            }
-            return _followedUserIds
+            return userDefaults.value(forKey: "followedUserIds") as! [Int]
+        }
+        set {
+            userDefaults.set(newValue, forKey: "followedUserIds")
         }
     }
     
@@ -68,20 +67,19 @@ extension CurrentAccount {
     
     
     static func setFollowedUserIds(ids: [Int]) {
-        _followedUserIds = ids
-        userDefaults.set(ids, forKey: "followedUserIds")
+        followedUserIds = ids
     }
     
     
     static func addFollowedUserId(id: Int) {
-        _followedUserIds.append(id)
+        followedUserIds.append(id)
         postFollowersUpdated()
     }
     
     
     static func removeFollowedUserId(id: Int) {
         if let index = followedUserIds.firstIndex(of: id) {
-            _followedUserIds.remove(at: index)
+            followedUserIds.remove(at: index)
             postFollowersUpdated()
         }
     }

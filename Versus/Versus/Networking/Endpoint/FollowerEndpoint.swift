@@ -11,8 +11,8 @@ import Foundation
 enum FollowerEndpoint {
     case followUser(userId: Int)
     case getFollowedUser(userId: Int, followedUserId: Int)
-    case loadFollowedUsers(userId: Int)
-    case loadFollowers(userId: Int)
+    case loadFollowedUsers(userId: Int, page: Int)
+    case loadFollowers(userId: Int, page: Int)
     case unfollow(followerId: Int)
 }
 
@@ -38,10 +38,10 @@ extension FollowerEndpoint: EndpointType {
         case .getFollowedUser(let userId, _):
             return "api/users/\(userId)/followed_users"
             
-        case .loadFollowedUsers(let userId):
+        case .loadFollowedUsers(let userId, _):
             return "api/users/\(userId)/followed_users"
             
-        case .loadFollowers(let userId):
+        case .loadFollowers(let userId, _):
             return "api/users/\(userId)/followers"
             
         case .unfollow(let followerId):
@@ -92,11 +92,23 @@ extension FollowerEndpoint: EndpointType {
                 additionalHeaders: headers
             )
             
-        case .loadFollowedUsers:
-            return .request(additionalHeaders: headers)
+        case .loadFollowedUsers(_, let page):
+            return .requestParametersAndHeaders(
+                bodyParameters: nil,
+                urlParameters: [
+                    "page": page
+                ],
+                additionalHeaders: headers
+            )
             
-        case .loadFollowers:
-            return .request(additionalHeaders: headers)
+        case .loadFollowers(_, let page):
+            return .requestParametersAndHeaders(
+                bodyParameters: nil,
+                urlParameters: [
+                    "page": page
+                ],
+                additionalHeaders: headers
+            )
             
         case .unfollow:
             return .request(additionalHeaders: headers)
