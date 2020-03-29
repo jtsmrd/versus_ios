@@ -6,6 +6,9 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import Foundation
+import UIKit
+
 class User: Codable {
     
     private var _id: Int?
@@ -18,7 +21,7 @@ class User: Codable {
     private var _updateDate: Date?
     private var _username: String?
     private var _entries: [Entry]?
-    private var _profileImage: String?
+    private var _profileImageId: String?
     private var _backgroundImage: String?
     private var _followedUserCount: Int?
     private var _followerCount: Int?
@@ -27,7 +30,7 @@ class User: Codable {
     private var _apnsToken: String?
     
     var profileImageDownloadState: ImageDownloadState = .new
-    var profileImageImage: UIImage?
+    var profileImage: UIImage?
     
     enum CodingKeys: String, CodingKey {
         case _id = "id"
@@ -40,7 +43,7 @@ class User: Codable {
         case _updateDate = "updateDate"
         case _username = "username"
         case _entries = "entries"
-        case _profileImage = "profileImage"
+        case _profileImageId = "profileImage"
         case _backgroundImage = "backgroundImage"
         case _followedUserCount = "followedUserCount"
         case _followerCount = "followerCount"
@@ -108,12 +111,12 @@ extension User {
     }
     
     
-    var profileImage: String {
+    var profileImageId: String {
         get {
-            return _profileImage ?? ""
+            return _profileImageId ?? ""
         }
         set {
-            _profileImage = newValue
+            _profileImageId = newValue
         }
     }
     

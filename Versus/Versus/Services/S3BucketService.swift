@@ -9,7 +9,6 @@
 import Foundation
 import AWSCore
 import AWSS3
-import AWSUserPoolsSignIn
 import AVKit
 
 enum S3BucketType {

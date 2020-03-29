@@ -6,6 +6,8 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 typealias NetworkRouterCompletion = (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> ()
 
 protocol NetworkRouter: class {

@@ -577,6 +577,30 @@ static NSTimeInterval _clockskew = 0.0;
         || [self isEqualToString:@"eu-west-3"]) {
         return AWSRegionEUWest3;
     }
+    
+    if ([self isEqualToString:@"AWSRegionUSGovEast1"]
+        || [self isEqualToString:@"USGovEast1"]
+        || [self isEqualToString:@"us-gov-east-1"]) {
+        return AWSRegionUSGovEast1;
+    }
+    
+    if ([self isEqualToString:@"AWSRegionEUNorth1"]
+        || [self isEqualToString:@"EUNorth1"]
+        || [self isEqualToString:@"eu-north-1"]) {
+        return AWSRegionEUNorth1;
+    }
+
+    if ([self isEqualToString:@"AWSRegionAPEast1"]
+        || [self isEqualToString:@"APEast1"]
+        || [self isEqualToString:@"ap-east-1"]) {
+        return AWSRegionAPEast1;
+    }
+    
+    if ([self isEqualToString:@"AWSRegionMESouth1"]
+        || [self isEqualToString:@"MESouth1"]
+        || [self isEqualToString:@"me-south-1"]) {
+        return AWSRegionMESouth1;
+    }
 
     return AWSRegionUnknown;
 }
@@ -615,7 +639,7 @@ static NSTimeInterval _clockskew = 0.0;
                                 options:NSFileManagerItemReplacementUsingNewMetadataOnly
                        resultingItemURL:nil
                                   error:outError];
-        if ( NO == result ) {
+        if (NO == result) {
             if (backupItemName) {
                 NSURL *backupItemURL = [[destinationURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:backupItemName];
                 NSError *error = nil;

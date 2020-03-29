@@ -6,6 +6,8 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 class LeaderService {
     
     static let instance = LeaderService()

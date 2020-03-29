@@ -53,6 +53,11 @@ class FollowerVC: UIViewController {
             forCellReuseIdentifier: FOLLOWER_CELL
         )
         
+        followerTableView.register(
+            UINib(nibName: "NoFollowersCell", bundle: nil),
+            forCellReuseIdentifier: "NoFollowersCell"
+        )
+        
         switch followerType {
         case .follower:
             titleLabel.text = "Followers"
@@ -253,8 +258,12 @@ extension FollowerVC: UITableViewDataSource {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        
-        return followers.count
+        if !followers.isEmpty {
+            return followers.count
+        }
+        else {
+            return 1    // No followers cell
+        }
     }
     
     
@@ -263,18 +272,27 @@ extension FollowerVC: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: FOLLOWER_CELL,
-            for: indexPath
-        ) as! FollowerCell
-        
-        let follower = followers[indexPath.row]
-        //TODO
-        cell.configureCell(
-            follower: follower,
-            followerType: followerType
-        )
-        return cell
+        if !followers.isEmpty {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: FOLLOWER_CELL,
+                for: indexPath
+            ) as! FollowerCell
+            
+            let follower = followers[indexPath.row]
+            //TODO
+            cell.configureCell(
+                follower: follower,
+                followerType: followerType
+            )
+            return cell
+        }
+        else {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "NoFollowersCell",
+                for: indexPath
+            )
+            return cell
+        }
     }
     
     
@@ -282,8 +300,12 @@ extension FollowerVC: UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        
-        return 70
+        if !followers.isEmpty {
+            return 70
+        }
+        else {
+            return tableView.frame.height    // No followers cell
+        }
     }
 }
 

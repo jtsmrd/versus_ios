@@ -45,7 +45,7 @@ class LeaderCell: UITableViewCell {
         )
         
         S3BucketService.instance.downloadImage(
-            mediaId: leader.user.profileImage,
+            mediaId: leader.user.profileImageId,
             imageType: .regular
         ) { (image, errorMessage) in
 

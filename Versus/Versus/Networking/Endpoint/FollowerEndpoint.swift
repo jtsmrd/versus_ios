@@ -6,6 +6,8 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 enum FollowerEndpoint {
     case followUser(userId: Int)
     case getFollowedUser(userId: Int, followedUserId: Int)

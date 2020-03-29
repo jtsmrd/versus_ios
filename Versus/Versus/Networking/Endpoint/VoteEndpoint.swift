@@ -6,6 +6,8 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 enum VoteEndpoint {
     case create(
         entryId: Int,

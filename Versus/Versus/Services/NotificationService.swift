@@ -6,6 +6,8 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 class NotificationService {
     
     static let instance = NotificationService()
@@ -18,11 +20,13 @@ class NotificationService {
     
     func getUserNotifications(
         userId: Int,
+        page: Int,
         completion: @escaping (_ notifications: [Notification], _ error: String?) -> ()
     ) {
         router.request(
             .loadNotifications(
-                userId: userId
+                userId: userId,
+                page: page
             )
         ) { (data, response, error) in
             

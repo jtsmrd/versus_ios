@@ -6,6 +6,8 @@
 //  Copyright © 2020 VersusTeam. All rights reserved.
 //
 
+import UIKit
+
 class CompetitionFeedContainerVC: UIViewController {
 
     enum ScreenPosition {

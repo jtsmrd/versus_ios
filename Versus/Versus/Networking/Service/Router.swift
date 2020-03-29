@@ -6,6 +6,8 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 class Router<Endpoint: EndpointType>: NetworkRouter {
     
     private var task: URLSessionTask?

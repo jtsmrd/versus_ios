@@ -6,6 +6,9 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+import UIKit
+
 class Notification: Codable {
     
     private var _id: Int
@@ -14,6 +17,9 @@ class Notification: Codable {
     private var _message: String
     private var _payload: String
     private var _wasViewed: Bool
+    
+    var imageDownloadState: ImageDownloadState = .new
+    var image: UIImage?
     
     enum CodingKeys: String, CodingKey {
         case _id = "id"
@@ -26,7 +32,7 @@ class Notification: Codable {
 }
 
 extension Notification {
-    
+        
     var id: Int {
         return _id
     }
@@ -47,12 +53,21 @@ extension Notification {
         return _wasViewed
     }
     
-    
     var notificationPayload: Any {
         return parseNotificationPayload(payload: _payload)
     }
     
-    
+    var notificationImageId: String? {
+        
+        switch notificationPayload {
+            
+        case let info as FollowerNotificationInfo:
+            return info.followerProfileImage
+            
+        default:
+            return nil
+        }
+    }
     
     private func parseNotificationPayload(payload: String) -> Any {
 

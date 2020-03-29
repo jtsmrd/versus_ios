@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 extension UIImage {
     
@@ -49,7 +50,7 @@ extension UIImage {
         var actualWidth: CGFloat = self.size.width
         var imgRatio: CGFloat = actualWidth / actualHeight
         let maxRatio: CGFloat = maxWidth / maxHeight
-        var compressionQuality: CGFloat = 0.5
+        var compressionQuality: CGFloat = 1
         
         if actualHeight > maxHeight || actualWidth > maxWidth {
             if imgRatio < maxRatio {
@@ -75,5 +76,43 @@ extension UIImage {
         UIGraphicsEndImageContext()
         guard let imageData = img.jpegData(compressionQuality: compressionQuality) else { return nil }
         return UIImage(data: imageData)
+    }
+    
+    
+    enum HEICError: Error {
+        case heicNotSupported
+        case cgImageMissing
+        case couldNotFinalize
+    }
+    
+    func heicData(compressionQuality: CGFloat) throws -> Data {
+        let data = NSMutableData()
+        guard let imageDestination = CGImageDestinationCreateWithData(
+            data,
+            AVFileType.heic as CFString,
+            1,
+            nil
+        )
+        else {
+            throw HEICError.heicNotSupported
+        }
+      
+        guard let cgImage = self.cgImage else {
+            throw HEICError.cgImageMissing
+        }
+      
+        let options: NSDictionary = [
+            kCGImageDestinationLossyCompressionQuality: compressionQuality
+        ]
+      
+        CGImageDestinationAddImage(
+            imageDestination,
+            cgImage,
+            options
+        )
+        guard CGImageDestinationFinalize(imageDestination) else {
+            throw HEICError.couldNotFinalize
+        }
+        return data as Data
     }
 }

@@ -6,11 +6,13 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 enum CompetitionEndpoint {
     case getCompetition(competitionId: Int)
-    case loadFeaturedCompetitions(categoryId: Int?)
-    case loadFollowedUserCompetitions(userId: Int)
-    case loadUserCompetitions(userId: Int)
+    case loadFeaturedCompetitions(categoryId: Int?, page: Int)
+    case loadFollowedUserCompetitions(userId: Int, page: Int)
+    case loadUserCompetitions(userId: Int, page: Int)
 }
 
 extension CompetitionEndpoint: EndpointType {
@@ -35,10 +37,10 @@ extension CompetitionEndpoint: EndpointType {
         case .loadFeaturedCompetitions:
             return "api/competitions"
         
-        case .loadFollowedUserCompetitions(let userId):
+        case .loadFollowedUserCompetitions(let userId, _):
             return "api/users/\(userId)/followed_user_competitions"
             
-        case .loadUserCompetitions(let userId):
+        case .loadUserCompetitions(let userId, _):
             return "api/users/\(userId)/competitions"
         }
     }
@@ -70,7 +72,7 @@ extension CompetitionEndpoint: EndpointType {
         case .getCompetition:
             return .request(additionalHeaders: headers)
             
-        case .loadFeaturedCompetitions(let categoryId):
+        case .loadFeaturedCompetitions(let categoryId, let page):
             
             if let categoryId = categoryId {
                 
@@ -78,7 +80,8 @@ extension CompetitionEndpoint: EndpointType {
                     bodyParameters: nil,
                     urlParameters: [
                         "categoryId": categoryId,
-                        "featured": 1
+                        "featured": 1,
+                        "page": page
                     ],
                     additionalHeaders: headers
                 )
@@ -87,16 +90,29 @@ extension CompetitionEndpoint: EndpointType {
             return .requestParametersAndHeaders(
                 bodyParameters: nil,
                 urlParameters: [
-                    "featured": 1
+                    "featured": 1,
+                    "page": page
                 ],
                 additionalHeaders: headers
             )
             
-        case .loadFollowedUserCompetitions:
-            return .request(additionalHeaders: headers)
+        case .loadFollowedUserCompetitions(_, let page):
+            return .requestParametersAndHeaders(
+                bodyParameters: nil,
+                urlParameters: [
+                    "page": page
+                ],
+                additionalHeaders: headers
+            )
             
-        case .loadUserCompetitions:
-            return .request(additionalHeaders: headers)
+        case .loadUserCompetitions(_, let page):
+            return .requestParametersAndHeaders(
+                bodyParameters: nil,
+                urlParameters: [
+                    "page": page
+                ],
+                additionalHeaders: headers
+            )
         }
     }
     

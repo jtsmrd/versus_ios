@@ -6,6 +6,8 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import UIKit
+
 protocol RankType {
     var id: Int { get }
     var title: String { get }

@@ -12,35 +12,20 @@ class DiscoverVC: UIViewController {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var searchContainerView: UIView!
-    @IBOutlet weak var leaderboardCollectionView: UICollectionView!
-    @IBOutlet weak var categoryCollectionView: UICollectionView!
+    @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var competitionTableView: UITableView!
-    @IBOutlet weak var competitionTableViewHeight: NSLayoutConstraint!
     
-    
-    private let competitionService = CompetitionService.instance
-    private let leaderboardService = LeaderboardService.instance
     private let pendingImageOperations = ImageOperations()
-    private let leaderboardCollectionViewSectionInsets = UIEdgeInsets(
-        top: 2,
-        left: 2,
-        bottom: 2,
-        right: 2
-    )
-    private let browseCategoryCollectionViewSectionInsets = UIEdgeInsets(
-        top: 2,
-        left: 2,
-        bottom: 2,
-        right: 2
-    )
+    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.50
     private let COMPETITION_CELL_HEIGHT: CGFloat = 188
     
-    
+    private var competitionManager: CompetitionManager!
     private var searchUserVC: SearchUserVC!
+    private var leaderboardSelectorVC: LeaderboardSelectorVC!
+    private var categorySelectorVC: CategorySelectorVC!
     private var competitions = [Competition]()
-    private var leaderboards = [Leaderboard]()
-    private var selectedCategoryIndexPath: IndexPath?
-    
+    private var refreshControl: UIRefreshControl!
+    private var selectedCategory: Category?
     
     
     init() {
@@ -54,37 +39,69 @@ class DiscoverVC: UIViewController {
     }
     
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        competitionManager = CompetitionManager(delegate: self)
+        addSearchUserViewController()
+        addLeaderboardSelectorViewController()
+        addCategorySelectorViewController()
+        registerCells()
         configureView()
-        getFeaturedCompetitions(categoryId: nil)
-        getLeaderboards()
+        configureRefreshControl()
+        getFeaturedCompetitions()
     }
 
     
+    @objc func reloadData() {
+        getFeaturedCompetitions()
+        leaderboardSelectorVC.reloadData()
+    }
     
-    private func configureView() {
-        
-        addSearchUserViewController()
-        
-        searchBar.backgroundImage = UIImage()
+    
+    private func registerCells() {
         
         competitionTableView.register(
             UINib(nibName: COMPETITION_CELL, bundle: nil),
             forCellReuseIdentifier: COMPETITION_CELL
         )
         
-        leaderboardCollectionView.register(
-            UINib(nibName: LEADERBOARD_CELL, bundle: nil),
-            forCellWithReuseIdentifier: LEADERBOARD_CELL
+        competitionTableView.register(
+            UINib(nibName: "LeaderboardSelectorCell", bundle: nil),
+            forCellReuseIdentifier: "LeaderboardSelectorCell"
         )
         
-        categoryCollectionView.register(
-            UINib(nibName: DISCOVER_CATEGORY_CELL, bundle: nil),
-            forCellWithReuseIdentifier: DISCOVER_CATEGORY_CELL
+        competitionTableView.register(
+            UINib(nibName: "CategorySelectorCell", bundle: nil),
+            forCellReuseIdentifier: "CategorySelectorCell"
         )
+    }
+    
+    
+    private func configureView() {
+        
+        searchBar.backgroundImage = UIImage()
+    }
+    
+    
+    private func configureRefreshControl() {
+        
+        let attributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)]
+        let refreshTitle = NSAttributedString(
+            string: "Updating",
+            attributes: attributes
+        )
+        
+        refreshControl = UIRefreshControl()
+        refreshControl.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
+        refreshControl.attributedTitle = refreshTitle
+        refreshControl.addTarget(
+            self,
+            action: #selector(DiscoverVC.reloadData),
+            for: .valueChanged
+        )
+        
+        competitionTableView.refreshControl = refreshControl
     }
     
     
@@ -105,44 +122,29 @@ class DiscoverVC: UIViewController {
     }
     
     
-    private func getFeaturedCompetitions(categoryId: Int?) {
+    private func addLeaderboardSelectorViewController() {
         
-        competitionService.loadFeaturedCompetitions(
-            categoryId: categoryId
-        ) { [weak self] (competitions, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                
-                if let error = error {
-                    self.displayMessage(message: error)
-                }
-                
-                self.competitions = competitions
-                self.competitionTableViewHeight.constant = (CGFloat(competitions.count) * self.COMPETITION_CELL_HEIGHT)
-                self.competitionTableView.reloadData()
-            }
-        }
+        leaderboardSelectorVC = LeaderboardSelectorVC()
+        addChild(leaderboardSelectorVC)
+        leaderboardSelectorVC.didMove(toParent: self)
     }
     
     
-    private func getLeaderboards() {
+    private func addCategorySelectorViewController() {
         
-        leaderboardService.getLeaderboards { [weak self] (leaderboards, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                
-                if let error = error {
-                    self.displayMessage(message: error)
-                }
-                
-                self.leaderboards = leaderboards.sorted(
-                    by: { $0.type.id < $1.type.id }
-                )
-                self.leaderboardCollectionView.reloadData()
-            }
-        }
+        categorySelectorVC = CategorySelectorVC(delegate: self)
+        addChild(categorySelectorVC)
+        categorySelectorVC.didMove(toParent: self)
+    }
+    
+    
+    private func getFeaturedCompetitions() {
+        
+        competitionManager.getCompetitions(
+            queryType: .featured(
+                categoryId: selectedCategory?.categoryType.rawValue
+            )
+        )
     }
     
     
@@ -157,18 +159,6 @@ class DiscoverVC: UIViewController {
     }
     
     
-    private func showLeaderboard(leaderboard: Leaderboard) {
-        
-        let leaderboardVC = LeaderboardVC(leaderboard: leaderboard)
-        leaderboardVC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(
-            leaderboardVC,
-            animated: true
-        )
-    }
-    
-    
-    
     // MARK: - Image Operations
     
     private func startCompetitionImageDownloadFor(
@@ -176,7 +166,7 @@ class DiscoverVC: UIViewController {
         indexPath: IndexPath
     ) {
         
-        var downloadsInProgress = pendingImageOperations.downloadsInProgress
+        var downloadsInProgress = pendingImageOperations.asyncDownloadsInProgress
         
         // Make sure there isn't already a download in progress.
         guard downloadsInProgress[indexPath] == nil else { return }
@@ -194,10 +184,9 @@ class DiscoverVC: UIViewController {
                     forKey: indexPath
                 )
                 
-                self.competitionTableView.reloadRows(
-                    at: [indexPath],
-                    with: .none
-                )
+                if let competitionCell = self.competitionTableView.cellForRow(at: indexPath) as? CompetitionCell {
+                    competitionCell.updateImages()
+                }
             }
         }
         
@@ -205,61 +194,93 @@ class DiscoverVC: UIViewController {
         downloadsInProgress[indexPath] = downloadOperation
         
         // Add the operation to the queue to start downloading.
-        pendingImageOperations.downloadQueue.addOperation(
+        pendingImageOperations.asyncDownloadQueue.addOperation(
             downloadOperation
         )
-        debugPrint("# SB Operation added")
     }
-    
-    
-    private func suspendAllOperations() {
-        pendingImageOperations.downloadQueue.isSuspended = true
-    }
-    
-    
-    private func resumeAllOperations() {
-        pendingImageOperations.downloadQueue.isSuspended = false
-    }
-    
-    
-    private func loadImagesForOnscreenCells() {
+}
+
+
+private extension DiscoverVC {
+
+    private func calculateIndexPathsToReload(
+        from newCompetitions: [Competition]
+    ) -> [IndexPath] {
         
-        if let pathsArray = competitionTableView.indexPathsForVisibleRows {
-            
-            var downloadsInProgress =
-                pendingImageOperations.downloadsInProgress
-            
-            let allPendingOperations = Set(
-                downloadsInProgress.keys
-            )
-            var toBeCancelled = allPendingOperations
-            
-            let visiblePaths = Set(pathsArray)
-            toBeCancelled.subtract(visiblePaths)
-            
-            var toBeStarted = visiblePaths
-            toBeStarted.subtract(allPendingOperations)
-            
-            for indexPath in toBeCancelled {
-                
-                if let pendingDownload = downloadsInProgress[indexPath] {
-                    pendingDownload.cancel()
-                }
-                downloadsInProgress.removeValue(
-                    forKey: indexPath
-                )
-            }
-            
-            for indexPath in toBeStarted {
-                
-                let competition = competitions[indexPath.row]
-                
-                startCompetitionImageDownloadFor(
-                    competition: competition,
-                    indexPath: indexPath
-                )
-            }
+        let startIndex = competitions.count - newCompetitions.count
+        let endIndex = startIndex + newCompetitions.count
+        let indexPaths = (startIndex..<endIndex).map {
+            IndexPath(row: $0, section: 2)
         }
+        
+        return indexPaths
+    }
+    
+    func visibleIndexPathsToReload(
+        intersecting indexPaths: [IndexPath]
+    ) -> [IndexPath] {
+        
+        let indexPathsForVisibleRows = competitionTableView.indexPathsForVisibleRows ?? []
+        
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        
+        return Array(indexPathsIntersection)
+    }
+}
+
+
+// MARK: - CompetitionManagerDelegate
+
+extension DiscoverVC: CompetitionManagerDelegate {
+    
+    func competitionResultsUpdated(
+        competitions: [Competition],
+        isNewRequest: Bool
+    ) {
+        if isNewRequest {
+            self.competitions = competitions
+        }
+        else {
+            self.competitions.append(contentsOf: competitions)
+        }
+        
+        DispatchQueue.main.async {
+            
+            var newIndexPathsToReload: [IndexPath]?
+            if !isNewRequest {
+                newIndexPathsToReload = self.calculateIndexPathsToReload(
+                    from: competitions
+                )
+            }
+                   
+            guard let newIndexPaths = newIndexPathsToReload else {
+                self.competitionTableView.refreshControl?.endRefreshing()
+                self.competitionTableView.reloadData()
+                return
+            }
+            
+            self.competitionTableView.beginUpdates()
+            self.competitionTableView.insertRows(
+                at: newIndexPaths,
+                with: .none
+            )
+            self.competitionTableView.endUpdates()
+        }
+    }
+    
+    func didFailWithError(error: String) {
+        DispatchQueue.main.async {
+            self.displayMessage(message: error)
+        }
+    }
+}
+
+
+extension DiscoverVC: CategorySelectorVCDelegate {
+    
+    func categorySelected(category: Category?) {
+        selectedCategory = category
+        getFeaturedCompetitions()
     }
 }
 
@@ -280,12 +301,25 @@ extension DiscoverVC: SearchVCDelegate {
 // MARK: - UITableViewDataSource
 extension DiscoverVC: UITableViewDataSource {
     
+    func numberOfSections(
+        in tableView: UITableView
+    ) -> Int {
+        return 3
+    }
+    
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        
-        return competitions.count
+        if section == 0 {
+            return 1
+        }
+        else if section == 1 {
+            return 1
+        }
+        else {
+            return competitions.count
+        }
     }
     
     
@@ -294,32 +328,61 @@ extension DiscoverVC: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: COMPETITION_CELL,
-            for: indexPath
-        ) as! CompetitionCell
-        
-        let competition = competitions[indexPath.row]
-        
-        cell.configureCell(
-            competition: competition
-        )
-        
-//        if competition.leftEntry.imageDownloadState == .new ||
-//            competition.rightEntry.imageDownloadState == .new {
-//
-//            startCompetitionImageDownloadFor(
-//                competition: competition,
-//                indexPath: indexPath
-//            )
-//        }
-        
-        return cell
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "LeaderboardSelectorCell",
+                for: indexPath
+            ) as! LeaderboardSelectorCell
+            cell.configureCell(
+                leaderboardSelectorView: leaderboardSelectorVC.view
+            )
+            return cell
+        }
+        else if indexPath.section == 1 {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "CategorySelectorCell",
+                for: indexPath
+            ) as! CategorySelectorCell
+            cell.configureCell(
+                categorySelectorView: categorySelectorVC.view
+            )
+            return cell
+        }
+        else {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: COMPETITION_CELL,
+                for: indexPath
+            ) as! CompetitionCell
+            
+            let competition = competitions[indexPath.row]
+            
+            cell.configureCell(
+                competition: competition
+            )
+            
+            if competition.leftEntry.imageDownloadState == .new &&
+                competition.rightEntry.imageDownloadState == .new {
+                startCompetitionImageDownloadFor(
+                    competition: competition,
+                    indexPath: indexPath
+                )
+            }
+            
+            return cell
+        }
     }
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return COMPETITION_CELL_HEIGHT
+        if indexPath.section == 0 {
+            return leaderboardSelectorVC.view.frame.height
+        }
+        else if indexPath.section == 1 {
+            return categorySelectorVC.view.frame.height
+        }
+        else {
+            return COMPETITION_CELL_HEIGHT
+        }
     }
 }
 
@@ -337,157 +400,36 @@ extension DiscoverVC: UITableViewDelegate {
             animated: false
         )
         
-        showCompetition(
-            competition: competitions[indexPath.row]
-        )
-    }
-}
-
-
-// MARK: - UICollectionViewDataSource
-extension DiscoverVC: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if collectionView == leaderboardCollectionView {
-            return leaderboards.count
-        }
-        else if collectionView == categoryCollectionView {
-            return CategoryCollection.instance.categories.count
-        }
-        return 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        if collectionView == leaderboardCollectionView {
-            
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: LEADERBOARD_CELL,
-                for: indexPath
-            ) as! LeaderboardCell
-            
-            let leaderboard = leaderboards[indexPath.row]
-            cell.configureCell(leaderboard: leaderboard)
-            return cell
-        }
-        else if collectionView == categoryCollectionView {
-            
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: DISCOVER_CATEGORY_CELL,
-                for: indexPath
-            ) as! DiscoverCategoryCell
-            
-            let category = CategoryCollection.instance.categories[indexPath.row]
-            var selected = false
-            
-            if let categoryIndexPath = selectedCategoryIndexPath, categoryIndexPath == indexPath {
-                
-                selected = true
-            }
-            cell.configureCell(
-                category: category,
-                selected: selected
+        if indexPath.section == 2 {
+            showCompetition(
+                competition: competitions[indexPath.row]
             )
-            return cell
-        }
-        return UICollectionViewCell()
-    }
-}
-
-
-// MARK: - UICollectionViewDelegate
-extension DiscoverVC: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        if collectionView == leaderboardCollectionView {
-            
-            let leaderboard = leaderboards[indexPath.row]
-            
-            showLeaderboard(leaderboard: leaderboard)
-        }
-        else if collectionView == categoryCollectionView {
-            
-            let cell = collectionView.cellForItem(at: indexPath) as! DiscoverCategoryCell
-            cell.toggleSelected(selected: !cell.categorySelected)
-            
-            if cell.categorySelected {
-                
-                selectedCategoryIndexPath = indexPath
-                getFeaturedCompetitions(
-                    categoryId: cell.category.categoryType.rawValue
-                )
-            }
-            else {
-                
-                selectedCategoryIndexPath = nil
-                getFeaturedCompetitions(
-                    categoryId: nil
-                )
-            }
-            collectionView.reloadData()
         }
     }
 }
 
 
-// MARK: - UICollectionViewDelegateFlowLayout
-extension DiscoverVC: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        if collectionView == leaderboardCollectionView {
-            
-            let itemsPerRow: CGFloat = 3
-            
-            let paddingSpace = leaderboardCollectionViewSectionInsets.left * (itemsPerRow + 1)
-            let availableWidth = view.frame.width - paddingSpace
-            let widthPerItem = availableWidth / itemsPerRow
-            
-            return CGSize(width: widthPerItem, height: collectionView.frame.height)
-        }
-        else if collectionView == categoryCollectionView {
-            
-            let itemsPerRow: CGFloat = 5.5
-            
-            let paddingSpace = browseCategoryCollectionViewSectionInsets.left * (itemsPerRow + 1)
-            let availableWidth = view.frame.width - paddingSpace
-            let widthPerItem = availableWidth / itemsPerRow
-            
-            return CGSize(width: widthPerItem, height: collectionView.frame.height)
-        }
-        return CGSize.zero
-    }
-    
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        insetForSectionAt section: Int) -> UIEdgeInsets {
-        
-        if collectionView == leaderboardCollectionView {
-            return leaderboardCollectionViewSectionInsets
-        }
-        else if collectionView == categoryCollectionView {
-            return browseCategoryCollectionViewSectionInsets
-        }
-        return UIEdgeInsets.zero
-    }
-    
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        
-        if collectionView == leaderboardCollectionView {
-            return leaderboardCollectionViewSectionInsets.left
-        }
-        else if collectionView == categoryCollectionView {
-            return browseCategoryCollectionViewSectionInsets.left
-        }
-        return 0.0
+// MARK: - UITableViewDataSourcePrefetching
+
+extension DiscoverVC: UITableViewDataSourcePrefetching {
+
+    func tableView(
+        _ tableView: UITableView,
+        prefetchRowsAt indexPaths: [IndexPath]
+    ) {
+        // No need to fetch if there are no more results
+        guard competitionManager.hasMoreResults else { return }
+
+        // Get the row number of the last visible row
+        guard let maxVisibleRowNumber =
+            tableView.indexPathsForVisibleRows?.max()?.row else { return }
+
+        // Calculate the percentage of total rows that are scolled to
+        let scrollPercentage = CGFloat(maxVisibleRowNumber) / CGFloat(competitions.count)
+
+        // Only prefetch when the scrolled percentage is >= 85%
+        guard scrollPercentage >= PREFETCH_SCROLL_PERCENTAGE else { return }
+
+        competitionManager.fetchMoreResults()
     }
 }

@@ -6,6 +6,8 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 typealias Parameters = [String: Any]
 
 protocol ParameterEncoder {

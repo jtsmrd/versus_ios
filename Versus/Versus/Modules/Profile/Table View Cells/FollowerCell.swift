@@ -227,15 +227,15 @@ class FollowerCell: UITableViewCell {
         usernameLabel.text = userDisplayed.username
         displayNameLabel.text = userDisplayed.name
         
-        s3BucketService.downloadImage(
-            mediaId: userDisplayed.profileImage,
-            imageType: .regular
-        ) { [weak self] (image, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.profileImageView.image = image
-            }
-        }
+//        s3BucketService.downloadImage(
+//            mediaId: userDisplayed.profileImageId,
+//            imageType: .regular
+//        ) { [weak self] (image, error) in
+//            guard let self = self else { return }
+//
+//            DispatchQueue.main.async {
+//                self.profileImageView.image = image
+//            }
+//        }
     }
 }

@@ -6,6 +6,8 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+import UIKit
 import MobileCoreServices
 
 protocol EditCurrentUserVCDelegate {
@@ -184,10 +186,10 @@ class EditCurrentUserVC: UIViewController {
     
     private func downloadProfileImage() {
         
-        if !user.profileImage.isEmpty {
+        if !user.profileImageId.isEmpty {
             
             s3BucketService.downloadImage(
-                mediaId: user.profileImage,
+                mediaId: user.profileImageId,
                 imageType: .regular
             ) { [weak self] (image, customError) in
                 

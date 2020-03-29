@@ -7,18 +7,17 @@
 //
 
 import UIKit
-import AWSUserPoolsSignIn
 
 class ResetPasswordVC: UIViewController {
 
     private let accountService = AccountService.instance
-    private let cognito = AWSCognitoIdentityUserPool.default()
+//    private let cognito = AWSCognitoIdentityUserPool.default()
     
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var resetPasswordButton: RoundButton!
     
     var keyboardToolbar: KeyboardToolbar!
-    var user: AWSCognitoIdentityUser!
+//    var user: AWSCognitoIdentityUser!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,7 +73,7 @@ class ResetPasswordVC: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let changePasswordVC = segue.destination as? ChangePasswordVC {
-            changePasswordVC.initData(user: user)
+//            changePasswordVC.initData(user: user)
         }
     }
 }

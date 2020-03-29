@@ -10,20 +10,15 @@ import UIKit
 
 class SearchUserCell: UITableViewCell {
     
-    
     @IBOutlet weak var profileImageView: CircleImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var displayNameLabel: UILabel!
     @IBOutlet weak var followButton: FollowButton!
     
-    
     private let followerService = FollowerService.instance
     
-    
-    private var user: User!
+    private var user: User?
     private var followStatus: FollowStatus = .notFollowing
-    
-    
     
     
     override func awakeFromNib() {
@@ -31,31 +26,28 @@ class SearchUserCell: UITableViewCell {
         // Initialization code
     }
     
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        profileImageView.image = nil
+        profileImageView.image = UIImage(named: "default-profile")
         usernameLabel.text = nil
         displayNameLabel.text = nil
+        user = nil
     }
     
     
-    
-    
-    /**
-     
-     */
     @IBAction func followButtonAction() {
+        
+        guard let user = user else { return }
         
         switch followStatus {
             
         case .following:
-            displayUnfollowAlert()
+            displayUnfollowAlert(user: user)
             
         case .notFollowing:
             
-            followUser()
+            followUser(user: user)
             
             // Manually set follow status to update UI immediately.
             // Revert if there's a failure
@@ -74,8 +66,8 @@ class SearchUserCell: UITableViewCell {
     }
     
     
-    private func followUser() {
-                
+    private func followUser(user: User) {
+        
         followerService.followUser(
             userId: user.id
         ) { [weak self] (error) in
@@ -94,7 +86,7 @@ class SearchUserCell: UITableViewCell {
                 }
                 else {
                     CurrentAccount.addFollowedUserId(
-                        id: self.user.id
+                        id: user.id
                     )
                 }
             }
@@ -102,7 +94,7 @@ class SearchUserCell: UITableViewCell {
     }
     
     
-    private func displayUnfollowAlert() {
+    private func displayUnfollowAlert(user: User) {
         
         let unfollowAlert = UIAlertController(
             title: "Confirm Unfollow",
@@ -115,7 +107,7 @@ class SearchUserCell: UITableViewCell {
             style: .destructive
         ) { (action) in
                         
-            self.loadAndUnfollowUser()
+            self.loadAndUnfollowUser(user: user)
             
             // Manually set follow status to update UI immediately.
             // Revert if there's a failure
@@ -141,7 +133,7 @@ class SearchUserCell: UITableViewCell {
     }
     
     
-    private func loadAndUnfollowUser() {
+    private func loadAndUnfollowUser(user: User) {
         
         let userId = CurrentAccount.user.id
         
@@ -209,12 +201,8 @@ class SearchUserCell: UITableViewCell {
     }
     
     
-    /**
-     
-     */
     func configureCell(
-        user: User,
-        profileImage: UIImage?
+        user: User
     ) {
         self.user = user
         
@@ -230,6 +218,15 @@ class SearchUserCell: UITableViewCell {
         
         usernameLabel.text = user.username
         displayNameLabel.text = user.name
-        profileImageView.image = profileImage
+        
+        if let image = user.profileImage {
+            profileImageView.image = image
+        }
+    }
+    
+    func updateProfileImage() {
+        if let image = user?.profileImage {
+            profileImageView.image = image
+        }
     }
 }

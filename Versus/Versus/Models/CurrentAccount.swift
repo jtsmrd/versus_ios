@@ -25,6 +25,9 @@ extension CurrentAccount {
     
     static var followedUserIds: [Int] {
         get {
+            if _followedUserIds.isEmpty {
+                _followedUserIds = userDefaults.value(forKey: "followedUserIds") as! [Int]
+            }
             return _followedUserIds
         }
     }
@@ -66,6 +69,7 @@ extension CurrentAccount {
     
     static func setFollowedUserIds(ids: [Int]) {
         _followedUserIds = ids
+        userDefaults.set(ids, forKey: "followedUserIds")
     }
     
     

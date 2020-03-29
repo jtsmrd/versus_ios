@@ -21,6 +21,7 @@ class NotificationCell: UITableViewCell {
     private let s3BucketService = S3BucketService.instance
     
     
+    private var notification: Notification?
     private var followStatus: FollowStatus = .notFollowing
     
     
@@ -36,6 +37,7 @@ class NotificationCell: UITableViewCell {
         notificationTextLabel.text = nil
         rankImageView.image = nil
         competitionImageView.image = nil
+        notification = nil
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -93,39 +95,39 @@ class NotificationCell: UITableViewCell {
 //            }
 //        }
         
-        competitionService.getCompetition(
-            competitionId: notificationInfo.competitionId
-        ) { [weak self] (competition, error) in
-            guard let self = self else { return }
-            
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.parentViewController?.displayMessage(message: error)
-                }
-            }
-            else if let competition = competition {
-
-                // Get and display the competition image for the current user
-                var mediaId = ""
-                if CurrentAccount.userIsMe(userId: competition.leftEntry.user.id) {
-                    mediaId = competition.leftEntry.mediaId
-                }
-                else {
-                    mediaId = competition.rightEntry.mediaId
-                }
-
-                self.s3BucketService.downloadImage(
-                    mediaId: mediaId,
-                    imageType: .regular
-                ) { [weak self] (image, error) in
-                    guard let self = self else { return }
-                    
-                    DispatchQueue.main.async {
-                        self.competitionImageView.image = image
-                    }
-                }
-            }
-        }
+//        competitionService.getCompetition(
+//            competitionId: notificationInfo.competitionId
+//        ) { [weak self] (competition, error) in
+//            guard let self = self else { return }
+//
+//            if let error = error {
+//                DispatchQueue.main.async {
+//                    self.parentViewController?.displayMessage(message: error)
+//                }
+//            }
+//            else if let competition = competition {
+//
+//                // Get and display the competition image for the current user
+//                var mediaId = ""
+//                if CurrentAccount.userIsMe(userId: competition.leftEntry.user.id) {
+//                    mediaId = competition.leftEntry.mediaId
+//                }
+//                else {
+//                    mediaId = competition.rightEntry.mediaId
+//                }
+//
+//                self.s3BucketService.downloadImage(
+//                    mediaId: mediaId,
+//                    imageType: .regular
+//                ) { [weak self] (image, error) in
+//                    guard let self = self else { return }
+//
+//                    DispatchQueue.main.async {
+//                        self.competitionImageView.image = image
+//                    }
+//                }
+//            }
+//        }
     }
     
     
@@ -136,22 +138,11 @@ class NotificationCell: UITableViewCell {
         rankImageView.isHidden = true
 
         let notificationInfo = notification.notificationPayload as! FollowerNotificationInfo
-//        notificationTextLabel.text = notificationInfo.notificationText.replacingOccurrences(of: "#username", with: "@" + notificationInfo.username)
 
-        determineUserFollowStatus(userId: notificationInfo.followerUserId)
+        determineUserFollowStatus(
+            userId: notificationInfo.followerUserId
+        )
         configureFollowerButton()
-
-        // Set the notification image view image to the following users' profile image
-        self.s3BucketService.downloadImage(
-            mediaId: notificationInfo.followerProfileImage,
-            imageType: .regular
-        ) { [weak self] (image, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.notificationImageView.image = image
-            }
-        }
     }
     
     
@@ -170,9 +161,17 @@ class NotificationCell: UITableViewCell {
 
     
     func configureCell(notification: Notification) {
+        self.notification = notification
         
-        // The default notification image, will be overwritten in some cases
-        notificationImageView.image = UIImage(named: "versus_icon_white")
+        if let image = notification.image {
+            notificationImageView.image = image
+        }
+        else {
+            notificationImageView.image = UIImage(
+                named: "versus_icon_white"
+            )
+        }
+        
         notificationTextLabel.text = notification.message
         
         // New notifications will have a background color. Once viewed, it will be clear.
@@ -195,6 +194,13 @@ class NotificationCell: UITableViewCell {
             
         case .newDirectMessage:
             return
+        }
+    }
+    
+    func updateImage() {
+        
+        if let image = notification?.image {
+            notificationImageView.image = image
         }
     }
 }

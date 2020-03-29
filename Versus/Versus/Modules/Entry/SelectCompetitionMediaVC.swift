@@ -32,6 +32,15 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
     private var videoViewSingleTap: UITapGestureRecognizer!
     private var videoViewDoubleTap: UITapGestureRecognizer!
     
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +55,12 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
         configureAVPlayer()
         
         configureGestureRecognizers()
+    }
+    
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
     }
     
     
@@ -119,15 +134,27 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
         switch media {
         case is UIImage:
             
-            performSegue(withIdentifier: SHOW_COMPETITION_DETAILS, sender: media)
+            let vc = CompetitionDetailsVC(media: media)
+            navigationController?.pushViewController(
+                vc,
+                animated: true
+            )
             
         case is AVURLAsset:
             
-            performSegue(withIdentifier: SHOW_SELECT_PREVIEW_IMAGE, sender: media)
+            let vc = SelectPreviewImageVC(
+                videoAVUrlAsset: media as! AVURLAsset
+            )
+            navigationController?.pushViewController(
+                vc,
+                animated: true
+            )
             
         default:
-            displayMessage(message: "Unsupported media type, please select an image or video.")
-            return
+            displayMessage(
+                message: "Unsupported media type, please select an image or video."
+            )
+            break
         }
     }
     
@@ -275,20 +302,6 @@ class SelectCompetitionMediaVC: SwiftyCamViewController {
         competitionVideoContainerView.removeGestureRecognizer(videoViewSingleTap)
         competitionVideoContainerView.removeGestureRecognizer(videoViewDoubleTap)
     }
-    
-
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if let competitionDetailsVC = segue.destination as? CompetitionDetailsVC, let image = sender as? UIImage {
-            competitionDetailsVC.initData(media: image)
-        }
-        else if let selectPreviewImageVC = segue.destination as? SelectPreviewImageVC, let videoAsset = sender as? AVURLAsset {
-            selectPreviewImageVC.initData(videoAVUrlAsset: videoAsset)
-        }
-    }
 }
 
 extension SelectCompetitionMediaVC: SwiftyCamViewControllerDelegate {
@@ -325,6 +338,10 @@ extension SelectCompetitionMediaVC: SwiftyCamViewControllerDelegate {
         
         // Configure the view for the video recorded.
         configureView()
+    }
+    
+    func swiftyCamSessionDidStartRunning(_ swiftyCam: SwiftyCamViewController) {
+        swiftyCam.view.setNeedsLayout()
     }
 }
 

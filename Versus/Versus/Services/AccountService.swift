@@ -6,6 +6,8 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 class AccountService {
     
     static let instance = AccountService()

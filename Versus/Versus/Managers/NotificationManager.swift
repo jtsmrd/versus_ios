@@ -6,45 +6,70 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import AWSDynamoDB
+protocol NotificationManagerDelegate: class {
+    func notificationResultsUpdated(
+        notifications: [Notification],
+        isNewRequest: Bool
+    )
+    func didFailWithError(error: String)
+}
 
 class NotificationManager {
     
-    static let instance = NotificationManager()
+    private let notificationService = NotificationService.instance
     
-    var notifications = [Notification]()
+    private var userId: Int = 0
+    private var page = 1
+    private var isNewRequest: Bool {
+        return page == 1
+    }
+    private var fetchingInProgress = false
+    private(set) var hasMoreResults = false
+    private weak var delegate: NotificationManagerDelegate?
     
-    private init() { }
-    
-    /*
-     Gets Notification records for the current user. Also stores results locally in NotificationManager instance.
-     */
-//    func getCurrentUserNotifications(completion: @escaping (_ notifications: [Notification], _ error: CustomError?) -> Void) {
-//
-//        NotificationService.instance.getCurrentUserNotifications { (notifications, customError) in
-//            if let customError = customError {
-//                completion(self.notifications, customError)
-//            }
-//            else {
-//
-//                // Don't add Notifications that already exist
-//                for notification in notifications {
-//                    if !self.notifications.contains(where: { $0 == notification }) {
-//                        self.notifications.append(notification)
-//                    }
-//                }
-//                completion(self.notifications, nil)
-//            }
-//        }
-//    }
+    init(delegate: NotificationManagerDelegate) {
+        self.delegate = delegate
+    }
     
     
-    /*
-     Removes the given Notification record from the stored collection. Used after deleting notificaiton from the database.
-    */
-    func removeNotification(notification: Notification) {
-        if let index = notifications.firstIndex(where: { $0 === notification }) {
-            notifications.remove(at: index)
+    private func getUserNotifications(page: Int) {
+        guard !fetchingInProgress else { return }
+        fetchingInProgress = true
+        
+        notificationService.getUserNotifications(
+            userId: userId,
+            page: page
+        ) { [weak self] (notifications, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.delegate?.didFailWithError(
+                    error: error
+                )
+            }
+            else {
+                self.delegate?.notificationResultsUpdated(
+                    notifications: notifications,
+                    isNewRequest: self.isNewRequest
+                )
+                self.hasMoreResults = notifications.count == Config.FETCH_LIMIT
+            }
+            self.fetchingInProgress = false
         }
+    }
+    
+    
+    func getUserNotifications(userId: Int) {
+        self.userId = userId
+        page = 1
+        getUserNotifications(
+            page: page
+        )
+    }
+    
+    func fetchMoreResults() {
+        guard !fetchingInProgress else { return }
+        page += 1
+        getUserNotifications(page: page)
     }
 }

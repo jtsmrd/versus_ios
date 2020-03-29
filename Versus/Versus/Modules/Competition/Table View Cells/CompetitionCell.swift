@@ -13,16 +13,20 @@ class CompetitionCell: UITableViewCell {
     @IBOutlet weak var versusCircleView: CircleView!
     @IBOutlet weak var categoryBarView: UIView!
     @IBOutlet weak var leftEntryImageView: UIImageView!
+    @IBOutlet weak var leftImageActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var leftEntryRankImageView: UIImageView!
     @IBOutlet weak var leftEntryUsernameLabel: UILabel!
     @IBOutlet weak var leftEntryVotesLabel: UILabel!
     @IBOutlet weak var categoryImageView: UIImageView!
     @IBOutlet weak var rightEntryImageView: UIImageView!
+    @IBOutlet weak var rightImageActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var rightEntryRankImageView: UIImageView!
     @IBOutlet weak var rightEntryUsernameLabel: UILabel!
     @IBOutlet weak var rightEntryVotesLabel: UILabel!
     
     private let s3BucketService = S3BucketService.instance
+    
+    private var competition: Competition?
     
     /**
  
@@ -37,17 +41,30 @@ class CompetitionCell: UITableViewCell {
         super.prepareForReuse()
         
         categoryImageView.image = nil
-        leftEntryImageView.image = nil
+        leftEntryImageView.image = UIImage(named: "default-profile")
         leftEntryRankImageView.image = nil
         leftEntryUsernameLabel.text = nil
         leftEntryVotesLabel.text = nil
-        rightEntryImageView.image = nil
+        rightEntryImageView.image = UIImage(named: "default-profile")
         rightEntryRankImageView.image = nil
         rightEntryUsernameLabel.text = nil
         rightEntryVotesLabel.text = nil
+        competition = nil
     }
     
     
+    func updateImages() {
+        
+        if let image = competition?.leftEntry.image {
+            leftEntryImageView.image = image
+            leftImageActivityIndicator.stopAnimating()
+        }
+        
+        if let image = competition?.rightEntry.image {
+            rightEntryImageView.image = image
+            rightImageActivityIndicator.stopAnimating()
+        }
+    }
     
     
     /**
@@ -56,7 +73,7 @@ class CompetitionCell: UITableViewCell {
     func configureCell(
         competition: Competition
     ) {
-        
+        self.competition = competition
         versusCircleView._backgroundColor = competition.category.backgroundColor
         versusCircleView.setNeedsDisplay()
         
@@ -84,26 +101,16 @@ class CompetitionCell: UITableViewCell {
             competition.rightEntry.voteCount
         )
         
-        s3BucketService.downloadImage(
-            mediaId: competition.leftEntry.mediaId,
-            imageType: .regular
-        ) { [weak self] (image, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.leftEntryImageView.image = image
-            }
+        leftImageActivityIndicator.startAnimating()
+        if let image = competition.leftEntry.image {
+            leftEntryImageView.image = image
+            leftImageActivityIndicator.stopAnimating()
         }
         
-        s3BucketService.downloadImage(
-            mediaId: competition.rightEntry.mediaId,
-            imageType: .regular
-        ) { [weak self] (image, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.rightEntryImageView.image = image
-            }
+        rightImageActivityIndicator.startAnimating()
+        if let image = competition.rightEntry.image {
+            rightEntryImageView.image = image
+            rightImageActivityIndicator.stopAnimating()
         }
     }
 }

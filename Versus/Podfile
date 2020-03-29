@@ -6,15 +6,7 @@ target 'Versus' do
   use_frameworks!
 
   # Pods for Versus
-  pod 'AWSMobileClient', '~> 2.6.13'
-  pod 'AWSUserPoolsSignIn', '~> 2.6.13'
-  pod 'AWSDynamoDB', '~> 2.6.13'
-  pod 'AWSS3', '~> 2.6.13'
-  pod 'AWSCognito', '~> 2.6.13'
-  pod 'AWSAuthCore', '~> 2.6.13'
-  pod 'AWSAPIGateway', '~> 2.6.13'
-  pod 'AWSLambda', '~> 2.6.13'
-  pod 'AWSSNS', '~> 2.6.13'
-  pod 'Toast-Swift', '~> 3.0.1'
-  pod 'SwiftyCam', '~> 3.0.0'
+  pod 'AWSS3'
+  pod 'Toast-Swift'
+  pod 'SwiftyCam'
 end

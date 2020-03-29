@@ -6,12 +6,14 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 enum UserEndpoint {
     case load(userId: Int)
     case loadFollowedUserIds(userId: Int)
     case loadWithUsername(username: String)
-    case searchByName(name: String)
-    case searchByUsername(username: String)
+    case searchByName(name: String, page: Int)
+    case searchByUsername(username: String, page: Int)
     case update(User)
 }
 
@@ -90,20 +92,22 @@ extension UserEndpoint: EndpointType {
         case .loadWithUsername:
             return .request(additionalHeaders: headers)
             
-        case .searchByName(let name):
+        case .searchByName(let name, let page):
             return .requestParametersAndHeaders(
                 bodyParameters: nil,
                 urlParameters: [
-                    "name": name
+                    "name": name,
+                    "page": page
                 ],
                 additionalHeaders: headers
             )
             
-        case .searchByUsername(let username):
+        case .searchByUsername(let username, let page):
             return .requestParametersAndHeaders(
                 bodyParameters: nil,
                 urlParameters: [
-                    "username": username
+                    "username": username,
+                    "page": page
                 ],
                 additionalHeaders: headers
             )
@@ -113,7 +117,7 @@ extension UserEndpoint: EndpointType {
             var params = [
                 "bio": user.bio,
                 "name": user.name,
-                "profileImage": user.profileImage,
+                "profileImage": user.profileImageId,
                 "backgroundImage": user.backgroundImage
             ]
             

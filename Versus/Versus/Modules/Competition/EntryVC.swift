@@ -83,9 +83,16 @@ class EntryVC: UIViewController {
         )
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        videoPlayerLayer.frame = CGRect(
+            origin: .zero,
+            size: view.frame.size
+        )
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
-        
         player.replaceCurrentItem(with: nil)
     }
     

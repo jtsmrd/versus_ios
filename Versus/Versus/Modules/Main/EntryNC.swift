@@ -9,7 +9,7 @@
 import UIKit
 
 class EntryNC: UINavigationController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

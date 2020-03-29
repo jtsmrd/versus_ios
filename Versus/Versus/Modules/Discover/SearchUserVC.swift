@@ -13,24 +13,27 @@ protocol SearchVCDelegate {
     func toggleSearchView(isHidden hidden: Bool)
 }
 
-
 class SearchUserVC: UIViewController {
 
+    enum SearchState {
+        case newSearch
+        case hasResults
+        case noResults
+    }
     
     @IBOutlet weak var userTableView: UITableView!
     
-    
-    private let userManager = UserManager.instance
     private let followerService = FollowerService.instance
     private let pendingImageOperations = ImageOperations()
-    private let ROW_HEIGHT: CGFloat = 70.0
-    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.85
+    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.50
+    private let SEARCH_RESULT_ROW_HEIGHT: CGFloat = 70.0
     
-    
+    private var userManager: UserManager!
     private var users = [User]()
     private var delegate: SearchVCDelegate?
     private var keyboardToolbar: KeyboardToolbar!
     private var indexPathOfLastSelection: IndexPath?
+    private var searchText: String = ""
     
     
     
@@ -49,14 +52,13 @@ class SearchUserVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        userTableView.register(
-            UINib(nibName: SEARCH_USER_CELL, bundle: nil),
-            forCellReuseIdentifier: SEARCH_USER_CELL
-        )
+        
+        userManager = UserManager(delegate: self)
+        
+        registerCells()
         
         userTableView.tableFooterView = UIView()
-        userManager.delegate = self
+        
         keyboardToolbar = KeyboardToolbar(includeNavigation: false)
     }
     
@@ -68,6 +70,89 @@ class SearchUserVC: UIViewController {
     }
     
     
+    
+    private func registerCells() {
+        
+        userTableView.register(
+            UINib(nibName: SEARCH_USER_CELL, bundle: nil),
+            forCellReuseIdentifier: SEARCH_USER_CELL
+        )
+        
+        userTableView.register(
+            UINib(nibName: NEW_SEARCH_INFO_CELL, bundle: nil),
+            forCellReuseIdentifier: NEW_SEARCH_INFO_CELL
+        )
+        
+        userTableView.register(
+            UINib(nibName: NO_USER_SEARCH_RESULTS_CELL, bundle: nil),
+            forCellReuseIdentifier: NO_USER_SEARCH_RESULTS_CELL
+        )
+    }
+    
+    
+    private func getSearchState() -> SearchState {
+        
+        if searchText.isEmpty {
+            return .newSearch
+        }
+        else {
+            if users.isEmpty {
+                return .noResults
+            }
+            else {
+                return .hasResults
+            }
+        }
+    }
+    
+    
+    private func getSearchResultCell(
+        indexPath: IndexPath
+    ) -> SearchUserCell {
+        
+        let cell = userTableView.dequeueReusableCell(
+            withIdentifier: SEARCH_USER_CELL,
+            for: indexPath
+        ) as! SearchUserCell
+        
+        let user = users[indexPath.row]
+        cell.configureCell(
+            user: user
+        )
+        
+        if user.profileImageDownloadState == .new {
+            startProfileImageDownloadFor(
+                user: user,
+                indexPath: indexPath
+            )
+        }
+        return cell
+    }
+    
+    
+    private func getSearchInfoCell(
+        indexPath: IndexPath
+    ) -> NewSearchInfoCell {
+        
+        let cell = userTableView.dequeueReusableCell(
+            withIdentifier: NEW_SEARCH_INFO_CELL,
+            for: indexPath
+        ) as! NewSearchInfoCell
+        return cell
+    }
+    
+    
+    private func getNoUserSearchResultsCell(
+        indexPath: IndexPath
+    ) -> NoUserSearchResultsCell {
+        
+        let cell = userTableView.dequeueReusableCell(
+            withIdentifier: NO_USER_SEARCH_RESULTS_CELL,
+            for: indexPath
+        ) as! NoUserSearchResultsCell
+        cell.configureCell(searchText: searchText)
+        return cell
+    }
     
     
     private func showUserProfile(indexPath: IndexPath) {
@@ -84,17 +169,105 @@ class SearchUserVC: UIViewController {
             animated: true
         )
     }
+    
+    
+    // MARK: - Image Operations
+    
+    private func startProfileImageDownloadFor(
+        user: User,
+        indexPath: IndexPath
+    ) {
+        var downloadsInProgress = pendingImageOperations.asyncDownloadsInProgress
+
+        // Make sure there isn't already a download in progress.
+        guard downloadsInProgress[indexPath] == nil else { return }
+
+        let downloadOperation = DownloadUserProfileImageOperation(
+            user: user
+        )
+        
+        downloadOperation.completionBlock = {
+
+            if downloadOperation.isCancelled { return }
+
+            DispatchQueue.main.async {
+                
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+                
+                if let searchUserCell = self.userTableView.cellForRow(at: indexPath) as? SearchUserCell {
+                    searchUserCell.updateProfileImage()
+                }
+            }
+        }
+
+        // Add the operation to the collection of downloads in progress.
+        downloadsInProgress[indexPath] = downloadOperation
+
+        // Add the operation to the queue to start downloading.
+        pendingImageOperations.asyncDownloadQueue.addOperation(
+            downloadOperation
+        )
+    }
+    
+    
+    private func cancelAllPendingImageDownloads() {
+            
+        var downloadsInProgress =
+            self.pendingImageOperations.downloadsInProgress
+        
+        let allPendingOperations = Set(
+            downloadsInProgress.keys
+        )
+        
+        for indexPath in allPendingOperations {
+            if let pendingDownload = downloadsInProgress[indexPath] {
+                pendingDownload.cancel()
+            }
+            downloadsInProgress.removeValue(
+                forKey: indexPath
+            )
+        }
+    }
 }
 
 
+private extension SearchUserVC {
+
+    private func calculateIndexPathsToReload(
+        from newUsers: [User]
+    ) -> [IndexPath] {
+        
+        let startIndex = users.count - newUsers.count
+        let endIndex = startIndex + newUsers.count
+        let indexPaths = (startIndex..<endIndex).map {
+            IndexPath(row: $0, section: 0)
+        }
+        
+        return indexPaths
+    }
+    
+    func visibleIndexPathsToReload(
+        intersecting indexPaths: [IndexPath]
+    ) -> [IndexPath] {
+        
+        let indexPathsForVisibleRows = userTableView.indexPathsForVisibleRows ?? []
+        
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        
+        return Array(indexPathsIntersection)
+    }
+}
 
 
 // MARK: - UserManagerDelegate
 extension SearchUserVC: UserManagerDelegate {
     
-    
-    func userResultsUpdated(users: [User], isNewSearch: Bool) {
-        
+    func userResultsUpdated(
+        users: [User],
+        isNewSearch: Bool
+    ) {
         if isNewSearch {
             self.users = users
         }
@@ -103,14 +276,32 @@ extension SearchUserVC: UserManagerDelegate {
         }
         
         DispatchQueue.main.async {
-            self.userTableView.reloadData()
+            
+            var newIndexPathsToReload: [IndexPath]?
+            if !isNewSearch {
+                newIndexPathsToReload = self.calculateIndexPathsToReload(
+                    from: users
+                )
+            }
+            
+            guard let newIndexPaths = newIndexPathsToReload else {
+                self.userTableView.reloadData()
+                return
+            }
+            
+            self.userTableView.beginUpdates()
+            self.userTableView.insertRows(
+                at: newIndexPaths,
+                with: .none
+            )
+            self.userTableView.endUpdates()
         }
     }
     
-    
-    func didFailWithError(errorMessage: String) {
-        
-        displayMessage(message: errorMessage)
+    func didFailWithError(error: String) {
+        DispatchQueue.main.async {
+            self.displayMessage(message: error)
+        }
     }
 }
 
@@ -120,78 +311,60 @@ extension SearchUserVC: UserManagerDelegate {
 // MARK: - UITableViewDataSource
 extension SearchUserVC: UITableViewDataSource {
     
-    /**
-     Return the current count of users from UserManager.
-     */
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
         
-        return users.count
+        let searchState = getSearchState()
+        
+        switch searchState {
+            
+        case .newSearch, .noResults:
+            userTableView.isScrollEnabled = false
+            return 1
+            
+        case .hasResults:
+            userTableView.isScrollEnabled = true
+            return users.count
+        }
     }
     
-    
-    /**
-     Download the user image and configure the SearchUserCell.
-     */
     func tableView(
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: SEARCH_USER_CELL,
-            for: indexPath
-        )
+        let searchState = getSearchState()
         
-        if let searchUserCell = cell as? SearchUserCell {
+        switch searchState {
             
-            let user = users[indexPath.row]
+        case .newSearch:
+            return getSearchInfoCell(indexPath: indexPath)
             
-            // Configure the cell with a user.
-            //TODO
-            searchUserCell.configureCell(
-                user: user,
-                profileImage: user.profileImageImage
-            )
+        case .noResults:
+            return getNoUserSearchResultsCell(indexPath: indexPath)
             
-            if user.profileImageDownloadState == .new {
-
-                if !tableView.isDragging && !tableView.isDecelerating {
-
-                    startProfileImageDownloadFor(
-                        user: user,
-                        indexPath: indexPath
-                    )
-                }
-            }
-            
-            // TODO: Fix only downloading images for visible cells.
-//            switch user.profileImageDownloadState {
-//
-//            case .new:
-//
-//
-//            case .failed, .downloaded:
-//                print("Image download failed")
-//            }
-            
-            return searchUserCell
+        case .hasResults:
+            return getSearchResultCell(indexPath: indexPath)
         }
-        return SearchUserCell()
     }
     
-    
-    /**
-     Set the row height.
-     */
     func tableView(
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
         
-        return ROW_HEIGHT
+        let searchState = getSearchState()
+        
+        switch searchState {
+            
+        case .newSearch, .noResults:
+            return userTableView.frame.height
+            
+        case .hasResults:
+            return SEARCH_RESULT_ROW_HEIGHT
+        }
     }
 }
 
@@ -201,17 +374,12 @@ extension SearchUserVC: UITableViewDataSource {
 // MARK: - UITableViewDataSourcePrefetching
 extension SearchUserVC: UITableViewDataSourcePrefetching {
     
-    /**
-    If more results exist, fetch them when the prefetch index >= the
-     current user count.
-     */
     func tableView(
         _ tableView: UITableView,
         prefetchRowsAt indexPaths: [IndexPath]
     ) {
-        
         // No need to fetch if there are no more results
-        guard userManager.hasMoreResults == true else { return }
+        guard userManager.hasMoreResults else { return }
         
         // Get the row number of the last visible row
         guard let maxVisibleRowNumber =
@@ -228,19 +396,13 @@ extension SearchUserVC: UITableViewDataSourcePrefetching {
 }
 
 
-
-
 // MARK: - UITableViewDelegate
 extension SearchUserVC: UITableViewDelegate {
     
-    /**
-     View the profile for the user selected.
-     */
     func tableView(
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        
         indexPathOfLastSelection = indexPath
         
         tableView.deselectRow(
@@ -248,66 +410,26 @@ extension SearchUserVC: UITableViewDelegate {
             animated: false
         )
         
-        showUserProfile(indexPath: indexPath)
-    }
-}
-
-
-
-
-// MARK: - UIScrollViewDelegate
-extension SearchUserVC: UIScrollViewDelegate {
-    
-    // TODO: Fix
-    func scrollViewWillBeginDragging(
-        _ scrollView: UIScrollView
-    ) {
-        
-//        suspendAllOperations()
-    }
-    
-    
-    func scrollViewDidEndDragging(
-        _ scrollView: UIScrollView,
-        willDecelerate decelerate: Bool
-    ) {
-        
-        if !decelerate {
-//            loadImagesForOnscreenCells()
-//            resumeAllOperations()
+        if getSearchState() == .hasResults {
+            showUserProfile(indexPath: indexPath)
         }
     }
-    
-    
-    func scrollViewDidEndDecelerating(
-        _ scrollView: UIScrollView
-    ) {
-        
-//        loadImagesForOnscreenCells()
-//        resumeAllOperations()
-    }
 }
-
-
 
 
 // MARK: - UISearchBarDelegate
 extension SearchUserVC: UISearchBarDelegate {
     
-    
     func searchBarShouldBeginEditing(
         _ searchBar: UISearchBar
     ) -> Bool {
-        
         searchBar.inputAccessoryView = keyboardToolbar
         return true
     }
     
-    
     func searchBarTextDidBeginEditing(
         _ searchBar: UISearchBar
     ) {
-        
         delegate?.toggleSearchView(isHidden: false)
         searchBar.setShowsCancelButton(
             true,
@@ -315,46 +437,39 @@ extension SearchUserVC: UISearchBarDelegate {
         )
     }
     
-    
     func searchBarTextDidEndEditing(
         _ searchBar: UISearchBar
     ) {
-        
         searchBar.setShowsCancelButton(
             false,
             animated: true
         )
-        
-        if users.isEmpty {
-            delegate?.toggleSearchView(isHidden: true)
-            searchBar.text?.removeAll()
-        }
     }
-    
     
     func searchBarCancelButtonClicked(
         _ searchBar: UISearchBar
     ) {
-        
         view.endEditing(true)
         delegate?.toggleSearchView(isHidden: true)
         searchBar.text?.removeAll()
+        searchText = ""
         users.removeAll()
         userTableView.reloadData()
         searchBar.setShowsCancelButton(false, animated: true)
     }
     
-    
     func searchBar(
         _ searchBar: UISearchBar,
         textDidChange searchText: String
     ) {
+        self.searchText = searchText
+        cancelAllPendingImageDownloads()
         
-//        cancelAllPendingImageDownloads()
-        
-        // Remove results for new searches.
-//        users.removeAll()
-//        userTableView.reloadData()
+        // Remove results if search text is empty
+        if searchText.isEmpty {
+            users.removeAll()
+            userTableView.reloadData()
+        }
         
         // User is searching by username, wait for more characters.
         guard searchText != "@" else {
@@ -371,163 +486,7 @@ extension SearchUserVC: UISearchBarDelegate {
 }
 
 
-
-
-// MARK: - Image Operations
-extension SearchUserVC {
-    
-    
-//    private func startProfileImageDownloadFor(
-//        user: User,
-//        indexPath: IndexPath
-//    ) {
-//        var downloadsInProgress = pendingImageOperations.downloadsInProgress
-//
-//        // Make sure there isn't already a download in progress.
-//        guard downloadsInProgress[indexPath] == nil else { return }
-//
-//        let downloadOperation = DownloadUserProfileImageOperation(
-//            user: user
-//        )
-//
-//        downloadOperation.completionBlock = {
-//
-//            if downloadOperation.isCancelled { return }
-//
-//            DispatchQueue.main.async {
-//                downloadsInProgress.removeValue(
-//                    forKey: indexPath
-//                )
-//                self.userTableView.reloadRows(
-//                    at: [indexPath],
-//                    with: .none
-//                )
-//            }
-//        }
-//
-//        // Add the operation to the collection of downloads in progress.
-//        downloadsInProgress[indexPath] = downloadOperation
-//
-//        // Add the operation to the queue to start downloading.
-//        pendingImageOperations.downloadQueue.addOperation(
-//            downloadOperation
-//        )
-//    }
-    
-    
-    private func startProfileImageDownloadFor(
-        user: User,
-        indexPath: IndexPath
-    ) {
-        var downloadsInProgress = pendingImageOperations.asyncDownloadsInProgress
-
-        // Make sure there isn't already a download in progress.
-        guard downloadsInProgress[indexPath] == nil else { return }
-
-        let downloadOperation = DownloadImageOperation(entity: user)
-
-        downloadOperation.completionBlock = {
-
-            if downloadOperation.isCancelled { return }
-
-            DispatchQueue.main.async {
-                downloadsInProgress.removeValue(
-                    forKey: indexPath
-                )
-                self.userTableView.reloadRows(
-                    at: [indexPath],
-                    with: .none
-                )
-            }
-        }
-
-        // Add the operation to the collection of downloads in progress.
-        downloadsInProgress[indexPath] = downloadOperation
-
-        // Add the operation to the queue to start downloading.
-        pendingImageOperations.asyncDownloadQueue.addOperation(
-            downloadOperation
-        )
-    }
-    
-    
-    private func suspendAllOperations() {
-        pendingImageOperations.downloadQueue.isSuspended = true
-    }
-    
-    
-    private func resumeAllOperations() {
-        pendingImageOperations.downloadQueue.isSuspended = false
-    }
-    
-    
-    private func loadImagesForOnscreenCells() {
-        
-        if let pathsArray = userTableView.indexPathsForVisibleRows {
-            
-            var downloadsInProgress =
-                pendingImageOperations.downloadsInProgress
-            
-            let allPendingOperations = Set(
-                downloadsInProgress.keys
-            )
-            var toBeCancelled = allPendingOperations
-            
-            let visiblePaths = Set(pathsArray)
-            toBeCancelled.subtract(visiblePaths)
-            
-            var toBeStarted = visiblePaths
-            toBeStarted.subtract(allPendingOperations)
-            
-            for indexPath in toBeCancelled {
-                
-                if let pendingDownload = downloadsInProgress[indexPath] {
-                    pendingDownload.cancel()
-                }
-                downloadsInProgress.removeValue(
-                    forKey: indexPath
-                )
-            }
-            
-            for indexPath in toBeStarted {
-                
-                let user = users[indexPath.row]
-                
-                startProfileImageDownloadFor(
-                    user: user,
-                    indexPath: indexPath
-                )
-            }
-        }
-    }
-    
-    private func cancelAllPendingImageDownloads() {
-        
-        DispatchQueue.main.async {
-            var downloadsInProgress =
-                self.pendingImageOperations.downloadsInProgress
-            
-            let allPendingOperations = Set(
-                downloadsInProgress.keys
-            )
-            
-            for indexPath in allPendingOperations {
-                
-                if let pendingDownload = downloadsInProgress[indexPath] {
-                    pendingDownload.cancel()
-                }
-//                downloadsInProgress.removeValue(
-//                    forKey: indexPath
-//                )
-            }
-        }
-        
-        
-    }
-}
-
-
-
+// MARK: - Image UserVCDelegate
 extension SearchUserVC: UserVCDelegate {
     
     func userUpdated() {

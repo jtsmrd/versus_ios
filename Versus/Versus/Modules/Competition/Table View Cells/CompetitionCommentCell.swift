@@ -43,25 +43,25 @@ class CompetitionCommentCell: UITableViewCell {
     }
     
     
-    func configureCell(comment: Comment) {
-        
-        S3BucketService.instance.downloadImage(
-            mediaId: comment.userId,
-            imageType: .small
-        ) { (image, errorMessage) in
-            
-            DispatchQueue.main.async {
-                
-                if let errorMessage = errorMessage {
-                    debugPrint(errorMessage)
-                    return
-                }
-                self.profileImageView.image = image
-            }
-        }
-        
-        usernameLabel.text = comment.username
-        commentLabel.text = comment.message
-        commentTimeLabel.text = comment.createDate.toElapsedTimeString_Minimal
-    }
+//    func configureCell(comment: Comment) {
+//        
+//        S3BucketService.instance.downloadImage(
+//            mediaId: comment.userId,
+//            imageType: .small
+//        ) { (image, errorMessage) in
+//            
+//            DispatchQueue.main.async {
+//                
+//                if let errorMessage = errorMessage {
+//                    debugPrint(errorMessage)
+//                    return
+//                }
+//                self.profileImageView.image = image
+//            }
+//        }
+//        
+//        usernameLabel.text = comment.username
+//        commentLabel.text = comment.message
+//        commentTimeLabel.text = comment.createDate.toElapsedTimeString_Minimal
+//    }
 }

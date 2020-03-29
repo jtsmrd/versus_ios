@@ -6,39 +6,174 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+protocol CompetitionManagerDelegate: class {
+    func competitionResultsUpdated(
+        competitions: [Competition],
+        isNewRequest: Bool
+    )
+    func didFailWithError(error: String)
+}
+
+enum CompetitionQueryType {
+    case featured(categoryId: Int?)
+    case followedUsers(userId: Int)
+    case user(userId: Int)
+}
+
 class CompetitionManager {
     
+    private let competitionService = CompetitionService.instance
     
-    static let instance = CompetitionManager()
+    private var queryType: CompetitionQueryType = .featured(
+        categoryId: nil
+    )
+    private var page = 1
+    private var isNewRequest: Bool {
+        return page == 1
+    }
+    private var fetchingInProgress = false
+    private(set) var hasMoreResults = false
     
-    var featuredCompetitions = [Competition]()
+    private weak var delegate: CompetitionManagerDelegate?
     
     
+    init(delegate: CompetitionManagerDelegate) {
+        self.delegate = delegate
+    }
     
     
-    private init() { }
-    
-    
-    
-    
-    func getFeaturedCompetitions(
-        completion: @escaping (_ competitions: [Competition], _ customError: CustomError?) -> Void
-    ) {
+    private func getFeaturedCompetitions(categoryId: Int?, page: Int) {
+        guard !fetchingInProgress else { return }
+        fetchingInProgress = true
         
-//        CompetitionService.instance.getFeaturedCompetitions(
-//            categoryId: nil
-//        ) { (competitions, customError) in
-//            if let customError = customError {
-//                completion(self.featuredCompetitions, customError)
-//                return
-//            }
-//            // Don't get Competitions that already exist
-//            for competition in competitions {
-//                if !self.featuredCompetitions.contains(where: { $0.competitionId == competition.competitionId }) {
-//                    self.featuredCompetitions.append(competition)
-//                }
-//            }
-//            completion(self.featuredCompetitions, nil)
-//        }
+        competitionService.loadFeaturedCompetitions(
+            categoryId: categoryId,
+            page: page
+        ) { [weak self] (competitions, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.delegate?.didFailWithError(
+                    error: error
+                )
+            }
+            else {
+                self.delegate?.competitionResultsUpdated(
+                    competitions: competitions,
+                    isNewRequest: self.isNewRequest
+                )
+                self.hasMoreResults = competitions.count == Config.FETCH_LIMIT
+            }
+            self.fetchingInProgress = false
+        }
+    }
+    
+    
+    private func getFollowedUserCompetitions(userId: Int, page: Int) {
+        guard !fetchingInProgress else { return }
+        fetchingInProgress = true
+        
+        competitionService.loadFollowedUserCompetitions(
+            userId: userId,
+            page: page
+        ) { [weak self] (competitions, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.delegate?.didFailWithError(
+                    error: error
+                )
+            }
+            else {
+                self.delegate?.competitionResultsUpdated(
+                    competitions: competitions,
+                    isNewRequest: self.isNewRequest
+                )
+                self.hasMoreResults = competitions.count == Config.FETCH_LIMIT
+            }
+            self.fetchingInProgress = false
+        }
+    }
+    
+    
+    private func getUserCompetitions(userId: Int, page: Int) {
+        guard !fetchingInProgress else { return }
+        fetchingInProgress = true
+        
+        competitionService.loadUserCompetitions(
+            userId: userId,
+            page: page
+        ) { [weak self] (competitions, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.delegate?.didFailWithError(
+                    error: error
+                )
+            }
+            else {
+                self.delegate?.competitionResultsUpdated(
+                    competitions: competitions,
+                    isNewRequest: self.isNewRequest
+                )
+                self.hasMoreResults = competitions.count == Config.FETCH_LIMIT
+            }
+            self.fetchingInProgress = false
+        }
+    }
+    
+    
+    func getCompetitions(
+        queryType: CompetitionQueryType
+    ) {
+        self.queryType = queryType
+        page = 1
+        
+        switch queryType {
+        case .featured(let categoryId):
+            getFeaturedCompetitions(
+                categoryId: categoryId,
+                page: page
+            )
+            
+        case .followedUsers(let userId):
+            getFollowedUserCompetitions(
+                userId: userId,
+                page: page
+            )
+            
+        case .user(let userId):
+            getUserCompetitions(
+                userId: userId,
+                page: page
+            )
+        }
+    }
+    
+    
+    /// Fetch more competitions with the existing queryType
+    func fetchMoreResults() {
+        guard !fetchingInProgress else { return }
+        page += 1
+        
+        switch queryType {
+        case .featured(let categoryId):
+            getFeaturedCompetitions(
+                categoryId: categoryId,
+                page: page
+            )
+            
+        case .followedUsers(let userId):
+            getFollowedUserCompetitions(
+                userId: userId,
+                page: page
+            )
+            
+        case .user(let userId):
+            getUserCompetitions(
+                userId: userId,
+                page: page
+            )
+        }
     }
 }

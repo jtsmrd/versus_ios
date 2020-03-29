@@ -8,6 +8,8 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import UIKit
+
 class LoginVC: UIViewController {
 
     

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CategoryCell" rowHeight="50" id="fYj-ni-ku4" customClass="CategoryCell" customModule="Versus" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="288" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fYj-ni-ku4" id="Hph-wV-KNI">
+                <rect key="frame" x="0.0" y="0.0" width="288" height="50"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mic" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hTA-em-Wxx">
+                        <rect key="frame" x="16" y="14" width="26.5" height="22"/>
+                        <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="16"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Mic" translatesAutoresizingMaskIntoConstraints="NO" id="2Hp-Zm-GC5">
+                        <rect key="frame" x="240" y="5" width="40" height="40"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="2Hp-Zm-GC5" secondAttribute="height" multiplier="1:1" id="UJx-vb-me2"/>
+                            <constraint firstAttribute="width" constant="40" id="lkS-fU-GHZ"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+                <color key="backgroundColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                <constraints>
+                    <constraint firstItem="2Hp-Zm-GC5" firstAttribute="centerY" secondItem="Hph-wV-KNI" secondAttribute="centerY" id="fev-23-JiG"/>
+                    <constraint firstItem="hTA-em-Wxx" firstAttribute="centerY" secondItem="Hph-wV-KNI" secondAttribute="centerY" id="iS0-wc-E80"/>
+                    <constraint firstItem="hTA-em-Wxx" firstAttribute="leading" secondItem="Hph-wV-KNI" secondAttribute="leading" constant="16" id="jZp-lW-17t"/>
+                    <constraint firstAttribute="trailing" secondItem="2Hp-Zm-GC5" secondAttribute="trailing" constant="8" id="qA2-KY-N2u"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="categoryImageView" destination="2Hp-Zm-GC5" id="fr3-3f-rGL"/>
+                <outlet property="categoryTitleLabel" destination="hTA-em-Wxx" id="Z2S-0W-xAN"/>
+            </connections>
+            <point key="canvasLocation" x="139" y="153"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="Mic" width="200" height="200"/>
+    </resources>
+</document>

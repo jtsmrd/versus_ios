@@ -7,12 +7,6 @@
 //
 
 import UIKit
-import AWSMobileClient
-import AWSAuthCore
-import AWSCore
-import AWSCognitoIdentityProvider
-import AWSUserPoolsSignIn
-import AWSSNS
 import UserNotifications
 
 let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
@@ -26,18 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
-        // Make sure we're connected to AWS
-        AWSDDLog.add(AWSDDTTYLogger.sharedInstance)
-        AWSDDLog.sharedInstance.logLevel = .info
-        
-        // Create AWSMobileClient to connect with AWS
-//        let interceptReturn = AWSMobileClient.sharedInstance().interceptApplication(application, didFinishLaunchingWithOptions: launchOptions)
-        
-        // Used for Lambda and SNS
-        let credentialsProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "us-east-1:b80002bd-0582-4a26-80b9-05737c384ef5")
-        let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider:credentialsProvider)
-        AWSServiceManager.default().defaultServiceConfiguration = configuration
         
         showInitialView(launchOptions)
         

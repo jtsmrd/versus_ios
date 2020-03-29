@@ -17,7 +17,7 @@ class CompetitionFeedVC: UIViewController {
     
     // MARK: - Outlets
 
-    @IBOutlet weak var competitionsTableView: UITableView!
+    @IBOutlet weak var competitionTableView: UITableView!
     @IBOutlet weak var noResultsView: UIView!
     @IBOutlet weak var noResultsInfoLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -26,12 +26,14 @@ class CompetitionFeedVC: UIViewController {
     
     // MARK: - Constants
     
-    private let competitionService = CompetitionService.instance
     private let notificationCenter = NotificationCenter.default
+    private let ROW_HEIGHT: CGFloat = 188.0
+    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.50
     
     
     // MARK: - Variables
     
+    private var competitionManager: CompetitionManager!
     private var type: CompetitionFeedType!
     private var competitions = [Competition]()
     private var pendingImageOperations = ImageOperations()
@@ -58,7 +60,9 @@ class CompetitionFeedVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        competitionsTableView.register(
+        competitionManager = CompetitionManager(delegate: self)
+        
+        competitionTableView.register(
             UINib(nibName: COMPETITION_CELL, bundle: nil),
             forCellReuseIdentifier: COMPETITION_CELL
         )
@@ -113,24 +117,31 @@ class CompetitionFeedVC: UIViewController {
         
         switch type {
         case .featured:
-            getFeauredCompetitions()
+            competitionManager.getCompetitions(
+                queryType: .featured(categoryId: nil)
+            )
             
         case .followedUsers:
-            getFollowedUserCompetitions()
+            let user = CurrentAccount.user
+            competitionManager.getCompetitions(
+                queryType: .followedUsers(userId: user.id)
+            )
             
-        case .none:
-            return
+        default:
+            break
         }
     }
     
     
     /// When a Competition is update (user voted), update the competition object and reload that row.
     /// - Parameter notification: Payload containing the updated Competition.
-    @objc func competitionUpdated(notification: Foundation.Notification) {
+    @objc func competitionUpdated(
+        notification: Foundation.Notification
+    ) {
         
         if let competition = notification.object as? Competition {
             
-            let selectedIndexPath = competitionsTableView.indexPathForSelectedRow
+            let selectedIndexPath = competitionTableView.indexPathForSelectedRow
             
             if let selectedIndexPath = selectedIndexPath {
                 
@@ -142,7 +153,7 @@ class CompetitionFeedVC: UIViewController {
                     competitions[index] = competition
                 }
                 
-                competitionsTableView.reloadRows(
+                competitionTableView.reloadRows(
                     at: [selectedIndexPath],
                     with: .automatic
                 )
@@ -170,66 +181,7 @@ class CompetitionFeedVC: UIViewController {
             for: .valueChanged
         )
         
-        competitionsTableView.refreshControl = refreshControl
-    }
-    
-    
-    private func getFeauredCompetitions() {
-        
-        competitionService.loadFeaturedCompetitions(
-            categoryId: nil
-        ) { [weak self] (competitions, error) in
-            guard let self = self else { return }
-            
-            self.handleGetCompetitionsResponse(
-                competitions: competitions,
-                error: error
-            )
-        }
-    }
-    
-    
-    private func getFollowedUserCompetitions() {
-        
-        let user = CurrentAccount.user
-        
-        competitionService.loadFollowedUserCompetitions(
-            userId: user.id
-        ) { [weak self] (competitions, error) in
-            guard let self = self else { return }
-            
-            self.handleGetCompetitionsResponse(
-                competitions: competitions,
-                error: error
-            )
-        }
-    }
-    
-    
-    private func handleGetCompetitionsResponse(
-        competitions: [Competition]?,
-        error: String?
-    ) {
-        DispatchQueue.main.async {
-            
-            self.reloadButton.isEnabled = true
-            self.activityIndicator.stopAnimating()
-            self.competitionsTableView.refreshControl?.endRefreshing()
-            
-            if let error = error {
-                self.displayMessage(message: error)
-            }
-            else if let competitions = competitions {
-                
-                self.competitions = competitions
-                self.competitionsTableView.reloadData()
-            }
-            else {
-                self.displayMessage(
-                    message: "Unable to load competitions."
-                )
-            }
-        }
+        competitionTableView.refreshControl = refreshControl
     }
     
     
@@ -250,93 +202,141 @@ class CompetitionFeedVC: UIViewController {
         competition: Competition,
         indexPath: IndexPath
     ) {
-        debugPrint("Started image download for row \(indexPath.row)")
-        var downloadsInProgress = pendingImageOperations.downloadsInProgress
-        
+        var downloadsInProgress = pendingImageOperations.asyncDownloadsInProgress
+
         // Make sure there isn't already a download in progress.
         guard downloadsInProgress[indexPath] == nil else { return }
-        
+
         let downloadOperation = DownloadCompetitionImageOperation(
             competition: competition
         )
-        
+
         downloadOperation.completionBlock = {
-            
+
             if downloadOperation.isCancelled { return }
-            
+
             DispatchQueue.main.async {
-                
+
                 downloadsInProgress.removeValue(
                     forKey: indexPath
                 )
-                
-                self.competitionsTableView.reloadRows(
-                    at: [indexPath],
-                    with: .none
-                )
-                
-                debugPrint("Ended image download for row \(indexPath.row)")
+
+                if let competitionCell = self.competitionTableView.cellForRow(at: indexPath) as? CompetitionCell {
+                    competitionCell.updateImages()
+                }
             }
         }
-        
+
         // Add the operation to the collection of downloads in progress.
         downloadsInProgress[indexPath] = downloadOperation
-        
+
         // Add the operation to the queue to start downloading.
-        pendingImageOperations.downloadQueue.addOperation(
+        pendingImageOperations.asyncDownloadQueue.addOperation(
             downloadOperation
         )
     }
-    
-    
-    private func suspendAllOperations() {
-        pendingImageOperations.downloadQueue.isSuspended = true
-    }
-    
-    
-    private func resumeAllOperations() {
-        pendingImageOperations.downloadQueue.isSuspended = false
-    }
-    
-    
-    private func loadImagesForOnscreenCells() {
+}
+
+
+private extension CompetitionFeedVC {
+
+    private func calculateIndexPathsToReload(
+        from newCompetitions: [Competition]
+    ) -> [IndexPath] {
         
-        if let pathsArray = competitionsTableView.indexPathsForVisibleRows {
-
-            var downloadsInProgress =
-                pendingImageOperations.downloadsInProgress
-
-            let allPendingOperations = Set(
-                downloadsInProgress.keys
-            )
-            var toBeCancelled = allPendingOperations
-
-            let visiblePaths = Set(pathsArray)
-            toBeCancelled.subtract(visiblePaths)
-
-            var toBeStarted = visiblePaths
-            toBeStarted.subtract(allPendingOperations)
-
-            for indexPath in toBeCancelled {
-
-                if let pendingDownload = downloadsInProgress[indexPath] {
-                    pendingDownload.cancel()
-                }
-                downloadsInProgress.removeValue(
-                    forKey: indexPath
-                )
-            }
-
-            for indexPath in toBeStarted {
-
-                let competition = competitions[indexPath.row]
-
-                startCompetitionImageDownloadFor(
-                    competition: competition,
-                    indexPath: indexPath
-                )
-            }
+        let startIndex = competitions.count - newCompetitions.count
+        let endIndex = startIndex + newCompetitions.count
+        let indexPaths = (startIndex..<endIndex).map {
+            IndexPath(row: $0, section: 0)
         }
+        
+        return indexPaths
+    }
+    
+    func visibleIndexPathsToReload(
+        intersecting indexPaths: [IndexPath]
+    ) -> [IndexPath] {
+        
+        let indexPathsForVisibleRows = competitionTableView.indexPathsForVisibleRows ?? []
+        
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        
+        return Array(indexPathsIntersection)
+    }
+}
+
+
+// MARK: - CompetitionManagerDelegate
+
+extension CompetitionFeedVC: CompetitionManagerDelegate {
+    
+    func competitionResultsUpdated(
+        competitions: [Competition],
+        isNewRequest: Bool
+    ) {
+        if isNewRequest {
+            self.competitions = competitions
+        }
+        else {
+            self.competitions.append(contentsOf: competitions)
+        }
+        
+        DispatchQueue.main.async {
+            
+            var newIndexPathsToReload: [IndexPath]?
+            if !isNewRequest {
+                newIndexPathsToReload = self.calculateIndexPathsToReload(
+                    from: competitions
+                )
+            }
+                   
+            guard let newIndexPaths = newIndexPathsToReload else {
+                self.reloadButton.isEnabled = true
+                self.activityIndicator.stopAnimating()
+                self.competitionTableView.refreshControl?.endRefreshing()
+                self.competitionTableView.reloadData()
+                return
+            }
+            
+            self.competitionTableView.beginUpdates()
+            self.competitionTableView.insertRows(
+                at: newIndexPaths,
+                with: .none
+            )
+            self.competitionTableView.endUpdates()
+        }
+    }
+    
+    func didFailWithError(error: String) {
+        DispatchQueue.main.async {
+            self.displayMessage(message: error)
+        }
+    }
+}
+
+
+// MARK: - UITableViewDataSourcePrefetching
+
+extension CompetitionFeedVC: UITableViewDataSourcePrefetching {
+    
+    func tableView(
+        _ tableView: UITableView,
+        prefetchRowsAt indexPaths: [IndexPath]
+    ) {
+        // No need to fetch if there are no more results
+        guard competitionManager.hasMoreResults else { return }
+        
+        // Get the row number of the last visible row
+        guard let maxVisibleRowNumber =
+            tableView.indexPathsForVisibleRows?.max()?.row else { return }
+        
+        // Calculate the percentage of total rows that are scolled to
+        let scrollPercentage = CGFloat(maxVisibleRowNumber) / CGFloat(competitions.count)
+        
+        // Only prefetch when the scrolled percentage is >= 85%
+        guard scrollPercentage >= PREFETCH_SCROLL_PERCENTAGE else { return }
+        
+        competitionManager.fetchMoreResults()
     }
 }
 
@@ -371,15 +371,12 @@ extension CompetitionFeedVC: UITableViewDataSource {
             competition: competition
         )
         
-//        if competition.leftEntry.imageDownloadState == .new ||
-//            competition.rightEntry.imageDownloadState == .new {
-//
-//            startCompetitionImageDownloadFor(
-//                competition: competition,
-//                indexPath: indexPath
-//            )
-//        }
-        
+        if competition.rightEntry.imageDownloadState == .new && competition.leftEntry.imageDownloadState == .new {
+            startCompetitionImageDownloadFor(
+                competition: competition,
+                indexPath: indexPath
+            )
+        }
         return competitionCell
     }
     
@@ -388,8 +385,7 @@ extension CompetitionFeedVC: UITableViewDataSource {
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        
-        return 188
+        return ROW_HEIGHT
     }
 }
 
@@ -415,40 +411,5 @@ extension CompetitionFeedVC: UITableViewDelegate {
         showCompetition(
             competition: competition
         )
-    }
-}
-
-
-// MARK: - UIScrollViewDelegate
-
-extension CompetitionFeedVC: UIScrollViewDelegate {
-    
-    
-    func scrollViewWillBeginDragging(
-        _ scrollView: UIScrollView
-    ) {
-        
-//        suspendAllOperations()
-    }
-    
-    
-    func scrollViewDidEndDragging(
-        _ scrollView: UIScrollView,
-        willDecelerate decelerate: Bool
-    ) {
-        
-        if !decelerate {
-//            loadImagesForOnscreenCells()
-//            resumeAllOperations()
-        }
-    }
-    
-    
-    func scrollViewDidEndDecelerating(
-        _ scrollView: UIScrollView
-    ) {
-        
-//        loadImagesForOnscreenCells()
-//        resumeAllOperations()
     }
 }

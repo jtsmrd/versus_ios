@@ -22,4 +22,10 @@ extension Data {
         
         return count
     }
+    
+    var prettySize: String {
+        let formatter = ByteCountFormatter()
+        formatter.countStyle = .binary
+        return formatter.string(fromByteCount: Int64(count))
+    }
 }

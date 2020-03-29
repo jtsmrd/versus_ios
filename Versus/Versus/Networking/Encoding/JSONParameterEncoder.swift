@@ -6,6 +6,8 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 struct JSONParameterEncoder: ParameterEncoder {
     
     static func encode(urlRequest: inout URLRequest, with parameters: Parameters) throws {

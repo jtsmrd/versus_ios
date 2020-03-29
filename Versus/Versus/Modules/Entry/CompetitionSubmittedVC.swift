@@ -11,6 +11,15 @@ import UIKit
 class CompetitionSubmittedVC: UIViewController {
 
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -20,6 +29,9 @@ class CompetitionSubmittedVC: UIViewController {
     @IBAction func tabkeMeHomeButtonAction() {
         
         // Dismiss the competition entry view controller stack.
-        navigationController?.dismiss(animated: true, completion: nil)
+        navigationController?.dismiss(
+            animated: true,
+            completion: nil
+        )
     }
 }

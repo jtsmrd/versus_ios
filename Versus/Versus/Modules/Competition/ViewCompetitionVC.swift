@@ -196,7 +196,7 @@ class ViewCompetitionVC: UIViewController {
         // TODO: Remove and load using operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
             
-            S3BucketService.instance.downloadImage(mediaId: self.competition.leftEntry.user.profileImage, imageType: .small) { [weak self] (image, customError) in
+            S3BucketService.instance.downloadImage(mediaId: self.competition.leftEntry.user.profileImageId, imageType: .small) { [weak self] (image, customError) in
                 
                 DispatchQueue.main.async {
                     self?.firstCompetitorSelectorButton._imageView.image = image
@@ -207,7 +207,7 @@ class ViewCompetitionVC: UIViewController {
         // TODO: Remove and load using operation queue.
         DispatchQueue.global(qos: .userInitiated).async {
             
-            S3BucketService.instance.downloadImage(mediaId: self.competition.rightEntry.user.profileImage, imageType: .small) { [weak self] (image, customError) in
+            S3BucketService.instance.downloadImage(mediaId: self.competition.rightEntry.user.profileImageId, imageType: .small) { [weak self] (image, customError) in
                 
                 DispatchQueue.main.async {
                     self?.secondCompetitorSelectorButton._imageView.image = image

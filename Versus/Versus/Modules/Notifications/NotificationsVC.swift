@@ -10,16 +10,28 @@ import UIKit
 
 class NotificationsVC: UIViewController {
     
+    // MARK: - Outlets
+    
     @IBOutlet weak var notificationsTableView: UITableView!
     @IBOutlet weak var noNotificationsView: UIView!
     
-    private let notificationService = NotificationService.instance
+    
+    // MARK: - Constants
+    
     private let userService = UserService.instance
+    private let notificationService = NotificationService.instance
+    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.50
+    
+    
+    // MARK: - Variables
     
     private var notifications = [Notification]()
+    private var notificationManager: NotificationManager!
+    private var pendingImageOperations = ImageOperations()
     private var notificationsRefreshControl: UIRefreshControl!
     
     
+    // MARK: - Initializers
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -32,9 +44,12 @@ class NotificationsVC: UIViewController {
     }
     
     
+    // MARK: - View Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        notificationManager = NotificationManager(delegate: self)
         
         notificationsTableView.register(
             UINib(nibName: NOTIFICATION_CELL, bundle: nil),
@@ -47,7 +62,13 @@ class NotificationsVC: UIViewController {
         notificationsRefreshControl = UIRefreshControl()
         notificationsRefreshControl.tintColor = #colorLiteral(red: 0, green: 0.7671272159, blue: 0.7075944543, alpha: 1)
         notificationsRefreshControl.attributedTitle = refreshTitle
-        notificationsRefreshControl.addTarget(self, action: #selector(NotificationsVC.getNotifications), for: .valueChanged)
+        notificationsRefreshControl.addTarget(
+            self,
+            action: #selector(
+                NotificationsVC.getNotifications
+            ),
+            for: .valueChanged
+        )
         notificationsTableView.refreshControl = notificationsRefreshControl
         
         notificationsRefreshControl.beginRefreshing()
@@ -55,9 +76,6 @@ class NotificationsVC: UIViewController {
     }
     
     
-    /**
-     
-     */
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -69,28 +87,62 @@ class NotificationsVC: UIViewController {
     }
 
     
-    /**
-     
-     */
+    
     @objc func getNotifications() {
-        
-        notificationService.getUserNotifications(
-            userId: CurrentAccount.user.id
-        ) { [weak self] (notifications, error) in
+        let userId = CurrentAccount.user.id
+        notificationManager.getUserNotifications(userId: userId)
+    }
+    
+    
+    
+    private func setNotificationViewed(
+        notification: Notification,
+        indexPath: IndexPath
+    ) {
+        notificationService.setNotificationViewed(
+            notification: notification
+        ) { [weak self] (notification, error) in
+            guard let self = self else { return }
+            
+            if let notification = notification {
+                self.notifications[indexPath.row] = notification
+                
+                DispatchQueue.main.async {
+                    self.notificationsTableView.reloadRows(
+                        at: [indexPath],
+                        with: .none
+                    )
+                }
+            }
+        }
+    }
+    
+    
+    private func deleteNotification(
+        notification: Notification,
+        indexPath: IndexPath
+    ) {
+        notificationService.deleteNotification(
+            notification: notification
+        ) { [weak self] (error) in
             guard let self = self else { return }
             
             DispatchQueue.main.async {
                 if let error = error {
                     self.displayMessage(message: error)
                 }
-                
-                self.notifications = notifications
-                self.notificationsTableView.reloadData()
-                self.notificationsTableView.refreshControl?.endRefreshing()
+                else {
+                    self.notifications.remove(at: indexPath.row)
+                    self.notificationsTableView.beginUpdates()
+                    self.notificationsTableView.deleteRows(
+                        at: [indexPath],
+                        with: .fade
+                    )
+                    self.notificationsTableView.endUpdates()
+                }
             }
         }
     }
-    
     
     
     private func showFollowerProfile(notification: Notification) {
@@ -123,25 +175,59 @@ class NotificationsVC: UIViewController {
             }
         }
     }
+    
+    
+    // MARK: - Image Operations
+    
+    private func startNotificationImageDownloadFor(
+        notification: Notification,
+        indexPath: IndexPath
+    ) {
+        var downloadsInProgress = pendingImageOperations.asyncDownloadsInProgress
+
+        // Make sure there isn't already a download in progress.
+        guard downloadsInProgress[indexPath] == nil else { return }
+
+        let downloadOperation = DownloadNotificationImageOperation(
+            notification: notification
+        )
+
+        downloadOperation.completionBlock = {
+
+            if downloadOperation.isCancelled { return }
+
+            DispatchQueue.main.async {
+
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
+
+                if let notificationCell = self.notificationsTableView.cellForRow(at: indexPath) as? NotificationCell {
+                    notificationCell.updateImage()
+                }
+            }
+        }
+
+        // Add the operation to the collection of downloads in progress.
+        downloadsInProgress[indexPath] = downloadOperation
+
+        // Add the operation to the queue to start downloading.
+        pendingImageOperations.asyncDownloadQueue.addOperation(
+            downloadOperation
+        )
+    }
 }
 
 
 extension NotificationsVC: UITableViewDataSource {
     
-    
-    /**
-     
-     */
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let notificationsCount = notifications.count
         noNotificationsView.isHidden = notificationsCount > 0 ? true : false
         return notificationsCount
     }
     
-    
-    /**
-     
-     */
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(
@@ -150,7 +236,17 @@ extension NotificationsVC: UITableViewDataSource {
         ) as! NotificationCell
         
         let notification = notifications[indexPath.row]
-        cell.configureCell(notification: notification)
+        cell.configureCell(
+            notification: notification
+        )
+        
+        if notification.imageDownloadState == .new {
+            startNotificationImageDownloadFor(
+                notification: notification,
+                indexPath: indexPath
+            )
+        }
+        
         return cell
     }
 }
@@ -172,19 +268,10 @@ extension NotificationsVC: UITableViewDelegate {
         
         let notification = notifications[indexPath.row]
         
-        notificationService.setNotificationViewed(
-            notification: notification
-        ) { [weak self] (notification, error) in
-            guard let self = self else { return }
-            
-            if let notification = notification {
-                self.notifications[indexPath.row] = notification
-                
-                DispatchQueue.main.async {
-                    tableView.reloadRows(at: [indexPath], with: .automatic)
-                }
-            }
-        }
+        setNotificationViewed(
+            notification: notification,
+            indexPath: indexPath
+        )
         
         switch notification.type.typeEnum {
             
@@ -214,24 +301,113 @@ extension NotificationsVC: UITableViewDelegate {
         }
     }
     
-    
-    /**
-     
-     */
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
         if editingStyle == .delete {
-//            let notificationToDelete = notifications[indexPath.row]
-//            notificationToDelete.delete { (customError) in
-//                DispatchQueue.main.async {
-//                    if let customError = customError {
-//                        self.displayError(error: customError)
-//                        return
-//                    }
-//                    self.notifications.remove(at: indexPath.row)
-//                    self.notificationManager.removeNotification(notification: notificationToDelete)
-//                    self.notificationsTableView.deleteRows(at: [indexPath], with: .fade)
-//                }
-//            }
+            let notification = notifications[indexPath.row]
+            deleteNotification(
+                notification: notification,
+                indexPath: indexPath
+            )
         }
+    }
+}
+
+
+private extension NotificationsVC {
+
+    private func calculateIndexPathsToReload(
+        from newNotifications: [Notification]
+    ) -> [IndexPath] {
+        
+        let startIndex = notifications.count - newNotifications.count
+        let endIndex = startIndex + newNotifications.count
+        let indexPaths = (startIndex..<endIndex).map {
+            IndexPath(row: $0, section: 0)
+        }
+        
+        return indexPaths
+    }
+    
+    func visibleIndexPathsToReload(
+        intersecting indexPaths: [IndexPath]
+    ) -> [IndexPath] {
+        
+        let indexPathsForVisibleRows = notificationsTableView.indexPathsForVisibleRows ?? []
+        
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        
+        return Array(indexPathsIntersection)
+    }
+}
+
+
+extension NotificationsVC: NotificationManagerDelegate {
+    
+    func notificationResultsUpdated(
+        notifications: [Notification],
+        isNewRequest: Bool
+    ) {
+        if isNewRequest {
+            self.notifications = notifications
+        }
+        else {
+            self.notifications.append(contentsOf: notifications)
+        }
+        
+        DispatchQueue.main.async {
+            
+            var newIndexPathsToReload: [IndexPath]?
+            if !isNewRequest {
+                newIndexPathsToReload = self.calculateIndexPathsToReload(
+                    from: notifications
+                )
+            }
+            
+            guard let newIndexPaths = newIndexPathsToReload else {
+                self.notificationsTableView.refreshControl?.endRefreshing()
+                self.notificationsTableView.reloadData()
+                return
+            }
+            
+            self.notificationsTableView.beginUpdates()
+            self.notificationsTableView.insertRows(
+                at: newIndexPaths,
+                with: .none
+            )
+            self.notificationsTableView.endUpdates()
+        }
+    }
+    
+    func didFailWithError(error: String) {
+        DispatchQueue.main.async {
+            self.displayMessage(message: error)
+        }
+    }
+}
+
+
+// MARK: - UITableViewDataSourcePrefetching
+
+extension NotificationsVC: UITableViewDataSourcePrefetching {
+    
+    func tableView(
+        _ tableView: UITableView,
+        prefetchRowsAt indexPaths: [IndexPath]
+    ) {
+        // No need to fetch if there are no more results
+        guard notificationManager.hasMoreResults else { return }
+        
+        // Get the row number of the last visible row
+        guard let maxVisibleRowNumber =
+            tableView.indexPathsForVisibleRows?.max()?.row else { return }
+        
+        // Calculate the percentage of total rows that are scolled to
+        let scrollPercentage = CGFloat(maxVisibleRowNumber) / CGFloat(notifications.count)
+        
+        // Only prefetch when the scrolled percentage is >= 85%
+        guard scrollPercentage >= PREFETCH_SCROLL_PERCENTAGE else { return }
+        
+        notificationManager.fetchMoreResults()
     }
 }

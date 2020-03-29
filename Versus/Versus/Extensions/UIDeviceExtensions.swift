@@ -6,7 +6,7 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 extension UIDevice {
     

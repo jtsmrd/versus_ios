@@ -6,9 +6,11 @@
 //  Copyright © 2019 VersusTeam. All rights reserved.
 //
 
+import Foundation
+import UIKit
+
 class CompetitionVC: UIViewController {
 
-    
     enum ScreenPosition {
         case center
         case left
@@ -21,9 +23,11 @@ class CompetitionVC: UIViewController {
     @IBOutlet weak var optionsButton: UIButton!
     @IBOutlet weak var commentCountLabel: UILabel!
     @IBOutlet weak var commentButton: UIButton!
+    @IBOutlet weak var leftEntryUserInfoView: UIView!
     @IBOutlet weak var leftEntryRankImageView: UIImageView!
     @IBOutlet weak var leftEntryUsernameLabel: UILabel!
     @IBOutlet weak var leftEntryButton: ProgressIndicatorButton!
+    @IBOutlet weak var rightEntryUserInfoView: UIView!
     @IBOutlet weak var rightEntryRankImageView: UIImageView!
     @IBOutlet weak var rightEntryUsernameLabel: UILabel!
     @IBOutlet weak var rightEntryButton: ProgressIndicatorButton!
@@ -174,6 +178,22 @@ class CompetitionVC: UIViewController {
     }
     
     
+    @objc func leftEntryUserInfoViewTapped() {
+        
+        showUserProfile(
+            user: competition.leftEntry.user
+        )
+    }
+    
+    
+    @objc func rightEntryUserInfoViewTapped() {
+        
+        showUserProfile(
+            user: competition.rightEntry.user
+        )
+    }
+    
+    
     
     
     private func loadEntryViewControllers() {
@@ -212,6 +232,24 @@ class CompetitionVC: UIViewController {
         
         rightEntryRankImageView.image = rightEntryUser.rank.image
         rightEntryUsernameLabel.text = rightEntryUser.username.withAtSignPrefix
+        
+        leftEntryUserInfoView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(
+                    CompetitionVC.leftEntryUserInfoViewTapped
+                )
+            )
+        )
+        
+        rightEntryUserInfoView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(
+                    CompetitionVC.rightEntryUserInfoViewTapped
+                )
+            )
+        )
         
         downloadProfileImage(
             for: leftEntryUser
@@ -311,7 +349,7 @@ class CompetitionVC: UIViewController {
         DispatchQueue.global(qos: .userInitiated).async {
             
             self.s3BucketService.downloadImage(
-                mediaId: user.profileImage,
+                mediaId: user.profileImageId,
                 imageType: .regular,
                 completion: completion
             )
@@ -596,6 +634,16 @@ class CompetitionVC: UIViewController {
 //            optionsButton.isEnabled = true
 //        }
 //        optionsViewBottom.constant = newConstant
+    }
+    
+    
+    private func showUserProfile(user: User) {
+        
+        let userVC = UserVC(user: user)
+        navigationController?.pushViewController(
+            userVC,
+            animated: true
+        )
     }
 }
 

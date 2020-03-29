@@ -7,11 +7,10 @@
 //
 
 import Foundation
-import AWSCognitoIdentityProvider
 
 // AWS User Pool and Identity
 
-let CognitoIdentityUserPoolRegion: AWSRegionType = .USEast1
+//let CognitoIdentityUserPoolRegion: AWSRegionType = .USEast1
 let CognitoIdentityUserPoolId = "us-east-1:884a7e32-302b-4c41-a955-ebb3ac3a0c87"
 let CognitoIdentityUserPoolAppClientId = "5bblc6bpht6itt8gss3kagokiv"
 let CognitoIdentityUserPoolAppClientSecret = "hg15srh5vkleu1euchc06ium381gp08vm7resjcee00thlafbqn"
@@ -58,6 +57,8 @@ typealias SuccessErrorCompletion = (_ success: Bool, _ error: CustomError?) -> V
 let FOLLOWER_CELL = "FollowerCell"
 let FOLLOWED_USER_CELL = "FollowedUserCell"
 let SEARCH_USER_CELL = "SearchUserCell"
+let NEW_SEARCH_INFO_CELL = "NewSearchInfoCell"
+let NO_USER_SEARCH_RESULTS_CELL = "NoUserSearchResultsCell"
 let CATEGORY_CELL = "CategoryCell"
 let COMPETITION_CELL = "CompetitionCell"
 let NOTIFICATION_CELL = "NotificationCell"

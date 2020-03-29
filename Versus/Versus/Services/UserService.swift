@@ -6,6 +6,9 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import Foundation
+import UIKit
+
 class UserService {
     
     static let instance = UserService()
@@ -215,15 +218,21 @@ class UserService {
     
     func searchByName(
         name: String,
-        completion: @escaping (_ users: [User]?, _ errorMessage: String?) -> ()
+        page: Int,
+        completion: @escaping (_ users: [User], _ errorMessage: String?) -> ()
     ) {
         
         router.request(
-            .searchByName(name: name)
+            .searchByName(name: name, page: page)
         ) { (data, response, error) in
             
+            var users = [User]()
+            
             if error != nil {
-                completion(nil, "Please check your network connection.")
+                completion(
+                    users,
+                    "Please check your network connection."
+                )
             }
             
             if let response = response as? HTTPURLResponse {
@@ -235,7 +244,10 @@ class UserService {
                 case .success:
                     
                     guard let responseData = data else {
-                        completion(nil, NetworkResponse.noData.rawValue)
+                        completion(
+                            users,
+                            NetworkResponse.noData.rawValue
+                        )
                         return
                     }
                     
@@ -243,16 +255,21 @@ class UserService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let users = try decoder.decode([User].self, from: responseData)
+                        users = try decoder.decode(
+                            [User].self,
+                            from: responseData
+                        )
                         completion(users, nil)
                     }
                     catch {
-                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                        completion(
+                            users,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
                     }
                     
                 case .failure(let networkFailureError):
-                    
-                    completion(nil, networkFailureError)
+                    completion(users, networkFailureError)
                 }
             }
         }
@@ -261,15 +278,20 @@ class UserService {
     
     func searchByUsername(
         username: String,
-        completion: @escaping (_ users: [User]?, _ errorMessage: String?) -> ()
+        page: Int,
+        completion: @escaping (_ users: [User], _ errorMessage: String?) -> ()
     ) {
-        
         router.request(
-            .searchByUsername(username: username)
+            .searchByUsername(username: username, page: page)
         ) { (data, response, error) in
             
+            var users = [User]()
+            
             if error != nil {
-                completion(nil, "Please check your network connection.")
+                completion(
+                    users,
+                    "Please check your network connection."
+                )
             }
             
             if let response = response as? HTTPURLResponse {
@@ -281,7 +303,10 @@ class UserService {
                 case .success:
                     
                     guard let responseData = data else {
-                        completion(nil, NetworkResponse.noData.rawValue)
+                        completion(
+                            users,
+                            NetworkResponse.noData.rawValue
+                        )
                         return
                     }
                     
@@ -289,65 +314,24 @@ class UserService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let users = try decoder.decode([User].self, from: responseData)
+                        users = try decoder.decode(
+                            [User].self,
+                            from: responseData
+                        )
                         completion(users, nil)
                     }
                     catch {
-                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                        completion(
+                            users,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
                     }
                     
                 case .failure(let networkFailureError):
-                    
-                    completion(nil, networkFailureError)
+                    completion(users, networkFailureError)
                 }
             }
         }
-    }
-    
-    
-    /**
- 
-     */
-    func saveUserSNSEndpointARN(
-        endpointArn: String,
-        userId: String,
-        completion: @escaping SuccessErrorCompletion
-    ) {
-//        let userSnsEndpointArn: AWSUserSNSEndpointARN = AWSUserSNSEndpointARN()
-//        userSnsEndpointArn._userId = userId
-//        userSnsEndpointArn._endpointArn = endpointArn
-//        userSnsEndpointArn._isEnabled = 1.toNSNumber
-//
-//        dynamoDB.save(
-//            userSnsEndpointArn
-//        ) { (error) in
-//            if let error = error {
-//                completion(false, CustomError(error: error, message: "Unable to save notifiation token"))
-//                return
-//            }
-//            completion(true, nil)
-//        }
-    }
-    
-    
-    /**
-     
-     */
-    func loadUserSNSEndpointARN(
-        userId: String,
-        completion: @escaping (_ awsEndpointArnRecord: AWSUserSNSEndpointARN?, _ customError: CustomError?) -> Void
-    ) {
-//        dynamoDB.load(
-//            AWSUserSNSEndpointARN.self,
-//            hashKey: userId,
-//            rangeKey: nil
-//        ) { (record, error) in
-//            if let error = error {
-//                completion(nil, CustomError(error: error, message: "Could not load User SNS Endpoint ARN"))
-//                return
-//            }
-//            completion(record as? AWSUserSNSEndpointARN, nil)
-//        }
     }
     
     
@@ -368,6 +352,7 @@ class UserService {
         if let profileImage = profileImage {
 
             uploadDG.enter()
+            
             s3BucketService.uploadImage(
                 image: profileImage,
                 imageType: .regular,
@@ -375,7 +360,7 @@ class UserService {
             ) { (customError) in
                 
                 if customError == nil {
-                    user.profileImage = imageId
+                    user.profileImageId = imageId
                 }
                 
                 error = customError?.message

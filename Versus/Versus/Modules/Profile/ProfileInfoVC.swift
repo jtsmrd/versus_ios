@@ -70,7 +70,7 @@ class ProfileInfoVC: UIViewController {
         
         notificationCenter.addObserver(
             self,
-            selector: #selector(ProfileInfoVC.reloadFollowerData),
+            selector: #selector(ProfileInfoVC.reloadUser),
             name: NSNotification.Name.OnFollowersUpdated,
             object: nil
         )
@@ -79,7 +79,7 @@ class ProfileInfoVC: UIViewController {
         
         configureView()
         
-        loadEntries()
+        loadUserData(shouldLoadEntries: true)
     }
 
     
@@ -133,31 +133,8 @@ class ProfileInfoVC: UIViewController {
     }
     
     
-    @objc func reloadFollowerData() {
-        
-        userService.loadUser(
-            userId: user.id
-        ) { [weak self] (user, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                
-                if let error = error {
-                    self.displayMessage(message: error)
-                }
-                else if let user = user {
-                    
-                    self.user = user
-                    self.delegate?.userReloaded(user: user)
-                    self.configureView()
-                }
-                else {
-                    self.displayMessage(
-                        message: "Unable to reload user."
-                    )
-                }
-            }
-        }
+    @objc func reloadUser() {
+        loadUserData()
     }
     
     
@@ -269,10 +246,10 @@ class ProfileInfoVC: UIViewController {
     
     private func downloadProfileImage() {
         
-        if !user.profileImage.isEmpty {
+        if !user.profileImageId.isEmpty {
             
             s3BucketService.downloadImage(
-                mediaId: user.profileImage,
+                mediaId: user.profileImageId,
                 imageType: .regular
             ) { [weak self] (image, error) in
                 guard let self = self else { return }
@@ -336,7 +313,7 @@ class ProfileInfoVC: UIViewController {
                         id: self.user.id
                     )
                     
-                    self.reloadFollowerData()
+                    self.loadUserData()
                 }
             }
         }
@@ -440,7 +417,7 @@ class ProfileInfoVC: UIViewController {
                             id: follower.id
                         )
                         
-                        self.reloadUserData()
+                        self.loadUserData()
                     }
                 }
             }
@@ -501,7 +478,7 @@ class ProfileInfoVC: UIViewController {
     
     // MARK: - Public functions
     
-    func reloadUserData() {
+    func loadUserData(shouldLoadEntries: Bool = false) {
         
         userService.loadUser(
             userId: user.id
@@ -526,6 +503,10 @@ class ProfileInfoVC: UIViewController {
                     )
                 }
             }
+        }
+        
+        if shouldLoadEntries {
+            loadEntries()
         }
     }
 }

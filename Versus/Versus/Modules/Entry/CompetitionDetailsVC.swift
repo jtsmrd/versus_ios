@@ -36,6 +36,35 @@ class CompetitionDetailsVC: UIViewController {
     var keyboardToolbar: KeyboardToolbar!
     
     
+    
+    /// Required object initializer.
+    ///
+    /// - Parameters:
+    ///   - media: An AVURLAsset or UIImage to upload for a competition.
+    ///   - previewImageTime: (Optional) When uploading a video, specify a
+    ///     time in the video to generate the preview image.
+    init(media: AnyObject, previewImageTime: CMTime? = nil) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.media = media
+        
+        if let time = previewImageTime {
+            self.previewImageTime = time
+        }
+        else {
+            // Default the image generation time to 2 seconds
+            self.previewImageTime = CMTime(
+                value: Int64(2),
+                timescale: 1
+            )
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +74,11 @@ class CompetitionDetailsVC: UIViewController {
         
         categoryTableView.layer.cornerRadius = 10
         categoryTableView.tableFooterView = UIView()
+        
+        categoryTableView.register(
+            UINib(nibName: "CategoryCell", bundle: nil),
+            forCellReuseIdentifier: "CategoryCell"
+        )
         
         selectCategoryView.addGestureRecognizer(
             UITapGestureRecognizer(
@@ -59,26 +93,6 @@ class CompetitionDetailsVC: UIViewController {
     
     deinit {
         selectCategoryView.gestureRecognizers?.removeAll()
-    }
-    
-    
-    /// Required object initializer.
-    ///
-    /// - Parameters:
-    ///   - media: An AVURLAsset or UIImage to upload for a competition.
-    ///   - previewImageTime: (Optional) When uploading a video, specify a
-    ///     time in the video to generate the preview image.
-    func initData(media: AnyObject, previewImageTime: CMTime? = nil) {
-        self.media = media
-        
-        if let time = previewImageTime {
-            self.previewImageTime = time
-        }
-        else {
-            
-            // Default the image generation time to 2 seconds
-            self.previewImageTime = CMTime(value: Int64(2), timescale: 1)
-        }
     }
     
     
@@ -263,17 +277,22 @@ class CompetitionDetailsVC: UIViewController {
             caption: caption,
             categoryType: categoryType
         ) { [weak self] (errorMessage) in
+            guard let self = self else { return }
             
             DispatchQueue.main.async {
                 
                 if let errorMessage = errorMessage {
                     
-                    self?.displayMessage(message: errorMessage)
-                    self?.setLoadingState(isLoading: false)
+                    self.displayMessage(message: errorMessage)
+                    self.setLoadingState(isLoading: false)
                     return
                 }
                 
-                self?.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
+                let vc = CompetitionSubmittedVC()
+                self.navigationController?.pushViewController(
+                    vc,
+                    animated: true
+                )
             }
         }
     }
@@ -299,17 +318,22 @@ class CompetitionDetailsVC: UIViewController {
             caption: caption,
             categoryType: categoryType
         ) { [weak self] (errorMessage) in
+            guard let self = self else { return }
             
             DispatchQueue.main.async {
                 
                 if let errorMessage = errorMessage {
                     
-                    self?.displayMessage(message: errorMessage)
-                    self?.setLoadingState(isLoading: false)
+                    self.displayMessage(message: errorMessage)
+                    self.setLoadingState(isLoading: false)
                     return
                 }
                 
-                self?.performSegue(withIdentifier: SHOW_COMPETITION_SUBMITTED, sender: nil)
+                let vc = CompetitionSubmittedVC()
+                self.navigationController?.pushViewController(
+                    vc,
+                    animated: true
+                )
             }
         }
     }

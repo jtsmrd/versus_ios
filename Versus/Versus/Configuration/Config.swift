@@ -10,7 +10,7 @@ import Foundation
 
 struct Config {
     
-//    static let BASE_URL = "http://192.168.1.222/"
-    static let BASE_URL = "http://127.0.0.1:8000/"
-    static let SNS_PLATFORM_APP_ARN = "arn:aws:sns:us-east-1:853109377079:app/APNS_SANDBOX/VersusSmrdel"
+    static let BASE_URL = "http://192.168.1.222/"
+//    static let BASE_URL = "http://127.0.0.1:8000/"
+    static let FETCH_LIMIT = 25
 }

@@ -9,7 +9,7 @@
 import Foundation
 
 enum NotificationEndpoint {
-    case loadNotifications(userId: Int)
+    case loadNotifications(userId: Int, page: Int)
     case setNotificationViewed(Notification)
     case deleteNotification(id: Int)
 }
@@ -28,7 +28,7 @@ extension NotificationEndpoint: EndpointType {
         
         switch self {
             
-        case .loadNotifications(let userId):
+        case .loadNotifications(let userId, _):
             return "api/users/\(userId)/notifications"
             
         case .setNotificationViewed(let notification):
@@ -58,8 +58,14 @@ extension NotificationEndpoint: EndpointType {
         
         switch self {
             
-        case .loadNotifications:
-            return .request(additionalHeaders: headers)
+        case .loadNotifications(_, let page):
+            return .requestParametersAndHeaders(
+                bodyParameters: nil,
+                urlParameters: [
+                    "page": page
+                ],
+                additionalHeaders: headers
+            )
             
         case .setNotificationViewed:
             return .requestParametersAndHeaders(

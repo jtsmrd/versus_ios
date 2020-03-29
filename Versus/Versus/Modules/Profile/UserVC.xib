@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
@@ -12,21 +12,19 @@
             <connections>
                 <outlet property="backButton" destination="RPj-Ui-veC" id="daP-wd-oXC"/>
                 <outlet property="competitionCollectionView" destination="OFl-aE-sGB" id="xca-tc-uad"/>
-                <outlet property="competitionCollectionViewHeight" destination="X7f-eD-Zvj" id="oJf-Ee-rPb"/>
+                <outlet property="contentContainerView" destination="MFT-dB-cdd" id="gVz-dM-4Or"/>
                 <outlet property="optionsButton" destination="krt-jG-YTM" id="hiJ-17-1Jw"/>
-                <outlet property="profileInfoContainerView" destination="rzs-5P-v9u" id="wUK-AZ-XEf"/>
-                <outlet property="scrollView" destination="0oL-O0-cwc" id="az1-7s-QbL"/>
                 <outlet property="usernameLabel" destination="k48-6p-FM5" id="LvE-oE-F8K"/>
                 <outlet property="view" destination="xLC-oc-2Xp" id="LAJ-eF-sPs"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="xLC-oc-2Xp">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6YP-PZ-Vtd" userLabel="Top Bar View">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RPj-Ui-veC">
                             <rect key="frame" x="8" y="5" width="40" height="40"/>
@@ -42,13 +40,13 @@
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@Username" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k48-6p-FM5">
-                            <rect key="frame" x="141" y="13.5" width="93.5" height="23.5"/>
+                            <rect key="frame" x="113.5" y="13.5" width="93.5" height="23.5"/>
                             <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="17"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="krt-jG-YTM">
-                            <rect key="frame" x="337" y="10" width="30" height="30"/>
+                            <rect key="frame" x="282" y="10" width="30" height="30"/>
                             <state key="normal" title="°°°">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -68,76 +66,35 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MFT-dB-cdd">
-                    <rect key="frame" x="0.0" y="50" width="375" height="617"/>
+                    <rect key="frame" x="0.0" y="50" width="320" height="518"/>
                     <subviews>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0oL-O0-cwc">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
-                            <subviews>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XA6-r6-A4G">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="464"/>
-                                    <subviews>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rzs-5P-v9u" userLabel="Profile Info Container View">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="364"/>
-                                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="364" id="8Gh-Sf-B7u"/>
-                                            </constraints>
-                                        </view>
-                                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="OFl-aE-sGB">
-                                            <rect key="frame" x="0.0" y="364" width="375" height="100"/>
-                                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="100" id="X7f-eD-Zvj"/>
-                                            </constraints>
-                                            <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="2" minimumInteritemSpacing="2" id="odK-fL-IL9">
-                                                <size key="itemSize" width="50" height="50"/>
-                                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="2"/>
-                                            </collectionViewFlowLayout>
-                                            <connections>
-                                                <outlet property="dataSource" destination="-1" id="est-Lz-AvD"/>
-                                                <outlet property="delegate" destination="-1" id="oKh-d2-M03"/>
-                                                <outlet property="prefetchDataSource" destination="-1" id="gAx-MN-jge"/>
-                                            </connections>
-                                        </collectionView>
-                                    </subviews>
-                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                    <constraints>
-                                        <constraint firstItem="OFl-aE-sGB" firstAttribute="top" secondItem="rzs-5P-v9u" secondAttribute="bottom" id="1FI-gb-Xgu"/>
-                                        <constraint firstItem="OFl-aE-sGB" firstAttribute="leading" secondItem="XA6-r6-A4G" secondAttribute="leading" id="1Wa-M4-7Xy"/>
-                                        <constraint firstItem="rzs-5P-v9u" firstAttribute="top" secondItem="XA6-r6-A4G" secondAttribute="top" id="bls-mb-jRz"/>
-                                        <constraint firstAttribute="trailing" secondItem="OFl-aE-sGB" secondAttribute="trailing" id="jKm-j8-yYa"/>
-                                        <constraint firstAttribute="trailing" secondItem="rzs-5P-v9u" secondAttribute="trailing" id="uXA-q4-czC"/>
-                                        <constraint firstItem="rzs-5P-v9u" firstAttribute="leading" secondItem="XA6-r6-A4G" secondAttribute="leading" id="zPb-WR-Txa"/>
-                                        <constraint firstAttribute="bottom" secondItem="OFl-aE-sGB" secondAttribute="bottom" id="zSr-3y-uMs"/>
-                                    </constraints>
-                                </view>
-                            </subviews>
-                            <constraints>
-                                <constraint firstItem="XA6-r6-A4G" firstAttribute="leading" secondItem="0oL-O0-cwc" secondAttribute="leading" id="GuV-BD-g2C"/>
-                                <constraint firstItem="XA6-r6-A4G" firstAttribute="top" secondItem="0oL-O0-cwc" secondAttribute="top" id="IUU-Yx-uvJ"/>
-                                <constraint firstAttribute="bottom" secondItem="XA6-r6-A4G" secondAttribute="bottom" id="yR4-wN-but"/>
-                                <constraint firstAttribute="trailing" secondItem="XA6-r6-A4G" secondAttribute="trailing" id="zp5-ny-fKY"/>
-                            </constraints>
-                            <viewLayoutGuide key="contentLayoutGuide" id="CX9-Yx-3VJ"/>
-                            <viewLayoutGuide key="frameLayoutGuide" id="A0l-8b-eq4"/>
+                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="OFl-aE-sGB">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="518"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="odK-fL-IL9">
+                                <size key="itemSize" width="50" height="50"/>
+                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </collectionViewFlowLayout>
                             <connections>
-                                <outlet property="delegate" destination="-1" id="kP0-HA-gDz"/>
+                                <outlet property="dataSource" destination="-1" id="est-Lz-AvD"/>
+                                <outlet property="delegate" destination="-1" id="oKh-d2-M03"/>
+                                <outlet property="prefetchDataSource" destination="-1" id="gAx-MN-jge"/>
                             </connections>
-                        </scrollView>
+                        </collectionView>
                     </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
-                        <constraint firstAttribute="bottom" secondItem="0oL-O0-cwc" secondAttribute="bottom" id="5Ur-sp-CmS"/>
-                        <constraint firstItem="0oL-O0-cwc" firstAttribute="leading" secondItem="MFT-dB-cdd" secondAttribute="leading" id="6DS-AY-bQV"/>
-                        <constraint firstAttribute="trailing" secondItem="0oL-O0-cwc" secondAttribute="trailing" id="kcA-lk-HvJ"/>
-                        <constraint firstItem="XA6-r6-A4G" firstAttribute="width" secondItem="MFT-dB-cdd" secondAttribute="width" id="xMa-c4-3rT"/>
-                        <constraint firstItem="0oL-O0-cwc" firstAttribute="top" secondItem="MFT-dB-cdd" secondAttribute="top" id="zPP-4r-T2m"/>
+                        <constraint firstAttribute="trailing" secondItem="OFl-aE-sGB" secondAttribute="trailing" id="Tuu-IX-N1R"/>
+                        <constraint firstAttribute="bottom" secondItem="OFl-aE-sGB" secondAttribute="bottom" id="ZzP-K9-dwE"/>
+                        <constraint firstItem="OFl-aE-sGB" firstAttribute="leading" secondItem="MFT-dB-cdd" secondAttribute="leading" id="eHo-Vh-zGm"/>
+                        <constraint firstItem="OFl-aE-sGB" firstAttribute="top" secondItem="MFT-dB-cdd" secondAttribute="top" id="f5F-cn-elr"/>
                     </constraints>
                 </view>
             </subviews>
             <color key="backgroundColor" red="0.0" green="0.76712721589999999" blue="0.70759445430000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="MFT-dB-cdd" firstAttribute="leading" secondItem="lKU-xg-POZ" secondAttribute="leading" id="AQ7-ES-2N4"/>
                 <constraint firstItem="lKU-xg-POZ" firstAttribute="trailing" secondItem="6YP-PZ-Vtd" secondAttribute="trailing" id="LKk-aL-M0o"/>

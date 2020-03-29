@@ -72,10 +72,10 @@ class RankCell: UITableViewCell {
     
     private func downloadProfileImage(user: User) {
         
-        if !user.profileImage.isEmpty {
+        if !user.profileImageId.isEmpty {
             
             s3BucketService.downloadImage(
-                mediaId: user.profileImage,
+                mediaId: user.profileImageId,
                 imageType: .regular
             ) { [weak self] (image, customError) in
                 

@@ -6,8 +6,9 @@
 //  Copyright © 2018 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 class CompetitionService {
-    
     
     static let instance = CompetitionService()
     
@@ -15,11 +16,7 @@ class CompetitionService {
     private let router = Router<CompetitionEndpoint>()
     
     
-    
-    
     private init() { }
-    
-    
     
     
     /// Load new competitions for users that the given user follows.
@@ -29,17 +26,24 @@ class CompetitionService {
     ///   - completion: A collection of competitions or an error message.
     func loadFollowedUserCompetitions(
         userId: Int,
-        completion: @escaping (_ competitions: [Competition]?, _ error: String?) -> ()
+        page: Int,
+        completion: @escaping (_ competitions: [Competition], _ error: String?) -> ()
     ) {
         
         router.request(
             .loadFollowedUserCompetitions(
-                userId: userId
+                userId: userId,
+                page: page
             )
         ) { (data, response, error) in
             
+            var competitions = [Competition]()
+            
             if error != nil {
-                completion(nil, "Please check your network connection.")
+                completion(
+                    competitions,
+                    "Please check your network connection."
+                )
             }
             
             if let response = response as? HTTPURLResponse {
@@ -51,7 +55,10 @@ class CompetitionService {
                 case .success:
                     
                     guard let responseData = data else {
-                        completion(nil, NetworkResponse.noData.rawValue)
+                        completion(
+                            competitions,
+                            NetworkResponse.noData.rawValue
+                        )
                         return
                     }
                     
@@ -59,16 +66,22 @@ class CompetitionService {
                     decoder.dateDecodingStrategy = .iso8601
                     
                     do {
-                        let competitions = try decoder.decode([Competition].self, from: responseData)
+                        competitions = try decoder.decode(
+                            [Competition].self,
+                            from: responseData
+                        )
                         completion(competitions, nil)
                     }
                     catch {
-                        completion(nil, NetworkResponse.unableToDecode.rawValue)
+                        completion(
+                            competitions,
+                            NetworkResponse.unableToDecode.rawValue
+                        )
                     }
                     
                 case .failure(let networkFailureError):
                     
-                    completion(nil, networkFailureError)
+                    completion(competitions, networkFailureError)
                 }
             }
         }
@@ -85,12 +98,14 @@ class CompetitionService {
     ///   - completion: A collection of competitions or an error message.
     func loadFeaturedCompetitions(
         categoryId: Int?,
+        page: Int,
         completion: @escaping (_ competitions: [Competition], _ error: String?) -> ()
     ) {
        
         router.request(
             .loadFeaturedCompetitions(
-                categoryId: categoryId
+                categoryId: categoryId,
+                page: page
             )
         ) { (data, response, error) in
             
@@ -151,12 +166,14 @@ class CompetitionService {
     ///   - completion: A collection of competitions or an error message.
     func loadUserCompetitions(
         userId: Int,
+        page: Int,
         completion: @escaping (_ competitions: [Competition], _ error: String?) -> ()
     ) {
         
         router.request(
             .loadUserCompetitions(
-                userId: userId
+                userId: userId,
+                page: page
             )
         ) { (data, response, error) in
             

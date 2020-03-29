@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,22 +14,30 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="188"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="375" height="187.5"/>
+                <rect key="frame" x="0.0" y="0.0" width="375" height="188"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="XxM-yJ-o4r" userLabel="Competitors Stack View">
-                        <rect key="frame" x="8" y="8" width="359" height="179.5"/>
+                        <rect key="frame" x="8" y="8" width="359" height="180"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="jqL-cp-Q3A">
-                                <rect key="frame" x="0.0" y="0.0" width="179.5" height="179.5"/>
+                                <rect key="frame" x="0.0" y="0.0" width="179.5" height="180"/>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-profile" translatesAutoresizingMaskIntoConstraints="NO" id="tlQ-Kb-xxf">
-                                <rect key="frame" x="179.5" y="0.0" width="179.5" height="179.5"/>
+                                <rect key="frame" x="179.5" y="0.0" width="179.5" height="180"/>
                             </imageView>
                         </subviews>
                     </stackView>
+                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="K7U-gM-S3l">
+                        <rect key="frame" x="79.5" y="79.5" width="37" height="37"/>
+                        <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </activityIndicatorView>
+                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="6Fu-5R-HCG">
+                        <rect key="frame" x="259" y="79.5" width="37" height="37"/>
+                        <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </activityIndicatorView>
                     <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eIh-G4-y1y" customClass="CircleView" customModule="Versus" customModuleProvider="target">
-                        <rect key="frame" x="154.5" y="61" width="66" height="65.5"/>
+                        <rect key="frame" x="154.5" y="61" width="66" height="66"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="VS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K2O-28-N0M">
                                 <rect key="frame" x="13.5" y="11" width="39.5" height="44"/>
@@ -52,7 +58,7 @@
                         </userDefinedRuntimeAttributes>
                     </view>
                     <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q3r-v9-4ej">
-                        <rect key="frame" x="8" y="162.5" width="359" height="25"/>
+                        <rect key="frame" x="8" y="163" width="359" height="25"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0aJ-7W-GQu">
                                 <rect key="frame" x="0.0" y="0.0" width="179.5" height="25"/>
@@ -153,8 +159,10 @@
                     </view>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="6Fu-5R-HCG" firstAttribute="centerX" secondItem="tlQ-Kb-xxf" secondAttribute="centerX" id="36i-yv-r7C"/>
                     <constraint firstItem="XxM-yJ-o4r" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="6WY-0f-dNi"/>
                     <constraint firstItem="eIh-G4-y1y" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Boa-WW-8dF"/>
+                    <constraint firstItem="6Fu-5R-HCG" firstAttribute="centerY" secondItem="tlQ-Kb-xxf" secondAttribute="centerY" id="CWi-2F-Vh3"/>
                     <constraint firstAttribute="trailing" secondItem="q3r-v9-4ej" secondAttribute="trailing" constant="8" id="IPz-Ba-uQj"/>
                     <constraint firstAttribute="bottom" secondItem="q3r-v9-4ej" secondAttribute="bottom" id="InS-bW-zMh"/>
                     <constraint firstAttribute="trailing" secondItem="XxM-yJ-o4r" secondAttribute="trailing" constant="8" id="KME-ld-17U"/>
@@ -163,7 +171,9 @@
                     <constraint firstItem="eIh-G4-y1y" firstAttribute="width" secondItem="eIh-G4-y1y" secondAttribute="height" multiplier="1:1" id="Wsv-Dz-9NH"/>
                     <constraint firstItem="eIh-G4-y1y" firstAttribute="height" secondItem="H2p-sc-9uM" secondAttribute="height" multiplier="0.35" id="aQA-Uv-gcU"/>
                     <constraint firstItem="XxM-yJ-o4r" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="b7V-Uf-8dK"/>
+                    <constraint firstItem="K7U-gM-S3l" firstAttribute="centerY" secondItem="jqL-cp-Q3A" secondAttribute="centerY" id="eZ9-dY-2Pm"/>
                     <constraint firstItem="q3r-v9-4ej" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="iPx-sl-31g"/>
+                    <constraint firstItem="K7U-gM-S3l" firstAttribute="centerX" secondItem="jqL-cp-Q3A" secondAttribute="centerX" id="zBU-YN-StB"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
@@ -174,18 +184,20 @@
                 <outlet property="leftEntryRankImageView" destination="N18-id-ZkH" id="Guc-zj-faO"/>
                 <outlet property="leftEntryUsernameLabel" destination="4Bt-C1-qI4" id="gtN-lO-SgU"/>
                 <outlet property="leftEntryVotesLabel" destination="88t-bU-Wpn" id="xKO-Lt-XGP"/>
+                <outlet property="leftImageActivityIndicator" destination="K7U-gM-S3l" id="Yc3-Js-TFa"/>
                 <outlet property="rightEntryImageView" destination="tlQ-Kb-xxf" id="WQ8-Nq-VOx"/>
                 <outlet property="rightEntryRankImageView" destination="csD-eX-df1" id="n3z-Fh-RIf"/>
                 <outlet property="rightEntryUsernameLabel" destination="8lQ-0b-LTd" id="1Fp-Fa-48u"/>
                 <outlet property="rightEntryVotesLabel" destination="Tgv-TS-F7A" id="oqm-18-VCX"/>
+                <outlet property="rightImageActivityIndicator" destination="6Fu-5R-HCG" id="bTi-Mv-7Ek"/>
                 <outlet property="versusCircleView" destination="eIh-G4-y1y" id="JGC-ez-kPo"/>
             </connections>
             <point key="canvasLocation" x="34" y="165.5"/>
         </tableViewCell>
     </objects>
     <resources>
-        <image name="Mic" width="800" height="800"/>
-        <image name="Star" width="496.55172729492188" height="499"/>
+        <image name="Mic" width="200" height="200"/>
+        <image name="Star" width="200" height="201"/>
         <image name="default-profile" width="376" height="376"/>
     </resources>
 </document>

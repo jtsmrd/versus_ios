@@ -31,7 +31,7 @@ class CommentsVC: UIViewController {
     
     var delegate: CompetitionCommentsVCDelegate?
     var competitionEntryId: String!
-    var comments = [Comment]()
+//    var comments = [Comment]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -142,38 +142,39 @@ class CommentsVC: UIViewController {
         
         self.competitionEntryId = competitionEntryId
         
-        CommentService.instance.getComments(for: competitionEntryId) { (comments, customError) in
-            DispatchQueue.main.async {
-                if let customError = customError {
-                    self.displayError(error: customError)
-                }
-                else {
-                    self.comments = comments.sorted { $0.createDate < $1.createDate }
-                    self.commentsTableView.reloadData()
-                    
-                    if !self.comments.isEmpty {
-                        self.commentsTableView.scrollToRow(at: IndexPath(row: comments.count - 1, section: 0), at: .bottom, animated: false)
-                    }
-                }
-            }
-        }
+//        CommentService.instance.getComments(for: competitionEntryId) { (comments, customError) in
+//            DispatchQueue.main.async {
+//                if let customError = customError {
+//                    self.displayError(error: customError)
+//                }
+//                else {
+//                    self.comments = comments.sorted { $0.createDate < $1.createDate }
+//                    self.commentsTableView.reloadData()
+//
+//                    if !self.comments.isEmpty {
+//                        self.commentsTableView.scrollToRow(at: IndexPath(row: comments.count - 1, section: 0), at: .bottom, animated: false)
+//                    }
+//                }
+//            }
+//        }
     }
 }
 
 extension CommentsVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let commentsCount = comments.count
-        noCommentsView.isHidden = commentsCount > 0 ? true : false
-        tableView.separatorStyle = commentsCount > 0 ? .singleLine : .none
-        return commentsCount
+//        let commentsCount = comments.count
+//        noCommentsView.isHidden = commentsCount > 0 ? true : false
+//        tableView.separatorStyle = commentsCount > 0 ? .singleLine : .none
+//        return commentsCount
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: COMPETITION_COMMENT_CELL, for: indexPath) as? CompetitionCommentCell {
-            cell.configureCell(comment: comments[indexPath.row])
-            return cell
-        }
+//        if let cell = tableView.dequeueReusableCell(withIdentifier: COMPETITION_COMMENT_CELL, for: indexPath) as? CompetitionCommentCell {
+//            cell.configureCell(comment: comments[indexPath.row])
+//            return cell
+//        }
         return UITableViewCell()
     }
 }

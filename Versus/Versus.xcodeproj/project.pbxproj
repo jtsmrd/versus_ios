@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,10 +18,7 @@
 		321E57EB2104F29500F94E2E /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57EA2104F29500F94E2E /* Comment.swift */; };
 		321E57ED2104F30400F94E2E /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57EC2104F30400F94E2E /* CommentService.swift */; };
 		321E57EF2104F9DC00F94E2E /* CommentsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321E57EE2104F9DC00F94E2E /* CommentsVC.swift */; };
-		3236FA8C213C2799004E28F5 /* AWS_Vote_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 3236FA8B213C2799004E28F5 /* AWS_Vote_Trigger.py */; };
-		3236FA8E213C79FD004E28F5 /* VoteForCompetition.py in Resources */ = {isa = PBXBuildFile; fileRef = 3236FA8D213C79FD004E28F5 /* VoteForCompetition.py */; };
 		323A7B3620CBFCBE0011AF95 /* CompetitionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */; };
-		323A7B3820CC9E950011AF95 /* AWSUserSNSEndpointARN.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323A7B3720CC9E950011AF95 /* AWSUserSNSEndpointARN.swift */; };
 		3251CA6420E8577100F9434D /* LeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3251CA6320E8577100F9434D /* LeaderCell.swift */; };
 		32580E0820E6E2DC00D138AD /* LeaderboardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32580E0720E6E2DC00D138AD /* LeaderboardVC.swift */; };
 		325CA3562131D38B00A6C47B /* Competitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325CA3552131D38B00A6C47B /* Competitor.swift */; };
@@ -35,22 +32,12 @@
 		327E604520C49F64000980CD /* CompetitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604420C49F64000980CD /* CompetitionManager.swift */; };
 		327E604920C4AD26000980CD /* KeyboardToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327E604820C4AD26000980CD /* KeyboardToolbar.swift */; };
 		327FA2B220DC501400B13C6D /* SelectPreviewImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */; };
-		329C4E7B20E00EAE00E4E8E9 /* AWS_Notification_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7520E00EAE00E4E8E9 /* AWS_Notification_Trigger.py */; };
-		329C4E7C20E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7620E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py */; };
-		329C4E7D20E00EAE00E4E8E9 /* MatchCompetitionEntries.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7720E00EAE00E4E8E9 /* MatchCompetitionEntries.py */; };
-		329C4E7E20E00EAE00E4E8E9 /* AWS_Competition_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7820E00EAE00E4E8E9 /* AWS_Competition_Trigger.py */; };
-		329C4E7F20E00EAE00E4E8E9 /* AWS_Follower_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7920E00EAE00E4E8E9 /* AWS_Follower_Trigger.py */; };
-		329C4E8020E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */; };
 		329C4E8320E02ED000E4E8E9 /* Tutorial.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 329C4E8220E02ED000E4E8E9 /* Tutorial.storyboard */; };
 		329C4E8520E0332900E4E8E9 /* TutorialVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C4E8420E0332900E4E8E9 /* TutorialVC.swift */; };
 		329C4E8720E0348000E4E8E9 /* TutorialPVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C4E8620E0348000E4E8E9 /* TutorialPVC.swift */; };
 		329C4E8920E0355B00E4E8E9 /* TutorialPageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C4E8820E0355B00E4E8E9 /* TutorialPageVC.swift */; };
 		32A8F022213B3A22000515FA /* SearchUserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A8F021213B3A22000515FA /* SearchUserVC.swift */; };
 		32A8F025213B4C37000515FA /* ImageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A8F024213B4C37000515FA /* ImageOperations.swift */; };
-		32B5F3C9212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py in Resources */ = {isa = PBXBuildFile; fileRef = 32B5F3C8212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py */; };
-		32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97620C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m */; };
-		32D9C97B20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97720C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m */; };
-		32D9C97C20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */; };
 		32D9C98420CB46E200F174B2 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D9C98320CB46E200F174B2 /* IntExtensions.swift */; };
 		589C140C381C23DC0BEB472F /* Pods_Versus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A999CFBAD01983D013158ED9 /* Pods_Versus.framework */; };
 		6B01D8B02086A4200021421F /* FollowerSuggestionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B01D8AF2086A4200021421F /* FollowerSuggestionCell.swift */; };
@@ -63,6 +50,14 @@
 		6B079FF1208D3F1E003BBB87 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF0208D3F1E003BBB87 /* DateExtensions.swift */; };
 		6B079FF5208D429D003BBB87 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF4208D429D003BBB87 /* Entry.swift */; };
 		6B079FF7208D4315003BBB87 /* EntryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B079FF6208D4315003BBB87 /* EntryService.swift */; };
+		6B12E83B242EBA05001E6FA5 /* LeaderboardSelectorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B12E839242EBA05001E6FA5 /* LeaderboardSelectorVC.swift */; };
+		6B12E83C242EBA05001E6FA5 /* LeaderboardSelectorVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B12E83A242EBA05001E6FA5 /* LeaderboardSelectorVC.xib */; };
+		6B12E83F242EBC27001E6FA5 /* CategorySelectorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B12E83D242EBC27001E6FA5 /* CategorySelectorVC.swift */; };
+		6B12E840242EBC27001E6FA5 /* CategorySelectorVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B12E83E242EBC27001E6FA5 /* CategorySelectorVC.xib */; };
+		6B12E843242EBE8E001E6FA5 /* LeaderboardSelectorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B12E841242EBE8D001E6FA5 /* LeaderboardSelectorCell.swift */; };
+		6B12E844242EBE8E001E6FA5 /* LeaderboardSelectorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B12E842242EBE8D001E6FA5 /* LeaderboardSelectorCell.xib */; };
+		6B12E847242EBEA4001E6FA5 /* CategorySelectorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B12E845242EBEA4001E6FA5 /* CategorySelectorCell.swift */; };
+		6B12E848242EBEA4001E6FA5 /* CategorySelectorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B12E846242EBEA4001E6FA5 /* CategorySelectorCell.xib */; };
 		6B13B93920AE00BD00769AFD /* RoundedCornerImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B13B93820AE00BD00769AFD /* RoundedCornerImageView.swift */; };
 		6B13B93C20AE180F00769AFD /* EditImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B13B93B20AE180F00769AFD /* EditImage.storyboard */; };
 		6B13B93E20AE1BFA00769AFD /* EditImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B13B93D20AE1BFA00769AFD /* EditImageVC.swift */; };
@@ -80,12 +75,21 @@
 		6B160C6B209231F2003F2F9D /* Competition.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B160C6A209231F2003F2F9D /* Competition.storyboard */; };
 		6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B1ABF1D2072E819005A0DDB /* Main.storyboard */; };
 		6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1B29992083CE230070848C /* StringExtensions.swift */; };
+		6B29AD992422C325008D6BD7 /* SelectCompetitionMediaVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B29AD982422C325008D6BD7 /* SelectCompetitionMediaVC.xib */; };
+		6B29AD9B2422C52B008D6BD7 /* SelectPreviewImageVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B29AD9A2422C52B008D6BD7 /* SelectPreviewImageVC.xib */; };
+		6B29AD9D2422C613008D6BD7 /* CompetitionDetailsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B29AD9C2422C613008D6BD7 /* CompetitionDetailsVC.xib */; };
+		6B29AD9F2422C7BF008D6BD7 /* CategoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B29AD9E2422C7BF008D6BD7 /* CategoryCell.xib */; };
+		6B29ADA12422C8B4008D6BD7 /* CompetitionSubmittedVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B29ADA02422C8B4008D6BD7 /* CompetitionSubmittedVC.xib */; };
 		6B2A22EA208AAAC500D65C9A /* PhotoLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2A22E9208AAAC500D65C9A /* PhotoLibraryCell.swift */; };
 		6B2E60C120A354AA005C1987 /* ProfileCompetitionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2E60C020A354AA005C1987 /* ProfileCompetitionCell.swift */; };
 		6B334FD120816032005B010F /* CustomError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD020816032005B010F /* CustomError.swift */; };
 		6B334FD32081652D005B010F /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */; };
 		6B334FD720818738005B010F /* Follower.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD620818738005B010F /* Follower.swift */; };
 		6B334FD9208187B3005B010F /* FollowerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B334FD8208187B3005B010F /* FollowerService.swift */; };
+		6B365D72242AC9C000A00E62 /* NewSearchInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B365D70242AC9C000A00E62 /* NewSearchInfoCell.swift */; };
+		6B365D73242AC9C000A00E62 /* NewSearchInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B365D71242AC9C000A00E62 /* NewSearchInfoCell.xib */; };
+		6B365D76242AD3AD00A00E62 /* NoUserSearchResultsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B365D74242AD3AD00A00E62 /* NoUserSearchResultsCell.swift */; };
+		6B365D77242AD3AD00A00E62 /* NoUserSearchResultsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B365D75242AD3AD00A00E62 /* NoUserSearchResultsCell.xib */; };
 		6B368D8A21CDB2BE0084A150 /* DeviceSizeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B368D8921CDB2BE0084A150 /* DeviceSizeType.swift */; };
 		6B368D8C21CDB44C0084A150 /* UIDeviceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B368D8B21CDB44C0084A150 /* UIDeviceExtensions.swift */; };
 		6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B36E1C8206FD9BA00F92375 /* Constants.swift */; };
@@ -99,6 +103,10 @@
 		6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DAEBF20822D7300946EB1 /* NSMutableAttributedStringExtensions.swift */; };
 		6B3DAEC620827D9800946EB1 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DAEC520827D9800946EB1 /* UIViewExtensions.swift */; };
 		6B3DAEC82082DBE700946EB1 /* FollowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DAEC72082DBE700946EB1 /* FollowButton.swift */; };
+		6B4731AD242D6159000EA1FE /* NoUserCompetitionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4731AB242D6159000EA1FE /* NoUserCompetitionsCell.swift */; };
+		6B4731AE242D6159000EA1FE /* NoUserCompetitionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B4731AC242D6159000EA1FE /* NoUserCompetitionsCell.xib */; };
+		6B4731B1242D671D000EA1FE /* NoFollowersCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4731AF242D671D000EA1FE /* NoFollowersCell.swift */; };
+		6B4731B2242D671D000EA1FE /* NoFollowersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B4731B0242D671D000EA1FE /* NoFollowersCell.xib */; };
 		6B4897BF2414240000C3FBDD /* NotificationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4897BE2414240000C3FBDD /* NotificationType.swift */; };
 		6B4897C124142FDA00C3FBDD /* NotificationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4897C024142FDA00C3FBDD /* NotificationEndpoint.swift */; };
 		6B525F8D2081143B007A7FC7 /* FollowerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B525F8C2081143B007A7FC7 /* FollowerCell.swift */; };
@@ -121,6 +129,8 @@
 		6B60E1E323F88B63001C60F4 /* LeaderEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B60E1E223F88B63001C60F4 /* LeaderEndpoint.swift */; };
 		6B61CD9D2400D5AF00396F47 /* LeaderboardType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61CD9C2400D5AF00396F47 /* LeaderboardType.swift */; };
 		6B61CD9F2400D78900396F47 /* LeaderboardEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61CD9E2400D78900396F47 /* LeaderboardEndpoint.swift */; };
+		6B63E2A1242C2FB7005B8101 /* ProfileInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B63E29F242C2FB7005B8101 /* ProfileInfoCell.swift */; };
+		6B63E2A2242C2FB7005B8101 /* ProfileInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B63E2A0242C2FB7005B8101 /* ProfileInfoCell.xib */; };
 		6B6DE28E20A264AC005368C4 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28D20A264AC005368C4 /* Vote.swift */; };
 		6B6DE29020A26510005368C4 /* VoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DE28F20A26510005368C4 /* VoteService.swift */; };
 		6B781CF9222ADB6A0061E622 /* UserEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B781CF8222ADB6A0061E622 /* UserEndpoint.swift */; };
@@ -132,7 +142,6 @@
 		6B8316E2207D791A0067EE0E /* Rank.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E1207D791A0067EE0E /* Rank.swift */; };
 		6B8316E4207D7C6A0067EE0E /* RankVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E3207D7C6A0067EE0E /* RankVC.swift */; };
 		6B8316E6207D977A0067EE0E /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8316E5207D977A0067EE0E /* CurrentUser.swift */; };
-		6B85343C2080021F00985BDD /* AWSUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85343B2080021F00985BDD /* AWSUser.swift */; };
 		6B85343E208020C100985BDD /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85343D208020C100985BDD /* User.swift */; };
 		6B87388F2079979D00BF834D /* S3BucketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B87388E2079979D00BF834D /* S3BucketService.swift */; };
 		6B8BF01D21E15E2A001889E9 /* AllTimeLeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BF01C21E15E2A001889E9 /* AllTimeLeader.swift */; };
@@ -194,6 +203,7 @@
 		6BD5E36120A65A0B00A9C054 /* CompetitionShareCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E36020A65A0B00A9C054 /* CompetitionShareCell.swift */; };
 		6BD5E36320A65A1E00A9C054 /* CompetitionOptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD5E36220A65A1E00A9C054 /* CompetitionOptionCell.swift */; };
 		6BD67D0120AA34F6001F2751 /* NotificationsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD67D0020AA34F6001F2751 /* NotificationsVC.swift */; };
+		6BD933A2242FE75C00C827D5 /* SearchOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD933A1242FE75C00C827D5 /* SearchOperations.swift */; };
 		6BDE76DF208FF0A3009621D0 /* SwiftyCamProgressButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDE76DE208FF0A3009621D0 /* SwiftyCamProgressButton.swift */; };
 		6BE829B022443A6500ED4244 /* FollowerEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE829AF22443A6500ED4244 /* FollowerEndpoint.swift */; };
 		6BEACB57206EB3DC00C221A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */; };
@@ -228,10 +238,7 @@
 		321E57EA2104F29500F94E2E /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		321E57EC2104F30400F94E2E /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
 		321E57EE2104F9DC00F94E2E /* CommentsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsVC.swift; sourceTree = "<group>"; };
-		3236FA8B213C2799004E28F5 /* AWS_Vote_Trigger.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = AWS_Vote_Trigger.py; sourceTree = "<group>"; };
-		3236FA8D213C79FD004E28F5 /* VoteForCompetition.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = VoteForCompetition.py; sourceTree = "<group>"; };
 		323A7B3420CBFCBE0011AF95 /* CompetitionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CompetitionCell.xib; sourceTree = "<group>"; };
-		323A7B3720CC9E950011AF95 /* AWSUserSNSEndpointARN.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSUserSNSEndpointARN.swift; sourceTree = "<group>"; };
 		3251CA6320E8577100F9434D /* LeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderCell.swift; sourceTree = "<group>"; };
 		32580E0720E6E2DC00D138AD /* LeaderboardVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardVC.swift; sourceTree = "<group>"; };
 		325CA3552131D38B00A6C47B /* Competitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competitor.swift; sourceTree = "<group>"; };
@@ -245,26 +252,12 @@
 		327E604420C49F64000980CD /* CompetitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionManager.swift; sourceTree = "<group>"; };
 		327E604820C4AD26000980CD /* KeyboardToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardToolbar.swift; sourceTree = "<group>"; };
 		327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPreviewImageVC.swift; sourceTree = "<group>"; };
-		329C4E7520E00EAE00E4E8E9 /* AWS_Notification_Trigger.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = AWS_Notification_Trigger.py; sourceTree = "<group>"; };
-		329C4E7620E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = GetFollowedUserCompetitions.py; sourceTree = "<group>"; };
-		329C4E7720E00EAE00E4E8E9 /* MatchCompetitionEntries.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = MatchCompetitionEntries.py; sourceTree = "<group>"; };
-		329C4E7820E00EAE00E4E8E9 /* AWS_Competition_Trigger.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = AWS_Competition_Trigger.py; sourceTree = "<group>"; };
-		329C4E7920E00EAE00E4E8E9 /* AWS_Follower_Trigger.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = AWS_Follower_Trigger.py; sourceTree = "<group>"; };
-		329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "versus-1_0-DetermineCompetitionWinner.py"; sourceTree = "<group>"; };
 		329C4E8220E02ED000E4E8E9 /* Tutorial.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Tutorial.storyboard; sourceTree = "<group>"; };
 		329C4E8420E0332900E4E8E9 /* TutorialVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialVC.swift; sourceTree = "<group>"; };
 		329C4E8620E0348000E4E8E9 /* TutorialPVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialPVC.swift; sourceTree = "<group>"; };
 		329C4E8820E0355B00E4E8E9 /* TutorialPageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialPageVC.swift; sourceTree = "<group>"; };
 		32A8F021213B3A22000515FA /* SearchUserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserVC.swift; sourceTree = "<group>"; };
 		32A8F024213B4C37000515FA /* ImageOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOperations.swift; sourceTree = "<group>"; };
-		32B5F3C8212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = AWS_FollowedUser_Trigger.py; sourceTree = "<group>"; };
-		32D9C97320C9F0AB00F174B2 /* Versus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Versus-Bridging-Header.h"; sourceTree = "<group>"; };
-		32D9C97420C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_RequestSchema.h; sourceTree = "<group>"; };
-		32D9C97520C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h; sourceTree = "<group>"; };
-		32D9C97620C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSAPI_CMAXD4H77D_ResponseSchema.m; sourceTree = "<group>"; };
-		32D9C97720C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSAPI_CMAXD4H77D_RequestSchema.m; sourceTree = "<group>"; };
-		32D9C97820C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSAPI_CMAXD4H77D_ResponseSchema.h; sourceTree = "<group>"; };
-		32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m; sourceTree = "<group>"; };
 		32D9C98320CB46E200F174B2 /* IntExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtensions.swift; sourceTree = "<group>"; };
 		3755991080BE762D5B01C76C /* Pods-Versus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Versus.release.xcconfig"; path = "Pods/Target Support Files/Pods-Versus/Pods-Versus.release.xcconfig"; sourceTree = "<group>"; };
 		6B01D8AF2086A4200021421F /* FollowerSuggestionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerSuggestionCell.swift; sourceTree = "<group>"; };
@@ -277,6 +270,14 @@
 		6B079FF0208D3F1E003BBB87 /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
 		6B079FF4208D429D003BBB87 /* Entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entry.swift; sourceTree = "<group>"; };
 		6B079FF6208D4315003BBB87 /* EntryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryService.swift; sourceTree = "<group>"; };
+		6B12E839242EBA05001E6FA5 /* LeaderboardSelectorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardSelectorVC.swift; sourceTree = "<group>"; };
+		6B12E83A242EBA05001E6FA5 /* LeaderboardSelectorVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LeaderboardSelectorVC.xib; sourceTree = "<group>"; };
+		6B12E83D242EBC27001E6FA5 /* CategorySelectorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySelectorVC.swift; sourceTree = "<group>"; };
+		6B12E83E242EBC27001E6FA5 /* CategorySelectorVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategorySelectorVC.xib; sourceTree = "<group>"; };
+		6B12E841242EBE8D001E6FA5 /* LeaderboardSelectorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardSelectorCell.swift; sourceTree = "<group>"; };
+		6B12E842242EBE8D001E6FA5 /* LeaderboardSelectorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LeaderboardSelectorCell.xib; sourceTree = "<group>"; };
+		6B12E845242EBEA4001E6FA5 /* CategorySelectorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySelectorCell.swift; sourceTree = "<group>"; };
+		6B12E846242EBEA4001E6FA5 /* CategorySelectorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategorySelectorCell.xib; sourceTree = "<group>"; };
 		6B13B93820AE00BD00769AFD /* RoundedCornerImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornerImageView.swift; sourceTree = "<group>"; };
 		6B13B93B20AE180F00769AFD /* EditImage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = EditImage.storyboard; sourceTree = "<group>"; };
 		6B13B93D20AE1BFA00769AFD /* EditImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImageVC.swift; sourceTree = "<group>"; };
@@ -294,12 +295,21 @@
 		6B160C6A209231F2003F2F9D /* Competition.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Competition.storyboard; sourceTree = "<group>"; };
 		6B1ABF1D2072E819005A0DDB /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		6B1B29992083CE230070848C /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
+		6B29AD982422C325008D6BD7 /* SelectCompetitionMediaVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCompetitionMediaVC.xib; sourceTree = "<group>"; };
+		6B29AD9A2422C52B008D6BD7 /* SelectPreviewImageVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectPreviewImageVC.xib; sourceTree = "<group>"; };
+		6B29AD9C2422C613008D6BD7 /* CompetitionDetailsVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CompetitionDetailsVC.xib; sourceTree = "<group>"; };
+		6B29AD9E2422C7BF008D6BD7 /* CategoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryCell.xib; sourceTree = "<group>"; };
+		6B29ADA02422C8B4008D6BD7 /* CompetitionSubmittedVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CompetitionSubmittedVC.xib; sourceTree = "<group>"; };
 		6B2A22E9208AAAC500D65C9A /* PhotoLibraryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryCell.swift; sourceTree = "<group>"; };
 		6B2E60C020A354AA005C1987 /* ProfileCompetitionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCompetitionCell.swift; sourceTree = "<group>"; };
 		6B334FD020816032005B010F /* CustomError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomError.swift; sourceTree = "<group>"; };
 		6B334FD22081652D005B010F /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		6B334FD620818738005B010F /* Follower.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Follower.swift; sourceTree = "<group>"; };
 		6B334FD8208187B3005B010F /* FollowerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerService.swift; sourceTree = "<group>"; };
+		6B365D70242AC9C000A00E62 /* NewSearchInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSearchInfoCell.swift; sourceTree = "<group>"; };
+		6B365D71242AC9C000A00E62 /* NewSearchInfoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewSearchInfoCell.xib; sourceTree = "<group>"; };
+		6B365D74242AD3AD00A00E62 /* NoUserSearchResultsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoUserSearchResultsCell.swift; sourceTree = "<group>"; };
+		6B365D75242AD3AD00A00E62 /* NoUserSearchResultsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NoUserSearchResultsCell.xib; sourceTree = "<group>"; };
 		6B368D8921CDB2BE0084A150 /* DeviceSizeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSizeType.swift; sourceTree = "<group>"; };
 		6B368D8B21CDB44C0084A150 /* UIDeviceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtensions.swift; sourceTree = "<group>"; };
 		6B36E1C8206FD9BA00F92375 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -313,6 +323,10 @@
 		6B3DAEBF20822D7300946EB1 /* NSMutableAttributedStringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSMutableAttributedStringExtensions.swift; sourceTree = "<group>"; };
 		6B3DAEC520827D9800946EB1 /* UIViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
 		6B3DAEC72082DBE700946EB1 /* FollowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowButton.swift; sourceTree = "<group>"; };
+		6B4731AB242D6159000EA1FE /* NoUserCompetitionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoUserCompetitionsCell.swift; sourceTree = "<group>"; };
+		6B4731AC242D6159000EA1FE /* NoUserCompetitionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NoUserCompetitionsCell.xib; sourceTree = "<group>"; };
+		6B4731AF242D671D000EA1FE /* NoFollowersCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoFollowersCell.swift; sourceTree = "<group>"; };
+		6B4731B0242D671D000EA1FE /* NoFollowersCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NoFollowersCell.xib; sourceTree = "<group>"; };
 		6B4897BE2414240000C3FBDD /* NotificationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationType.swift; sourceTree = "<group>"; };
 		6B4897C024142FDA00C3FBDD /* NotificationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationEndpoint.swift; sourceTree = "<group>"; };
 		6B525F8C2081143B007A7FC7 /* FollowerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerCell.swift; sourceTree = "<group>"; };
@@ -336,6 +350,8 @@
 		6B60E1E223F88B63001C60F4 /* LeaderEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderEndpoint.swift; sourceTree = "<group>"; };
 		6B61CD9C2400D5AF00396F47 /* LeaderboardType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardType.swift; sourceTree = "<group>"; };
 		6B61CD9E2400D78900396F47 /* LeaderboardEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardEndpoint.swift; sourceTree = "<group>"; };
+		6B63E29F242C2FB7005B8101 /* ProfileInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoCell.swift; sourceTree = "<group>"; };
+		6B63E2A0242C2FB7005B8101 /* ProfileInfoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileInfoCell.xib; sourceTree = "<group>"; };
 		6B6DE28D20A264AC005368C4 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
 		6B6DE28F20A26510005368C4 /* VoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteService.swift; sourceTree = "<group>"; };
 		6B781CF8222ADB6A0061E622 /* UserEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEndpoint.swift; sourceTree = "<group>"; };
@@ -347,7 +363,6 @@
 		6B8316E1207D791A0067EE0E /* Rank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rank.swift; sourceTree = "<group>"; };
 		6B8316E3207D7C6A0067EE0E /* RankVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankVC.swift; sourceTree = "<group>"; };
 		6B8316E5207D977A0067EE0E /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
-		6B85343B2080021F00985BDD /* AWSUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSUser.swift; sourceTree = "<group>"; };
 		6B85343D208020C100985BDD /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6B87388E2079979D00BF834D /* S3BucketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = S3BucketService.swift; sourceTree = "<group>"; };
 		6B8BF01C21E15E2A001889E9 /* AllTimeLeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllTimeLeader.swift; sourceTree = "<group>"; };
@@ -361,6 +376,7 @@
 		6B8E7D232241A0FF008E0E85 /* EntryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EntryCell.xib; sourceTree = "<group>"; };
 		6B8E7D252241A129008E0E85 /* EntriesVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EntriesVC.xib; sourceTree = "<group>"; };
 		6B8E7D272241A19F008E0E85 /* ProfileCompetitionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileCompetitionCell.xib; sourceTree = "<group>"; };
+		6B903D9A24301BA100C408D2 /* Versus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Versus-Bridging-Header.h"; sourceTree = "<group>"; };
 		6B93D4BB23B583AD0038AFC3 /* VoteEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteEndpoint.swift; sourceTree = "<group>"; };
 		6B93D4BD23B588C10038AFC3 /* ToDo */ = {isa = PBXFileReference; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
 		6B9877652247DF940091B5BB /* CompetitionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionEndpoint.swift; sourceTree = "<group>"; };
@@ -411,6 +427,7 @@
 		6BD5E36020A65A0B00A9C054 /* CompetitionShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionShareCell.swift; sourceTree = "<group>"; };
 		6BD5E36220A65A1E00A9C054 /* CompetitionOptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionOptionCell.swift; sourceTree = "<group>"; };
 		6BD67D0020AA34F6001F2751 /* NotificationsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsVC.swift; sourceTree = "<group>"; };
+		6BD933A1242FE75C00C827D5 /* SearchOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchOperations.swift; sourceTree = "<group>"; };
 		6BDE76DE208FF0A3009621D0 /* SwiftyCamProgressButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyCamProgressButton.swift; sourceTree = "<group>"; };
 		6BE829AF22443A6500ED4244 /* FollowerEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerEndpoint.swift; sourceTree = "<group>"; };
 		6BEACB53206EB3DC00C221A0 /* Versus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Versus.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -458,22 +475,6 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
-		329C4E7220DE963D00E4E8E9 /* AWS Lambda Functions */ = {
-			isa = PBXGroup;
-			children = (
-				329C4E7820E00EAE00E4E8E9 /* AWS_Competition_Trigger.py */,
-				32B5F3C8212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py */,
-				329C4E7920E00EAE00E4E8E9 /* AWS_Follower_Trigger.py */,
-				329C4E7520E00EAE00E4E8E9 /* AWS_Notification_Trigger.py */,
-				3236FA8B213C2799004E28F5 /* AWS_Vote_Trigger.py */,
-				329C4E7620E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py */,
-				329C4E7720E00EAE00E4E8E9 /* MatchCompetitionEntries.py */,
-				329C4E7A20E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py */,
-				3236FA8D213C79FD004E28F5 /* VoteForCompetition.py */,
-			);
-			path = "AWS Lambda Functions";
-			sourceTree = "<group>";
-		};
 		329C4E8120E02EBC00E4E8E9 /* Tutorial */ = {
 			isa = PBXGroup;
 			children = (
@@ -490,22 +491,9 @@
 			children = (
 				32A8F024213B4C37000515FA /* ImageOperations.swift */,
 				6BAA434E224FC2D100941539 /* AsyncOperation.swift */,
+				6BD933A1242FE75C00C827D5 /* SearchOperations.swift */,
 			);
 			path = Operations;
-			sourceTree = "<group>";
-		};
-		32D9C97220C9F07400F174B2 /* Api */ = {
-			isa = PBXGroup;
-			children = (
-				32D9C97520C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.h */,
-				32D9C97920C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m */,
-				32D9C97420C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.h */,
-				32D9C97720C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m */,
-				32D9C97820C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.h */,
-				32D9C97620C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m */,
-				32D9C97320C9F0AB00F174B2 /* Versus-Bridging-Header.h */,
-			);
-			path = Api;
 			sourceTree = "<group>";
 		};
 		32D9C98220CB209700F174B2 /* Competition Feed */ = {
@@ -684,6 +672,8 @@
 				6B8E7D1F2241A066008E0E85 /* RankCell.xib */,
 				6B55E33721E03FF30083137A /* EntryCell.swift */,
 				6B8E7D232241A0FF008E0E85 /* EntryCell.xib */,
+				6B4731AF242D671D000EA1FE /* NoFollowersCell.swift */,
+				6B4731B0242D671D000EA1FE /* NoFollowersCell.xib */,
 			);
 			path = "Table View Cells";
 			sourceTree = "<group>";
@@ -693,6 +683,10 @@
 			children = (
 				6B2E60C020A354AA005C1987 /* ProfileCompetitionCell.swift */,
 				6B8E7D272241A19F008E0E85 /* ProfileCompetitionCell.xib */,
+				6B63E29F242C2FB7005B8101 /* ProfileInfoCell.swift */,
+				6B63E2A0242C2FB7005B8101 /* ProfileInfoCell.xib */,
+				6B4731AB242D6159000EA1FE /* NoUserCompetitionsCell.swift */,
+				6B4731AC242D6159000EA1FE /* NoUserCompetitionsCell.xib */,
 			);
 			path = "Collection View Cells";
 			sourceTree = "<group>";
@@ -748,15 +742,6 @@
 				6B9E7478223DDA59001EF5CD /* UserVC.xib */,
 			);
 			path = Profile;
-			sourceTree = "<group>";
-		};
-		6BA4B0CC20744BEE00BC23A0 /* AWS Models */ = {
-			isa = PBXGroup;
-			children = (
-				6B85343B2080021F00985BDD /* AWSUser.swift */,
-				323A7B3720CC9E950011AF95 /* AWSUserSNSEndpointARN.swift */,
-			);
-			path = "AWS Models";
 			sourceTree = "<group>";
 		};
 		6BAA03E8206F1D270032F7F9 /* Modules */ = {
@@ -841,8 +826,12 @@
 		6BB9A382207ED1DB006881BE /* Discover */ = {
 			isa = PBXGroup;
 			children = (
+				6B12E83D242EBC27001E6FA5 /* CategorySelectorVC.swift */,
+				6B12E83E242EBC27001E6FA5 /* CategorySelectorVC.xib */,
 				6B5A0FEB240AA3E700B9121E /* DiscoverVC.swift */,
 				6B5A0FEC240AA3E700B9121E /* DiscoverVC.xib */,
+				6B12E839242EBA05001E6FA5 /* LeaderboardSelectorVC.swift */,
+				6B12E83A242EBA05001E6FA5 /* LeaderboardSelectorVC.xib */,
 				32580E0720E6E2DC00D138AD /* LeaderboardVC.swift */,
 				6B5A0FF7240ABDF400B9121E /* LeaderboardVC.xib */,
 				32A8F021213B3A22000515FA /* SearchUserVC.swift */,
@@ -877,12 +866,17 @@
 			isa = PBXGroup;
 			children = (
 				6BC1E12A20894B54005404E1 /* CategoryCell.swift */,
+				6B29AD9E2422C7BF008D6BD7 /* CategoryCell.xib */,
 				6BC1E12820894B3C005404E1 /* CompetitionDetailsVC.swift */,
+				6B29AD9C2422C613008D6BD7 /* CompetitionDetailsVC.xib */,
 				6BC1E12E20894F6E005404E1 /* CompetitionSubmittedVC.swift */,
+				6B29ADA02422C8B4008D6BD7 /* CompetitionSubmittedVC.xib */,
 				6BC1E12620894276005404E1 /* Entry.storyboard */,
 				6B2A22E9208AAAC500D65C9A /* PhotoLibraryCell.swift */,
 				6BBBF3CA21D3E533000A0172 /* SelectCompetitionMediaVC.swift */,
+				6B29AD982422C325008D6BD7 /* SelectCompetitionMediaVC.xib */,
 				327FA2B120DC501400B13C6D /* SelectPreviewImageVC.swift */,
+				6B29AD9A2422C52B008D6BD7 /* SelectPreviewImageVC.xib */,
 			);
 			path = Entry;
 			sourceTree = "<group>";
@@ -922,12 +916,10 @@
 		6BEACB55206EB3DC00C221A0 /* Versus */ = {
 			isa = PBXGroup;
 			children = (
+				6B903D9A24301BA100C408D2 /* Versus-Bridging-Header.h */,
 				6B781CFA222B15E60061E622 /* Configuration */,
-				32D9C97220C9F07400F174B2 /* Api */,
 				6BEACB56206EB3DC00C221A0 /* AppDelegate.swift */,
 				6BEACB5D206EB3DE00C221A0 /* Assets.xcassets */,
-				329C4E7220DE963D00E4E8E9 /* AWS Lambda Functions */,
-				6BA4B0CC20744BEE00BC23A0 /* AWS Models */,
 				6BEACB68206EB6AC00C221A0 /* awsconfiguration.json */,
 				6B36E1C8206FD9BA00F92375 /* Constants.swift */,
 				6BAA03F0206F1EEA0032F7F9 /* Custom Views */,
@@ -951,14 +943,22 @@
 		6BFA29872246B411009B9DC3 /* Table View Cells */ = {
 			isa = PBXGroup;
 			children = (
+				6B12E845242EBEA4001E6FA5 /* CategorySelectorCell.swift */,
+				6B12E846242EBEA4001E6FA5 /* CategorySelectorCell.xib */,
 				6BAC02EE20A8A6D900792E34 /* DiscoverCategoryCell.swift */,
 				6B5A0FF1240AB08700B9121E /* DiscoverCategoryCell.xib */,
 				6BAC02EC20A8A6BB00792E34 /* LeaderboardCell.swift */,
 				6B5A0FEF240AB03500B9121E /* LeaderboardCell.xib */,
 				320105AA20E921A20099C056 /* LeaderboardHeaderImageCell.swift */,
 				6B5A0FF9240ABEA300B9121E /* LeaderboardHeaderImageCell.xib */,
+				6B12E841242EBE8D001E6FA5 /* LeaderboardSelectorCell.swift */,
+				6B12E842242EBE8D001E6FA5 /* LeaderboardSelectorCell.xib */,
 				3251CA6320E8577100F9434D /* LeaderCell.swift */,
 				6B5A0FFB240ABEC500B9121E /* LeaderCell.xib */,
+				6B365D70242AC9C000A00E62 /* NewSearchInfoCell.swift */,
+				6B365D71242AC9C000A00E62 /* NewSearchInfoCell.xib */,
+				6B365D74242AD3AD00A00E62 /* NoUserSearchResultsCell.swift */,
+				6B365D75242AD3AD00A00E62 /* NoUserSearchResultsCell.xib */,
 				6BB9A385207ED21E006881BE /* SearchUserCell.swift */,
 				6B5A0FF5240AB7EC00B9121E /* SearchUserCell.xib */,
 			);
@@ -1003,7 +1003,7 @@
 				6BEACB4F206EB3DC00C221A0 /* Sources */,
 				6BEACB50206EB3DC00C221A0 /* Frameworks */,
 				6BEACB51206EB3DC00C221A0 /* Resources */,
-				A5AE8566EBA32ACCC260DF31 /* [CP] Embed Pods Frameworks */,
+				ACC712233302A4D8E26FA49C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1079,43 +1079,48 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				329C4E8020E00EAE00E4E8E9 /* versus-1_0-DetermineCompetitionWinner.py in Resources */,
 				6B160C6B209231F2003F2F9D /* Competition.storyboard in Resources */,
 				6B370DBA2247FADC0036DA3E /* CompetitionVC.xib in Resources */,
-				329C4E7B20E00EAE00E4E8E9 /* AWS_Notification_Trigger.py in Resources */,
+				6B29AD9D2422C613008D6BD7 /* CompetitionDetailsVC.xib in Resources */,
 				6B8E7D202241A066008E0E85 /* RankCell.xib in Resources */,
-				32B5F3C9212F1E7F006D09CC /* AWS_FollowedUser_Trigger.py in Resources */,
-				329C4E7F20E00EAE00E4E8E9 /* AWS_Follower_Trigger.py in Resources */,
 				6B5A0FF4240AB76900B9121E /* SearchUserVC.xib in Resources */,
-				329C4E7C20E00EAE00E4E8E9 /* GetFollowedUserCompetitions.py in Resources */,
+				6B29AD9B2422C52B008D6BD7 /* SelectPreviewImageVC.xib in Resources */,
 				6BEACB69206EB6AC00C221A0 /* awsconfiguration.json in Resources */,
 				6B8E7D262241A129008E0E85 /* EntriesVC.xib in Resources */,
 				6BA797552401652400191113 /* CompetitionFeedVC.xib in Resources */,
-				329C4E7D20E00EAE00E4E8E9 /* MatchCompetitionEntries.py in Resources */,
 				329C4E8320E02ED000E4E8E9 /* Tutorial.storyboard in Resources */,
+				6B365D77242AD3AD00A00E62 /* NoUserSearchResultsCell.xib in Resources */,
+				6B12E83C242EBA05001E6FA5 /* LeaderboardSelectorVC.xib in Resources */,
 				6B370DBE2248040F0036DA3E /* EntryVC.xib in Resources */,
 				6B5A0FF8240ABDF400B9121E /* LeaderboardVC.xib in Resources */,
 				6B5A0FFC240ABEC500B9121E /* LeaderCell.xib in Resources */,
 				6B8E7D282241A19F008E0E85 /* ProfileCompetitionCell.xib in Resources */,
+				6B29ADA12422C8B4008D6BD7 /* CompetitionSubmittedVC.xib in Resources */,
+				6B12E848242EBEA4001E6FA5 /* CategorySelectorCell.xib in Resources */,
+				6B12E840242EBC27001E6FA5 /* CategorySelectorVC.xib in Resources */,
 				6B8E7D242241A0FF008E0E85 /* EntryCell.xib in Resources */,
-				3236FA8E213C79FD004E28F5 /* VoteForCompetition.py in Resources */,
+				6B29AD992422C325008D6BD7 /* SelectCompetitionMediaVC.xib in Resources */,
 				6B8E7D1222419474008E0E85 /* FollowerVC.xib in Resources */,
 				6B1ABF1E2072E819005A0DDB /* Main.storyboard in Resources */,
 				6BC6A1F1241EA50400479346 /* NotificationsVC.xib in Resources */,
 				6B5A0FF6240AB7EC00B9121E /* SearchUserCell.xib in Resources */,
 				6B93D4BE23B588C10038AFC3 /* ToDo in Resources */,
 				6BA797592401750E00191113 /* CompetitionFeedContainerVC.xib in Resources */,
+				6B4731AE242D6159000EA1FE /* NoUserCompetitionsCell.xib in Resources */,
+				6B12E844242EBE8E001E6FA5 /* LeaderboardSelectorCell.xib in Resources */,
 				6B8E7D1E2241A014008E0E85 /* FollowerCell.xib in Resources */,
 				6B5A1000240B01B000B9121E /* ProfileInfoVC.xib in Resources */,
 				6B5A0FFA240ABEA300B9121E /* LeaderboardHeaderImageCell.xib in Resources */,
 				6BC6A1F3241EA5DC00479346 /* NotificationCell.xib in Resources */,
+				6B4731B2242D671D000EA1FE /* NoFollowersCell.xib in Resources */,
 				325CA3582131FA3D00A6C47B /* Competitor.storyboard in Resources */,
-				329C4E7E20E00EAE00E4E8E9 /* AWS_Competition_Trigger.py in Resources */,
+				6B365D73242AC9C000A00E62 /* NewSearchInfoCell.xib in Resources */,
 				6B5A0FF0240AB03500B9121E /* LeaderboardCell.xib in Resources */,
+				6B63E2A2242C2FB7005B8101 /* ProfileInfoCell.xib in Resources */,
+				6B29AD9F2422C7BF008D6BD7 /* CategoryCell.xib in Resources */,
 				6B9E7476223DD1E2001EF5CD /* EditCurrentUserVC.xib in Resources */,
 				6BEACB61206EB3DE00C221A0 /* LaunchScreen.storyboard in Resources */,
 				6BC1E12720894276005404E1 /* Entry.storyboard in Resources */,
-				3236FA8C213C2799004E28F5 /* AWS_Vote_Trigger.py in Resources */,
 				6BEACB5E206EB3DE00C221A0 /* Assets.xcassets in Resources */,
 				323A7B3620CBFCBE0011AF95 /* CompetitionCell.xib in Resources */,
 				6B5A0FF2240AB08700B9121E /* DiscoverCategoryCell.xib in Resources */,
@@ -1148,48 +1153,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A5AE8566EBA32ACCC260DF31 /* [CP] Embed Pods Frameworks */ = {
+		ACC712233302A4D8E26FA49C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Versus/Pods-Versus-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/AWSAPIGateway/AWSAPIGateway.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSAuthCore/AWSAuthCore.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSCognito/AWSCognito.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSCognitoIdentityProvider/AWSCognitoIdentityProvider.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSCognitoIdentityProviderASF/AWSCognitoIdentityProviderASF.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSCore/AWSCore.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSDynamoDB/AWSDynamoDB.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSLambda/AWSLambda.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSMobileClient/AWSMobileClient.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSS3/AWSS3.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSSNS/AWSSNS.framework",
-				"${BUILT_PRODUCTS_DIR}/AWSUserPoolsSignIn/AWSUserPoolsSignIn.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftyCam/SwiftyCam.framework",
-				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Versus/Pods-Versus-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSAPIGateway.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSAuthCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognito.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognitoIdentityProvider.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognitoIdentityProviderASF.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSDynamoDB.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSLambda.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSMobileClient.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSS3.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSSNS.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSUserPoolsSignIn.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyCam.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Versus/Pods-Versus-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Versus/Pods-Versus-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Versus/Pods-Versus-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1222,6 +1200,7 @@
 				6B5A0FFF240B01B000B9121E /* ProfileInfoVC.swift in Sources */,
 				320105B320E930990099C056 /* LeaderboardService.swift in Sources */,
 				6BC01AC32092824700FDAC44 /* ViewCompetitionVC.swift in Sources */,
+				6B4731B1242D671D000EA1FE /* NoFollowersCell.swift in Sources */,
 				6BA797582401750E00191113 /* CompetitionFeedContainerVC.swift in Sources */,
 				6B9E7475223DD1E2001EF5CD /* EditCurrentUserVC.swift in Sources */,
 				320105AD20E92B9A0099C056 /* LeaderboardCollection.swift in Sources */,
@@ -1233,12 +1212,10 @@
 				6B370DB92247FADC0036DA3E /* CompetitionVC.swift in Sources */,
 				6B079FED208D3500003BBB87 /* Utilities.swift in Sources */,
 				327C1EC5213AAE96001E2C8B /* UserManager.swift in Sources */,
-				32D9C97A20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_ResponseSchema.m in Sources */,
 				327FA2B220DC501400B13C6D /* SelectPreviewImageVC.swift in Sources */,
 				6B3DAEC620827D9800946EB1 /* UIViewExtensions.swift in Sources */,
 				6BB9A386207ED21E006881BE /* SearchUserCell.swift in Sources */,
 				6BA797612401869800191113 /* NotificationsNC.swift in Sources */,
-				32D9C97B20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_RequestSchema.m in Sources */,
 				6B9E7472223DC741001EF5CD /* CurrentUserNC.swift in Sources */,
 				327E604520C49F64000980CD /* CompetitionManager.swift in Sources */,
 				32580E0820E6E2DC00D138AD /* LeaderboardVC.swift in Sources */,
@@ -1264,6 +1241,7 @@
 				6B8BF02321E19714001889E9 /* Notification.swift in Sources */,
 				6B079FF7208D4315003BBB87 /* EntryService.swift in Sources */,
 				6BB6AD772093980000B2C1A1 /* ProgressIndicatorButton.swift in Sources */,
+				6B63E2A1242C2FB7005B8101 /* ProfileInfoCell.swift in Sources */,
 				6B3DAEC82082DBE700946EB1 /* FollowButton.swift in Sources */,
 				6B368D8A21CDB2BE0084A150 /* DeviceSizeType.swift in Sources */,
 				6B61CD9F2400D78900396F47 /* LeaderboardEndpoint.swift in Sources */,
@@ -1273,11 +1251,11 @@
 				6BF687F520ACDE9100F69B68 /* NotificationService.swift in Sources */,
 				6B4897BF2414240000C3FBDD /* NotificationType.swift in Sources */,
 				6B8BF01F21E1923A001889E9 /* MonthlyLeader.swift in Sources */,
+				6B12E83F242EBC27001E6FA5 /* CategorySelectorVC.swift in Sources */,
 				32A8F022213B3A22000515FA /* SearchUserVC.swift in Sources */,
 				6B93D4BC23B583AD0038AFC3 /* VoteEndpoint.swift in Sources */,
 				6BA7975B240184B700191113 /* CompetitionFeedNC.swift in Sources */,
 				6B13B93920AE00BD00769AFD /* RoundedCornerImageView.swift in Sources */,
-				6B85343C2080021F00985BDD /* AWSUser.swift in Sources */,
 				6BDE76DF208FF0A3009621D0 /* SwiftyCamProgressButton.swift in Sources */,
 				325CA3562131D38B00A6C47B /* Competitor.swift in Sources */,
 				320105B920E96F3C0099C056 /* Leader.swift in Sources */,
@@ -1295,7 +1273,6 @@
 				6BAA03F4206F23AB0032F7F9 /* RoundButton.swift in Sources */,
 				6BB8178F207A842400503620 /* FollowSuggestionsVC.swift in Sources */,
 				6BD67D0120AA34F6001F2751 /* NotificationsVC.swift in Sources */,
-				323A7B3820CC9E950011AF95 /* AWSUserSNSEndpointARN.swift in Sources */,
 				6BC1E12F20894F6E005404E1 /* CompetitionSubmittedVC.swift in Sources */,
 				6BA7975F2401866100191113 /* EntryNC.swift in Sources */,
 				6B61CD9D2400D5AF00396F47 /* LeaderboardType.swift in Sources */,
@@ -1311,7 +1288,9 @@
 				6B334FD9208187B3005B010F /* FollowerService.swift in Sources */,
 				6BAC02ED20A8A6BB00792E34 /* LeaderboardCell.swift in Sources */,
 				6B36E1C9206FD9BA00F92375 /* Constants.swift in Sources */,
+				6B4731AD242D6159000EA1FE /* NoUserCompetitionsCell.swift in Sources */,
 				6B147DCD21E2ADE800D7E30F /* Router.swift in Sources */,
+				6BD933A2242FE75C00C827D5 /* SearchOperations.swift in Sources */,
 				6B1B299A2083CE230070848C /* StringExtensions.swift in Sources */,
 				6BD5E36120A65A0B00A9C054 /* CompetitionShareCell.swift in Sources */,
 				6B3DAEC020822D7300946EB1 /* NSMutableAttributedStringExtensions.swift in Sources */,
@@ -1319,6 +1298,7 @@
 				6B147DC021E2A75100D7E30F /* HTTPTask.swift in Sources */,
 				6B55E33A21E044950083137A /* EntriesVC.swift in Sources */,
 				6B781CF9222ADB6A0061E622 /* UserEndpoint.swift in Sources */,
+				6B365D72242AC9C000A00E62 /* NewSearchInfoCell.swift in Sources */,
 				6B2E60C120A354AA005C1987 /* ProfileCompetitionCell.swift in Sources */,
 				6B368D8C21CDB44C0084A150 /* UIDeviceExtensions.swift in Sources */,
 				6BC1E12B20894B54005404E1 /* CategoryCell.swift in Sources */,
@@ -1332,6 +1312,7 @@
 				329C4E8920E0355B00E4E8E9 /* TutorialPageVC.swift in Sources */,
 				6B9E7479223DDA59001EF5CD /* UserVC.swift in Sources */,
 				320105B120E92E310099C056 /* Leaderboard.swift in Sources */,
+				6B365D76242AD3AD00A00E62 /* NoUserSearchResultsCell.swift in Sources */,
 				6BA7975D2401855000191113 /* DiscoverNC.swift in Sources */,
 				6B85343E208020C100985BDD /* User.swift in Sources */,
 				321E57EF2104F9DC00F94E2E /* CommentsVC.swift in Sources */,
@@ -1340,17 +1321,19 @@
 				6BE829B022443A6500ED4244 /* FollowerEndpoint.swift in Sources */,
 				6BB6AD792093A8AC00B2C1A1 /* CountdownTimer.swift in Sources */,
 				6B334FD120816032005B010F /* CustomError.swift in Sources */,
+				6B12E847242EBEA4001E6FA5 /* CategorySelectorCell.swift in Sources */,
 				6B334FD32081652D005B010F /* UIViewControllerExtensions.swift in Sources */,
 				6BA4B0C6207431B800BC23A0 /* BorderView.swift in Sources */,
 				6BAA434F224FC2D100941539 /* AsyncOperation.swift in Sources */,
 				6BAA03EF206F1E420032F7F9 /* LoginVC.swift in Sources */,
 				6B01D8B02086A4200021421F /* FollowerSuggestionCell.swift in Sources */,
+				6B12E83B242EBA05001E6FA5 /* LeaderboardSelectorVC.swift in Sources */,
 				6B8316E4207D7C6A0067EE0E /* RankVC.swift in Sources */,
 				6B525F8F208114D7007A7FC7 /* FollowerVC.swift in Sources */,
 				6BB8178A207A6E2E00503620 /* UIImageExtensions.swift in Sources */,
 				6B781CFE222B54DB0061E622 /* CurrentAccount.swift in Sources */,
 				6B04B73F20914251007BF021 /* Competition.swift in Sources */,
-				32D9C97C20C9F0AC00F174B2 /* AWSAPI_CMAXD4H77D_GetFollowedUsersCompMobileHubClient.m in Sources */,
+				6B12E843242EBE8E001E6FA5 /* LeaderboardSelectorCell.swift in Sources */,
 				6BAF1AD12235A68500360299 /* AccountEndpoint.swift in Sources */,
 				6B8316DF207D73070067EE0E /* UserRankView.swift in Sources */,
 				6B079FEF208D3E02003BBB87 /* FormatterExtensions.swift in Sources */,
@@ -1566,7 +1549,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.versussmrdel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Versus/Api/Versus-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Versus/Versus-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1590,7 +1573,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.versusteam.versussmrdel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Versus/Api/Versus-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Versus/Versus-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

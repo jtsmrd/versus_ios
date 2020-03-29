@@ -23,16 +23,13 @@ class UserVC: UIViewController {
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var optionsButton: UIButton!
     @IBOutlet weak var usernameLabel: UILabel!
-    @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var profileInfoContainerView: UIView!
+    @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var competitionCollectionView: UICollectionView!
-    @IBOutlet weak var competitionCollectionViewHeight: NSLayoutConstraint!
     
     
-    private let competitionService = CompetitionService.instance
     private let accountService = AccountService.instance
     private let pendingImageOperations = ImageOperations()
-    
+    private let PREFETCH_SCROLL_PERCENTAGE: CGFloat = 0.50
     private let collectionViewSectionInsets = UIEdgeInsets(
         top: 2.0,
         left: 2.0,
@@ -40,14 +37,13 @@ class UserVC: UIViewController {
         right: 2.0
     )
     
+    private var competitionManager: CompetitionManager!
     private var user: User!
     private var viewMode: UserViewMode!
     private var profileInfoVC: ProfileInfoVC!
     private var delegate: UserVCDelegate?
     private var competitions = [Competition]()
     private var refreshControl: UIRefreshControl!
-    
-    
     
     
     init(
@@ -68,29 +64,16 @@ class UserVC: UIViewController {
     }
     
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        competitionManager = CompetitionManager(delegate: self)
         addProfileInfoViewController()
-        
         registerCells()
-        
         configureViewMode()
-        
         configureView()
-        
         configureRefreshControl()
-        
         loadCompetitions()
-    }
-
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        competitionCollectionViewHeight.constant = competitionCollectionView.contentSize.height
     }
     
     
@@ -116,9 +99,10 @@ class UserVC: UIViewController {
     }
     
     
+    
     @objc func reloadUser() {
         
-        profileInfoVC.reloadUserData()
+        profileInfoVC.loadUserData(shouldLoadEntries: true)
         
         loadCompetitions()
     }
@@ -133,11 +117,6 @@ class UserVC: UIViewController {
             viewMode: viewMode
         )
         addChild(profileInfoVC)
-        profileInfoVC.view.frame = CGRect(
-            origin: .zero,
-            size: profileInfoContainerView.frame.size
-        )
-        profileInfoContainerView.addSubview(profileInfoVC.view)
         profileInfoVC.didMove(toParent: self)
     }
     
@@ -147,6 +126,16 @@ class UserVC: UIViewController {
         competitionCollectionView.register(
             UINib(nibName: "ProfileCompetitionCell", bundle: nil),
             forCellWithReuseIdentifier: "ProfileCompetitionCell"
+        )
+        
+        competitionCollectionView.register(
+            UINib(nibName: "ProfileInfoCell", bundle: nil),
+            forCellWithReuseIdentifier: "ProfileInfoCell"
+        )
+        
+        competitionCollectionView.register(
+            UINib(nibName: "NoUserCompetitionsCell", bundle: nil),
+            forCellWithReuseIdentifier: "NoUserCompetitionsCell"
         )
     }
     
@@ -168,7 +157,6 @@ class UserVC: UIViewController {
     
     
     private func configureView() {
-        
         usernameLabel.text = user.username.withAtSignPrefix
     }
     
@@ -190,29 +178,15 @@ class UserVC: UIViewController {
             for: .valueChanged
         )
         
-        scrollView.refreshControl = refreshControl
+        competitionCollectionView.refreshControl = refreshControl
     }
     
     
     private func loadCompetitions() {
         
-        competitionService.loadUserCompetitions(
-            userId: user.id
-        ) { [weak self] (competitions, error) in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                
-                self.scrollView.refreshControl?.endRefreshing()
-                
-                if let error = error {
-                    self.displayMessage(message: error)
-                }
-                
-                self.competitions = competitions
-                self.competitionCollectionView.reloadData()
-            }
-        }
+        competitionManager.getCompetitions(
+            queryType: .user(userId: user.id)
+        )
     }
     
     
@@ -318,171 +292,217 @@ class UserVC: UIViewController {
     // MARK: - Image Operations
     
     private func startEntryImageDownloadFor(
-            entry: Entry,
-            indexPath: IndexPath
-        ) {
+        entry: Entry,
+        indexPath: IndexPath
+    ) {
+        var downloadsInProgress = pendingImageOperations.asyncDownloadsInProgress
+        
+        // Make sure there isn't already a download in progress.
+        guard downloadsInProgress[indexPath] == nil else { return }
+        
+        let downloadOperation = DownloadEntryImageOperation(
+            entry: entry
+        )
+        
+        downloadOperation.completionBlock = {
             
-            var downloadsInProgress = pendingImageOperations.downloadsInProgress
+            if downloadOperation.isCancelled { return }
             
-            // Make sure there isn't already a download in progress.
-            guard downloadsInProgress[indexPath] == nil else { return }
-            
-            let downloadOperation = DownloadEntryImageOperation(
-                entry: entry
-            )
-            
-            downloadOperation.completionBlock = {
+            DispatchQueue.main.async {
+                downloadsInProgress.removeValue(
+                    forKey: indexPath
+                )
                 
-                if downloadOperation.isCancelled { return }
-                
-                DispatchQueue.main.async {
-                    downloadsInProgress.removeValue(
-                        forKey: indexPath
-                    )
-                    
-                    self.competitionCollectionView.reloadItems(
-                        at: [indexPath]
-                    )
+                if let profileCompetitionCell = self.competitionCollectionView.cellForItem(at: indexPath) as? ProfileCompetitionCell {
+                    profileCompetitionCell.updateImage()
+                }
+                else {
+                    debugPrint("Not Cell")
                 }
             }
-            
-            // Add the operation to the collection of downloads in progress.
-            downloadsInProgress[indexPath] = downloadOperation
-            
-            // Add the operation to the queue to start downloading.
-            pendingImageOperations.downloadQueue.addOperation(
-                downloadOperation
-            )
         }
         
+        // Add the operation to the collection of downloads in progress.
+        downloadsInProgress[indexPath] = downloadOperation
         
-        private func suspendAllOperations() {
-            pendingImageOperations.downloadQueue.isSuspended = true
-        }
-        
-        
-        private func resumeAllOperations() {
-            pendingImageOperations.downloadQueue.isSuspended = false
-        }
-        
-        
-        private func loadImagesForOnscreenCells() {
-            
-    //        if let pathsArray = browseTableView.indexPathsForVisibleRows {
-    //
-    //            var downloadsInProgress =
-    //                pendingImageOperations.downloadsInProgress
-    //
-    //            let allPendingOperations = Set(
-    //                downloadsInProgress.keys
-    //            )
-    //            var toBeCancelled = allPendingOperations
-    //
-    //            let visiblePaths = Set(pathsArray)
-    //            toBeCancelled.subtract(visiblePaths)
-    //
-    //            var toBeStarted = visiblePaths
-    //            toBeStarted.subtract(allPendingOperations)
-    //
-    //            for indexPath in toBeCancelled {
-    //
-    //                if let pendingDownload = downloadsInProgress[indexPath] {
-    //                    pendingDownload.cancel()
-    //                }
-    //                downloadsInProgress.removeValue(
-    //                    forKey: indexPath
-    //                )
-    //            }
-    //
-    //            for indexPath in toBeStarted {
-    //
-    //                let competition = featuredCompetitions[indexPath.row]
-    //
-    //                startCompetitionImageDownloadFor(
-    //                    competition: competition,
-    //                    indexPath: indexPath
-    //                )
-    //            }
-    //        }
-        }
+        // Add the operation to the queue to start downloading.
+        pendingImageOperations.asyncDownloadQueue.addOperation(
+            downloadOperation
+        )
+    }
 }
 
+
+private extension UserVC {
+
+    private func calculateIndexPathsToReload(
+        from newCompetitions: [Competition]
+    ) -> [IndexPath] {
+        
+        let startIndex = competitions.count - newCompetitions.count
+        let endIndex = startIndex + newCompetitions.count
+        let indexPaths = (startIndex..<endIndex).map {
+            IndexPath(row: $0, section: 1)
+        }
+        
+        return indexPaths
+    }
+    
+    func visibleIndexPathsToReload(
+        intersecting indexPaths: [IndexPath]
+    ) -> [IndexPath] {
+        
+        let indexPathsForVisibleRows = competitionCollectionView.indexPathsForVisibleItems
+        
+        let indexPathsIntersection = Set(indexPathsForVisibleRows).intersection(indexPaths)
+        
+        return Array(indexPathsIntersection)
+    }
+}
+
+
+// MARK: - CompetitionManagerDelegate
+
+extension UserVC: CompetitionManagerDelegate {
+    
+    func competitionResultsUpdated(
+        competitions: [Competition],
+        isNewRequest: Bool
+    ) {
+        if isNewRequest {
+            self.competitions = competitions
+        }
+        else {
+            self.competitions.append(contentsOf: competitions)
+        }
+        
+        DispatchQueue.main.async {
+            
+            var newIndexPathsToReload: [IndexPath]?
+            if !isNewRequest {
+                newIndexPathsToReload = self.calculateIndexPathsToReload(
+                    from: competitions
+                )
+            }
+            
+            guard let newIndexPaths = newIndexPathsToReload else {
+                self.competitionCollectionView.refreshControl?.endRefreshing()
+                self.competitionCollectionView.reloadData()
+                return
+            }
+            
+            self.competitionCollectionView.insertItems(
+                at: newIndexPaths
+            )
+        }
+    }
+    
+    func didFailWithError(error: String) {
+        DispatchQueue.main.async {
+            self.displayMessage(message: error)
+        }
+    }
+}
 
 
 extension UserVC: UICollectionViewDataSource {
     
-    
     func numberOfSections(
         in collectionView: UICollectionView
     ) -> Int {
-        
-        return 1
+        return 2
     }
-    
     
     func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        
-        return competitions.count
+        if section == 0 {
+            return 1
+        }
+        else {
+            if !competitions.isEmpty {
+                return competitions.count
+            }
+            else {
+                return 1    // No competitions cell
+            }
+        }
     }
-    
     
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: PROFILE_COMPETITION_CELL,
-            for: indexPath
-        ) as! ProfileCompetitionCell
-        
-        let competition = competitions[indexPath.row]
-        var userEntry: Entry!
-        
-        if competition.leftEntry.user.id == user.id {
-            userEntry = competition.leftEntry
+        if indexPath.section == 0 {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "ProfileInfoCell",
+                for: indexPath
+            ) as! ProfileInfoCell
+            cell.configureCell(
+                profileInfoView: profileInfoVC.view
+            )
+            return cell
         }
         else {
-            userEntry = competition.rightEntry
-        }
-        
-        cell.configureCell(
-            entry: userEntry
-        )
-        
-        if userEntry.imageDownloadState == .new {
             
-            startEntryImageDownloadFor(
-                entry: userEntry,
-                indexPath: indexPath
-            )
+            if !competitions.isEmpty {
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: PROFILE_COMPETITION_CELL,
+                    for: indexPath
+                ) as! ProfileCompetitionCell
+                
+                let competition = competitions[indexPath.row]
+                var userEntry: Entry!
+                
+                if competition.leftEntry.user.id == user.id {
+                    userEntry = competition.leftEntry
+                }
+                else {
+                    userEntry = competition.rightEntry
+                }
+                
+                cell.configureCell(
+                    entry: userEntry
+                )
+                
+                if userEntry.imageDownloadState == .new {
+                    startEntryImageDownloadFor(
+                        entry: userEntry,
+                        indexPath: indexPath
+                    )
+                }
+                return cell
+            }
+            else {
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: "NoUserCompetitionsCell",
+                    for: indexPath
+                )
+                return cell
+            }
         }
-        
-        return cell
     }
 }
 
 
 
-
 extension UserVC: UICollectionViewDelegate {
-    
     
     func collectionView(
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        
         collectionView.deselectItem(
             at: indexPath,
             animated: false
         )
         
-        let competition = competitions[indexPath.row]
-        showCompetition(competition: competition)
+        if indexPath.section == 1 && !competitions.isEmpty {
+            let competition = competitions[indexPath.row]
+            showCompetition(competition: competition)
+        }
     }
 }
 
@@ -491,25 +511,40 @@ extension UserVC: UICollectionViewDelegate {
 
 extension UserVC: UICollectionViewDelegateFlowLayout {
     
-    
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         
-        let itemsPerRow: CGFloat = 3
-        
-        let paddingSpace = collectionViewSectionInsets.left * (itemsPerRow + 1)
-        let availableWidth = view.frame.width - paddingSpace
-        let widthPerItem = availableWidth / itemsPerRow
-        
-        return CGSize(
-            width: widthPerItem,
-            height: widthPerItem
-        )
+        if indexPath.section == 0 {
+            return CGSize(
+                width: collectionView.frame.width,
+                height: profileInfoVC.view.frame.height
+            )
+        }
+        else {
+            
+            if !competitions.isEmpty {
+                let itemsPerRow: CGFloat = 3
+                
+                let paddingSpace = collectionViewSectionInsets.left * (itemsPerRow + 1)
+                let availableWidth = view.frame.width - paddingSpace
+                let widthPerItem = availableWidth / itemsPerRow
+                
+                return CGSize(
+                    width: widthPerItem,
+                    height: widthPerItem
+                )
+            }
+            else {
+                return CGSize(
+                    width: collectionView.frame.width,
+                    height: collectionView.frame.height - profileInfoVC.view.frame.height
+                )
+            }
+        }
     }
-    
     
     func collectionView(
         _ collectionView: UICollectionView,
@@ -517,9 +552,18 @@ extension UserVC: UICollectionViewDelegateFlowLayout {
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
         
-        return collectionViewSectionInsets
+        if section == 0 {
+            return .zero
+        }
+        else {
+            if !competitions.isEmpty {
+                return collectionViewSectionInsets
+            }
+            else {
+                return .zero
+            }
+        }
     }
-    
     
     func collectionView(
         _ collectionView: UICollectionView,
@@ -527,7 +571,34 @@ extension UserVC: UICollectionViewDelegateFlowLayout {
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
         
-        return collectionViewSectionInsets.left
+        if section == 0 {
+            return .zero
+        }
+        else {
+            if !competitions.isEmpty {
+                return collectionViewSectionInsets.left
+            }
+            else {
+                return .zero
+            }
+        }
+    }
+}
+
+
+extension UserVC: UICollectionViewDataSourcePrefetching {
+    
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        
+        guard competitionManager.hasMoreResults else { return }
+        
+        guard let maxVisibleItemNumber = competitionCollectionView.indexPathsForVisibleItems.max()?.item else { return }
+        
+        let scrollPercentage = CGFloat(maxVisibleItemNumber) / CGFloat(competitions.count)
+        
+        guard scrollPercentage >= PREFETCH_SCROLL_PERCENTAGE else { return }
+        
+        competitionManager.fetchMoreResults()
     }
 }
 
@@ -536,7 +607,7 @@ extension UserVC: UICollectionViewDelegateFlowLayout {
 extension UserVC: EditCurrentUserVCDelegate {
     
     func userUpdated() {
-        profileInfoVC.reloadUserData()
+        profileInfoVC.loadUserData()
     }
 }
 

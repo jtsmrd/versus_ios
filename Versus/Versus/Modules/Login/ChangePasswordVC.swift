@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AWSUserPoolsSignIn
 
 class ChangePasswordVC: UIViewController {
 
@@ -20,7 +19,7 @@ class ChangePasswordVC: UIViewController {
     @IBOutlet weak var cancelButton: RoundButton!
     
     var keyboardToolbar: KeyboardToolbar!
-    var user: AWSCognitoIdentityUser!
+//    var user: AWSCognitoIdentityUser!
     
     
     /**
@@ -36,8 +35,8 @@ class ChangePasswordVC: UIViewController {
     /**
      
      */
-    func initData(user: AWSCognitoIdentityUser) {
-        self.user = user
+    func initData() {
+//        self.user = user
     }
     
     

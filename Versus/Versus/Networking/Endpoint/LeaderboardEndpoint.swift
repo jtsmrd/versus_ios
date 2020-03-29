@@ -6,6 +6,8 @@
 //  Copyright © 2020 VersusTeam. All rights reserved.
 //
 
+import Foundation
+
 enum LeaderboardEndpoint {
     case getLeaderboards
 }

@@ -20,6 +20,21 @@ class SelectPreviewImageVC: UIViewController {
     private var seekTime: CMTime!
     
     
+    
+    /// Required initializer.
+    ///
+    /// - Parameter videoAVUrlAsset: The video asset to generate an image from.
+    init(videoAVUrlAsset: AVURLAsset) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.videoAVUrlAsset = videoAVUrlAsset
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -34,15 +49,10 @@ class SelectPreviewImageVC: UIViewController {
         super.viewDidLayoutSubviews()
         
         // Resize the player layer to after the views are layed out.
-        videoPlayerLayer.frame = CGRect(origin: .zero, size: videoContainerView.frame.size)
-    }
-    
-    
-    /// Required initializer.
-    ///
-    /// - Parameter videoAVUrlAsset: The video asset to generate an image from.
-    func initData(videoAVUrlAsset: AVURLAsset) {
-        self.videoAVUrlAsset = videoAVUrlAsset
+        videoPlayerLayer.frame = CGRect(
+            origin: .zero,
+            size: videoContainerView.frame.size
+        )
     }
     
     
@@ -55,8 +65,14 @@ class SelectPreviewImageVC: UIViewController {
     
     @IBAction func selectButtonAction() {
         
-        // Navigate to the competition details view controller.
-        performSegue(withIdentifier: SHOW_COMPETITION_DETAILS, sender: nil)
+        let vc = CompetitionDetailsVC(
+            media: videoAVUrlAsset,
+            previewImageTime: seekTime
+        )
+        navigationController?.pushViewController(
+            vc,
+            animated: true
+        )
     }
     
     
@@ -86,16 +102,5 @@ class SelectPreviewImageVC: UIViewController {
         videoPlayerLayer.videoGravity = .resizeAspect
         
         videoContainerView.layer.addSublayer(videoPlayerLayer)
-    }
-    
-
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if let competitionDetailsVC = segue.destination as? CompetitionDetailsVC {
-            competitionDetailsVC.initData(media: videoAVUrlAsset, previewImageTime: seekTime)
-        }
     }
 }
